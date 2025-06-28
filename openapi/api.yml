@@ -1,0 +1,157 @@
+openapi: 3.0.0
+
+info:
+  title: GigaChill
+  version: 0.1.0
+
+servers:
+  - url: http://localhost:3000
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Auth
+  - name: Me
+
+paths:
+  /auth/login:
+    post:
+      summary: Аутентификация пользователя
+      description: Возвращает JWT токен при успешной аутентификации.
+      tags: [Auth]
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLoginPassword"
+      responses:
+        "200":
+          description: Успешная авторизация
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+        "401":
+          description: Неверный логин или пароль
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/register:
+    post:
+      summary: Регистрация нового пользователя
+      tags: [Auth]
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLoginPassword"
+      responses:
+        "201":
+          description: Пользователь создан, токен выдан
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+        "400":
+          description: Невалидные данные (например, короткий пароль)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Пользователь с таким логином уже существует
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /me:
+    get:
+      summary: Текущий пользователь
+      description: Возвращает данные пользователя, идентифицированного по JWT.
+      tags: [Me]
+      operationId: getMe
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Сообщение об ошибке
+          example: "Something went wrong"
+      required: [message]
+
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT access-токен (HS256)
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+    UserLogin:
+      type: object
+      properties:
+        login:
+          type: string
+          description: Логин пользователя
+          example: user123
+
+    UserPassword:
+      type: object
+      properties:
+        password:
+          type: string
+          description: Пароль пользователя
+          example: mysecurepassword
+
+    UserName:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Имя пользователя
+          example: Иван Иванов
+
+    UserLoginPassword:
+      allOf:
+        - $ref: "#/components/schemas/UserLogin"
+        - $ref: "#/components/schemas/UserPassword"
+
+    User:
+      allOf:
+        - $ref: "#/components/schemas/UserLogin"
+        - $ref: "#/components/schemas/UserName"
+        - type: object
+          properties:
+            id:
+              type: string
+              description: Идентификатор пользователя
+              example: c014cfe2-7a69-4959-88f7-4a2b795c2a20
