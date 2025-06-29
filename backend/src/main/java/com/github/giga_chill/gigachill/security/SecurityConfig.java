@@ -12,9 +12,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
     private final JwtFilter jwtFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    public SecurityConfig(JwtFilter jwtFilter) {
+    public SecurityConfig(JwtFilter jwtFilter, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
         this.jwtFilter = jwtFilter;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
 
     @Bean
@@ -26,6 +28,9 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll() // Разрешаем все запросы к /auth/**
                         .anyRequest().authenticated() // Для остальных запросов требуем аутентификацию
                 )
+                .exceptionHandling(ex -> ex
+                    .authenticationEntryPoint(customAuthenticationEntryPoint)
+                )   
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // Добавляем JWT фильтр перед UsernamePasswordAuthenticationFilter
                 .build();
     }
