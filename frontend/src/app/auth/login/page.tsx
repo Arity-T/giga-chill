@@ -41,7 +41,7 @@ export default function LoginForm() {
             <Button block type="primary" htmlType="submit">
               Войти
             </Button>
-            или <a href="">Зарегистрироваться!</a>
+            или <a href="/auth/register">Зарегистрироваться!</a>
           </Form.Item>
         </Form>
       </Card>
