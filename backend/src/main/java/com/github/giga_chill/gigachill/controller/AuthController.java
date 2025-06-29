@@ -4,10 +4,11 @@ import com.github.giga_chill.gigachill.model.*;
 import com.github.giga_chill.gigachill.exception.*;
 import com.github.giga_chill.gigachill.security.JwtService;
 import com.github.giga_chill.gigachill.security.InMemoryUserService;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
 
 @RestController
 public class AuthController {
@@ -20,27 +21,46 @@ public class AuthController {
     }
 
     @PostMapping("/auth/login")
-    public AuthResponse login(@RequestBody AuthRequest request) {
-        if (userService.validate(request.login, request.password)) {
-            return new AuthResponse(jwtService.generateToken(request.login));
-        } else {
+    public ResponseEntity<Void> login(@RequestBody AuthRequest request, HttpServletResponse response) {
+        if (!userService.validate(request.login, request.password)) {
             throw new UnauthorizedException("Something went wrong");
         }
+    
+        String jwt = jwtService.generateToken(request.login);
+    
+        ResponseCookie cookie = ResponseCookie.from("token", jwt)
+                .httpOnly(true)
+                .secure(false) // TODO: false для localhost, true для прода
+                .path("/")
+                .sameSite("Strict")
+                .build();
+    
+        response.addHeader("Set-Cookie", cookie.toString());
+        return ResponseEntity.noContent().build(); // 204
     }
 
     @PostMapping("/auth/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody AuthRequest request) {
-        if (request.login == null || request.login.length() < 4 || request.password == null || request.password.length() < 4) {
-            throw new BadRequestException("Something went wrong");
-        }
-
+    public ResponseEntity<Void> register(@RequestBody AuthRequest request, HttpServletResponse response) {
         if (userService.userExists(request.login)) {
             throw new ConflictException("Something went wrong");
         }
 
+        if (request.password.length() < 4) {
+            throw new BadRequestException("Something went wrong");
+        }
+
         userService.register(request.login, request.password);
-        var token = jwtService.generateToken(request.login);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse(token));
+        String jwt = jwtService.generateToken(request.login);
+
+        ResponseCookie cookie = ResponseCookie.from("token", jwt)
+                .httpOnly(true)
+                .secure(false) // TODO: false для localhost, true для прода
+                .path("/")
+                .sameSite("Strict")
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
+        return ResponseEntity.noContent().build(); // 204
     }
 
     @GetMapping("/me")

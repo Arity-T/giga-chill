@@ -23,15 +23,22 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String header = request.getHeader("Authorization");
+        String token = null;
 
-        if (header != null && header.startsWith("Bearer ")) {
-            String token = header.substring(7);
-            if (jwtService.validate(token)) {
-                String username = jwtService.extractUsername(token);
-                var auth = new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
-                SecurityContextHolder.getContext().setAuthentication(auth);
+        // Читаем токен из cookie
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
             }
+        }
+
+        if (token != null && jwtService.validate(token)) {
+            String username = jwtService.extractUsername(token);
+            var auth = new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
+            SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
         filterChain.doFilter(request, response);
