@@ -1,5 +1,5 @@
 # Тестовая реализация авторизации
-## Стрктура и назначение
+## Структура и назначение
 В папке **/model** хранятся DTO:
 - `AuthRequest` для запроса (логин пароль).
 - `AuthResponse` для ответа (токен).
@@ -43,6 +43,6 @@ curl -X POST http://localhost:3000/auth/login -H "Content-Type: application/json
 
 - **Эндпоинт /me:**
 ```pwsh
-curl -X GET http://localhost:3000/auth/me -H "Authorization: Bearer ВАШ_ТОКЕН"
+curl -X GET http://localhost:3000/me -H "Authorization: Bearer ВАШ_ТОКЕН"
 ```
 На место `ВАШ_ТОКЕН` вставляем токен, который нам вернула система при логине/регистрации. Без токена должна быть ошибка.
