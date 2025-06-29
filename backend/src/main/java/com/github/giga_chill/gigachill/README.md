@@ -31,18 +31,18 @@
 ## Проверка эндпоинтов
 - **Регистрация:**
 ```pwsh
-curl -X POST http://localhost:3000/auth/register -H "Content-Type: application/json" -d '{"login":"vlad", "password":"securepass"}'
+curl -i -X POST http://localhost:3000/auth/register -H "Content-Type: application/json" -d '{"login":"vlad", "password":"securepass"}' -c cookies.txt
 ```
-Регистрируется новый пользователь, в ответ приходит токен для него. При повторной регистрации должна быть ошибка.
+Регистрирует пользователя. JWT-токен будет отправлен в Set-Cookie и сохранён в cookies.txt.
 
 - **Логин:**
 ```pwsh
-curl -X POST http://localhost:3000/auth/login -H "Content-Type: application/json" -d '{"login":"vlad", "password":"securepass"}'
+curl -i -X POST http://localhost:3000/auth/login -H "Content-Type: application/json" -d '{"login":"vlad", "password":"securepass"}' -c cookies.txt
 ```
-Входим по имени пользователя и паролю, в ответ приходит токен.
+Логинится с уже зарегистрированным пользователем. JWT тоже сохранится в cookies.txt.
 
 - **Эндпоинт /me:**
 ```pwsh
-curl -X GET http://localhost:3000/me -H "Authorization: Bearer ВАШ_ТОКЕН"
+curl -X GET http://localhost:3000/me -b cookies.txt
 ```
-На место `ВАШ_ТОКЕН` вставляем токен, который нам вернула система при логине/регистрации. Без токена должна быть ошибка.
+Отправляет токен из куки. Возвращает информацию о текущем пользователе. Если куки нет или токен истёк — будет 401 ошибка.
