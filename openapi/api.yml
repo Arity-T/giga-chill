@@ -8,7 +8,7 @@ servers:
   - url: http://localhost:3000
 
 security:
-  - BearerAuth: []
+  - CookieAuth: []
 
 tags:
   - name: Auth
@@ -28,12 +28,8 @@ paths:
             schema:
               $ref: "#/components/schemas/UserLoginPassword"
       responses:
-        "200":
-          description: Успешная авторизация
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Token"
+        "204":
+          description: JWT отправлен в Set-Cookie (HttpOnly). Тело пустое.
         "401":
           description: Неверный логин или пароль
           content:
@@ -53,12 +49,8 @@ paths:
             schema:
               $ref: "#/components/schemas/UserLoginPassword"
       responses:
-        "201":
-          description: Пользователь создан, токен выдан
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Token"
+        "204":
+          description: Пользователь создан. JWT-токен отправлен в Set-Cookie (HttpOnly). Тело пустое.
         "400":
           description: Невалидные данные (например, короткий пароль)
           content:
@@ -93,10 +85,10 @@ paths:
 
 components:
   securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
 
   schemas:
     ErrorResponse:
@@ -107,14 +99,6 @@ components:
           description: Сообщение об ошибке
           example: "Something went wrong"
       required: [message]
-
-    Token:
-      type: object
-      properties:
-        token:
-          type: string
-          description: JWT access-токен (HS256)
-          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
     UserLogin:
       type: object
