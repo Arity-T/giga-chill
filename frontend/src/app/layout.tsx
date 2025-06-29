@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import AntdProvider from "@/components/AntdProvider";
+// https://ant.design/docs/react/use-with-next
+import { AntdRegistry } from '@ant-design/nextjs-registry';
 import "./globals.css";
 
 const geistSans = Geist({
@@ -25,7 +28,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+        <AntdRegistry>
+          <AntdProvider>{children}</AntdProvider>
+        </AntdRegistry>
       </body>
     </html>
   );
