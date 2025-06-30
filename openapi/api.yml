@@ -47,7 +47,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserLoginPassword"
+              $ref: "#/components/schemas/UserRegister"
       responses:
         "204":
           description: Пользователь создан. JWT-токен отправлен в Set-Cookie (HttpOnly). Тело пустое.
@@ -128,6 +128,12 @@ components:
       allOf:
         - $ref: "#/components/schemas/UserLogin"
         - $ref: "#/components/schemas/UserPassword"
+
+    UserRegister:
+      allOf:
+        - $ref: "#/components/schemas/UserLogin"
+        - $ref: "#/components/schemas/UserPassword"
+        - $ref: "#/components/schemas/UserName"
 
     User:
       allOf:
