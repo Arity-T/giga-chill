@@ -1,12 +1,35 @@
 'use client';
 
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import AuthWrapper from '@/components/auth-wrapper/AuthWrapper';
+import { useRegisterMutation, useLazyGetMeQuery } from '@/store/api/api';
 
 export default function RegisterForm() {
-  const onFinish = (values: any) => {
-    console.log('Успешная отправка:', values);
+  const [register, { isLoading: registerLoading }] = useRegisterMutation();
+  const [getMe] = useLazyGetMeQuery();
+
+  const onFinish = async (values: any) => {
+    console.log('Данные формы регистрации:', values);
+
+    try {
+      await register({ 
+        name: values.name,
+        login: values.login, 
+        password: values.password 
+      }).unwrap();
+
+      console.log('Регистрация успешна');
+
+      const user = await getMe().unwrap();
+
+      console.log('Пользователь после регистрации:');
+      console.log(user);
+
+    } catch (err) {
+      console.log('Ошибка регистрации:');
+      console.log(err);
+    }
   };
 
   return (
@@ -55,7 +78,7 @@ export default function RegisterForm() {
         </Form.Item>
 
         <Form.Item>
-          <Button block type="primary" htmlType="submit">
+          <Button block type="primary" htmlType="submit" loading={registerLoading}>
             Зарегистрироваться
           </Button>
           или <a href="/auth/login">Войти!</a>

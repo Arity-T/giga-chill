@@ -1,12 +1,26 @@
 'use client';
 
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import AuthWrapper from '@/components/auth-wrapper/AuthWrapper';
+import { useLoginMutation, useLazyGetMeQuery } from '@/store/api/api';
 
 export default function LoginForm() {
-  const onFinish = (values: any) => {
-    console.log('Успешная отправка:', values);
+  const [login, { isLoading: loginLoading }] = useLoginMutation();
+  const [getMe] = useLazyGetMeQuery();
+
+  const onFinish = async (values: any) => {
+    try {
+      await login(values).unwrap();
+
+      const user = await getMe().unwrap();
+
+      console.log('user');
+      console.log(user);
+    } catch (err) {
+      console.log('error');
+      console.log(err);
+    }
   };
 
   return (
