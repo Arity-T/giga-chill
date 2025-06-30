@@ -63,6 +63,21 @@ public class AuthController {
         return ResponseEntity.noContent().build(); // 204
     }
 
+    @PostMapping("/auth/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        // Создаём cookie с таким же именем, но с пустым значением и сроком жизни 0
+        ResponseCookie cookie = ResponseCookie.from("token", "")
+                .httpOnly(true)
+                .secure(false) // TODO: true на проде
+                .path("/")
+                .sameSite("Strict")
+                .maxAge(0)  // Удалить cookie
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
+        return ResponseEntity.noContent().build(); // 204 No Content
+    }
+
     @GetMapping("/me")
     public ResponseEntity<UserInfo> me(Authentication authentication) {
         var user = userService.getByLogin(authentication.getName());
@@ -72,4 +87,5 @@ public class AuthController {
 
         return ResponseEntity.ok(new UserInfo(user.login, user.name, user.id));
     }
+
 }

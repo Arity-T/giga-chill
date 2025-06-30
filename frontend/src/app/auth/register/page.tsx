@@ -4,6 +4,8 @@ import { Form, Input, Button, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import AuthWrapper from '@/components/auth-wrapper/AuthWrapper';
 import { useRegisterMutation, useLazyGetMeQuery } from '@/store/api/api';
+import { PAGES } from '@/config/pages.config';
+import Link from 'next/link';
 
 export default function RegisterForm() {
   const [register, { isLoading: registerLoading }] = useRegisterMutation();
@@ -13,10 +15,10 @@ export default function RegisterForm() {
     console.log('Данные формы регистрации:', values);
 
     try {
-      await register({ 
+      await register({
         name: values.name,
-        login: values.login, 
-        password: values.password 
+        login: values.login,
+        password: values.password
       }).unwrap();
 
       console.log('Регистрация успешна');
@@ -81,7 +83,7 @@ export default function RegisterForm() {
           <Button block type="primary" htmlType="submit" loading={registerLoading}>
             Зарегистрироваться
           </Button>
-          или <a href="/auth/login">Войти!</a>
+          или <Link href={PAGES.LOGIN}>Войти!</Link>
         </Form.Item>
       </Form>
     </AuthWrapper>

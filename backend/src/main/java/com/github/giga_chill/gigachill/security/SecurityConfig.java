@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // Отключаем CSRF
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Отключаем сессии
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // Разрешаем все запросы к /auth/**
+                        .requestMatchers("/auth/login", "/auth/register").permitAll() // Разрешаем все запросы к этим эндпоинтам
                         .anyRequest().authenticated() // Для остальных запросов требуем аутентификацию
                 )
                 .exceptionHandling(ex -> ex
