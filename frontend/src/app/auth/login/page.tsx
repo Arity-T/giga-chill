@@ -4,6 +4,8 @@ import { Form, Input, Button, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import AuthWrapper from '@/components/auth-wrapper/AuthWrapper';
 import { useLoginMutation, useLazyGetMeQuery } from '@/store/api/api';
+import { PAGES } from '@/config/pages.config';
+import Link from 'next/link';
 
 export default function LoginForm() {
   const [login, { isLoading: loginLoading }] = useLoginMutation();
@@ -46,7 +48,7 @@ export default function LoginForm() {
           <Button block type="primary" htmlType="submit">
             Войти
           </Button>
-          или <a href="/auth/register">Зарегистрироваться!</a>
+          или <Link href={PAGES.REGISTER}>Зарегистрироваться!</Link>
         </Form.Item>
       </Form>
     </AuthWrapper>
