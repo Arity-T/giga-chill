@@ -9,4 +9,4 @@ jwt:
   expiration: 1d
 
 frontend:
-  origin:
+  origin: "*"
