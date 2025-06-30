@@ -49,7 +49,7 @@ public class AuthController {
             throw new BadRequestException("Something went wrong");
         }
 
-        userService.register(request.login, request.password);
+        userService.register(request.login, request.password, request.name);
         String jwt = jwtService.generateToken(request.login);
 
         ResponseCookie cookie = ResponseCookie.from("token", jwt)
