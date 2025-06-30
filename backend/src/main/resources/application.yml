@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: gigachill
+
+server:
+  port: 3000
+
+jwt:
+  expiration: 1d
+
+frontend:
+  origin:
