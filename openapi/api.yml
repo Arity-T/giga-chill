@@ -63,6 +63,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      summary: Выход из системы
+      description: Удаляет JWT токен из cookie.
+      tags: [Auth]
+      operationId: logoutUser
+      responses:
+        "204":
+          description: Пользователь успешно вышел из системы. JWT токен удалён из cookie.
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /me:
     get:
       summary: Текущий пользователь
