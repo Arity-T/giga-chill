@@ -13,7 +13,6 @@ export default function LoginForm() {
     <AuthWrapper title="Вход в систему">
       <Form
         name="login"
-        initialValues={{ remember: true }}
         onFinish={onFinish}
       >
         <Form.Item

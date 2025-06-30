@@ -13,7 +13,6 @@ export default function RegisterForm() {
     <AuthWrapper title="Регистрация">
       <Form
         name="register"
-        initialValues={{ remember: true }}
         onFinish={onFinish}
       >
         <Form.Item
@@ -34,7 +33,6 @@ export default function RegisterForm() {
           <Input prefix={<LockOutlined />} type="password" placeholder="Пароль" />
         </Form.Item>
 
-        {/* Field */}
         <Form.Item
           name="password2"
           style={{ marginBottom: 30 }}
