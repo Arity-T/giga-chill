@@ -23,7 +23,7 @@ public class AuthController {
     @PostMapping("/auth/login")
     public ResponseEntity<Void> login(@RequestBody AuthRequest request, HttpServletResponse response) {
         if (!userService.validate(request.login, request.password)) {
-            throw new UnauthorizedException("Something went wrong");
+            throw new UnauthorizedException("Неверный логин или пароль");
         }
 
         String jwt = jwtService.generateToken(request.login);
@@ -42,11 +42,11 @@ public class AuthController {
     @PostMapping("/auth/register")
     public ResponseEntity<Void> register(@RequestBody AuthRequest request, HttpServletResponse response) {
         if (userService.userExists(request.login)) {
-            throw new ConflictException("Something went wrong");
+            throw new ConflictException("Пользователь с таким логином уже существует");
         }
 
         if (request.login == null || request.login.length() < 4 || request.password == null || request.password.length() < 4) {
-            throw new BadRequestException("Something went wrong");
+            throw new BadRequestException("Логин и пароль должны быть не короче 4 символов");
         }
 
         userService.register(request.login, request.password, request.name);
@@ -65,13 +65,9 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<UserInfo> me(Authentication authentication) {
-        if (authentication == null || authentication.getName() == null) {
-            throw new UnauthorizedException("Something went wrong");
-        }
-
         var user = userService.getByLogin(authentication.getName());
         if (user == null) {
-            throw new UnauthorizedException("Something went wrong");
+            throw new UnauthorizedException("Пользователь не найден");
         }
 
         return ResponseEntity.ok(new UserInfo(user.login, user.name, user.id));

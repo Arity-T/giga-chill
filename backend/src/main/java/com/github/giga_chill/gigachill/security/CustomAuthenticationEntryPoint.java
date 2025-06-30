@@ -22,7 +22,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
       response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-      var error = Map.of("message", "Something went wrong");
+      var error = Map.of("message", "Отсутствует или недействительный токен");
       objectMapper.writeValue(response.getOutputStream(), error);
   }
 }
