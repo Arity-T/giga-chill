@@ -1,5 +1,6 @@
 package com.github.giga_chill.gigachill.security;
 
+import com.github.giga_chill.gigachill.properties.FrontendProperties;
 import org.springframework.context.annotation.*;
 import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.authentication.configuration.*;
@@ -15,10 +16,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final FrontendProperties frontendProperties;
 
-    public SecurityConfig(JwtFilter jwtFilter, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+    public SecurityConfig(JwtFilter jwtFilter, CustomAuthenticationEntryPoint customAuthenticationEntryPoint, FrontendProperties frontendProperties) {
         this.jwtFilter = jwtFilter;
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+        this.frontendProperties = frontendProperties;
     }
 
     @Bean
@@ -31,8 +34,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated() // Для остальных запросов требуем аутентификацию
                 )
                 .exceptionHandling(ex -> ex
-                    .authenticationEntryPoint(customAuthenticationEntryPoint)
-                )   
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // Добавляем JWT фильтр перед UsernamePasswordAuthenticationFilter
                 .build();
     }
@@ -48,7 +51,7 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOriginPatterns("*") // TODO: заменить на allowedOrigins с адресом фронта
+                        .allowedOriginPatterns(frontendProperties.getOrigin()) // TODO: заменить на allowedOrigins с адресом фронта
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowCredentials(true);
             }

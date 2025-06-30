@@ -17,8 +17,8 @@ public class InMemoryUserService {
     return users.containsKey(login);
   }
 
-  public void register(String login, String password) {
-      users.put(login, new User(login, "Default name", password));
+  public void register(String login, String password, String name) {
+      users.put(login, new User(login, name, password));
   }
 
   public boolean validate(String login, String password) {

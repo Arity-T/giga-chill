@@ -1,21 +1,32 @@
 package com.github.giga_chill.gigachill.security;
 
+import com.github.giga_chill.gigachill.properties.JwtProperties;
 import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 
 @Service
 public class JwtService {
+    private final JwtProperties properties;
+
     private final Key key = Jwts.SIG.HS256.key().build();
-    private final long expirationMs = 24 * 60 * 60 * 1000; // 24 часа
+
+    public JwtService(JwtProperties properties) {
+        this.properties = properties;
+    }
 
     public String generateToken(String username) {
+        Date expiration = Date.from(Instant.now().plus(properties.getExpiration()));
+
         return Jwts.builder()
                 .subject(username)
-                .expiration(new Date(System.currentTimeMillis() + expirationMs))
+                .expiration(expiration)
                 .signWith(key)
                 .compact();
     }
