@@ -48,7 +48,7 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000") // TODO: здесь адрес фронта
+                        .allowedOriginPatterns("*") // TODO: заменить на allowedOrigins с адресом фронта
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowCredentials(true);
             }
