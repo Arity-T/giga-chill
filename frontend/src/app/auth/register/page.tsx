@@ -3,13 +3,14 @@
 import { Form, Input, Button, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import AuthWrapper from '@/components/auth-wrapper/AuthWrapper';
-import { useRegisterMutation, useLazyGetMeQuery } from '@/store/api/api';
+import { useRegisterMutation } from '@/store/api/api';
 import { PAGES } from '@/config/pages.config';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function RegisterForm() {
+  const router = useRouter();
   const [register, { isLoading: registerLoading }] = useRegisterMutation();
-  const [getMe] = useLazyGetMeQuery();
 
   const onFinish = async (values: any) => {
     console.log('Данные формы регистрации:', values);
@@ -20,14 +21,7 @@ export default function RegisterForm() {
         login: values.login,
         password: values.password
       }).unwrap();
-
-      console.log('Регистрация успешна');
-
-      const user = await getMe().unwrap();
-
-      console.log('Пользователь после регистрации:');
-      console.log(user);
-
+      router.replace(PAGES.HOME);
     } catch (err) {
       console.log('Ошибка регистрации:');
       console.log(err);

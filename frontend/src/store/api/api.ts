@@ -8,6 +8,7 @@ export const api = createApi({
     baseUrl: 'http://localhost:3000',
     credentials: 'include',
   }),
+  tagTypes: ['Me'],
   endpoints: (builder) => ({
     login: builder.mutation<void, UserLoginPassword>({
       query: (body) => ({
@@ -15,6 +16,7 @@ export const api = createApi({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['Me'],
     }),
 
     register: builder.mutation<void, RegisterRequest>({
@@ -23,10 +25,12 @@ export const api = createApi({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['Me'],
     }),
 
     getMe: builder.query<User, void>({
       query: () => '/me',
+      providesTags: ['Me'],
     }),
   }),
 });
@@ -34,5 +38,5 @@ export const api = createApi({
 export const {
   useLoginMutation,
   useRegisterMutation,
-  useLazyGetMeQuery,
+  useGetMeQuery,
 } = api;
