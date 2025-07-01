@@ -25,6 +25,8 @@ public class AuthController {
     private final JwtService jwtService;
     private final InMemoryUserService userService;
     private final Path ADMIN_DATA_SOURCE = Paths.get("src/main/resources/test_for_admin.txt");
+    private final Path OWNER_DATA_SOURCE = Paths.get("src/main/resources/test_for_owner.txt");
+    private final Path MEMBER_DATA_SOURCE = Paths.get("src/main/resources/test_for_member.txt");
 
     public AuthController(JwtService jwtService, InMemoryUserService userService) {
         this.jwtService = jwtService;
@@ -116,6 +118,38 @@ public class AuthController {
         }
 
         String content = Files.readString(ADMIN_DATA_SOURCE, StandardCharsets.UTF_8);
+        System.out.println(content);
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(content);
+    }
+
+    @GetMapping(path = "/owner", produces = MediaType.TEXT_PLAIN_VALUE)
+    @PreAuthorize("hasRole('ROLE_OWNER')")
+    public ResponseEntity<String> getOwnerData(Authentication authentication) throws IOException {
+
+        System.out.println("Authorities: " + authentication.getAuthorities());
+        if (!Files.exists(OWNER_DATA_SOURCE) || !Files.isReadable(OWNER_DATA_SOURCE)) {
+            throw new NotFoundException("Файл не существует");
+        }
+
+        String content = Files.readString(OWNER_DATA_SOURCE, StandardCharsets.UTF_8);
+        System.out.println(content);
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(content);
+    }
+
+    @GetMapping(path = "/member", produces = MediaType.TEXT_PLAIN_VALUE)
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_OWNER', 'ROLE_MEMBER')")
+    public ResponseEntity<String> getMemberData(Authentication authentication) throws IOException {
+
+        System.out.println("Authorities: " + authentication.getAuthorities());
+        if (!Files.exists(MEMBER_DATA_SOURCE) || !Files.isReadable(MEMBER_DATA_SOURCE)) {
+            throw new NotFoundException("Файл не существует");
+        }
+
+        String content = Files.readString(MEMBER_DATA_SOURCE, StandardCharsets.UTF_8);
         System.out.println(content);
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_PLAIN)
