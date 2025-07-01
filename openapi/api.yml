@@ -13,6 +13,7 @@ security:
 tags:
   - name: Auth
   - name: Me
+  - name: Roles
 
 paths:
   /auth/login:
@@ -99,6 +100,67 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /owner:
+    get:
+      summary: Информация для владельца
+      description: Возвращает данные пользователю, идентифицированного по JWT и имеющего роль "Owner".
+      tags: [Roles]
+      operationId: getOwner
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/OwnerData"
+        "403":
+          description: Отказано в доступе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessDenied"
+  
+  /admin:
+    get:
+      summary: Информация для админа
+      description: Возвращает данные пользователю, идентифицированного по JWT и имеющего роль "Admin" или "Owner".
+      tags: [Roles]
+      operationId: getAdmin
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/AdminData"
+        "403":
+          description: Отказано в доступе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessDenied"
+
+  /member:
+    get:
+      summary: Информация для участника
+      description: Возвращает данные пользователю, идентифицированного по JWT и имеющего роль "Owner", "Admin" или "Member".
+      tags: [Roles]
+      operationId: getMember
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/MemberData"
+        "403":
+          description: Отказано в доступе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessDenied"
+
+
 components:
   securitySchemes:
     CookieAuth:
@@ -161,3 +223,28 @@ components:
               type: string
               description: Идентификатор пользователя
               example: c014cfe2-7a69-4959-88f7-4a2b795c2a20
+
+    AccessDenied:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Сообщение об ошибке
+          example: "Access Denied"
+      required: [message]
+
+    OwnerData:
+      type: string
+      description: Данные для владельца
+      example: example for owners
+
+    AdminData:
+      type: string
+      description: Данные для админа
+      example: example for admins
+
+    MemberData:
+      type: string
+      description: Данные для участника
+      example: example for members
+    
