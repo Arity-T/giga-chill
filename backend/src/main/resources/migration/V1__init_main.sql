@@ -6,7 +6,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto; -- Для UUID
 
 CREATE TYPE event_role AS ENUM ('participant', 'admin', 'owner');
 
-CREATE TYPE task_status AS ENUM ('open', 'in work', 'under review', 'completed', 'canceled')
+CREATE TYPE task_status AS ENUM ('open', 'in work', 'under review', 'completed', 'canceled');
 
 -- Таблицы
 
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS event (
   description TEXT,
   start_datetime TIMESTAMP DEFAULT NULL,
   end_datetime TIMESTAMP DEFAULT NULL,
-  budget NUMERIC DEFAUL NULL
+  budget NUMERIC DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS user_in_event (
@@ -37,7 +37,6 @@ CREATE TABLE IF NOT EXISTS task (
   event_id UUID NOT NULL REFERENCES event(event_id), 
   author_id UUID NOT NULL REFERENCES users(user_id),
   executor_id UUID DEFAULT NULL REFERENCES users(user_id),
-  actual_approval_id DEFAULT NULL REFERENCES task_approval(task_approval_id),
   title TEXT, -- Ограничения
   description TEXT,
   status task_status NOT NULL,
@@ -51,13 +50,16 @@ CREATE TABLE IF NOT EXISTS task_approval (
   reviewer_comment TEXT DEFAULT NULL
 );
 
+-- Отдельно добавляем цикличную связь 1-к-1
+ALTER TABLE task
+ADD COLUMN actual_approval_id UUID DEFAULT NULL REFERENCES task_approval(task_approval_id);
+
 CREATE TABLE IF NOT EXISTS purchase_list (
   purchase_list_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   task_id UUID NOT NULL REFERENCES task(task_id), -- Список же не может существовать без задачи?
   event_id UUID NOT NULL REFERENCES event(event_id),
   title TEXT NOT NULL, -- Можем сделать ещё и unique
-  budget NUMERIC DEFAULT NULL,
-  -- Дописать логику с purchase_approval и file_link
+  budget NUMERIC DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS purchase (
