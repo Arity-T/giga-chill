@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS task (
   executor_id UUID DEFAULT NULL REFERENCES users(user_id),
   title TEXT, -- Ограничения
   description TEXT,
-  status task_status NOT NULL,
+  status task_status NOT NULL DEFAULT 'open',
   deadline_datetime TIMESTAMP DEFAULT NULL
 );
 
