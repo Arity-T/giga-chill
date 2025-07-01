@@ -19,7 +19,9 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS event (
   event_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  description TEXT,
+  title VARCHAR(32) NOT NULL, -- Ограничения
+  location TEXT NOT NULL,
+  description TEXT DEFAULT NULL,
   start_datetime TIMESTAMP DEFAULT NULL,
   end_datetime TIMESTAMP DEFAULT NULL,
   budget NUMERIC DEFAULT NULL
@@ -29,7 +31,7 @@ CREATE TABLE IF NOT EXISTS user_in_event (
   user_in_event_id SERIAL PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES users(user_id),
   event_id UUID NOT NULL REFERENCES event(event_id),
-  role event_role NOT NULL
+  role event_role NOT NULL DEFAULT 'participant'
 );
 
 CREATE TABLE IF NOT EXISTS task (
@@ -37,10 +39,10 @@ CREATE TABLE IF NOT EXISTS task (
   event_id UUID NOT NULL REFERENCES event(event_id), 
   author_id UUID NOT NULL REFERENCES users(user_id),
   executor_id UUID DEFAULT NULL REFERENCES users(user_id),
-  title TEXT, -- Ограничения
-  description TEXT,
+  title TEXT NOT NULL, -- Ограничения
+  description TEXT DEFAULT NULL,
   status task_status NOT NULL DEFAULT 'open',
-  deadline_datetime TIMESTAMP DEFAULT NULL
+  deadline_datetime TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS task_approval (
@@ -59,13 +61,12 @@ CREATE TABLE IF NOT EXISTS purchase_list (
   task_id UUID NOT NULL REFERENCES task(task_id), -- Список же не может существовать без задачи?
   event_id UUID NOT NULL REFERENCES event(event_id),
   title TEXT NOT NULL, -- Можем сделать ещё и unique
-  budget NUMERIC DEFAULT NULL
+  comment TEXT DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS purchase (
   purchase_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   purchase_list_id UUID NOT NULL REFERENCES purchase_list(purchase_list_id), -- Покупка не существует без задачи?
-  event_id UUID NOT NULL REFERENCES event(event_id),
   title TEXT NOT NULL, -- Можно unique, можно ограничения
   quantity INTEGER NOT NULL,
   unit TEXT NOT NULL, -- Можно ограничения
@@ -79,9 +80,9 @@ CREATE TABLE IF NOT EXISTS consumer_in_list (
 );
 
 CREATE TABLE IF NOT EXISTS purchase_list_approval (
-  purchase_list_approval_id SERIAL PRIMARY KEY,
+  purchase_list_approval_id SERIAL PRIMARY KEY, -- UUID или хватит SERIAL (будет ли видно на эндпоинтах)?
   task_approval_id UUID NOT NULL REFERENCES task_approval(task_approval_id) ON DELETE CASCADE,
   purchase_list_id UUID NOT NULL REFERENCES purchase_list(purchase_list_id) ON DELETE CASCADE,
   budget NUMERIC NOT NULL,
-  file_link TEXT
+  file_link TEXT NOT NULL
 );
