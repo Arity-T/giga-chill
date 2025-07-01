@@ -376,6 +376,52 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /events/{eventId}/participants/{participantId}/role:
+    patch:
+      summary: Изменить роль участника
+      tags: [Participants]
+      operationId: updateParticipantRole
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/participantId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRole"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserWithRole"
+        "400":
+          description: Невалидная роль или попытка изменить роль owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для изменения ролей (требуется роль owner или admin)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие или участник не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   parameters:
     eventId:
@@ -458,6 +504,15 @@ components:
               description: Идентификатор пользователя
               example: c014cfe2-7a69-4959-88f7-4a2b795c2a20
 
+    UserRole:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [owner, admin, participant]
+          description: Роль пользователя в мероприятии
+          example: owner
+
     UserWithRole:
       allOf:
         - $ref: "#/components/schemas/User"
@@ -466,7 +521,7 @@ components:
             user_role:
               readOnly: true
               type: string
-              enum: [owner, admin, participant, none]
+              enum: [owner, admin, participant]
               description: Роль пользователя в мероприятии
               example: owner
 
