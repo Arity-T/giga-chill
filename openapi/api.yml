@@ -14,6 +14,7 @@ tags:
   - name: Auth
   - name: Me
   - name: Events
+  - name: Participants
 
 paths:
   /auth/login:
@@ -261,6 +262,120 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /events/{eventId}/participants:
+    get:
+      summary: Список участников
+      tags: [Participants]
+      operationId: getParticipants
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersWithRoles"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Пользователь не является участником данного мероприятия
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие не найдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      summary: Добавить участника
+      description: Добавление по логину. Роль по умолчанию — **participant**.
+      tags: [Participants]
+      operationId: addParticipant
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLogin"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserWithRole"
+        "400":
+          description: Невалидные данные (например, пользователь с таким логином не найден)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для добавления участников (требуется роль owner или admin)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие не найдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Пользователь уже является участником мероприятия
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /events/{eventId}/participants/{participantId}:
+    delete:
+      summary: Удалить участника
+      tags: [Participants]
+      operationId: deleteParticipant
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/participantId"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для удаления участников (требуется роль owner или admin)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие или участник не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   parameters:
     eventId:
@@ -271,6 +386,15 @@ components:
         type: string
         format: uuid
       example: c014cfe2-7a69-4959-88f7-4a2b795c2a20
+
+    participantId:
+      name: participantId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      example: 0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c
 
   securitySchemes:
     CookieAuth:
@@ -333,6 +457,23 @@ components:
               type: string
               description: Идентификатор пользователя
               example: c014cfe2-7a69-4959-88f7-4a2b795c2a20
+
+    UserWithRole:
+      allOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          properties:
+            user_role:
+              readOnly: true
+              type: string
+              enum: [owner, admin, participant, none]
+              description: Роль пользователя в мероприятии
+              example: owner
+
+    UsersWithRoles:
+      type: array
+      items:
+        $ref: "#/components/schemas/UserWithRole"
 
     Event:
       type: object
