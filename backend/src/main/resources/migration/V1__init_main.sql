@@ -4,9 +4,9 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto; -- Для UUID
 
 -- Перечисления
 
-CREATE TYPE event_role AS ENUM ('participant', 'admin', 'owner');
+CREATE TYPE event_role AS ENUM ('participant', 'admin', 'owner'); -- Обсудить названия
 
-CREATE TYPE task_status AS ENUM ('open', 'in work', 'under review', 'completed', 'canceled');
+CREATE TYPE task_status AS ENUM ('open', 'in work', 'under review', 'completed', 'canceled'); -- Обсудить названия
 
 -- Таблицы
 
@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS user_in_event (
   user_in_event_id SERIAL PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES users(user_id),
   event_id UUID NOT NULL REFERENCES event(event_id),
-  role event_role NOT NULL DEFAULT 'participant'
+  role event_role NOT NULL DEFAULT 'participant',
+  balance NUMERIC DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS task (
