@@ -28,6 +28,14 @@ export const api = createApi({
       invalidatesTags: ['Me'],
     }),
 
+    logout: builder.mutation<void, void>({
+      query: () => ({
+        url: '/auth/logout',
+        method: 'POST',
+      }),
+      invalidatesTags: ['Me'],
+    }),
+
     getMe: builder.query<User, void>({
       query: () => '/me',
       providesTags: ['Me'],
@@ -38,5 +46,6 @@ export const api = createApi({
 export const {
   useLoginMutation,
   useRegisterMutation,
+  useLogoutMutation,
   useGetMeQuery,
 } = api;
