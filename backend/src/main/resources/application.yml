@@ -1,6 +1,10 @@
 spring:
   application:
     name: gigachill
+  datasource:
+    url: jdbc:postgresql://localhost:5432/gigachill
+    username: postgres
+    password: postgres
 
 server:
   port: 3000

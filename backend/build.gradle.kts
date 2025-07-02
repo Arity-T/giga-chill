@@ -2,13 +2,13 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.5.3"
 	id("io.spring.dependency-management") version "1.1.7"
-	id("org.flywaydb.flyway") version "11.10.0"
 	id("nu.studer.jooq") version "8.2"
 }
 
 group = "com.github.giga-chill"
 version = "0.0.1-SNAPSHOT"
 
+// === Java toolchain ===
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
@@ -25,51 +25,48 @@ repositories {
 	mavenCentral()
 }
 
-val flywayClasspath by configurations.creating
-
+// === Зависимости приложения и тестов ===
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-security")
-	implementation("org.springframework.boot:spring-boot-starter-validation")
-	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.boot:spring-boot-starter-jooq")
-	implementation("org.springframework.boot:spring-boot-starter-jdbc")
-	implementation("org.postgresql:postgresql:42.1.4")
-	implementation("org.flywaydb:flyway-core")
-	implementation("org.flywaydb:flyway-database-postgresql")
-	implementation("io.jsonwebtoken:jjwt-api:0.12.1")
-	implementation("org.jooq:jooq")
+    // Spring Boot
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-jooq")
 
-	flywayClasspath("org.postgresql:postgresql:42.7.3")
+    // Flyway (миграции будут работать только при запуске приложения)
+    implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-database-postgresql")
 
-	runtimeOnly("org.postgresql:postgresql")
-	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.1")
-	runtimeOnly("io.jsonwebtoken:jjwt-gson:0.12.1")
+    // JWT
+    implementation("io.jsonwebtoken:jjwt-api:0.12.1")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.1")
+    runtimeOnly("io.jsonwebtoken:jjwt-gson:0.12.1")
 
-	compileOnly("org.projectlombok:lombok")
+    // PostgreSQL драйвер для приложения
+    runtimeOnly("org.postgresql:postgresql")
 
-	annotationProcessor("org.projectlombok:lombok")
+    // Lombok
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
 
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("org.springframework.security:spring-security-test")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    // Тесты
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-	jooqGenerator("org.jooq:jooq-codegen")
-	jooqGenerator("org.jooq:jooq-meta")
-	jooqGenerator("org.postgresql:postgresql")
+    // jOOQ codegen
+    jooqGenerator("org.jooq:jooq-codegen")
+    jooqGenerator("org.jooq:jooq-meta")
+    jooqGenerator("org.postgresql:postgresql")
 }
 
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
-flyway {
-    url = "jdbc:postgresql://localhost:5432/gigachill"
-    user = "postgres"
-    password = "postgres"
-    schemas = arrayOf("public")
-    locations = arrayOf("filesystem:src/main/resources/db/migration")
-}
+sourceSets["main"].java.srcDir("build/generated-sources/jooq")
 
+// === jOOQ codegen конфигурация ===
 jooq {
     configurations {
         create("main") {
@@ -102,8 +99,8 @@ jooq {
                     }
 
                     target.apply {
-                        packageName = "com.github.giga_chill.jooq"
-                        directory = "src/main/java"
+                        packageName = "com.github.giga_chill.jooq.generated"
+                        directory = "build/generated/sources/jooq"
                     }
                 }
             }
