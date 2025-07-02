@@ -87,7 +87,6 @@ public class EventsController {
         if (eventService.getEventById(eventId) == null){
             throw new NotFoundException("Мероприятие не найдено");
         }
-
         eventService.deleteEvent(eventId, user.id);
 
         return ResponseEntity.noContent().build();
