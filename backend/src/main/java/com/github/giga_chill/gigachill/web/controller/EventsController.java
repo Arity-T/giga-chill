@@ -78,11 +78,10 @@ public class EventsController {
         return ResponseEntity.ok(toResponseEventInfo(event, eventService.getUserRoleInEvent(user.id, event.getEvent_id())));
     }
 
-    @PatchMapping("/{eventId}")
+    @DeleteMapping("/{eventId}")
     //TODO: Настроить подгрузку роли из бд
 //    @PreAuthorize("hasAnyRole('ROLE_OWNER')")
-    public ResponseEntity<Void> deleteEventById(@RequestBody RequestEventInfo requestEventInfo,
-                                                            Authentication authentication, @PathVariable String eventId){
+    public ResponseEntity<Void> deleteEventById(Authentication authentication, @PathVariable String eventId){
         //TODO: Добавить обработку 400
         User user = userAuthentication(authentication);
         if (eventService.getEventById(eventId) == null){
