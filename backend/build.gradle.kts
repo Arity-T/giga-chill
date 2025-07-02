@@ -2,7 +2,7 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.5.3"
 	id("io.spring.dependency-management") version "1.1.7"
-	id("nu.studer.jooq") version "8.2"
+	id("nu.studer.jooq") version "10.1"
 }
 
 group = "com.github.giga-chill"
@@ -24,6 +24,8 @@ configurations {
 repositories {
 	mavenCentral()
 }
+
+val jooqVersion = "3.20.5"
 
 // === Зависимости приложения и тестов ===
 dependencies {
@@ -55,8 +57,10 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // jOOQ codegen
-    jooqGenerator("org.jooq:jooq-codegen")
-    jooqGenerator("org.jooq:jooq-meta")
+    implementation("org.jooq:jooq:$jooqVersion")
+    jooqGenerator("org.jooq:jooq:$jooqVersion")
+    jooqGenerator("org.jooq:jooq-codegen:$jooqVersion")
+    jooqGenerator("org.jooq:jooq-meta:$jooqVersion")
     jooqGenerator("org.postgresql:postgresql")
 }
 
@@ -84,16 +88,19 @@ jooq {
 
                 generator.apply {
                     name = "org.jooq.codegen.DefaultGenerator"
-                    strategy.name = "org.jooq.codegen.DefaultGeneratorStrategy"
 
                     database.apply {
                         name = "org.jooq.meta.postgres.PostgresDatabase"
                         inputSchema = "public"
+                        includes = ".*"
+                        excludes = "flyway_schema_history|pgp_armor_headers"
                     }
 
                     generate.apply {
                         isDeprecated = false
                         isRecords = true
+                        isPojos = true
+                        isTables = true
                         isImmutablePojos = true
                         isFluentSetters = true
                     }
