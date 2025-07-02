@@ -4,7 +4,7 @@ import com.github.giga_chill.gigachill.model.*;
 import com.github.giga_chill.gigachill.exception.*;
 import com.github.giga_chill.gigachill.model.info.UserInfo;
 import com.github.giga_chill.gigachill.security.JwtService;
-import com.github.giga_chill.gigachill.security.InMemoryUserService;
+import com.github.giga_chill.gigachill.service.InMemoryUserService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;

@@ -1,4 +1,4 @@
-package com.github.giga_chill.gigachill.security;
+package com.github.giga_chill.gigachill.service;
 
 import com.github.giga_chill.gigachill.model.User;
 import org.springframework.stereotype.Service;
