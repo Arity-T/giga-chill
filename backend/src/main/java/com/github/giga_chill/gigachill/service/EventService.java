@@ -49,7 +49,6 @@ public class EventService {
         event.setDescription(requestEventInfo.description());
 
         //TODO: Связь с бд
-
         return event;
     }
 
@@ -65,5 +64,12 @@ public class EventService {
         USER_EVENTS.computeIfAbsent(userId, value -> new HashMap<>()).put(event.getEvent_id(), event);
         USER_EVENT_ROLES.computeIfAbsent(userId, value -> new HashMap<>()).put(event.getEvent_id(), Role.ROLE_OWNER.toString());
         return event;
+    }
+
+    public void deleteEvent(String eventId, String userId){
+        //TODO: Связь с бд
+        EVENTS.remove(eventId);
+        USER_EVENTS.get(userId).remove(eventId);
+        USER_EVENT_ROLES.get(userId).remove(eventId);
     }
 }
