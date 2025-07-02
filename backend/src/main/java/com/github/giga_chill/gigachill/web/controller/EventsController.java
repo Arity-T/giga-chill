@@ -38,13 +38,14 @@ public class EventsController {
             ResponseEntity.ok(null);
         }
         return ResponseEntity.ok(userEvents.stream()
-                .map(event -> toResponseEventInfo(event, eventService.getUserRoleInEvent(event.getEvent_id(), user.id)))
+                .map(event -> toResponseEventInfo(event, eventService.getUserRoleInEvent(user.id, event.getEvent_id())))
                 .toList());
     }
 
     @PostMapping
     public ResponseEntity<ResponseEventInfo> postEvents(@RequestBody RequestEventInfo requestEventInfo,
                                                         Authentication authentication){
+
         //TODO: Добавить обработку 400
         var login = authentication.getName();
         if (login == null) {
@@ -53,11 +54,9 @@ public class EventsController {
         User user = inMemoryUserService.getByLogin(login);
         Event event = eventService.createEvent(user.id, requestEventInfo);
 
-
         return ResponseEntity.created(URI.create("/events/" + event.getEvent_id()))
                 .body(toResponseEventInfo(event, eventService.getUserRoleInEvent(user.id, event.getEvent_id())));
     }
-
 
 
     private ResponseEventInfo toResponseEventInfo(Event event, String userRole){

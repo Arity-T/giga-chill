@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class InMemoryUserService {
-  private final Map<String, User> users = new ConcurrentHashMap<>();
+  public final Map<String, User> users = new ConcurrentHashMap<>();
 
   public InMemoryUserService() {
     users.put("admin", new User("admin", "Артём Тищенко", "1234"));

@@ -13,7 +13,7 @@ public class EventService {
     //Временно
     private final Map<String, Event> EVENTS = new HashMap<>();
     private final Map<String, List<Event>> USER_EVENTS = new HashMap<>();
-    private final Map<String, Map<String, String>> USER_EVENT_ROLES = new HashMap<>();
+    public final Map<String, Map<String, String>> USER_EVENT_ROLES = new HashMap<>();
 
 
     public List<Event> getAllUserEvents(String userId){
@@ -21,7 +21,7 @@ public class EventService {
         return USER_EVENTS.get(userId);
     }
 
-    public String getUserRoleInEvent(String eventId, String userId){
+    public String getUserRoleInEvent(String userId, String eventId){
         //TODO: Связь с бд
         return USER_EVENT_ROLES.get(userId).get(eventId);
     }
@@ -30,12 +30,12 @@ public class EventService {
         Event event = new Event(UUID.randomUUID().toString(), requestEventInfo.title(),
                 requestEventInfo.location(), requestEventInfo.start_datetime(), requestEventInfo.end_datetime(),
                 requestEventInfo.description(), 0);
+        //TODO: Связь с бд
 
         //Временно
         EVENTS.put(event.getEvent_id(), event);
         USER_EVENTS.computeIfAbsent(userId, value -> new ArrayList<>()).add(event);
         USER_EVENT_ROLES.computeIfAbsent(userId, value -> new HashMap<>()).put(event.getEvent_id(), Role.ROLE_OWNER.toString());
-
         return event;
     }
 }
