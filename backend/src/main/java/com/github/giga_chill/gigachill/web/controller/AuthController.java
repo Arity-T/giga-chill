@@ -1,8 +1,8 @@
-package com.github.giga_chill.gigachill.controller;
+package com.github.giga_chill.gigachill.web.controller;
 
 import com.github.giga_chill.gigachill.model.*;
 import com.github.giga_chill.gigachill.exception.*;
-import com.github.giga_chill.gigachill.model.info.UserInfo;
+import com.github.giga_chill.gigachill.web.info.UserInfo;
 import com.github.giga_chill.gigachill.security.JwtService;
 import com.github.giga_chill.gigachill.service.InMemoryUserService;
 import jakarta.servlet.http.HttpServletResponse;
