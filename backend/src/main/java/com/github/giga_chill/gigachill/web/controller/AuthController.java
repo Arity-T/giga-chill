@@ -58,8 +58,6 @@ public class AuthController {
         userService.register(request.login, request.password, request.name);
         String jwt = jwtService.generateToken(request.login, userService.getByLogin(request.login).rolesToString());
 
-        System.out.println(userService.getByLogin(request.login).rolesToString());
-
         ResponseCookie cookie = ResponseCookie.from("token", jwt)
                 .httpOnly(true)
                 .secure(false) // TODO: false для localhost, true для прода
