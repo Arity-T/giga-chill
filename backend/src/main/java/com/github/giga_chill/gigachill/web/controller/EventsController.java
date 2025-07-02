@@ -6,12 +6,14 @@ import com.github.giga_chill.gigachill.model.Event;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.InMemoryUserService;
-import com.github.giga_chill.gigachill.web.info.EventInfo;
+import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
+import com.github.giga_chill.gigachill.web.info.ResponseEventInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -23,7 +25,7 @@ public class EventsController {
     private final InMemoryUserService inMemoryUserService;
 
     @GetMapping
-    public ResponseEntity<List<EventInfo>> getEvents(Authentication authentication){
+    public ResponseEntity<List<ResponseEventInfo>> getEvents(Authentication authentication){
         var login = authentication.getName();
         if (login == null) {
             throw new UnauthorizedException("Пользователь не найден");
@@ -32,16 +34,35 @@ public class EventsController {
 
         var userEvents = eventService.getAllUserEvents(user.id);
 
+        if (userEvents == null){
+            ResponseEntity.ok(null);
+        }
         return ResponseEntity.ok(userEvents.stream()
-                .map(event -> toEventInfo(event, eventService.getUserRoleInEvent(event.getEvent_id(), user.id)))
+                .map(event -> toResponseEventInfo(event, eventService.getUserRoleInEvent(event.getEvent_id(), user.id)))
                 .toList());
     }
 
+    @PostMapping
+    public ResponseEntity<ResponseEventInfo> postEvents(@RequestBody RequestEventInfo requestEventInfo,
+                                                        Authentication authentication){
+        //TODO: Добавить обработку 400
+        var login = authentication.getName();
+        if (login == null) {
+            throw new UnauthorizedException("Пользователь не найден");
+        }
+        User user = inMemoryUserService.getByLogin(login);
+        Event event = eventService.createEvent(user.id, requestEventInfo);
+
+
+        return ResponseEntity.created(URI.create("/events/" + event.getEvent_id()))
+                .body(toResponseEventInfo(event, eventService.getUserRoleInEvent(user.id, event.getEvent_id())));
+    }
 
 
 
-    private EventInfo toEventInfo(Event event, String userRole){
-        return new EventInfo(event.getEvent_id(), userRole, event.getTitle(), event.getLocation(),
+    private ResponseEventInfo toResponseEventInfo(Event event, String userRole){
+        return new ResponseEventInfo(event.getEvent_id(), userRole, event.getTitle(), event.getLocation(),
                 event.getStart_datetime(), event.getEnd_datetime(), event.getDescription(), event.getBudget());
     }
+
 }

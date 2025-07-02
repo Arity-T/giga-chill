@@ -1,11 +1,13 @@
 package com.github.giga_chill.gigachill.service;
 
 import com.github.giga_chill.gigachill.model.Event;
+import com.github.giga_chill.gigachill.model.Role;
+import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
+import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+@Service
 public class EventService {
 
     //Временно
@@ -24,4 +26,16 @@ public class EventService {
         return USER_EVENT_ROLES.get(userId).get(eventId);
     }
 
+    public Event createEvent(String userId, RequestEventInfo requestEventInfo){
+        Event event = new Event(UUID.randomUUID().toString(), requestEventInfo.title(),
+                requestEventInfo.location(), requestEventInfo.start_datetime(), requestEventInfo.end_datetime(),
+                requestEventInfo.description(), 0);
+
+        //Временно
+        EVENTS.put(event.getEvent_id(), event);
+        USER_EVENTS.computeIfAbsent(userId, value -> new ArrayList<>()).add(event);
+        USER_EVENT_ROLES.computeIfAbsent(userId, value -> new HashMap<>()).put(event.getEvent_id(), Role.ROLE_OWNER.toString());
+
+        return event;
+    }
 }
