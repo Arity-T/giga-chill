@@ -39,6 +39,21 @@ public class EventService {
         return USER_EVENT_ROLES.get(userId).get(eventId);
     }
 
+    public Event updateEvent(String eventId, RequestEventInfo requestEventInfo){
+
+        Event event = EVENTS.get(eventId);
+        event.setTitle(requestEventInfo.title());
+        event.setLocation(requestEventInfo.location());
+        event.setStart_datetime(requestEventInfo.start_datetime());
+        event.setEnd_datetime(requestEventInfo.end_datetime());
+        event.setDescription(requestEventInfo.description());
+
+        //TODO: Связь с бд
+
+        return event;
+    }
+
+
     public Event createEvent(String userId, RequestEventInfo requestEventInfo){
         Event event = new Event(UUID.randomUUID().toString(), requestEventInfo.title(),
                 requestEventInfo.location(), requestEventInfo.start_datetime(), requestEventInfo.end_datetime(),

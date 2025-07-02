@@ -11,8 +11,6 @@ import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
 import com.github.giga_chill.gigachill.web.info.ResponseEventInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,6 +60,21 @@ public class EventsController {
         if (event == null){
             throw new NotFoundException("Мероприятие не найдено");
         }
+        return ResponseEntity.ok(toResponseEventInfo(event, eventService.getUserRoleInEvent(user.id, event.getEvent_id())));
+    }
+
+    @PatchMapping("/{eventId}")
+    //TODO: Настроить подгрузку роли из бд
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_OWNER')")
+    public ResponseEntity<ResponseEventInfo> patchEventById(@RequestBody RequestEventInfo requestEventInfo,
+                                                            Authentication authentication, @PathVariable String eventId){
+        //TODO: Добавить обработку 400
+        User user = userAuthentication(authentication);
+        if (eventService.getEventById(eventId) == null){
+            throw new NotFoundException("Мероприятие не найдено");
+        }
+        Event event = eventService.updateEvent(eventId, requestEventInfo);
+
         return ResponseEntity.ok(toResponseEventInfo(event, eventService.getUserRoleInEvent(user.id, event.getEvent_id())));
     }
 
