@@ -44,13 +44,13 @@
 ## Проверка эндпоинтов
 - **Регистрация:**
 ```pwsh
-curl -i -X POST http://localhost:3000/auth/register -H "Content-Type: application/json" -d '{"login":"vlad", "password":"securepass"}' -c cookies.txt
+curl -i -X POST http://localhost:3000/auth/register -H "Content-Type: application/json" -d '{"login":"vlad", "password":"1234", "name":"Владислав Гаар"}' -c cookies.txt
 ```
 Регистрирует пользователя. JWT-токен будет отправлен в Set-Cookie и сохранён в cookies.txt.
 
 - **Логин:**
 ```pwsh
-curl -i -X POST http://localhost:3000/auth/login -H "Content-Type: application/json" -d '{"login":"vlad", "password":"securepass"}' -c cookies.txt
+curl -i -X POST http://localhost:3000/auth/login -H "Content-Type: application/json" -d '{"login":"vlad", "password":"1234"}' -c cookies.txt
 ```
 Логинится с уже зарегистрированным пользователем. JWT тоже сохранится в cookies.txt.
 
