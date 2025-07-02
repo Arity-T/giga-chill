@@ -2,31 +2,22 @@ package com.github.giga_chill.gigachill.controller;
 
 import com.github.giga_chill.gigachill.model.*;
 import com.github.giga_chill.gigachill.exception.*;
+import com.github.giga_chill.gigachill.model.info.UserInfo;
 import com.github.giga_chill.gigachill.security.JwtService;
 import com.github.giga_chill.gigachill.security.InMemoryUserService;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.stream.Collectors;
+
 
 @RestController
 public class AuthController {
     private final JwtService jwtService;
     private final InMemoryUserService userService;
-    private final Path ADMIN_DATA_SOURCE = Paths.get("src/main/resources/test_for_admin.txt");
-    private final Path OWNER_DATA_SOURCE = Paths.get("src/main/resources/test_for_owner.txt");
-    private final Path MEMBER_DATA_SOURCE = Paths.get("src/main/resources/test_for_member.txt");
+
 
     public AuthController(JwtService jwtService, InMemoryUserService userService) {
         this.jwtService = jwtService;
@@ -104,56 +95,7 @@ public class AuthController {
         if (user == null) {
             throw new UnauthorizedException("Пользователь не найден");
         }
-//        System.out.println("Authorities: " + authentication.getAuthorities());
-        return ResponseEntity.ok(new UserInfo(user.login, user.name, user.id, user.roles));
-    }
-
-    @GetMapping(path = "/admin", produces = MediaType.TEXT_PLAIN_VALUE)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_OWNER')")
-    public ResponseEntity<String> getAdminData(Authentication authentication) throws IOException {
-
-        System.out.println("Authorities: " + authentication.getAuthorities());
-        if (!Files.exists(ADMIN_DATA_SOURCE) || !Files.isReadable(ADMIN_DATA_SOURCE)) {
-            throw new NotFoundException("Файл не существует");
-        }
-
-        String content = Files.readString(ADMIN_DATA_SOURCE, StandardCharsets.UTF_8);
-        System.out.println(content);
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_PLAIN)
-                .body(content);
-    }
-
-    @GetMapping(path = "/owner", produces = MediaType.TEXT_PLAIN_VALUE)
-    @PreAuthorize("hasRole('ROLE_OWNER')")
-    public ResponseEntity<String> getOwnerData(Authentication authentication) throws IOException {
-
-        System.out.println("Authorities: " + authentication.getAuthorities());
-        if (!Files.exists(OWNER_DATA_SOURCE) || !Files.isReadable(OWNER_DATA_SOURCE)) {
-            throw new NotFoundException("Файл не существует");
-        }
-
-        String content = Files.readString(OWNER_DATA_SOURCE, StandardCharsets.UTF_8);
-        System.out.println(content);
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_PLAIN)
-                .body(content);
-    }
-
-    @GetMapping(path = "/member", produces = MediaType.TEXT_PLAIN_VALUE)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_OWNER', 'ROLE_MEMBER')")
-    public ResponseEntity<String> getMemberData(Authentication authentication) throws IOException {
-
-        System.out.println("Authorities: " + authentication.getAuthorities());
-        if (!Files.exists(MEMBER_DATA_SOURCE) || !Files.isReadable(MEMBER_DATA_SOURCE)) {
-            throw new NotFoundException("Файл не существует");
-        }
-
-        String content = Files.readString(MEMBER_DATA_SOURCE, StandardCharsets.UTF_8);
-        System.out.println(content);
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_PLAIN)
-                .body(content);
+        return ResponseEntity.ok(new UserInfo(user.login, user.name, user.id));
     }
 
 }
