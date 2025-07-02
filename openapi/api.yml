@@ -513,6 +513,7 @@ components:
           description: Роль пользователя в мероприятии
           example: owner
 
+
     UserWithRole:
       allOf:
         - $ref: "#/components/schemas/User"
@@ -524,6 +525,10 @@ components:
               enum: [owner, admin, participant]
               description: Роль пользователя в мероприятии
               example: owner
+            balance:
+              type: number
+              description: баланс пользователя в мероприятии
+              example: 200
 
     UsersWithRoles:
       type: array
@@ -548,10 +553,10 @@ components:
           type: string
           description: Название мероприятия
           example: "Встреча с друзьями"
-        description:
+        location: 
           type: string
-          description: Описание мероприятия
-          example: "Встреча с друзьями в кафе"
+          description: Место мероприятия
+          example: Политехническая улица, 29 лит П
         start_datetime:
           type: string
           description: Дата и время начала мероприятия
@@ -560,6 +565,10 @@ components:
           type: string
           description: Дата и время окончания мероприятия
           example: "2025-01-01T12:00:00Z"
+        description:
+          type: string
+          description: Описание мероприятия
+          example: "Встреча с друзьями в кафе"
         budget:
           readOnly: true
           type: number
