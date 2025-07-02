@@ -7,18 +7,31 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+
 @Service
 public class EventService {
 
     //Временно
     private final Map<String, Event> EVENTS = new HashMap<>();
-    private final Map<String, List<Event>> USER_EVENTS = new HashMap<>();
-    public final Map<String, Map<String, String>> USER_EVENT_ROLES = new HashMap<>();
+    private final Map<String, Map<String, Event>> USER_EVENTS = new HashMap<>();
+    private final Map<String, Map<String, String>> USER_EVENT_ROLES = new HashMap<>();
 
+
+
+    public Event getEventById(String eventId){
+        //TODO: Связь с бд
+        return EVENTS.get(eventId);
+    }
 
     public List<Event> getAllUserEvents(String userId){
         //TODO: Связь с бд
-        return USER_EVENTS.get(userId);
+
+        //временно
+        if (!USER_EVENTS.containsKey(userId)){
+            return List.of();
+        }
+
+        return new ArrayList<>(USER_EVENTS.get(userId).values());
     }
 
     public String getUserRoleInEvent(String userId, String eventId){
@@ -34,7 +47,7 @@ public class EventService {
 
         //Временно
         EVENTS.put(event.getEvent_id(), event);
-        USER_EVENTS.computeIfAbsent(userId, value -> new ArrayList<>()).add(event);
+        USER_EVENTS.computeIfAbsent(userId, value -> new HashMap<>()).put(event.getEvent_id(), event);
         USER_EVENT_ROLES.computeIfAbsent(userId, value -> new HashMap<>()).put(event.getEvent_id(), Role.ROLE_OWNER.toString());
         return event;
     }

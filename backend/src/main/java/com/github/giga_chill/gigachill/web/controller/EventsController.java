@@ -1,6 +1,7 @@
 package com.github.giga_chill.gigachill.web.controller;
 
 
+import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.exception.UnauthorizedException;
 import com.github.giga_chill.gigachill.model.Event;
 import com.github.giga_chill.gigachill.model.User;
@@ -10,6 +11,8 @@ import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
 import com.github.giga_chill.gigachill.web.info.ResponseEventInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,15 +29,11 @@ public class EventsController {
 
     @GetMapping
     public ResponseEntity<List<ResponseEventInfo>> getEvents(Authentication authentication){
-        var login = authentication.getName();
-        if (login == null) {
-            throw new UnauthorizedException("Пользователь не найден");
-        }
-        User user = inMemoryUserService.getByLogin(login);
+        User user = userAuthentication(authentication);
 
         var userEvents = eventService.getAllUserEvents(user.id);
 
-        if (userEvents == null){
+        if (userEvents.isEmpty()){
             ResponseEntity.ok(null);
         }
         return ResponseEntity.ok(userEvents.stream()
@@ -47,15 +46,32 @@ public class EventsController {
                                                         Authentication authentication){
 
         //TODO: Добавить обработку 400
-        var login = authentication.getName();
-        if (login == null) {
-            throw new UnauthorizedException("Пользователь не найден");
-        }
-        User user = inMemoryUserService.getByLogin(login);
+        User user = userAuthentication(authentication);
         Event event = eventService.createEvent(user.id, requestEventInfo);
 
         return ResponseEntity.created(URI.create("/events/" + event.getEvent_id()))
                 .body(toResponseEventInfo(event, eventService.getUserRoleInEvent(user.id, event.getEvent_id())));
+    }
+
+    @GetMapping("/{eventId}")
+    //TODO: Настроить подгрузку роли из бд
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_OWNER', ROLE_PARTICIPANT)")
+    public ResponseEntity<ResponseEventInfo> getEventById(Authentication authentication, @PathVariable String eventId){
+        User user = userAuthentication(authentication);
+        Event event = eventService.getEventById(eventId);
+        if (event == null){
+            throw new NotFoundException("Мероприятие не найдено");
+        }
+        return ResponseEntity.ok(toResponseEventInfo(event, eventService.getUserRoleInEvent(user.id, event.getEvent_id())));
+    }
+
+
+    private User userAuthentication(Authentication authentication){
+        var login = authentication.getName();
+        if (login == null) {
+            throw new UnauthorizedException("Пользователь не найден");
+        }
+        return inMemoryUserService.getByLogin(login);
     }
 
 

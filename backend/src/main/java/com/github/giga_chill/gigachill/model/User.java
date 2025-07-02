@@ -28,7 +28,7 @@ public class User implements UserDetails {
         } else if (login.equals("Owner") || login.equals("setOwner")) {
             roles.add(Role.ROLE_OWNER);
         } else {
-            roles.add(Role.ROLE_MEMBER);
+            roles.add(Role.ROLE_PARTICIPANT);
         }
     }
 
