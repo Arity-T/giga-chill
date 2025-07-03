@@ -12,32 +12,32 @@ CREATE TYPE task_status AS ENUM ('open', 'in_progress', 'under_review', 'complet
 
 CREATE TABLE IF NOT EXISTS users (
   user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  login VARCHAR(16) NOT NULL UNIQUE, -- Согласовать и прописать ограничения
+  login VARCHAR(16) NOT NULL UNIQUE,
   password_hash TEXT NOT NULL,
-  name VARCHAR(32) NOT NULL -- Согласовать и прописать ограничения
+  name VARCHAR(32) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS event (
+CREATE TABLE IF NOT EXISTS events (
   event_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  title VARCHAR(32) NOT NULL, -- Ограничения
-  location TEXT NOT NULL,
+  title VARCHAR(64) NOT NULL,
+  location VARCHAR(64) NOT NULL,
   description TEXT DEFAULT NULL,
   start_datetime TIMESTAMP DEFAULT NULL,
   end_datetime TIMESTAMP DEFAULT NULL,
-  budget NUMERIC DEFAULT NULL
+  budget NUMERIC(12, 2) DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS user_in_event (
   user_in_event_id SERIAL PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES users(user_id),
-  event_id UUID NOT NULL REFERENCES event(event_id),
+  event_id UUID NOT NULL REFERENCES events(event_id),
   role event_role NOT NULL DEFAULT 'participant',
   balance NUMERIC DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS task (
   task_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  event_id UUID NOT NULL REFERENCES event(event_id), 
+  event_id UUID NOT NULL REFERENCES events(event_id), 
   author_id UUID NOT NULL REFERENCES users(user_id),
   executor_id UUID DEFAULT NULL REFERENCES users(user_id),
   title TEXT NOT NULL, -- Ограничения
@@ -60,7 +60,7 @@ ADD COLUMN actual_approval_id UUID DEFAULT NULL REFERENCES task_approval(task_ap
 CREATE TABLE IF NOT EXISTS purchase_list (
   purchase_list_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   task_id UUID NOT NULL REFERENCES task(task_id), -- Список же не может существовать без задачи?
-  event_id UUID NOT NULL REFERENCES event(event_id),
+  event_id UUID NOT NULL REFERENCES events(event_id),
   title TEXT NOT NULL, -- Можем сделать ещё и unique
   comment TEXT DEFAULT NULL
 );
