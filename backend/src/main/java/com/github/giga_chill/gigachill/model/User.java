@@ -21,15 +21,6 @@ public class User implements UserDetails {
         this.name = name;
         this.password = password;
         this.roles = new HashSet<>();
-
-        //Убрать
-        if (login.equals("Admin") || login.equals("setAdmin")) {
-            roles.add(Role.ROLE_ADMIN);
-        } else if (login.equals("Owner") || login.equals("setOwner")) {
-            roles.add(Role.ROLE_OWNER);
-        } else {
-            roles.add(Role.ROLE_PARTICIPANT);
-        }
     }
 
     @Override
