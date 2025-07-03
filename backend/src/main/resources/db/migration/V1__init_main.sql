@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS user_in_event (
   user_id UUID NOT NULL REFERENCES users(user_id),
   event_id UUID NOT NULL REFERENCES events(event_id),
   role event_role NOT NULL DEFAULT 'participant',
-  balance NUMERIC DEFAULT NULL,
+  balance NUMERIC(12, 2) DEFAULT NULL,
   PRIMARY KEY (user_id, event_id)
 );
 
@@ -84,6 +84,6 @@ CREATE TABLE IF NOT EXISTS purchase_list_approval (
   purchase_list_approval_id UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- UUID или хватит SERIAL (будет ли видно на эндпоинтах)?
   task_approval_id UUID NOT NULL REFERENCES task_approval(task_approval_id) ON DELETE CASCADE,
   purchase_list_id UUID NOT NULL REFERENCES purchase_list(purchase_list_id) ON DELETE CASCADE,
-  budget NUMERIC NOT NULL,
+  budget NUMERIC(12, 2) NOT NULL,
   file_link TEXT NOT NULL
 );
