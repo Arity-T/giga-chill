@@ -44,6 +44,7 @@ public class EventService {
         //TODO: Связь с бд
 //        return eventDAO.getUserRoleInEvent(userId, eventId);
 
+        //TEMPORARY:
         return USER_EVENT_ROLES.get(userId).get(eventId);
     }
 
