@@ -7,6 +7,7 @@ import com.github.giga_chill.gigachill.model.Event;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.InMemoryUserService;
+import com.github.giga_chill.gigachill.service.ParticipantsService;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
 import com.github.giga_chill.gigachill.web.info.ResponseEventInfo;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class EventsController {
 
     private final EventService eventService;
     private final InMemoryUserService inMemoryUserService;
+    private final ParticipantsService participantsService;
 
     @GetMapping
     public ResponseEntity<List<ResponseEventInfo>> getEvents(Authentication authentication){
@@ -46,7 +48,7 @@ public class EventsController {
         //TODO: Добавить обработку 400
         User user = inMemoryUserService.userAuthentication(authentication);
         Event event = eventService.createEvent(user.id, requestEventInfo);
-
+        participantsService.createEvent(event.getEvent_id(), user);
         return ResponseEntity.created(URI.create("/events/" + event.getEvent_id()))
                 .body(toResponseEventInfo(event, eventService.getUserRoleInEvent(user.id, event.getEvent_id())));
     }
