@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS purchase_list (
   task_id UUID NOT NULL REFERENCES task(task_id), -- Список же не может существовать без задачи?
   event_id UUID NOT NULL REFERENCES events(event_id),
   title TEXT NOT NULL, -- Можем сделать ещё и unique
-  comment TEXT DEFAULT NULL
+  description TEXT DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS purchase (
