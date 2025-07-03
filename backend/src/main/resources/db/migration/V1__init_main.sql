@@ -6,7 +6,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto; -- Для UUID
 
 CREATE TYPE event_role AS ENUM ('participant', 'admin', 'owner'); -- Обсудить названия
 
-CREATE TYPE task_status AS ENUM ('open', 'in work', 'under review', 'completed', 'canceled'); -- Обсудить названия
+CREATE TYPE task_status AS ENUM ('open', 'in_progress', 'under_review', 'completed', 'canceled');
 
 -- Таблицы
 
