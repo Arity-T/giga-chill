@@ -30,7 +30,7 @@ public class ParticipantsService {
         return EVENT_PARTICIPANTS.get(eventId);
     }
 
-    public Participant createParticipantInEvent(String eventId, User user){
+    public Participant addParticipantToEvent(String eventId, User user){
         //TODO: связь с бд
 
         //TEMPORARY:
