@@ -33,7 +33,6 @@ public class ParticipantsService {
 
         //TEMPORARY:
         Participant participant = new Participant(user.id, user.login, user.name, Role.ROLE_PARTICIPANT.toString());
-        System.out.println(EVENT_PARTICIPANTS);
         EVENT_PARTICIPANTS.get(eventId).add(participant);
         return participant;
     }
@@ -57,9 +56,27 @@ public class ParticipantsService {
 
     public boolean IsParticipant(String eventId, String userId){
         //TODO: связь с бд
+        //TODO: Запретить удаление самого себя
 
         //TEMPORARY:
-        return EVENT_PARTICIPANTS.get(eventId).stream().anyMatch(item -> userId.equals(item.getId()));
+        return EVENT_PARTICIPANTS.get(eventId).stream()
+                .anyMatch(item -> userId.equals(item.getId()));
+    }
+
+    public Participant updateParticipantRole(String eventId, String participantId, String role){
+        //TODO: связь с бд
+        //TODO: менять роль у себя
+        //TODO: запретить изменять роль owner
+
+        //TEMPORARY:
+
+        Participant participant = EVENT_PARTICIPANTS.get(eventId)
+                .stream()
+                .filter(item -> participantId.equals(item.getId()))
+                .findFirst()
+                .orElse(null);
+        participant.setRole(role);
+        return participant;
     }
 
 

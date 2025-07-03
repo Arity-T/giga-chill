@@ -80,6 +80,25 @@ public class ParticipantsController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{eventId}/participants/{participantId}/role")
+    //TODO: Настроить подгрузку роли из бд
+//    @PreAuthorize("hasRole('ROLE_OWNER')")
+    public ResponseEntity<ParticipantInfo> patchParticipant(Authentication authentication, @PathVariable String eventId,
+                                                            @PathVariable String participantId,
+                                                            @RequestBody Map<String, Object> body) {
+        String newRole = (String) body.get("role");
+        if (eventService.getEventById(eventId) == null) {
+            throw new NotFoundException("Мероприятие не найдено");
+        }
+        if (!participantsService.IsParticipant(eventId, participantId)) {
+            throw new NotFoundException("Пользователь с таким именем не найден");
+        }
+
+        Participant participant = participantsService.updateParticipantRole(eventId, participantId, newRole);
+
+        return ResponseEntity.ok(toParticipantInfo(participant));
+    }
+
 
     private ParticipantInfo toParticipantInfo(Participant participant) {
         return new ParticipantInfo(participant.getLogin(), participant.getName(),
