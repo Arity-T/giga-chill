@@ -20,11 +20,19 @@ public class EventService {
     private final Map<String, Map<String, String>> USER_EVENT_ROLES = new HashMap<>();
 
 
+    public boolean isExists(String eventId){
+        //TODO: Связь с бд
+
+        //TEMPORARY:
+        return EVENTS.containsKey(eventId);
+    }
+
+
     public Event getEventById(String eventId) {
         //TODO: Связь с бд
 //        return eventDAO.getEventById(eventId)
 
-
+        //TEMPORARY:
         return EVENTS.get(eventId);
     }
 
