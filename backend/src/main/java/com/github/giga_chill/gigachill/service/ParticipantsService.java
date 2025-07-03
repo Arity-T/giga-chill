@@ -4,8 +4,10 @@ package com.github.giga_chill.gigachill.service;
 import com.github.giga_chill.gigachill.model.Participant;
 import com.github.giga_chill.gigachill.model.Role;
 import com.github.giga_chill.gigachill.model.User;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,7 @@ public class ParticipantsService {
 
         //TEMPORARY:
         Participant participant = new Participant(user.id, user.login, user.name, Role.ROLE_PARTICIPANT.toString());
+        System.out.println(EVENT_PARTICIPANTS);
         EVENT_PARTICIPANTS.get(eventId).add(participant);
         return participant;
     }
@@ -40,7 +43,8 @@ public class ParticipantsService {
 
         //TEMPORARY:
         Participant participant = new Participant(user.id, user.login, user.name, Role.ROLE_OWNER.toString());
-        EVENT_PARTICIPANTS.put(eventId, List.of(participant));
+        EVENT_PARTICIPANTS.put(eventId, new ArrayList<>());
+        EVENT_PARTICIPANTS.get(eventId).add(participant);
     }
 
     public boolean IsParticipant(String eventId, String userId){

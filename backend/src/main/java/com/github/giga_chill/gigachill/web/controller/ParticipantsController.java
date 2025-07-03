@@ -3,6 +3,7 @@ package com.github.giga_chill.gigachill.web.controller;
 
 import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
+import com.github.giga_chill.gigachill.exception.UnauthorizedException;
 import com.github.giga_chill.gigachill.model.Participant;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
@@ -52,11 +53,14 @@ public class ParticipantsController {
         }
         String participantLogin = (String) body.get("login");
         User user = inMemoryUserService.getByLogin(participantLogin);
-        if (participantsService.IsParticipant(eventId, user.login)){
+        if (user == null) {
+            throw new UnauthorizedException("Пользователь не найден");
+        }
+        if (participantsService.IsParticipant(eventId, user.id)){
             throw new ConflictException("Пользователь с таким именем уже является участником мероприятия");
         }
-        Participant participant = participantsService.createParticipantInEvent(eventId, user);
 
+        Participant participant = participantsService.createParticipantInEvent(eventId, user);
         return ResponseEntity.created(URI.create("events/" + eventId + "/participants"))
                 .body(toParticipantInfo(participant));
     }
