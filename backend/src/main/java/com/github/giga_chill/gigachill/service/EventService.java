@@ -14,7 +14,7 @@ public class EventService {
 
     private EventDAO eventDAO;
 
-    //Временно
+    //TEMPORARY:
     private final Map<String, Event> EVENTS = new HashMap<>();
     private final Map<String, Map<String, Event>> USER_EVENTS = new HashMap<>();
     private final Map<String, Map<String, String>> USER_EVENT_ROLES = new HashMap<>();
@@ -32,7 +32,7 @@ public class EventService {
         //TODO: Связь с бд
 //        return eventDAO.getAllUserEvents(userId);
 
-        //временно
+        //TEMPORARY:
         if (!USER_EVENTS.containsKey(userId)) {
             return List.of();
         }
@@ -55,6 +55,8 @@ public class EventService {
 //
 //        return eventDAO.updateEvent(eventId, event);
 
+
+        //TEMPORARY:
         Event event = EVENTS.get(eventId);
         event.setTitle(requestEventInfo.title());
         event.setLocation(requestEventInfo.location());
@@ -75,7 +77,7 @@ public class EventService {
 //        return eventDAO.createEvent(userId, event);
 
 
-        //Временно
+        //TEMPORARY:
         EVENTS.put(event.getEvent_id(), event);
         USER_EVENTS.computeIfAbsent(userId, value -> new HashMap<>()).put(event.getEvent_id(), event);
         USER_EVENT_ROLES.computeIfAbsent(userId, value -> new HashMap<>()).put(event.getEvent_id(), Role.ROLE_OWNER.toString());
@@ -86,7 +88,7 @@ public class EventService {
         //TODO: Связь с бд
         //eventDAO.deleteEvent(eventId);
 
-
+        //TEMPORARY:
         EVENTS.remove(eventId);
         USER_EVENTS.get(userId).remove(eventId);
         USER_EVENT_ROLES.get(userId).remove(eventId);
