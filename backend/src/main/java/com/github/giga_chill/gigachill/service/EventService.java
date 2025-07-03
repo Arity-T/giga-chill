@@ -1,6 +1,6 @@
 package com.github.giga_chill.gigachill.service;
 
-import com.github.giga_chill.gigachill.data.access.api.EventDAO;
+import com.github.giga_chill.gigachill.data.access.object.EventDAO;
 import com.github.giga_chill.gigachill.model.Event;
 import com.github.giga_chill.gigachill.model.Role;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
@@ -20,8 +20,10 @@ public class EventService {
     private final Map<String, Map<String, String>> USER_EVENT_ROLES = new HashMap<>();
 
 
-    public boolean isExists(String eventId){
+    public boolean isExisted(String eventId){
         //TODO: Связь с бд
+        //return eventDAO.isExisted(eventId);
+
 
         //TEMPORARY:
         return EVENTS.containsKey(eventId);

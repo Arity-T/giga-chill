@@ -69,6 +69,6 @@ public interface EventDAO {
       * @param eventId the unique identifier of the event
       * @return {@code true} if the event exists, {@code false} otherwise
       */
-     boolean isExists(String eventId);
+     boolean isExisted(String eventId);
 
 }

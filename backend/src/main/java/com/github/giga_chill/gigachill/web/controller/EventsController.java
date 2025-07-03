@@ -58,7 +58,7 @@ public class EventsController {
 //    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_OWNER', ROLE_PARTICIPANT)")
     public ResponseEntity<ResponseEventInfo> getEventById(Authentication authentication, @PathVariable String eventId){
         User user = inMemoryUserService.userAuthentication(authentication);
-        if (!eventService.isExists(eventId)){
+        if (!eventService.isExisted(eventId)){
             throw new NotFoundException("Мероприятие не найдено");
         }
         Event event = eventService.getEventById(eventId);
@@ -72,7 +72,7 @@ public class EventsController {
                                                             Authentication authentication, @PathVariable String eventId){
         //TODO: Добавить обработку 400
         User user = inMemoryUserService.userAuthentication(authentication);
-        if (!eventService.isExists(eventId)){
+        if (!eventService.isExisted(eventId)){
             throw new NotFoundException("Мероприятие не найдено");
         }
         Event event = eventService.updateEvent(eventId, requestEventInfo);
@@ -86,7 +86,7 @@ public class EventsController {
     public ResponseEntity<Void> deleteEventById(Authentication authentication, @PathVariable String eventId){
         //TODO: Добавить обработку 400
         User user = inMemoryUserService.userAuthentication(authentication);
-        if (!eventService.isExists(eventId)){
+        if (!eventService.isExisted(eventId)){
             throw new NotFoundException("Мероприятие не найдено");
         }
         eventService.deleteEvent(eventId, user.id);

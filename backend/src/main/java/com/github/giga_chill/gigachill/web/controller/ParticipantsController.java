@@ -34,7 +34,7 @@ public class ParticipantsController {
 //    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_OWNER', ROLE_PARTICIPANT)")
     public ResponseEntity<List<ParticipantInfo>> getParticipants(Authentication authentication,
                                                                  @PathVariable String eventId) {
-        if (!eventService.isExists(eventId)) {
+        if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Мероприятие не найдено");
         }
         return ResponseEntity.ok(participantsService.getAllParticipantsByEventId(eventId)
@@ -48,7 +48,7 @@ public class ParticipantsController {
 //    @PreAuthorize("hasRole('ROLE_OWNER')")
     public ResponseEntity<ParticipantInfo> postParticipant(Authentication authentication, @PathVariable String eventId,
                                                            @RequestBody Map<String, Object> body) {
-        if (!eventService.isExists(eventId)) {
+        if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Мероприятие не найдено");
         }
         String participantLogin = (String) body.get("login");
@@ -70,7 +70,7 @@ public class ParticipantsController {
 //    @PreAuthorize("hasRole('ROLE_OWNER')")
     public ResponseEntity<Void> deleteParticipant(Authentication authentication, @PathVariable String eventId,
                                                   @PathVariable String participantId) {
-        if (!eventService.isExists(eventId)) {
+        if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Мероприятие не найдено");
         }
         if (!participantsService.IsParticipant(eventId, participantId)) {
@@ -87,7 +87,7 @@ public class ParticipantsController {
                                                             @PathVariable String participantId,
                                                             @RequestBody Map<String, Object> body) {
         String newRole = (String) body.get("role");
-        if (!eventService.isExists(eventId)) {
+        if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Мероприятие не найдено");
         }
         if (!participantsService.IsParticipant(eventId, participantId)) {
