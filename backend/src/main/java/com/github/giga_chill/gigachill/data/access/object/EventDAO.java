@@ -43,18 +43,16 @@ public interface EventDAO {
       *
       * @param eventId the unique identifier of the event to update
       * @param event   the {@link EventDTO} object containing updated fields
-      * @return the updated {@link EventDTO} instance
       */
-     EventDTO updateEvent(String eventId, EventDTO event);
+     void updateEvent(String eventId, EventDTO event);
 
      /**
       * Creates a new event for a given user.
       *
       * @param userId the unique identifier of the user creating the event
       * @param event  the {@link EventDTO} object to be persisted
-      * @return the newly created {@link EventDTO} with its assigned ID
       */
-     EventDTO createEvent(String userId, EventDTO event);
+     void createEvent(String userId, EventDTO event);
 
      /**
       * Deletes an event by its unique identifier.
