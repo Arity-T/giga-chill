@@ -38,6 +38,7 @@ public class ParticipantsService {
         return participant;
     }
 
+    //Может и не нужно
     public void createEvent(String eventId, User user){
         //TODO: связь с бд
 
@@ -45,6 +46,13 @@ public class ParticipantsService {
         Participant participant = new Participant(user.id, user.login, user.name, Role.ROLE_OWNER.toString());
         EVENT_PARTICIPANTS.put(eventId, new ArrayList<>());
         EVENT_PARTICIPANTS.get(eventId).add(participant);
+    }
+
+    public void deleteParticipant(String eventId, String participantId){
+        //TODO: связь с бд
+
+        //TEMPORARY:
+        EVENT_PARTICIPANTS.get(eventId).removeIf(item -> participantId.equals(item.getId()));
     }
 
     public boolean IsParticipant(String eventId, String userId){

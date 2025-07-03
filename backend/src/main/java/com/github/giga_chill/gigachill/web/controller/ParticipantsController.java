@@ -33,8 +33,8 @@ public class ParticipantsController {
     //TODO: Настроить подгрузку роли из бд
 //    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_OWNER', ROLE_PARTICIPANT)")
     public ResponseEntity<List<ParticipantInfo>> getParticipants(Authentication authentication,
-                                                                 @PathVariable String eventId){
-        if (eventService.getEventById(eventId) == null){
+                                                                 @PathVariable String eventId) {
+        if (eventService.getEventById(eventId) == null) {
             throw new NotFoundException("Мероприятие не найдено");
         }
         return ResponseEntity.ok(participantsService.getAllParticipantsByEventId(eventId)
@@ -47,8 +47,8 @@ public class ParticipantsController {
     //TODO: Настроить подгрузку роли из бд
 //    @PreAuthorize("hasRole('ROLE_OWNER')")
     public ResponseEntity<ParticipantInfo> postParticipant(Authentication authentication, @PathVariable String eventId,
-                                                           @RequestBody Map<String, Object> body){
-        if (eventService.getEventById(eventId) == null){
+                                                           @RequestBody Map<String, Object> body) {
+        if (eventService.getEventById(eventId) == null) {
             throw new NotFoundException("Мероприятие не найдено");
         }
         String participantLogin = (String) body.get("login");
@@ -56,8 +56,8 @@ public class ParticipantsController {
         if (user == null) {
             throw new UnauthorizedException("Пользователь не найден");
         }
-        if (participantsService.IsParticipant(eventId, user.id)){
-            throw new ConflictException("Пользователь с таким именем уже является участником мероприятия");
+        if (participantsService.IsParticipant(eventId, user.id)) {
+            throw new ConflictException("Пользователь с таким логином уже является участником мероприятия");
         }
 
         Participant participant = participantsService.createParticipantInEvent(eventId, user);
@@ -65,9 +65,23 @@ public class ParticipantsController {
                 .body(toParticipantInfo(participant));
     }
 
+    @DeleteMapping("/{eventId}/participants/{participantId}")
+    //TODO: Настроить подгрузку роли из бд
+//    @PreAuthorize("hasRole('ROLE_OWNER')")
+    public ResponseEntity<Void> deleteParticipant(Authentication authentication, @PathVariable String eventId,
+                                                  @PathVariable String participantId) {
+        if (eventService.getEventById(eventId) == null) {
+            throw new NotFoundException("Мероприятие не найдено");
+        }
+        if (!participantsService.IsParticipant(eventId, participantId)) {
+            throw new NotFoundException("Пользователь с таким именем не найден");
+        }
+        participantsService.deleteParticipant(eventId, participantId);
+        return ResponseEntity.noContent().build();
+    }
 
 
-    private ParticipantInfo toParticipantInfo(Participant participant){
+    private ParticipantInfo toParticipantInfo(Participant participant) {
         return new ParticipantInfo(participant.getLogin(), participant.getName(),
                 participant.getId(), participant.getRole());
     }
