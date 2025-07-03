@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Participant {
-    public String id;
-    public String login;
-    public String name;
-    public String role;
+    private String id;
+    private String login;
+    private String name;
+    private String role;
 }
