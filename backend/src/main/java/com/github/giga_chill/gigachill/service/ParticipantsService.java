@@ -15,6 +15,8 @@ import java.util.Map;
 @Service
 public class ParticipantsService {
 
+
+    //TEMPORARY:
     private final Map<String, List<Participant>> EVENT_PARTICIPANTS = new HashMap<>();
 
 
