@@ -275,7 +275,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UsersWithRoles"
+                $ref: "#/components/schemas/UsersInEvent"
         "401":
           description: Токен отсутствует, истёк или некорректен
           content:
@@ -314,7 +314,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserWithRole"
+                $ref: "#/components/schemas/UserInEvent"
         "400":
           description: Невалидные данные (например, пользователь с таким логином не найден)
           content:
@@ -396,7 +396,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserWithRole"
+                $ref: "#/components/schemas/UserInEvent"
         "400":
           description: Невалидная роль или попытка изменить роль owner
           content:
@@ -513,8 +513,7 @@ components:
           description: Роль пользователя в мероприятии
           example: owner
 
-
-    UserWithRole:
+    UserInEvent:
       allOf:
         - $ref: "#/components/schemas/User"
         - type: object
@@ -527,13 +526,13 @@ components:
               example: owner
             balance:
               type: number
-              description: баланс пользователя в мероприятии
+              description: Баланс пользователя в мероприятии (сумма долгов)
               example: 200
 
-    UsersWithRoles:
+    UsersInEvent:
       type: array
       items:
-        $ref: "#/components/schemas/UserWithRole"
+        $ref: "#/components/schemas/UserInEvent"
 
     Event:
       type: object
@@ -553,7 +552,7 @@ components:
           type: string
           description: Название мероприятия
           example: "Встреча с друзьями"
-        location: 
+        location:
           type: string
           description: Место мероприятия
           example: Политехническая улица, 29 лит П
