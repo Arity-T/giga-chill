@@ -60,8 +60,8 @@ public class EventService {
         Event event = EVENTS.get(eventId);
         event.setTitle(requestEventInfo.title());
         event.setLocation(requestEventInfo.location());
-        event.setStart_datetime(requestEventInfo.start_datetime());
-        event.setEnd_datetime(requestEventInfo.end_datetime());
+        event.setStartDatetime(requestEventInfo.start_datetime());
+        event.setEndDatetime(requestEventInfo.end_datetime());
         event.setDescription(requestEventInfo.description());
 
 
@@ -78,8 +78,8 @@ public class EventService {
 
 
         //TEMPORARY:
-        EVENTS.put(event.getEvent_id(), event);
-        USER_EVENTS.computeIfAbsent(userId, value -> new HashMap<>()).put(event.getEvent_id(), event);
+        EVENTS.put(event.getEventId(), event);
+        USER_EVENTS.computeIfAbsent(userId, value -> new HashMap<>()).put(event.getEventId(), event);
         return event;
     }
 

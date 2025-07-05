@@ -39,7 +39,7 @@ public class EventsController {
         }
         return ResponseEntity.ok(userEvents.stream()
                 .map(event -> toResponseEventInfo(event,
-                        participantsService.getParticipantRoleInEvent(event.getEvent_id(), user.id)))
+                        participantsService.getParticipantRoleInEvent(event.getEventId(), user.id)))
                 .toList());
     }
 
@@ -50,10 +50,10 @@ public class EventsController {
 
         User user = inMemoryUserService.userAuthentication(authentication);
         Event event = eventService.createEvent(user.id, requestEventInfo);
-        participantsService.createEvent(event.getEvent_id(), user);
-        return ResponseEntity.created(URI.create("/events/" + event.getEvent_id()))
+        participantsService.createEvent(event.getEventId(), user);
+        return ResponseEntity.created(URI.create("/events/" + event.getEventId()))
                 .body(toResponseEventInfo(event,
-                        participantsService.getParticipantRoleInEvent(event.getEvent_id(), user.id)));
+                        participantsService.getParticipantRoleInEvent(event.getEventId(), user.id)));
     }
 
     @GetMapping("/{eventId}")
@@ -67,7 +67,7 @@ public class EventsController {
             throw new ForbiddenException("Пользователь не является участником мероприятия");
         }
         Event event = eventService.getEventById(eventId);
-        return ResponseEntity.ok(toResponseEventInfo(event, participantsService.getParticipantRoleInEvent(event.getEvent_id(), user.id)));
+        return ResponseEntity.ok(toResponseEventInfo(event, participantsService.getParticipantRoleInEvent(event.getEventId(), user.id)));
     }
 
     @PatchMapping("/{eventId}")
@@ -87,7 +87,7 @@ public class EventsController {
         Event event = eventService.updateEvent(eventId, requestEventInfo);
 
         return ResponseEntity.ok(toResponseEventInfo(event,
-                participantsService.getParticipantRoleInEvent(event.getEvent_id(), user.id)));
+                participantsService.getParticipantRoleInEvent(event.getEventId(), user.id)));
     }
 
     @DeleteMapping("/{eventId}")
@@ -109,8 +109,8 @@ public class EventsController {
     }
 
     private ResponseEventInfo toResponseEventInfo(Event event, String userRole){
-        return new ResponseEventInfo(event.getEvent_id(), userRole, event.getTitle(), event.getLocation(),
-                event.getStart_datetime(), event.getEnd_datetime(), event.getDescription(), event.getBudget());
+        return new ResponseEventInfo(event.getEventId(), userRole, event.getTitle(), event.getLocation(),
+                event.getStartDatetime(), event.getEndDatetime(), event.getDescription(), event.getBudget());
     }
 
 }
