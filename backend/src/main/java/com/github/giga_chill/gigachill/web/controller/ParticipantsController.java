@@ -2,6 +2,7 @@ package com.github.giga_chill.gigachill.web.controller;
 
 
 import com.github.giga_chill.gigachill.exception.ConflictException;
+import com.github.giga_chill.gigachill.exception.ForbiddenException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.exception.UnauthorizedException;
 import com.github.giga_chill.gigachill.model.Participant;
@@ -34,8 +35,12 @@ public class ParticipantsController {
 //    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_OWNER', ROLE_PARTICIPANT)")
     public ResponseEntity<List<ParticipantInfo>> getParticipants(Authentication authentication,
                                                                  @PathVariable String eventId) {
+        User user = inMemoryUserService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Мероприятие не найдено");
+        }
+        if (!participantsService.IsParticipant(eventId, user.id)){
+            throw new ForbiddenException("Пользователь не является участником мероприятия");
         }
         return ResponseEntity.ok(participantsService.getAllParticipantsByEventId(eventId)
                 .stream()
@@ -48,15 +53,23 @@ public class ParticipantsController {
 //    @PreAuthorize("hasRole('ROLE_OWNER')")
     public ResponseEntity<ParticipantInfo> postParticipant(Authentication authentication, @PathVariable String eventId,
                                                            @RequestBody Map<String, Object> body) {
+
+        User user = inMemoryUserService.userAuthentication(authentication);
+        String participantLogin = (String) body.get("login");
+        User userToAdd = inMemoryUserService.getByLogin(participantLogin);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Мероприятие не найдено");
         }
-        String participantLogin = (String) body.get("login");
-        User user = inMemoryUserService.getByLogin(participantLogin);
-        if (user == null) {
+        if (!participantsService.IsParticipant(eventId, user.id)){
+            throw new ForbiddenException("Пользователь не является участником мероприятия");
+        }
+        if (!participantsService.isOwner(eventId, user.id)){
+            throw new ForbiddenException("Недостаточно прав");
+        }
+        if (userToAdd == null) {
             throw new UnauthorizedException("Пользователь не найден");
         }
-        if (participantsService.IsParticipant(eventId, user.id)) {
+        if (participantsService.IsParticipant(eventId, userToAdd.id)) {
             throw new ConflictException("Пользователь с таким логином уже является участником мероприятия");
         }
 
@@ -70,8 +83,15 @@ public class ParticipantsController {
 //    @PreAuthorize("hasRole('ROLE_OWNER')")
     public ResponseEntity<Void> deleteParticipant(Authentication authentication, @PathVariable String eventId,
                                                   @PathVariable String participantId) {
+        User user = inMemoryUserService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Мероприятие не найдено");
+        }
+        if (!participantsService.IsParticipant(eventId, user.id)){
+            throw new ForbiddenException("Пользователь не является участником мероприятия");
+        }
+        if (!participantsService.isOwner(eventId, user.id)){
+            throw new ForbiddenException("Недостаточно прав");
         }
         if (!participantsService.IsParticipant(eventId, participantId)) {
             throw new NotFoundException("Пользователь с таким именем не найден");
@@ -86,7 +106,14 @@ public class ParticipantsController {
     public ResponseEntity<ParticipantInfo> patchParticipant(Authentication authentication, @PathVariable String eventId,
                                                             @PathVariable String participantId,
                                                             @RequestBody Map<String, Object> body) {
+        User user = inMemoryUserService.userAuthentication(authentication);
         String newRole = (String) body.get("role");
+        if (!participantsService.IsParticipant(eventId, user.id)){
+            throw new ForbiddenException("Пользователь не является участником мероприятия");
+        }
+        if (!participantsService.isOwner(eventId, user.id)){
+            throw new ForbiddenException("Недостаточно прав");
+        }
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Мероприятие не найдено");
         }

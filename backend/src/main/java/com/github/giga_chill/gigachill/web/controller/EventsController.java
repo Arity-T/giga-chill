@@ -37,7 +37,8 @@ public class EventsController {
             ResponseEntity.ok(null);
         }
         return ResponseEntity.ok(userEvents.stream()
-                .map(event -> toResponseEventInfo(event, participantsService.getParticipantRoleInEvent(event.getEvent_id(), user.id)))
+                .map(event -> toResponseEventInfo(event,
+                        participantsService.getParticipantRoleInEvent(event.getEvent_id(), user.id)))
                 .toList());
     }
 
@@ -50,7 +51,8 @@ public class EventsController {
         Event event = eventService.createEvent(user.id, requestEventInfo);
         participantsService.createEvent(event.getEvent_id(), user);
         return ResponseEntity.created(URI.create("/events/" + event.getEvent_id()))
-                .body(toResponseEventInfo(event, participantsService.getParticipantRoleInEvent(event.getEvent_id(), user.id)));
+                .body(toResponseEventInfo(event,
+                        participantsService.getParticipantRoleInEvent(event.getEvent_id(), user.id)));
     }
 
     @GetMapping("/{eventId}")
@@ -58,11 +60,11 @@ public class EventsController {
 //    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_OWNER', ROLE_PARTICIPANT)")
     public ResponseEntity<ResponseEventInfo> getEventById(Authentication authentication, @PathVariable String eventId){
         User user = inMemoryUserService.userAuthentication(authentication);
-        if(!participantsService.IsParticipant(eventId, user.id)){
-            throw new ForbiddenException("Недостаточно прав");
-        }
         if (!eventService.isExisted(eventId)){
             throw new NotFoundException("Мероприятие не найдено");
+        }
+        if(!participantsService.IsParticipant(eventId, user.id)){
+            throw new ForbiddenException("Пользователь не является участником мероприятия");
         }
         Event event = eventService.getEventById(eventId);
         return ResponseEntity.ok(toResponseEventInfo(event, participantsService.getParticipantRoleInEvent(event.getEvent_id(), user.id)));
@@ -78,9 +80,16 @@ public class EventsController {
         if (!eventService.isExisted(eventId)){
             throw new NotFoundException("Мероприятие не найдено");
         }
+        if (!participantsService.IsParticipant(eventId, user.id)){
+            throw new ForbiddenException("Пользователь не является участником мероприятия");
+        }
+        if (!participantsService.isOwner(eventId, user.id) && !participantsService.isAdmin(eventId, user.id)){
+            throw new ForbiddenException("Недостаточно прав");
+        }
         Event event = eventService.updateEvent(eventId, requestEventInfo);
 
-        return ResponseEntity.ok(toResponseEventInfo(event, participantsService.getParticipantRoleInEvent(event.getEvent_id(), user.id)));
+        return ResponseEntity.ok(toResponseEventInfo(event,
+                participantsService.getParticipantRoleInEvent(event.getEvent_id(), user.id)));
     }
 
     @DeleteMapping("/{eventId}")
@@ -91,6 +100,12 @@ public class EventsController {
         User user = inMemoryUserService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)){
             throw new NotFoundException("Мероприятие не найдено");
+        }
+        if (!participantsService.IsParticipant(eventId, user.id)){
+            throw new ForbiddenException("Пользователь не является участником мероприятия");
+        }
+        if (!participantsService.isOwner(eventId, user.id)){
+            throw new ForbiddenException("Недостаточно прав");
         }
         eventService.deleteEvent(eventId, user.id);
 
