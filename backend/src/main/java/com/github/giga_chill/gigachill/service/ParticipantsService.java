@@ -52,6 +52,7 @@ public class ParticipantsService {
 
     public void deleteParticipant(String eventId, String participantId) {
         //TODO: связь с бд
+        //TODO: Запретить удаление самого себя
 
         //TEMPORARY:
         EVENT_PARTICIPANTS.get(eventId).removeIf(item -> participantId.equals(item.getId()));
@@ -59,7 +60,7 @@ public class ParticipantsService {
 
     public boolean IsParticipant(String eventId, String userId) {
         //TODO: связь с бд
-        //TODO: Запретить удаление самого себя
+
 
         //TEMPORARY:
         return EVENT_PARTICIPANTS.get(eventId).stream()
