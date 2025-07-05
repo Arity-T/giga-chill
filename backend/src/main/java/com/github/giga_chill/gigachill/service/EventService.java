@@ -2,7 +2,6 @@ package com.github.giga_chill.gigachill.service;
 
 import com.github.giga_chill.gigachill.data.access.object.EventDAO;
 import com.github.giga_chill.gigachill.model.Event;
-import com.github.giga_chill.gigachill.model.Role;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,6 @@ public class EventService {
     //TEMPORARY:
     private final Map<String, Event> EVENTS = new HashMap<>();
     private final Map<String, Map<String, Event>> USER_EVENTS = new HashMap<>();
-    private final Map<String, Map<String, String>> USER_EVENT_ROLES = new HashMap<>();
 
 
     public boolean isExisted(String eventId){
@@ -28,7 +26,6 @@ public class EventService {
         //TEMPORARY:
         return EVENTS.containsKey(eventId);
     }
-
 
     public Event getEventById(String eventId) {
         //TODO: Связь с бд
@@ -48,14 +45,6 @@ public class EventService {
         }
 
         return new ArrayList<>(USER_EVENTS.get(userId).values());
-    }
-
-    public String getUserRoleInEvent(String userId, String eventId) {
-        //TODO: Связь с бд
-//        return eventDAO.getUserRoleInEvent(userId, eventId);
-
-        //TEMPORARY:
-        return USER_EVENT_ROLES.get(userId).get(eventId);
     }
 
     public Event updateEvent(String eventId, RequestEventInfo requestEventInfo) {
@@ -91,7 +80,6 @@ public class EventService {
         //TEMPORARY:
         EVENTS.put(event.getEvent_id(), event);
         USER_EVENTS.computeIfAbsent(userId, value -> new HashMap<>()).put(event.getEvent_id(), event);
-        USER_EVENT_ROLES.computeIfAbsent(userId, value -> new HashMap<>()).put(event.getEvent_id(), Role.ROLE_OWNER.toString());
         return event;
     }
 
@@ -102,6 +90,5 @@ public class EventService {
         //TEMPORARY:
         EVENTS.remove(eventId);
         USER_EVENTS.get(userId).remove(eventId);
-        USER_EVENT_ROLES.get(userId).remove(eventId);
     }
 }

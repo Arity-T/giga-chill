@@ -2,9 +2,9 @@ package com.github.giga_chill.gigachill.service;
 
 
 import com.github.giga_chill.gigachill.model.Participant;
-import com.github.giga_chill.gigachill.model.Role;
 import com.github.giga_chill.gigachill.model.User;
-import org.slf4j.Logger;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class ParticipantsService {
-
+    private final Environment env;
 
     //TEMPORARY:
     private final Map<String, List<Participant>> EVENT_PARTICIPANTS = new HashMap<>();
-
 
     public List<Participant> getAllParticipantsByEventId(String eventId){
         //TODO: связь с бд
@@ -80,6 +80,19 @@ public class ParticipantsService {
         participant.setRole(role);
         return participant;
     }
+
+    public String getParticipantRoleInEvent(String eventId, String participantId) {
+        //TODO: Связь с бд
+
+        //TEMPORARY:
+        return EVENT_PARTICIPANTS.get(eventId)
+                .stream()
+                .filter(item->participantId.equals(item.getId()))
+                .findFirst()
+                .orElse(null).getRole();
+    }
+
+
 
 
 }
