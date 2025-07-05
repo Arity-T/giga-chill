@@ -28,8 +28,7 @@ public class ParticipantsController {
 
 
     @GetMapping("/{eventId}/participants")
-    //TODO: Настроить подгрузку роли из бд
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_OWNER', ROLE_PARTICIPANT)")
+    //ACCESS: owner, admin, participant
     public ResponseEntity<List<ParticipantInfo>> getParticipants(Authentication authentication,
                                                                  @PathVariable String eventId) {
         User user = inMemoryUserService.userAuthentication(authentication);
@@ -46,8 +45,7 @@ public class ParticipantsController {
     }
 
     @PostMapping("/{eventId}/participants")
-    //TODO: Настроить подгрузку роли из бд
-//    @PreAuthorize("hasRole('ROLE_OWNER')")
+    //ACCESS: owner
     public ResponseEntity<ParticipantInfo> postParticipant(Authentication authentication, @PathVariable String eventId,
                                                            @RequestBody Map<String, Object> body) {
 
@@ -79,8 +77,7 @@ public class ParticipantsController {
     }
 
     @DeleteMapping("/{eventId}/participants/{participantId}")
-    //TODO: Настроить подгрузку роли из бд
-//    @PreAuthorize("hasRole('ROLE_OWNER')")
+    //ACCESS: owner,
     public ResponseEntity<Void> deleteParticipant(Authentication authentication, @PathVariable String eventId,
                                                   @PathVariable String participantId) {
         User user = inMemoryUserService.userAuthentication(authentication);
@@ -101,8 +98,7 @@ public class ParticipantsController {
     }
 
     @PatchMapping("/{eventId}/participants/{participantId}/role")
-    //TODO: Настроить подгрузку роли из бд
-//    @PreAuthorize("hasRole('ROLE_OWNER')")
+    //ACCESS: owner
     public ResponseEntity<ParticipantInfo> patchParticipant(Authentication authentication, @PathVariable String eventId,
                                                             @PathVariable String participantId,
                                                             @RequestBody Map<String, Object> body) {

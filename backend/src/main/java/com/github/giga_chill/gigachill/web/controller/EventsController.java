@@ -28,6 +28,7 @@ public class EventsController {
     private final ParticipantsService participantsService;
 
     @GetMapping
+    //ACCESS: ALL
     public ResponseEntity<List<ResponseEventInfo>> getEvents(Authentication authentication){
         User user = inMemoryUserService.userAuthentication(authentication);
 
@@ -43,10 +44,10 @@ public class EventsController {
     }
 
     @PostMapping
+    //ACCESS: ALL
     public ResponseEntity<ResponseEventInfo> postEvents(@RequestBody RequestEventInfo requestEventInfo,
                                                         Authentication authentication){
 
-        //TODO: Добавить обработку 400
         User user = inMemoryUserService.userAuthentication(authentication);
         Event event = eventService.createEvent(user.id, requestEventInfo);
         participantsService.createEvent(event.getEvent_id(), user);
@@ -56,8 +57,7 @@ public class EventsController {
     }
 
     @GetMapping("/{eventId}")
-    //TODO: Настроить подгрузку роли из бд
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_OWNER', ROLE_PARTICIPANT)")
+    //ACCESS: owner, admin, participant
     public ResponseEntity<ResponseEventInfo> getEventById(Authentication authentication, @PathVariable String eventId){
         User user = inMemoryUserService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)){
@@ -71,11 +71,9 @@ public class EventsController {
     }
 
     @PatchMapping("/{eventId}")
-    //TODO: Настроить подгрузку роли из бд
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_OWNER')")
+    //ACCESS: owner, admin
     public ResponseEntity<ResponseEventInfo> patchEventById(@RequestBody RequestEventInfo requestEventInfo,
                                                             Authentication authentication, @PathVariable String eventId){
-        //TODO: Добавить обработку 400
         User user = inMemoryUserService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)){
             throw new NotFoundException("Мероприятие не найдено");
@@ -93,10 +91,8 @@ public class EventsController {
     }
 
     @DeleteMapping("/{eventId}")
-    //TODO: Настроить подгрузку роли из бд
-//    @PreAuthorize("hasAnyRole('ROLE_OWNER')")
+    //ACCESS: owner
     public ResponseEntity<Void> deleteEventById(Authentication authentication, @PathVariable String eventId){
-        //TODO: Добавить обработку 400
         User user = inMemoryUserService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)){
             throw new NotFoundException("Мероприятие не найдено");
