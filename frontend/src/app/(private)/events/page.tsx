@@ -1,20 +1,32 @@
 'use client';
 
-import { Card, Tag, Row, Col, Typography, Space } from "antd";
-import { CalendarOutlined, EnvironmentOutlined, UserOutlined } from '@ant-design/icons';
+import { Card, Tag, Row, Col, Typography, Space, Button, Flex } from "antd";
+import { CalendarOutlined, EnvironmentOutlined, UserOutlined, PlusOutlined } from '@ant-design/icons';
+import { useState } from "react";
 import styles from "./page.module.css";
 import { useGetEventsQuery } from "@/store/api/api";
 import { formatDateTime } from "@/utils/datetime-utils";
 import { getRoleColor, getRoleText } from "@/utils/role-utils";
+import CreateEventModal from "./CreateEventModal";
 
 const { Title, Text } = Typography;
 
 export default function EventsPage() {
     const { data: events } = useGetEventsQuery();
+    const [createModalOpen, setCreateModalOpen] = useState(false);
 
     return (
         <div className={styles.page}>
-            <Title level={2}>Мероприятия</Title>
+            <Flex justify="space-between" align="center" style={{ marginBottom: 24 }}>
+                <Title level={2} style={{ margin: 0 }}>Мероприятия</Title>
+                <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => setCreateModalOpen(true)}
+                >
+                    Создать
+                </Button>
+            </Flex>
 
             <Row gutter={[16, 16]}>
                 {events?.map((event) => (
@@ -60,6 +72,11 @@ export default function EventsPage() {
                     </Col>
                 ))}
             </Row>
+
+            <CreateEventModal
+                open={createModalOpen}
+                onCancel={() => setCreateModalOpen(false)}
+            />
         </div>
     );
 }
