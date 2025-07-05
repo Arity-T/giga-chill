@@ -1,9 +1,6 @@
 package com.github.giga_chill.gigachill.web;
 
-import com.github.giga_chill.gigachill.exception.BadRequestException;
-import com.github.giga_chill.gigachill.exception.ConflictException;
-import com.github.giga_chill.gigachill.exception.NotFoundException;
-import com.github.giga_chill.gigachill.exception.UnauthorizedException;
+import com.github.giga_chill.gigachill.exception.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -55,6 +52,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleMissingRequestBodyException(HttpMessageNotReadableException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(new ErrorResponse(e.getMessage()));
     }
 
