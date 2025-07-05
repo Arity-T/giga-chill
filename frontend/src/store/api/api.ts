@@ -1,6 +1,6 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { UserLoginPassword, User, RegisterRequest } from '@/types/api'
+import type { UserLoginPassword, User, RegisterRequest, Event } from '@/types/api'
 
 export const api = createApi({
   reducerPath: 'api',
@@ -8,7 +8,7 @@ export const api = createApi({
     baseUrl: 'http://localhost:3000',
     credentials: 'include',
   }),
-  tagTypes: ['Me'],
+  tagTypes: ['Me', 'Events'],
   endpoints: (builder) => ({
     login: builder.mutation<void, UserLoginPassword>({
       query: (body) => ({
@@ -40,6 +40,11 @@ export const api = createApi({
       query: () => '/me',
       providesTags: ['Me'],
     }),
+
+    getEvents: builder.query<Event[], void>({
+      query: () => '/events',
+      providesTags: ['Events'],
+    }),
   }),
 });
 
@@ -48,4 +53,5 @@ export const {
   useRegisterMutation,
   useLogoutMutation,
   useGetMeQuery,
+  useGetEventsQuery,
 } = api;
