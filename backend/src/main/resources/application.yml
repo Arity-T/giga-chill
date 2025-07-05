@@ -14,5 +14,5 @@ frontend:
 
 roles:
   owner: owner
-  admin: owner
+  admin: admin
   participant: participant
