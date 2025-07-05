@@ -30,15 +30,6 @@ public interface EventDAO {
      List<EventDTO> getAllUserEvents(String userId);
 
      /**
-      * Retrieves the role of a user in a specific event.
-      *
-      * @param userId  the unique identifier of the user
-      * @param eventId the unique identifier of the event
-      * @return the role name of the user in the event, or {@code null} if none
-      */
-     String getUserRoleInEvent(String userId, String eventId);
-
-     /**
       * Updates the details of an existing event.
       *
       * @param eventId the unique identifier of the event to update

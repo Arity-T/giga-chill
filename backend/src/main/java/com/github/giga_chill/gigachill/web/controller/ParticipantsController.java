@@ -1,9 +1,7 @@
 package com.github.giga_chill.gigachill.web.controller;
 
 
-import com.github.giga_chill.gigachill.exception.ConflictException;
-import com.github.giga_chill.gigachill.exception.NotFoundException;
-import com.github.giga_chill.gigachill.exception.UnauthorizedException;
+import com.github.giga_chill.gigachill.exception.*;
 import com.github.giga_chill.gigachill.model.Participant;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
@@ -30,12 +28,15 @@ public class ParticipantsController {
 
 
     @GetMapping("/{eventId}/participants")
-    //TODO: Настроить подгрузку роли из бд
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_OWNER', ROLE_PARTICIPANT)")
+    //ACCESS: owner, admin, participant
     public ResponseEntity<List<ParticipantInfo>> getParticipants(Authentication authentication,
                                                                  @PathVariable String eventId) {
+        User user = inMemoryUserService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Мероприятие не найдено");
+        }
+        if (!participantsService.IsParticipant(eventId, user.id)){
+            throw new ForbiddenException("Пользователь не является участником мероприятия");
         }
         return ResponseEntity.ok(participantsService.getAllParticipantsByEventId(eventId)
                 .stream()
@@ -44,34 +45,50 @@ public class ParticipantsController {
     }
 
     @PostMapping("/{eventId}/participants")
-    //TODO: Настроить подгрузку роли из бд
-//    @PreAuthorize("hasRole('ROLE_OWNER')")
+    //ACCESS: owner
     public ResponseEntity<ParticipantInfo> postParticipant(Authentication authentication, @PathVariable String eventId,
                                                            @RequestBody Map<String, Object> body) {
+
+        User user = inMemoryUserService.userAuthentication(authentication);
+        String participantLogin = (String) body.get("login");
+        if (participantLogin == null){
+            throw new BadRequestException("Не соответствующие тело запроса");
+        }
+        User userToAdd = inMemoryUserService.getByLogin(participantLogin);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Мероприятие не найдено");
         }
-        String participantLogin = (String) body.get("login");
-        User user = inMemoryUserService.getByLogin(participantLogin);
-        if (user == null) {
+        if (!participantsService.IsParticipant(eventId, user.id)){
+            throw new ForbiddenException("Пользователь не является участником мероприятия");
+        }
+        if (!participantsService.isOwner(eventId, user.id)){
+            throw new ForbiddenException("Недостаточно прав");
+        }
+        if (userToAdd == null) {
             throw new UnauthorizedException("Пользователь не найден");
         }
-        if (participantsService.IsParticipant(eventId, user.id)) {
+        if (participantsService.IsParticipant(eventId, userToAdd.id)) {
             throw new ConflictException("Пользователь с таким логином уже является участником мероприятия");
         }
 
-        Participant participant = participantsService.addParticipantToEvent(eventId, user);
+        Participant participant = participantsService.addParticipantToEvent(eventId, userToAdd);
         return ResponseEntity.created(URI.create("events/" + eventId + "/participants"))
                 .body(toParticipantInfo(participant));
     }
 
     @DeleteMapping("/{eventId}/participants/{participantId}")
-    //TODO: Настроить подгрузку роли из бд
-//    @PreAuthorize("hasRole('ROLE_OWNER')")
+    //ACCESS: owner,
     public ResponseEntity<Void> deleteParticipant(Authentication authentication, @PathVariable String eventId,
                                                   @PathVariable String participantId) {
+        User user = inMemoryUserService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Мероприятие не найдено");
+        }
+        if (!participantsService.IsParticipant(eventId, user.id)){
+            throw new ForbiddenException("Пользователь не является участником мероприятия");
+        }
+        if (!participantsService.isOwner(eventId, user.id)){
+            throw new ForbiddenException("Недостаточно прав");
         }
         if (!participantsService.IsParticipant(eventId, participantId)) {
             throw new NotFoundException("Пользователь с таким именем не найден");
@@ -81,12 +98,21 @@ public class ParticipantsController {
     }
 
     @PatchMapping("/{eventId}/participants/{participantId}/role")
-    //TODO: Настроить подгрузку роли из бд
-//    @PreAuthorize("hasRole('ROLE_OWNER')")
+    //ACCESS: owner
     public ResponseEntity<ParticipantInfo> patchParticipant(Authentication authentication, @PathVariable String eventId,
                                                             @PathVariable String participantId,
                                                             @RequestBody Map<String, Object> body) {
+        User user = inMemoryUserService.userAuthentication(authentication);
         String newRole = (String) body.get("role");
+        if (newRole == null){
+            throw new BadRequestException("Не соответствующие тело запроса");
+        }
+        if (!participantsService.IsParticipant(eventId, user.id)){
+            throw new ForbiddenException("Пользователь не является участником мероприятия");
+        }
+        if (!participantsService.isOwner(eventId, user.id)){
+            throw new ForbiddenException("Недостаточно прав");
+        }
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Мероприятие не найдено");
         }

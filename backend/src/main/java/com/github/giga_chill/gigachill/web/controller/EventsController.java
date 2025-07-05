@@ -1,8 +1,8 @@
 package com.github.giga_chill.gigachill.web.controller;
 
 
+import com.github.giga_chill.gigachill.exception.ForbiddenException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
-import com.github.giga_chill.gigachill.exception.UnauthorizedException;
 import com.github.giga_chill.gigachill.model.Event;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
@@ -28,6 +28,7 @@ public class EventsController {
     private final ParticipantsService participantsService;
 
     @GetMapping
+    //ACCESS: ALL
     public ResponseEntity<List<ResponseEventInfo>> getEvents(Authentication authentication){
         User user = inMemoryUserService.userAuthentication(authentication);
 
@@ -37,57 +38,70 @@ public class EventsController {
             ResponseEntity.ok(null);
         }
         return ResponseEntity.ok(userEvents.stream()
-                .map(event -> toResponseEventInfo(event, eventService.getUserRoleInEvent(user.id, event.getEvent_id())))
+                .map(event -> toResponseEventInfo(event,
+                        participantsService.getParticipantRoleInEvent(event.getEventId(), user.id)))
                 .toList());
     }
 
     @PostMapping
+    //ACCESS: ALL
     public ResponseEntity<ResponseEventInfo> postEvents(@RequestBody RequestEventInfo requestEventInfo,
                                                         Authentication authentication){
 
-        //TODO: Добавить обработку 400
         User user = inMemoryUserService.userAuthentication(authentication);
         Event event = eventService.createEvent(user.id, requestEventInfo);
-        participantsService.createEvent(event.getEvent_id(), user);
-        return ResponseEntity.created(URI.create("/events/" + event.getEvent_id()))
-                .body(toResponseEventInfo(event, eventService.getUserRoleInEvent(user.id, event.getEvent_id())));
+        participantsService.createEvent(event.getEventId(), user);
+        return ResponseEntity.created(URI.create("/events/" + event.getEventId()))
+                .body(toResponseEventInfo(event,
+                        participantsService.getParticipantRoleInEvent(event.getEventId(), user.id)));
     }
 
     @GetMapping("/{eventId}")
-    //TODO: Настроить подгрузку роли из бд
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_OWNER', ROLE_PARTICIPANT)")
+    //ACCESS: owner, admin, participant
     public ResponseEntity<ResponseEventInfo> getEventById(Authentication authentication, @PathVariable String eventId){
         User user = inMemoryUserService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)){
             throw new NotFoundException("Мероприятие не найдено");
         }
+        if(!participantsService.IsParticipant(eventId, user.id)){
+            throw new ForbiddenException("Пользователь не является участником мероприятия");
+        }
         Event event = eventService.getEventById(eventId);
-        return ResponseEntity.ok(toResponseEventInfo(event, eventService.getUserRoleInEvent(user.id, event.getEvent_id())));
+        return ResponseEntity.ok(toResponseEventInfo(event, participantsService.getParticipantRoleInEvent(event.getEventId(), user.id)));
     }
 
     @PatchMapping("/{eventId}")
-    //TODO: Настроить подгрузку роли из бд
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_OWNER')")
+    //ACCESS: owner, admin
     public ResponseEntity<ResponseEventInfo> patchEventById(@RequestBody RequestEventInfo requestEventInfo,
                                                             Authentication authentication, @PathVariable String eventId){
-        //TODO: Добавить обработку 400
         User user = inMemoryUserService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)){
             throw new NotFoundException("Мероприятие не найдено");
         }
+        if (!participantsService.IsParticipant(eventId, user.id)){
+            throw new ForbiddenException("Пользователь не является участником мероприятия");
+        }
+        if (!participantsService.isOwner(eventId, user.id) && !participantsService.isAdmin(eventId, user.id)){
+            throw new ForbiddenException("Недостаточно прав");
+        }
         Event event = eventService.updateEvent(eventId, requestEventInfo);
 
-        return ResponseEntity.ok(toResponseEventInfo(event, eventService.getUserRoleInEvent(user.id, event.getEvent_id())));
+        return ResponseEntity.ok(toResponseEventInfo(event,
+                participantsService.getParticipantRoleInEvent(event.getEventId(), user.id)));
     }
 
     @DeleteMapping("/{eventId}")
-    //TODO: Настроить подгрузку роли из бд
-//    @PreAuthorize("hasAnyRole('ROLE_OWNER')")
+    //ACCESS: owner
     public ResponseEntity<Void> deleteEventById(Authentication authentication, @PathVariable String eventId){
-        //TODO: Добавить обработку 400
         User user = inMemoryUserService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)){
             throw new NotFoundException("Мероприятие не найдено");
+        }
+        if (!participantsService.IsParticipant(eventId, user.id)){
+            throw new ForbiddenException("Пользователь не является участником мероприятия");
+        }
+        if (!participantsService.isOwner(eventId, user.id)){
+            throw new ForbiddenException("Недостаточно прав");
         }
         eventService.deleteEvent(eventId, user.id);
 
@@ -95,8 +109,8 @@ public class EventsController {
     }
 
     private ResponseEventInfo toResponseEventInfo(Event event, String userRole){
-        return new ResponseEventInfo(event.getEvent_id(), userRole, event.getTitle(), event.getLocation(),
-                event.getStart_datetime(), event.getEnd_datetime(), event.getDescription(), event.getBudget());
+        return new ResponseEventInfo(event.getEventId(), userRole, event.getTitle(), event.getLocation(),
+                event.getStartDatetime(), event.getEndDatetime(), event.getDescription(), event.getBudget());
     }
 
 }

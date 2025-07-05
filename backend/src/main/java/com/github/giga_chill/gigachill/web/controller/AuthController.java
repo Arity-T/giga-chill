@@ -30,9 +30,7 @@ public class AuthController {
             throw new UnauthorizedException("Неверный логин или пароль");
         }
 
-        String jwt = jwtService.generateToken(request.login, userService.getByLogin(request.login).rolesToString());
-
-
+        String jwt = jwtService.generateToken(request.login);
 
         ResponseCookie cookie = ResponseCookie.from("token", jwt)
                 .httpOnly(true)
@@ -56,7 +54,7 @@ public class AuthController {
         }
 
         userService.register(request.login, request.password, request.name);
-        String jwt = jwtService.generateToken(request.login, userService.getByLogin(request.login).rolesToString());
+        String jwt = jwtService.generateToken(request.login);
 
         ResponseCookie cookie = ResponseCookie.from("token", jwt)
                 .httpOnly(true)
@@ -66,9 +64,6 @@ public class AuthController {
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
-
-
-
         return ResponseEntity.noContent().build(); // 204
     }
 
@@ -93,6 +88,7 @@ public class AuthController {
         if (user == null) {
             throw new UnauthorizedException("Пользователь не найден");
         }
+
         return ResponseEntity.ok(new UserInfo(user.login, user.name, user.id));
     }
 

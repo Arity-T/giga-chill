@@ -54,4 +54,13 @@ public interface ParticipantDAO {
      */
     void updateParticipantRole(String eventId, String participantId, String role);
 
+    /**
+     * Retrieves the role of a participant in a specific event.
+     *
+     * @param eventId the unique identifier of the event
+     * @param participantId  the unique identifier of the participant
+     * @return the role name of the user in the event, or {@code null} if none
+     */
+    String getParticipantRoleInEvent(String eventId, String participantId);
+
 }

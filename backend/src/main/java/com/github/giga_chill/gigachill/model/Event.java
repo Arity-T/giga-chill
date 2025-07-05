@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Event {
 
-    private String event_id;
+    private String eventId;
     private String title;
     private String location;
-    private String start_datetime;
-    private String end_datetime;
+    private String startDatetime;
+    private String endDatetime;
     private String description;
     private Integer budget;
 }

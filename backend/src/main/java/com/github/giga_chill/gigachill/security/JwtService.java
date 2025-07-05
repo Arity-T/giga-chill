@@ -24,13 +24,12 @@ public class JwtService {
         this.properties = properties;
     }
 
-    public String generateToken(String username,  Collection<String> roles) {
+    public String generateToken(String username) {
         Date expiration = Date.from(Instant.now().plus(properties.getExpiration()));
 
         return Jwts.builder()
-                .setSubject(username)
-                .claim("roles", roles)          // <- добавляем claim с ролями
-                .setExpiration(expiration)
+                .subject(username)
+                .expiration(expiration)
                 .signWith(key)
                 .compact();
     }
@@ -49,20 +48,6 @@ public class JwtService {
                 .verifyWith((SecretKey) key)
                 .build()
                 .parseSignedClaims(token);
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<String> extractRoles(String token) {
-        Claims claims = parseClaims(token).getBody();
-        Object roles = claims.get("roles");
-        if (roles instanceof List<?>) {
-            // Обычно JJWT возвращает List<LinkedHashMap> для сложных объектов,
-            // но для простых строковых списков это будет List<String>
-            return ((List<?>) roles).stream()
-                    .map(Object::toString)
-                    .collect(Collectors.toList());
-        }
-        return List.of();
     }
 
     public String extractUsername(String token) {

@@ -10,3 +10,9 @@ jwt:
 
 frontend:
   origin: "*"
+
+
+roles:
+  owner: owner
+  admin: admin
+  participant: participant
