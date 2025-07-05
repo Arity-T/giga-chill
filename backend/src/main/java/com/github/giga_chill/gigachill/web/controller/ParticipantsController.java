@@ -1,6 +1,5 @@
 package com.github.giga_chill.gigachill.web.controller;
 
-
 import com.github.giga_chill.gigachill.exception.*;
 import com.github.giga_chill.gigachill.model.Participant;
 import com.github.giga_chill.gigachill.model.User;
@@ -28,15 +27,16 @@ public class ParticipantsController {
 
 
     @GetMapping("/{eventId}/participants")
-    //ACCESS: owner, admin, participant
+    // ACCESS: owner, admin, participant
     public ResponseEntity<List<ParticipantInfo>> getParticipants(Authentication authentication,
                                                                  @PathVariable String eventId) {
         User user = inMemoryUserService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)) {
-            throw new NotFoundException("Мероприятие не найдено");
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!participantsService.IsParticipant(eventId, user.id)){
-            throw new ForbiddenException("Пользователь не является участником мероприятия");
+        if (!participantsService.IsParticipant(eventId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a participant of event with id " + eventId);
         }
         return ResponseEntity.ok(participantsService.getAllParticipantsByEventId(eventId)
                 .stream()
@@ -45,30 +45,34 @@ public class ParticipantsController {
     }
 
     @PostMapping("/{eventId}/participants")
-    //ACCESS: owner
-    public ResponseEntity<ParticipantInfo> postParticipant(Authentication authentication, @PathVariable String eventId,
+    // ACCESS: owner
+    public ResponseEntity<ParticipantInfo> postParticipant(Authentication authentication,
+                                                           @PathVariable String eventId,
                                                            @RequestBody Map<String, Object> body) {
 
         User user = inMemoryUserService.userAuthentication(authentication);
         String participantLogin = (String) body.get("login");
-        if (participantLogin == null){
-            throw new BadRequestException("Не соответствующие тело запроса");
+        if (participantLogin == null) {
+            throw new BadRequestException("Invalid request body: " + body);
         }
         User userToAdd = inMemoryUserService.getByLogin(participantLogin);
         if (!eventService.isExisted(eventId)) {
-            throw new NotFoundException("Мероприятие не найдено");
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!participantsService.IsParticipant(eventId, user.id)){
-            throw new ForbiddenException("Пользователь не является участником мероприятия");
+        if (!participantsService.IsParticipant(eventId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a participant of event with id " + eventId);
         }
-        if (!participantsService.isOwner(eventId, user.id)){
-            throw new ForbiddenException("Недостаточно прав");
+        if (!participantsService.isOwner(eventId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " does not have permission to add participants to event with id " + eventId);
         }
         if (userToAdd == null) {
-            throw new UnauthorizedException("Пользователь не найден");
+            throw new UnauthorizedException("User with login '" + participantLogin + "' not found");
         }
         if (participantsService.IsParticipant(eventId, userToAdd.id)) {
-            throw new ConflictException("Пользователь с таким логином уже является участником мероприятия");
+            throw new ConflictException("User with login '" + participantLogin +
+                    "' is already a participant of event with id " + eventId);
         }
 
         Participant participant = participantsService.addParticipantToEvent(eventId, userToAdd);
@@ -77,50 +81,56 @@ public class ParticipantsController {
     }
 
     @DeleteMapping("/{eventId}/participants/{participantId}")
-    //ACCESS: owner
-    public ResponseEntity<Void> deleteParticipant(Authentication authentication, @PathVariable String eventId,
+    // ACCESS: owner
+    public ResponseEntity<Void> deleteParticipant(Authentication authentication,
+                                                  @PathVariable String eventId,
                                                   @PathVariable String participantId) {
         User user = inMemoryUserService.userAuthentication(authentication);
-        if(user.id.equals(participantId)){
-            throw new BadRequestException("Пользователь не может удалить сам себя");
+        if (user.id.equals(participantId)) {
+            throw new BadRequestException("User with id " + participantId + " cannot delete themselves");
         }
         if (!eventService.isExisted(eventId)) {
-            throw new NotFoundException("Мероприятие не найдено");
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!participantsService.IsParticipant(eventId, user.id)){
-            throw new ForbiddenException("Пользователь не является участником мероприятия");
+        if (!participantsService.IsParticipant(eventId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a participant of event with id " + eventId);
         }
-        if (!participantsService.isOwner(eventId, user.id)){
-            throw new ForbiddenException("Недостаточно прав");
+        if (!participantsService.isOwner(eventId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " does not have permission to remove participants from event with id " + eventId);
         }
         if (!participantsService.IsParticipant(eventId, participantId)) {
-            throw new NotFoundException("Пользователь с таким именем не найден");
+            throw new NotFoundException("Participant with id " + participantId + " not found in event " + eventId);
         }
         participantsService.deleteParticipant(eventId, participantId);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{eventId}/participants/{participantId}/role")
-    //ACCESS: owner
-    public ResponseEntity<ParticipantInfo> patchParticipant(Authentication authentication, @PathVariable String eventId,
+    // ACCESS: owner
+    public ResponseEntity<ParticipantInfo> patchParticipant(Authentication authentication,
+                                                            @PathVariable String eventId,
                                                             @PathVariable String participantId,
                                                             @RequestBody Map<String, Object> body) {
         User user = inMemoryUserService.userAuthentication(authentication);
         String newRole = (String) body.get("role");
-        if (newRole == null){
-            throw new BadRequestException("Не соответствующие тело запроса");
-        }
-        if (!participantsService.IsParticipant(eventId, user.id)){
-            throw new ForbiddenException("Пользователь не является участником мероприятия");
-        }
-        if (!participantsService.isOwner(eventId, user.id)){
-            throw new ForbiddenException("Недостаточно прав");
+        if (newRole == null) {
+            throw new BadRequestException("Invalid request body: " + body);
         }
         if (!eventService.isExisted(eventId)) {
-            throw new NotFoundException("Мероприятие не найдено");
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!participantsService.IsParticipant(eventId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a participant of event with id " + eventId);
+        }
+        if (!participantsService.isOwner(eventId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " does not have permission to change participant roles in event with id " + eventId);
         }
         if (!participantsService.IsParticipant(eventId, participantId)) {
-            throw new NotFoundException("Пользователь с таким именем не найден");
+            throw new NotFoundException("Participant with id " + participantId + " not found in event " + eventId);
         }
 
         Participant participant = participantsService.updateParticipantRole(eventId, participantId, newRole);
@@ -128,10 +138,13 @@ public class ParticipantsController {
         return ResponseEntity.ok(toParticipantInfo(participant));
     }
 
-
     private ParticipantInfo toParticipantInfo(Participant participant) {
-        return new ParticipantInfo(participant.getLogin(), participant.getName(),
-                participant.getId(), participant.getRole());
+        return new ParticipantInfo(
+                participant.getLogin(),
+                participant.getName(),
+                participant.getId(),
+                participant.getRole()
+        );
     }
 
 }

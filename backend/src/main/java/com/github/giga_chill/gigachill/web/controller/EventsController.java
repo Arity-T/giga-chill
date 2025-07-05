@@ -61,10 +61,11 @@ public class EventsController {
     public ResponseEntity<ResponseEventInfo> getEventById(Authentication authentication, @PathVariable String eventId){
         User user = inMemoryUserService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)){
-            throw new NotFoundException("Мероприятие не найдено");
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if(!participantsService.IsParticipant(eventId, user.id)){
-            throw new ForbiddenException("Пользователь не является участником мероприятия");
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a participant of event with id " + eventId);
         }
         Event event = eventService.getEventById(eventId);
         return ResponseEntity.ok(toResponseEventInfo(event, participantsService.getParticipantRoleInEvent(event.getEventId(), user.id)));
@@ -76,13 +77,15 @@ public class EventsController {
                                                             Authentication authentication, @PathVariable String eventId){
         User user = inMemoryUserService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)){
-            throw new NotFoundException("Мероприятие не найдено");
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!participantsService.IsParticipant(eventId, user.id)){
-            throw new ForbiddenException("Пользователь не является участником мероприятия");
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a participant of event with id " + eventId);
         }
         if (!participantsService.isOwner(eventId, user.id) && !participantsService.isAdmin(eventId, user.id)){
-            throw new ForbiddenException("Недостаточно прав");
+            throw new ForbiddenException("User with id " + user.id +
+                    " does not have permission to patch event with id " + eventId);
         }
         Event event = eventService.updateEvent(eventId, requestEventInfo);
 
@@ -95,13 +98,15 @@ public class EventsController {
     public ResponseEntity<Void> deleteEventById(Authentication authentication, @PathVariable String eventId){
         User user = inMemoryUserService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)){
-            throw new NotFoundException("Мероприятие не найдено");
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!participantsService.IsParticipant(eventId, user.id)){
-            throw new ForbiddenException("Пользователь не является участником мероприятия");
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a participant of event with id " + eventId);
         }
         if (!participantsService.isOwner(eventId, user.id)){
-            throw new ForbiddenException("Недостаточно прав");
+            throw new ForbiddenException("User with id " + user.id +
+                    " does not have permission to delete event with id " + eventId);
         }
         eventService.deleteEvent(eventId, user.id);
 
