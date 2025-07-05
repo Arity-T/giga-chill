@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-  private final JwtService jwtService;
+    private final JwtService jwtService;
 
     public JwtFilter(JwtService jwtService) {
         this.jwtService = jwtService;
@@ -41,16 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (token != null && jwtService.validate(token)) {
             String username = jwtService.extractUsername(token);
-
-            // Для доступа к ролям
-            List<String> roles = jwtService.extractRoles(token);
-
-            List<GrantedAuthority> authorities = roles.stream()
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList());
-
-
-            var auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
+            var auth = new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
