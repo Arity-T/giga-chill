@@ -81,9 +81,9 @@ public class ParticipantsController {
     public ResponseEntity<Void> deleteParticipant(Authentication authentication, @PathVariable String eventId,
                                                   @PathVariable String participantId) {
         User user = inMemoryUserService.userAuthentication(authentication);
-//        if(user.id.equals(participantId)){
-//            throw new BadRequestException("Пользователь не может удалить сам себя");
-//        }
+        if(user.id.equals(participantId)){
+            throw new BadRequestException("Пользователь не может удалить сам себя");
+        }
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Мероприятие не найдено");
         }
