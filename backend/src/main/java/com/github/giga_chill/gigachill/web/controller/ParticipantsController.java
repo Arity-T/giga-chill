@@ -1,10 +1,7 @@
 package com.github.giga_chill.gigachill.web.controller;
 
 
-import com.github.giga_chill.gigachill.exception.ConflictException;
-import com.github.giga_chill.gigachill.exception.ForbiddenException;
-import com.github.giga_chill.gigachill.exception.NotFoundException;
-import com.github.giga_chill.gigachill.exception.UnauthorizedException;
+import com.github.giga_chill.gigachill.exception.*;
 import com.github.giga_chill.gigachill.model.Participant;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
@@ -56,6 +53,9 @@ public class ParticipantsController {
 
         User user = inMemoryUserService.userAuthentication(authentication);
         String participantLogin = (String) body.get("login");
+        if (participantLogin == null){
+            throw new BadRequestException("Не соответствующие тело запроса");
+        }
         User userToAdd = inMemoryUserService.getByLogin(participantLogin);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Мероприятие не найдено");
@@ -108,6 +108,9 @@ public class ParticipantsController {
                                                             @RequestBody Map<String, Object> body) {
         User user = inMemoryUserService.userAuthentication(authentication);
         String newRole = (String) body.get("role");
+        if (newRole == null){
+            throw new BadRequestException("Не соответствующие тело запроса");
+        }
         if (!participantsService.IsParticipant(eventId, user.id)){
             throw new ForbiddenException("Пользователь не является участником мероприятия");
         }
