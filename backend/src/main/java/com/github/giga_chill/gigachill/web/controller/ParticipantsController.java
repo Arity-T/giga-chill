@@ -34,7 +34,7 @@ public class ParticipantsController {
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!participantsService.IsParticipant(eventId, user.id)) {
+        if (!participantsService.isParticipant(eventId, user.id)) {
             throw new ForbiddenException("User with id " + user.id +
                     " is not a participant of event with id " + eventId);
         }
@@ -59,7 +59,7 @@ public class ParticipantsController {
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!participantsService.IsParticipant(eventId, user.id)) {
+        if (!participantsService.isParticipant(eventId, user.id)) {
             throw new ForbiddenException("User with id " + user.id +
                     " is not a participant of event with id " + eventId);
         }
@@ -70,7 +70,7 @@ public class ParticipantsController {
         if (userToAdd == null) {
             throw new UnauthorizedException("User with login '" + participantLogin + "' not found");
         }
-        if (participantsService.IsParticipant(eventId, userToAdd.id)) {
+        if (participantsService.isParticipant(eventId, userToAdd.id)) {
             throw new ConflictException("User with login '" + participantLogin +
                     "' is already a participant of event with id " + eventId);
         }
@@ -92,7 +92,7 @@ public class ParticipantsController {
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!participantsService.IsParticipant(eventId, user.id)) {
+        if (!participantsService.isParticipant(eventId, user.id)) {
             throw new ForbiddenException("User with id " + user.id +
                     " is not a participant of event with id " + eventId);
         }
@@ -100,7 +100,7 @@ public class ParticipantsController {
             throw new ForbiddenException("User with id " + user.id +
                     " does not have permission to remove participants from event with id " + eventId);
         }
-        if (!participantsService.IsParticipant(eventId, participantId)) {
+        if (!participantsService.isParticipant(eventId, participantId)) {
             throw new NotFoundException("Participant with id " + participantId + " not found in event " + eventId);
         }
         participantsService.deleteParticipant(eventId, participantId);
@@ -121,7 +121,7 @@ public class ParticipantsController {
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!participantsService.IsParticipant(eventId, user.id)) {
+        if (!participantsService.isParticipant(eventId, user.id)) {
             throw new ForbiddenException("User with id " + user.id +
                     " is not a participant of event with id " + eventId);
         }
@@ -129,7 +129,7 @@ public class ParticipantsController {
             throw new ForbiddenException("User with id " + user.id +
                     " does not have permission to change participant roles in event with id " + eventId);
         }
-        if (!participantsService.IsParticipant(eventId, participantId)) {
+        if (!participantsService.isParticipant(eventId, participantId)) {
             throw new NotFoundException("Participant with id " + participantId + " not found in event " + eventId);
         }
 

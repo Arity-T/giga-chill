@@ -58,7 +58,7 @@ public class ParticipantsService {
         EVENT_PARTICIPANTS.get(eventId).removeIf(item -> participantId.equals(item.getId()));
     }
 
-    public boolean IsParticipant(String eventId, String userId) {
+    public boolean isParticipant(String eventId, String userId) {
         //TODO: связь с бд
 
 
@@ -100,10 +100,6 @@ public class ParticipantsService {
 
     public boolean isAdmin(String eventId, String participantId) {
         return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.admin").toString());
-    }
-
-    public boolean isParticipant(String eventId, String participantId) {
-        return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.participant").toString());
     }
 
 }

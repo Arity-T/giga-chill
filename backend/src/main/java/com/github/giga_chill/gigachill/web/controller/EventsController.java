@@ -63,7 +63,7 @@ public class EventsController {
         if (!eventService.isExisted(eventId)){
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if(!participantsService.IsParticipant(eventId, user.id)){
+        if(!participantsService.isParticipant(eventId, user.id)){
             throw new ForbiddenException("User with id " + user.id +
                     " is not a participant of event with id " + eventId);
         }
@@ -79,7 +79,7 @@ public class EventsController {
         if (!eventService.isExisted(eventId)){
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!participantsService.IsParticipant(eventId, user.id)){
+        if (!participantsService.isParticipant(eventId, user.id)){
             throw new ForbiddenException("User with id " + user.id +
                     " is not a participant of event with id " + eventId);
         }
@@ -100,7 +100,7 @@ public class EventsController {
         if (!eventService.isExisted(eventId)){
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!participantsService.IsParticipant(eventId, user.id)){
+        if (!participantsService.isParticipant(eventId, user.id)){
             throw new ForbiddenException("User with id " + user.id +
                     " is not a participant of event with id " + eventId);
         }
