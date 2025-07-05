@@ -73,7 +73,7 @@ public class ParticipantsController {
             throw new ConflictException("Пользователь с таким логином уже является участником мероприятия");
         }
 
-        Participant participant = participantsService.addParticipantToEvent(eventId, user);
+        Participant participant = participantsService.addParticipantToEvent(eventId, userToAdd);
         return ResponseEntity.created(URI.create("events/" + eventId + "/participants"))
                 .body(toParticipantInfo(participant));
     }
