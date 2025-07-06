@@ -1,41 +1,44 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Input, DatePicker, Button, Card, Space, Typography, App } from 'antd';
-import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { Input, DatePicker, Card, App } from 'antd';
 import { useUpdateEventMutation } from '@/store/api/api';
 import { Event, UpdateEventRequest } from '@/types/api';
 import dayjs, { Dayjs } from 'dayjs';
+import EditableField from './editable-field/EditableField';
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
-const { Text } = Typography;
 
 interface EditEventFormProps {
     event: Event;
 }
 
-interface FieldChanges {
-    title: boolean;
-    location: boolean;
-    description: boolean;
-    dateRange: boolean;
-}
+type FieldKey = 'title' | 'location' | 'description' | 'dateRange';
+
+type FormValues = {
+    title: string;
+    location: string;
+    description: string;
+    dateRange: [Dayjs, Dayjs];
+};
+
+type FieldStates = Record<FieldKey, boolean>;
 
 export default function EditEventForm({ event }: EditEventFormProps) {
     const { message } = App.useApp();
     const [updateEvent] = useUpdateEventMutation();
 
     // Текущие значения полей
-    const [values, setValues] = useState({
+    const [values, setValues] = useState<FormValues>({
         title: event.title,
         location: event.location,
         description: event.description,
-        dateRange: [dayjs(event.start_datetime), dayjs(event.end_datetime)] as [Dayjs, Dayjs],
+        dateRange: [dayjs(event.start_datetime), dayjs(event.end_datetime)],
     });
 
     // Отслеживание изменений полей
-    const [hasChanges, setHasChanges] = useState<FieldChanges>({
+    const [hasChanges, setHasChanges] = useState<FieldStates>({
         title: false,
         location: false,
         description: false,
@@ -43,7 +46,7 @@ export default function EditEventForm({ event }: EditEventFormProps) {
     });
 
     // Состояния загрузки для каждого поля
-    const [loadingStates, setLoadingStates] = useState<FieldChanges>({
+    const [loadingStates, setLoadingStates] = useState<FieldStates>({
         title: false,
         location: false,
         description: false,
@@ -61,56 +64,57 @@ export default function EditEventForm({ event }: EditEventFormProps) {
         });
     }, [values, event]);
 
-    const resetField = (field: keyof FieldChanges) => {
+    const resetField = (field: FieldKey) => {
+        const resetValues: Record<FieldKey, () => void> = {
+            title: () => setValues(prev => ({ ...prev, title: event.title })),
+            location: () => setValues(prev => ({ ...prev, location: event.location })),
+            description: () => setValues(prev => ({ ...prev, description: event.description })),
+            dateRange: () => setValues(prev => ({ ...prev, dateRange: [dayjs(event.start_datetime), dayjs(event.end_datetime)] })),
+        };
+
+        resetValues[field]();
+    };
+
+    const validateAndGetUpdateData = (field: FieldKey): UpdateEventRequest | null => {
         switch (field) {
             case 'title':
-                setValues(prev => ({ ...prev, title: event.title }));
-                break;
+                if (!values.title || values.title.length < 3) {
+                    message.error('Название должно содержать минимум 3 символа');
+                    return null;
+                }
+                return { title: values.title };
+
             case 'location':
-                setValues(prev => ({ ...prev, location: event.location }));
-                break;
+                if (!values.location) {
+                    message.error('Место проведения обязательно для заполнения');
+                    return null;
+                }
+                return { location: values.location };
+
             case 'description':
-                setValues(prev => ({ ...prev, description: event.description }));
-                break;
+                return { description: values.description };
+
             case 'dateRange':
-                setValues(prev => ({ ...prev, dateRange: [dayjs(event.start_datetime), dayjs(event.end_datetime)] as [Dayjs, Dayjs] }));
-                break;
+                if (!values.dateRange[0] || !values.dateRange[1]) {
+                    message.error('Необходимо выбрать дату и время');
+                    return null;
+                }
+                return {
+                    start_datetime: values.dateRange[0].toISOString(),
+                    end_datetime: values.dateRange[1].toISOString(),
+                };
+
+            default:
+                return null;
         }
     };
 
-    const saveField = async (field: keyof FieldChanges) => {
+    const saveField = async (field: FieldKey) => {
         setLoadingStates(prev => ({ ...prev, [field]: true }));
 
         try {
-            const updateData: UpdateEventRequest = {};
-
-            switch (field) {
-                case 'title':
-                    if (!values.title || values.title.length < 3) {
-                        message.error('Название должно содержать минимум 3 символа');
-                        return;
-                    }
-                    updateData.title = values.title;
-                    break;
-                case 'location':
-                    if (!values.location) {
-                        message.error('Место проведения обязательно для заполнения');
-                        return;
-                    }
-                    updateData.location = values.location;
-                    break;
-                case 'description':
-                    updateData.description = values.description;
-                    break;
-                case 'dateRange':
-                    if (!values.dateRange[0] || !values.dateRange[1]) {
-                        message.error('Необходимо выбрать дату и время');
-                        return;
-                    }
-                    updateData.start_datetime = values.dateRange[0].toISOString();
-                    updateData.end_datetime = values.dateRange[1].toISOString();
-                    break;
-            }
+            const updateData = validateAndGetUpdateData(field);
+            if (!updateData) return;
 
             await updateEvent({ eventId: event.event_id, event: updateData }).unwrap();
             message.success('Поле успешно обновлено');
@@ -121,80 +125,50 @@ export default function EditEventForm({ event }: EditEventFormProps) {
         }
     };
 
-    const renderField = (
-        field: keyof FieldChanges,
-        label: string,
-        inputElement: React.ReactNode
-    ) => (
-        <div style={{ marginBottom: '16px', maxWidth: '500px' }}>
-            <Text strong style={{ display: 'block', marginBottom: '8px' }}>
-                {label}
-            </Text>
-            <div style={{ position: 'relative' }}>
-                <div style={{ width: '100%', paddingRight: '72px' }}>
-                    {inputElement}
-                </div>
-                <div style={{
-                    position: 'absolute',
-                    right: '8px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    display: 'flex',
-                    gap: '4px',
-                    opacity: hasChanges[field] ? 1 : 0,
-                    transition: 'opacity 0.2s ease'
-                }}>
-                    <Button
-                        type="text"
-                        icon={<CheckOutlined />}
-                        onClick={() => saveField(field)}
-                        loading={loadingStates[field]}
-                        size="small"
-                    />
-                    <Button
-                        type="text"
-                        icon={<CloseOutlined />}
-                        onClick={() => resetField(field)}
-                        disabled={loadingStates[field]}
-                        size="small"
-                    />
-                </div>
-            </div>
-        </div>
-    );
-
     return (
         <Card title="Общая информация" size="small">
-            {renderField(
-                'title',
-                'Название мероприятия',
+            <EditableField
+                label="Название мероприятия"
+                hasChanges={hasChanges.title}
+                isLoading={loadingStates.title}
+                onSave={() => saveField('title')}
+                onReset={() => resetField('title')}
+            >
                 <Input
                     value={values.title}
                     onChange={(e) => setValues(prev => ({ ...prev, title: e.target.value }))}
                     placeholder="Введите название мероприятия"
                     style={{ width: '100%' }}
                 />
-            )}
+            </EditableField>
 
-            {renderField(
-                'location',
-                'Место проведения',
+            <EditableField
+                label="Место проведения"
+                hasChanges={hasChanges.location}
+                isLoading={loadingStates.location}
+                onSave={() => saveField('location')}
+                onReset={() => resetField('location')}
+            >
                 <Input
                     value={values.location}
                     onChange={(e) => setValues(prev => ({ ...prev, location: e.target.value }))}
                     placeholder="Введите место проведения"
                     style={{ width: '100%' }}
                 />
-            )}
+            </EditableField>
 
-            {renderField(
-                'dateRange',
-                'Дата и время',
+            <EditableField
+                label="Дата и время"
+                hasChanges={hasChanges.dateRange}
+                isLoading={loadingStates.dateRange}
+                onSave={() => saveField('dateRange')}
+                onReset={() => resetField('dateRange')}
+            >
                 <RangePicker
                     value={values.dateRange}
                     onChange={(dates) => {
                         if (dates && dates[0] && dates[1]) {
-                            setValues(prev => ({ ...prev, dateRange: [dates[0], dates[1]] as [Dayjs, Dayjs] }));
+                            setValues(prev => ({ ...prev, dateRange: [dates[0]!, dates[1]!] }));
                         }
                     }}
                     showTime={{ format: 'HH:mm' }}
@@ -202,11 +176,15 @@ export default function EditEventForm({ event }: EditEventFormProps) {
                     placeholder={['Начало мероприятия', 'Конец мероприятия']}
                     style={{ width: '100%' }}
                 />
-            )}
+            </EditableField>
 
-            {renderField(
-                'description',
-                'Описание',
+            <EditableField
+                label="Описание"
+                hasChanges={hasChanges.description}
+                isLoading={loadingStates.description}
+                onSave={() => saveField('description')}
+                onReset={() => resetField('description')}
+            >
                 <TextArea
                     value={values.description}
                     onChange={(e) => setValues(prev => ({ ...prev, description: e.target.value }))}
@@ -216,7 +194,7 @@ export default function EditEventForm({ event }: EditEventFormProps) {
                     showCount
                     style={{ width: '100%' }}
                 />
-            )}
+            </EditableField>
         </Card>
     );
 } 
