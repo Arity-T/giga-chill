@@ -4,7 +4,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto; -- Для UUID
 
 -- Перечисления
 
-CREATE TYPE event_role AS ENUM ('participant', 'admin', 'owner'); -- Обсудить названия
+CREATE TYPE event_role AS ENUM ('participant', 'admin', 'owner');
 
 CREATE TYPE task_status AS ENUM ('open', 'in_progress', 'under_review', 'completed', 'canceled');
 
@@ -19,9 +19,9 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS events (
   event_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  title VARCHAR(64) NOT NULL,
-  location VARCHAR(64) NOT NULL,
-  description TEXT DEFAULT NULL,
+  title VARCHAR(50) NOT NULL,
+  location VARCHAR(50) NOT NULL,
+  description VARCHAR(500) DEFAULT NULL,
   start_datetime TIMESTAMP DEFAULT NULL,
   end_datetime TIMESTAMP DEFAULT NULL,
   budget NUMERIC(12, 2) DEFAULT NULL
@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS user_in_event (
   event_id UUID NOT NULL REFERENCES events(event_id),
   role event_role NOT NULL DEFAULT 'participant',
   balance NUMERIC(12, 2) DEFAULT NULL,
+  is_active BOOLEAN DEFAULT TRUE,
   PRIMARY KEY (user_id, event_id)
 );
 
@@ -40,17 +41,17 @@ CREATE TABLE IF NOT EXISTS task (
   event_id UUID NOT NULL REFERENCES events(event_id), 
   author_id UUID NOT NULL REFERENCES users(user_id),
   executor_id UUID DEFAULT NULL REFERENCES users(user_id),
-  title TEXT NOT NULL, -- Ограничения
-  description TEXT DEFAULT NULL,
+  title VARCHAR(50) NOT NULL,
+  description VARCHAR(500) DEFAULT NULL,
   status task_status NOT NULL DEFAULT 'open',
   deadline_datetime TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS task_approval (
-  task_approval_id UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- UUID или хватит SERIAL (будет ли видно на эндпоинтах)?
+  task_approval_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   task_id UUID NOT NULL REFERENCES task(task_id) ON DELETE CASCADE, 
-  executor_comment TEXT DEFAULT NULL,
-  reviewer_comment TEXT DEFAULT NULL
+  executor_comment VARCHAR(500) DEFAULT NULL,
+  reviewer_comment VARCHAR(500) DEFAULT NULL
 );
 
 -- Отдельно добавляем цикличную связь 1-к-1
@@ -59,18 +60,18 @@ ADD COLUMN actual_approval_id UUID DEFAULT NULL REFERENCES task_approval(task_ap
 
 CREATE TABLE IF NOT EXISTS purchase_list (
   purchase_list_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  task_id UUID NOT NULL REFERENCES task(task_id), -- Список же не может существовать без задачи?
+  task_id UUID DEFAULT NULL REFERENCES task(task_id),
   event_id UUID NOT NULL REFERENCES events(event_id),
-  title TEXT NOT NULL, -- Можем сделать ещё и unique
-  description TEXT DEFAULT NULL
+  title VARCHAR(50) NOT NULL,
+  description VARCHAR(500) DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS purchase (
   purchase_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  purchase_list_id UUID NOT NULL REFERENCES purchase_list(purchase_list_id), -- Покупка не существует без задачи?
-  title TEXT NOT NULL, -- Можно unique, можно ограничения
+  purchase_list_id UUID NOT NULL REFERENCES purchase_list(purchase_list_id),
+  title VARCHAR(50) NOT NULL,
   quantity INTEGER NOT NULL,
-  unit TEXT NOT NULL, -- Можно ограничения
+  unit VARCHAR(20) NOT NULL,
   is_purchased BOOLEAN DEFAULT FALSE
 );
 
@@ -81,7 +82,7 @@ CREATE TABLE IF NOT EXISTS consumer_in_list (
 );
 
 CREATE TABLE IF NOT EXISTS purchase_list_approval (
-  purchase_list_approval_id UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- UUID или хватит SERIAL (будет ли видно на эндпоинтах)?
+  purchase_list_approval_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   task_approval_id UUID NOT NULL REFERENCES task_approval(task_approval_id) ON DELETE CASCADE,
   purchase_list_id UUID NOT NULL REFERENCES purchase_list(purchase_list_id) ON DELETE CASCADE,
   budget NUMERIC(12, 2) NOT NULL,
