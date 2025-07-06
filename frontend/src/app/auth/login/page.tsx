@@ -3,22 +3,19 @@
 import { Form, Input, Button, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import AuthWrapper from '@/components/auth-wrapper/AuthWrapper';
-import { useLoginMutation, useLazyGetMeQuery } from '@/store/api/api';
+import { useLoginMutation } from '@/store/api/api';
 import { PAGES } from '@/config/pages.config';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function LoginForm() {
+  const router = useRouter();
   const [login, { isLoading: loginLoading }] = useLoginMutation();
-  const [getMe] = useLazyGetMeQuery();
 
   const onFinish = async (values: any) => {
     try {
       await login(values).unwrap();
-
-      const user = await getMe().unwrap();
-
-      console.log('user');
-      console.log(user);
+      router.replace(PAGES.HOME);
     } catch (err) {
       console.log('error');
       console.log(err);
@@ -45,7 +42,7 @@ export default function LoginForm() {
         </Form.Item>
 
         <Form.Item>
-          <Button block type="primary" htmlType="submit">
+          <Button block type="primary" htmlType="submit" loading={loginLoading}>
             Войти
           </Button>
           или <Link href={PAGES.REGISTER}>Зарегистрироваться!</Link>
