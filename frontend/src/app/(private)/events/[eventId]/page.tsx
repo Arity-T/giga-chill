@@ -1,11 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Card, Typography, Space, Tag, Button } from 'antd';
-import { CalendarOutlined, EnvironmentOutlined, UserOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import { useRouter } from 'next/navigation';
+import { Typography, Descriptions, Divider } from 'antd';
+import { CalendarOutlined, EnvironmentOutlined, DollarOutlined } from '@ant-design/icons';
+import { useGetEventQuery } from '@/store/api/api';
+import { formatDateTime } from '@/utils/datetime-utils';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Paragraph, Text } = Typography;
 
 interface EventDetailsPageProps {
     params: Promise<{
@@ -14,43 +15,89 @@ interface EventDetailsPageProps {
 }
 
 export default function EventDetailsPage({ params }: EventDetailsPageProps) {
-    const router = useRouter();
     const { eventId } = React.use(params);
+    const { data: event, isLoading } = useGetEventQuery(eventId);
 
-    const handleGoBack = () => {
-        router.back();
-    };
+    if (isLoading) {
+        return <div>Загрузка...</div>;
+    }
+
+    if (!event) {
+        return <div>Мероприятие не найдено</div>;
+    }
 
     return (
-        <div style={{ padding: '24px' }}>
-            <div style={{ marginBottom: '24px' }}>
-                <Button
-                    icon={<ArrowLeftOutlined />}
-                    onClick={handleGoBack}
-                    type="text"
-                >
-                    Назад к событиям
-                </Button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}>
+            <div>
+                <Title level={3} style={{ margin: 0, marginBottom: '16px' }}>
+                    Общая информация
+                </Title>
+
+                {event.description && (
+                    <Paragraph style={{ marginBottom: '24px' }}>
+                        {event.description}
+                    </Paragraph>
+                )}
             </div>
 
-            <Card>
-                <Space direction="vertical" size="large" style={{ width: '100%' }}>
-                    <div>
-                        <Title level={2}>Детали события</Title>
-                        <Text type="secondary">ID события: {eventId}</Text>
-                    </div>
+            <Descriptions
+                bordered
+                column={1}
+                size="middle"
+                styles={{ label: { width: '200px', fontWeight: 'bold' } }}
+            >
+                <Descriptions.Item
+                    label={
+                        <span>
+                            <CalendarOutlined style={{ marginRight: '8px' }} />
+                            Начало мероприятия
+                        </span>
+                    }
+                >
+                    {formatDateTime(event.start_datetime)}
+                </Descriptions.Item>
 
-                    <div>
-                        <Text strong>Здесь будет отображаться полная информация о событии</Text>
-                    </div>
+                <Descriptions.Item
+                    label={
+                        <span>
+                            <CalendarOutlined style={{ marginRight: '8px' }} />
+                            Окончание мероприятия
+                        </span>
+                    }
+                >
+                    {formatDateTime(event.end_datetime)}
+                </Descriptions.Item>
 
-                    <div>
-                        <Text type="secondary">
-                            Страница в разработке. Будет загружаться событие по ID: {eventId}
-                        </Text>
-                    </div>
-                </Space>
-            </Card>
+                <Descriptions.Item
+                    label={
+                        <span>
+                            <EnvironmentOutlined style={{ marginRight: '8px' }} />
+                            Место проведения
+                        </span>
+                    }
+                >
+                    {event.location}
+                </Descriptions.Item>
+
+                <Descriptions.Item
+                    label={
+                        <span>
+                            <DollarOutlined style={{ marginRight: '8px' }} />
+                            Бюджет
+                        </span>
+                    }
+                >
+                    {event.budget.toLocaleString('ru-RU')} ₽
+                </Descriptions.Item>
+            </Descriptions>
+
+            <Divider />
+
+            <div>
+                <Text type="secondary">
+                    ID мероприятия: {event.event_id}
+                </Text>
+            </div>
         </div>
     );
 }

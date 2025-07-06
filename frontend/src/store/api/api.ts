@@ -43,7 +43,7 @@ export const api = createApi({
 
     getEvents: builder.query<Event[], void>({
       query: () => '/events',
-      providesTags: ['Events'],
+      providesTags: [{ type: 'Events', id: 'LIST' }],
     }),
 
     createEvent: builder.mutation<Event, CreateEventRequest>({
@@ -52,7 +52,12 @@ export const api = createApi({
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['Events'],
+      invalidatesTags: [{ type: 'Events', id: 'LIST' }],
+    }),
+
+    getEvent: builder.query<Event, string>({
+      query: (eventId) => `/events/${eventId}`,
+      providesTags: (_result, _error, eventId) => [{ type: 'Events', id: eventId }],
     }),
   }),
 });
@@ -64,4 +69,5 @@ export const {
   useGetMeQuery,
   useGetEventsQuery,
   useCreateEventMutation,
+  useGetEventQuery,
 } = api;

@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Card, Tag, Space, Typography } from 'antd';
-import { CalendarOutlined, EnvironmentOutlined, UserOutlined } from '@ant-design/icons';
+import { Card, Space, Typography } from 'antd';
+import { CalendarOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { formatDateTime } from "@/utils/datetime-utils";
-import { getRoleColor, getRoleText } from "@/utils/role-utils";
 import { PAGES } from "@/config/pages.config";
+import UserRoleTag from '@/components/UserRoleTag';
 import type { Event } from '@/types/api';
 
 const { Text } = Typography;
@@ -18,12 +18,7 @@ interface EventCardProps {
 export default function EventCard({ event }: EventCardProps) {
     const extraContent = (
         <Space>
-            <Tag
-                color={getRoleColor(event.user_role)}
-                icon={<UserOutlined />}
-            >
-                {getRoleText(event.user_role)}
-            </Tag>
+            <UserRoleTag role={event.user_role} />
         </Space>
     );
 
