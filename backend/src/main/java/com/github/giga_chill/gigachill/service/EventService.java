@@ -58,12 +58,16 @@ public class EventService {
 
         //TEMPORARY:
         Event event = EVENTS.get(eventId);
-        event.setTitle(requestEventInfo.title());
-        event.setLocation(requestEventInfo.location());
-        event.setStartDatetime(requestEventInfo.start_datetime());
-        event.setEndDatetime(requestEventInfo.end_datetime());
-        event.setDescription(requestEventInfo.description());
-
+        Optional.ofNullable(requestEventInfo.title())
+                .ifPresent(event::setTitle);
+        Optional.ofNullable(requestEventInfo.location())
+                .ifPresent(event::setLocation);
+        Optional.ofNullable(requestEventInfo.start_datetime())
+                .ifPresent(event::setStartDatetime);
+        Optional.ofNullable(requestEventInfo.end_datetime())
+                .ifPresent(event::setEndDatetime);
+        Optional.ofNullable(requestEventInfo.description())
+                .ifPresent(event::setDescription);
 
         return event;
     }
