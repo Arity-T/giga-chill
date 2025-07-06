@@ -34,6 +34,14 @@ export interface CreateEventRequest {
   description?: string;
 }
 
+export interface UpdateEventRequest {
+  title?: string;
+  location?: string;
+  start_datetime?: string;
+  end_datetime?: string;
+  description?: string;
+}
+
 export enum UserRole {
   OWNER = 'owner',
   ADMIN = 'admin',
