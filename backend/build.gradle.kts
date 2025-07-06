@@ -110,3 +110,27 @@ jooq {
         }
     }
 }
+
+tasks.register("applyMigrations") {
+    dependsOn("classes")
+    
+    doLast {
+        val isWindows = System.getProperty("os.name").contains("Windows", ignoreCase = true)
+        val command = if (isWindows) {
+            listOf("powershell", "-File", "./apply-migrations.ps1")
+        } else {
+            listOf("bash", "./apply-migrations.sh")
+        }
+        
+        exec {
+            environment(
+                "DB_HOST" to (System.getenv("DB_HOST") ?: "localhost"),
+                "DB_PORT" to (System.getenv("DB_PORT") ?: "5432"),
+                "DB_NAME" to (System.getenv("DB_NAME") ?: "gigachill"),
+                "DB_USER" to (System.getenv("DB_USER") ?: "postgres"),
+                "DB_PASSWORD" to (System.getenv("DB_PASSWORD") ?: "postgres")
+            )
+            commandLine(command)
+        }
+    }
+}
