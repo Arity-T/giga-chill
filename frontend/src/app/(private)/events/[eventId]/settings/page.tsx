@@ -1,12 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Typography, Card, Space, Alert } from 'antd';
+import { Typography, Space, Alert } from 'antd';
 import { useGetEventQuery } from '@/store/api/api';
 import { EventIdPathParam } from '@/types/path-params';
 import { UserRole } from '@/types/api';
 import DeleteEventButton from './DeleteEventButton';
 import EditEventForm from './EditEventForm';
+import SettingsSection from './SettingsSection';
 
 const { Title, Text } = Typography;
 
@@ -26,7 +27,7 @@ export default function EventSettingsPage({ params }: EventIdPathParam) {
     if (event.user_role !== UserRole.OWNER) {
         return (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}>
-                <Title level={3} style={{ margin: 0 }}>
+                <Title level={2} style={{ margin: 0 }}>
                     Настройки мероприятия
                 </Title>
 
@@ -42,13 +43,15 @@ export default function EventSettingsPage({ params }: EventIdPathParam) {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}>
-            <Title level={3} style={{ margin: 0 }}>
+            <Title level={2} style={{ margin: 0 }}>
                 Настройки мероприятия
             </Title>
 
-            <EditEventForm event={event} />
+            <SettingsSection title="Общая информация">
+                <EditEventForm event={event} />
+            </SettingsSection>
 
-            <Card title="Опасная зона" size="small">
+            <SettingsSection title="Опасная зона">
                 <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                     <Text type="secondary">
                         Здесь находятся действия, которые могут повлиять на мероприятие.
@@ -57,7 +60,7 @@ export default function EventSettingsPage({ params }: EventIdPathParam) {
 
                     <DeleteEventButton event={event} />
                 </Space>
-            </Card>
+            </SettingsSection>
         </div>
     );
 } 

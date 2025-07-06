@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Input, DatePicker, Card, App } from 'antd';
+import { Input, DatePicker, App } from 'antd';
 import { useUpdateEventMutation } from '@/store/api/api';
 import { Event, UpdateEventRequest } from '@/types/api';
 import dayjs, { Dayjs } from 'dayjs';
@@ -126,7 +126,7 @@ export default function EditEventForm({ event }: EditEventFormProps) {
     };
 
     return (
-        <Card title="Общая информация" size="small">
+        <>
             <EditableField
                 label="Название мероприятия"
                 hasChanges={hasChanges.title}
@@ -195,6 +195,6 @@ export default function EditEventForm({ event }: EditEventFormProps) {
                     style={{ width: '100%' }}
                 />
             </EditableField>
-        </Card>
+        </>
     );
 } 
