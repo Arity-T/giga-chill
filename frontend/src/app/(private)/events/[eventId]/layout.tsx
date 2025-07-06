@@ -17,6 +17,7 @@ import { useGetEventQuery } from '@/store/api/api';
 import { Button, Typography } from 'antd';
 import UserRoleTag from '@/components/UserRoleTag';
 import { PAGES } from '@/config/pages.config';
+import { UserRole } from '@/types/api';
 
 const { Sider, Content } = Layout;
 const { Title } = Typography;
@@ -39,7 +40,7 @@ export default function EventLayout({ children, params }: EventLayoutProps) {
         router.push(PAGES.EVENTS);
     };
 
-    const menuItems = [
+    const baseMenuItems = [
         {
             key: PAGES.EVENT_DETAILS(eventId),
             icon: <InfoCircleOutlined />,
@@ -85,16 +86,23 @@ export default function EventLayout({ children, params }: EventLayoutProps) {
                 </Link>
             ),
         },
-        {
-            key: PAGES.EVENT_SETTINGS(eventId),
-            icon: <SettingOutlined />,
-            label: (
-                <Link href={PAGES.EVENT_SETTINGS(eventId)}>
-                    Настройки
-                </Link>
-            ),
-        },
     ];
+
+    // Добавляем пункт настроек только для владельца мероприятия
+    const menuItems = event?.user_role === UserRole.OWNER
+        ? [
+            ...baseMenuItems,
+            {
+                key: PAGES.EVENT_SETTINGS(eventId),
+                icon: <SettingOutlined />,
+                label: (
+                    <Link href={PAGES.EVENT_SETTINGS(eventId)}>
+                        Настройки
+                    </Link>
+                ),
+            },
+        ]
+        : baseMenuItems;
 
     if (isLoading) {
         return (
