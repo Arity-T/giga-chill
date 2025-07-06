@@ -117,7 +117,7 @@ tasks.register("applyMigrations") {
     doLast {
         val isWindows = System.getProperty("os.name").contains("Windows", ignoreCase = true)
         val command = if (isWindows) {
-            listOf("powershell", "-File", "./apply-migrations.ps1")
+            listOf("powershell", "-File", "./scripts/apply-migrations.ps1")
         } else {
             listOf("bash", "./apply-migrations.sh")
         }
