@@ -16,6 +16,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useGetEventQuery } from '@/store/api/api';
 import { Button, Typography } from 'antd';
 import UserRoleTag from '@/components/UserRoleTag';
+import { PAGES } from '@/config/pages.config';
 
 const { Sider, Content } = Layout;
 const { Title } = Typography;
@@ -35,60 +36,60 @@ export default function EventLayout({ children, params }: EventLayoutProps) {
     const { data: event, isLoading, error } = useGetEventQuery(eventId);
 
     const handleGoBack = () => {
-        router.push('/events');
+        router.push(PAGES.EVENTS);
     };
 
     const menuItems = [
         {
-            key: `/events/${eventId}`,
+            key: PAGES.EVENT_DETAILS(eventId),
             icon: <InfoCircleOutlined />,
             label: (
-                <Link href={`/events/${eventId}`}>
+                <Link href={PAGES.EVENT_DETAILS(eventId)}>
                     Общая информация
                 </Link>
             ),
         },
         {
-            key: `/events/${eventId}/participants`,
+            key: PAGES.EVENT_PARTICIPANTS(eventId),
             icon: <TeamOutlined />,
             label: (
-                <Link href={`/events/${eventId}/participants`}>
+                <Link href={PAGES.EVENT_PARTICIPANTS(eventId)}>
                     Участники
                 </Link>
             ),
         },
         {
-            key: `/events/${eventId}/tasks`,
+            key: PAGES.EVENT_TASKS(eventId),
             icon: <CheckSquareOutlined />,
             label: (
-                <Link href={`/events/${eventId}/tasks`}>
+                <Link href={PAGES.EVENT_TASKS(eventId)}>
                     Задачи
                 </Link>
             ),
         },
         {
-            key: `/events/${eventId}/shopping`,
+            key: PAGES.EVENT_SHOPPING(eventId),
             icon: <ShoppingCartOutlined />,
             label: (
-                <Link href={`/events/${eventId}/shopping`}>
+                <Link href={PAGES.EVENT_SHOPPING(eventId)}>
                     Список покупок
                 </Link>
             ),
         },
         {
-            key: `/events/${eventId}/balance`,
+            key: PAGES.EVENT_BALANCE(eventId),
             icon: <DollarOutlined />,
             label: (
-                <Link href={`/events/${eventId}/balance`}>
+                <Link href={PAGES.EVENT_BALANCE(eventId)}>
                     Мой баланс
                 </Link>
             ),
         },
         {
-            key: `/events/${eventId}/settings`,
+            key: PAGES.EVENT_SETTINGS(eventId),
             icon: <SettingOutlined />,
             label: (
-                <Link href={`/events/${eventId}/settings`}>
+                <Link href={PAGES.EVENT_SETTINGS(eventId)}>
                     Настройки
                 </Link>
             ),

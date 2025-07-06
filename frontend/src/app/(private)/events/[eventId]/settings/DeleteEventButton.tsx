@@ -5,6 +5,7 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { useDeleteEventMutation } from '@/store/api/api';
 import { Event } from '@/types/api';
+import { PAGES } from '@/config/pages.config';
 
 interface DeleteEventButtonProps {
     event: Event;
@@ -31,7 +32,7 @@ export default function DeleteEventButton({ event }: DeleteEventButtonProps) {
                 try {
                     await deleteEvent(event.event_id).unwrap();
                     message.info('Мероприятие удалено!');
-                    router.replace('/events');
+                    router.replace(PAGES.EVENTS);
                 } catch (error) {
                     console.error('Ошибка при удалении мероприятия:', error);
                     message.error('Ошибка при удалении мероприятия');
