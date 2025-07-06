@@ -3,16 +3,12 @@
 import React from 'react';
 import { Typography, Alert } from 'antd';
 import { CheckSquareOutlined } from '@ant-design/icons';
+import { EventIdPathParam } from '@/types/path-params';
 
 const { Title } = Typography;
 
-interface TasksPageProps {
-    params: Promise<{
-        eventId: string;
-    }>;
-}
 
-export default function TasksPage({ params }: TasksPageProps) {
+export default function TasksPage({ params }: EventIdPathParam) {
     const { eventId } = React.use(params);
 
     return (

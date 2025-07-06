@@ -3,16 +3,11 @@
 import React from 'react';
 import { Typography, Alert } from 'antd';
 import { DollarOutlined } from '@ant-design/icons';
+import { EventIdPathParam } from '@/types/path-params';
 
 const { Title } = Typography;
 
-interface BalancePageProps {
-    params: Promise<{
-        eventId: string;
-    }>;
-}
-
-export default function BalancePage({ params }: BalancePageProps) {
+export default function BalancePage({ params }: EventIdPathParam) {
     const { eventId } = React.use(params);
 
     return (

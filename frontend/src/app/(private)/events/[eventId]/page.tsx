@@ -5,16 +5,11 @@ import { Typography, Descriptions, Divider } from 'antd';
 import { CalendarOutlined, EnvironmentOutlined, DollarOutlined } from '@ant-design/icons';
 import { useGetEventQuery } from '@/store/api/api';
 import { formatDateTime } from '@/utils/datetime-utils';
+import { EventIdPathParam } from '@/types/path-params';
 
 const { Title, Paragraph, Text } = Typography;
 
-interface EventDetailsPageProps {
-    params: Promise<{
-        eventId: string;
-    }>;
-}
-
-export default function EventDetailsPage({ params }: EventDetailsPageProps) {
+export default function EventDetailsPage({ params }: EventIdPathParam) {
     const { eventId } = React.use(params);
     const { data: event, isLoading } = useGetEventQuery(eventId);
 

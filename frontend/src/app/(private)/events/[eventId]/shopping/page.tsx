@@ -3,16 +3,11 @@
 import React from 'react';
 import { Typography, Alert } from 'antd';
 import { ShoppingCartOutlined } from '@ant-design/icons';
+import { EventIdPathParam } from '@/types/path-params';
 
 const { Title } = Typography;
 
-interface ShoppingPageProps {
-    params: Promise<{
-        eventId: string;
-    }>;
-}
-
-export default function ShoppingPage({ params }: ShoppingPageProps) {
+export default function ShoppingPage({ params }: EventIdPathParam) {
     const { eventId } = React.use(params);
 
     return (
