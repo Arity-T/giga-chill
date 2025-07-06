@@ -6,6 +6,7 @@ import { useGetEventQuery } from '@/store/api/api';
 import { EventIdPathParam } from '@/types/path-params';
 import { UserRole } from '@/types/api';
 import DeleteEventButton from './DeleteEventButton';
+import EditEventForm from './EditEventForm';
 
 const { Title, Text } = Typography;
 
@@ -44,6 +45,8 @@ export default function EventSettingsPage({ params }: EventIdPathParam) {
             <Title level={3} style={{ margin: 0 }}>
                 Настройки мероприятия
             </Title>
+
+            <EditEventForm event={event} />
 
             <Card title="Опасная зона" size="small">
                 <Space direction="vertical" size="middle" style={{ width: '100%' }}>

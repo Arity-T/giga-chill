@@ -1,6 +1,6 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { UserLoginPassword, User, RegisterRequest, Event, CreateEventRequest } from '@/types/api'
+import type { UserLoginPassword, User, RegisterRequest, Event, CreateEventRequest, UpdateEventRequest } from '@/types/api'
 
 export const api = createApi({
   reducerPath: 'api',
@@ -69,6 +69,18 @@ export const api = createApi({
       // Не ивалидируем тег с конкретным eventId, потому что иначе сразу после удаления
       // будет отправляться лишний запрос.
     }),
+
+    updateEvent: builder.mutation<Event, { eventId: string; event: UpdateEventRequest }>({
+      query: ({ eventId, event }) => ({
+        url: `/events/${eventId}`,
+        method: 'PATCH',
+        body: event,
+      }),
+      invalidatesTags: (_result, _error, { eventId }) => [
+        { type: 'Events', id: eventId },
+        { type: 'Events', id: 'LIST' }
+      ],
+    }),
   }),
 });
 
@@ -81,4 +93,5 @@ export const {
   useCreateEventMutation,
   useGetEventQuery,
   useDeleteEventMutation,
+  useUpdateEventMutation,
 } = api;
