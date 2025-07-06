@@ -35,10 +35,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-jooq")
 
-    // Flyway (миграции будут работать только при запуске приложения)
-    implementation("org.flywaydb:flyway-core")
-    implementation("org.flywaydb:flyway-database-postgresql")
-
     // JWT
     implementation("io.jsonwebtoken:jjwt-api:0.12.1")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.1")
@@ -107,11 +103,10 @@ jooq {
 
                     target.apply {
                         packageName = "com.github.giga_chill.jooq.generated"
-                        directory = "build/generated/sources/jooq"
+                        directory = "build/generated-sources/jooq"
                     }
                 }
             }
         }
     }
 }
-
