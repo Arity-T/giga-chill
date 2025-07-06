@@ -9,7 +9,8 @@ import {
     CheckSquareOutlined,
     DollarOutlined,
     ShoppingCartOutlined,
-    ArrowLeftOutlined
+    ArrowLeftOutlined,
+    SettingOutlined
 } from '@ant-design/icons';
 import { useRouter, usePathname } from 'next/navigation';
 import { useGetEventQuery } from '@/store/api/api';
@@ -80,6 +81,15 @@ export default function EventLayout({ children, params }: EventLayoutProps) {
             label: (
                 <Link href={`/events/${eventId}/balance`}>
                     Мой баланс
+                </Link>
+            ),
+        },
+        {
+            key: `/events/${eventId}/settings`,
+            icon: <SettingOutlined />,
+            label: (
+                <Link href={`/events/${eventId}/settings`}>
+                    Настройки
                 </Link>
             ),
         },

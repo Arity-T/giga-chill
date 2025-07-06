@@ -8,4 +8,5 @@ export const PAGES = {
     EVENT_TASKS: (eventId: string) => `/events/${eventId}/tasks`,
     EVENT_BALANCE: (eventId: string) => `/events/${eventId}/balance`,
     EVENT_SHOPPING: (eventId: string) => `/events/${eventId}/shopping`,
+    EVENT_SETTINGS: (eventId: string) => `/events/${eventId}/settings`,
 }

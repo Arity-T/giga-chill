@@ -59,6 +59,16 @@ export const api = createApi({
       query: (eventId) => `/events/${eventId}`,
       providesTags: (_result, _error, eventId) => [{ type: 'Events', id: eventId }],
     }),
+
+    deleteEvent: builder.mutation<void, string>({
+      query: (eventId) => ({
+        url: `/events/${eventId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: [{ type: 'Events', id: 'LIST' }],
+      // Не ивалидируем тег с конкретным eventId, потому что иначе сразу после удаления
+      // будет отправляться лишний запрос.
+    }),
   }),
 });
 
@@ -70,4 +80,5 @@ export const {
   useGetEventsQuery,
   useCreateEventMutation,
   useGetEventQuery,
+  useDeleteEventMutation,
 } = api;
