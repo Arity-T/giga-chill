@@ -118,6 +118,17 @@ export const api = createApi({
         { type: 'EventParticipants', id: eventId }
       ],
     }),
+
+    addParticipant: builder.mutation<UserInEvent, { eventId: string; login: string }>({
+      query: ({ eventId, login }) => ({
+        url: `/events/${eventId}/participants`,
+        method: 'POST',
+        body: { login },
+      }),
+      invalidatesTags: (_result, _error, { eventId }) => [
+        { type: 'EventParticipants', id: eventId }
+      ],
+    }),
   }),
 });
 
@@ -134,4 +145,5 @@ export const {
   useGetEventParticipantsQuery,
   useDeleteParticipantMutation,
   useUpdateParticipantRoleMutation,
+  useAddParticipantMutation,
 } = api;

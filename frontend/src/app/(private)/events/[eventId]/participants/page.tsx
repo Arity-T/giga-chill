@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
-import { Typography, Alert, Spin, App } from 'antd';
-import { TeamOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Typography, Alert, Spin, App, Button, Flex } from 'antd';
+import { TeamOutlined, UserAddOutlined } from '@ant-design/icons';
 import { EventIdPathParam } from '@/types/path-params';
 import {
     useGetEventQuery,
@@ -13,12 +13,14 @@ import {
 } from '@/store/api/api';
 import { UserRole, UserInEvent } from '@/types/api';
 import ParticipantTable from './ParticipantTable';
+import AddParticipantModal from './AddParticipantModal';
 
 const { Title } = Typography;
 
 export default function ParticipantsPage({ params }: EventIdPathParam) {
     const { eventId } = React.use(params);
     const { message } = App.useApp();
+    const [isAddModalVisible, setIsAddModalVisible] = useState(false);
 
     // Получаем информацию о мероприятии, текущем пользователе и участниках
     const { data: event, isLoading: eventLoading, error: eventError } = useGetEventQuery(eventId);
@@ -62,6 +64,13 @@ export default function ParticipantsPage({ params }: EventIdPathParam) {
         }
     };
 
+    const handleAddParticipantSuccess = () => {
+        message.success('Участник успешно добавлен в мероприятие!');
+    };
+
+    // Проверяем, может ли пользователь добавлять участников (owner или admin)
+    const canAddParticipants = event?.user_role === UserRole.OWNER || event?.user_role === UserRole.ADMIN;
+
     // Показываем спиннер пока загружаются данные или идет обновление/удаление
     const isLoadingOrFetching = eventLoading || userLoading || participantsLoading || participantsFetching || isUpdatingRole || isDeleting;
 
@@ -102,12 +111,31 @@ export default function ParticipantsPage({ params }: EventIdPathParam) {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}>
-            <Title level={3} style={{ margin: 0 }}>
-                <TeamOutlined style={{ marginRight: '8px' }} />
-                Участники
-            </Title>
+            <Flex justify="space-between" align="center">
+                <Title level={3} style={{ margin: 0 }}>
+                    <TeamOutlined style={{ marginRight: '8px' }} />
+                    Участники
+                </Title>
+
+                {canAddParticipants && (
+                    <Button
+                        type="primary"
+                        icon={<UserAddOutlined />}
+                        onClick={() => setIsAddModalVisible(true)}
+                    >
+                        Добавить участника
+                    </Button>
+                )}
+            </Flex>
 
             {content}
+
+            <AddParticipantModal
+                visible={isAddModalVisible}
+                onCancel={() => setIsAddModalVisible(false)}
+                eventId={eventId}
+                onSuccess={handleAddParticipantSuccess}
+            />
         </div>
     );
 } 
