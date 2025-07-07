@@ -24,7 +24,6 @@ DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=gigachill
 DB_USER=postgres
-DB_USER=postgres
 DB_PASSWORD=postgres
 
 # Backend server
