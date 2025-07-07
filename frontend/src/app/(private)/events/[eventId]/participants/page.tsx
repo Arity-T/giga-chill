@@ -1,14 +1,104 @@
 'use client';
 
 import React from 'react';
-import { Typography, Alert } from 'antd';
+import { Typography, Alert, Spin, App } from 'antd';
 import { TeamOutlined } from '@ant-design/icons';
 import { EventIdPathParam } from '@/types/path-params';
+import {
+    useGetEventQuery,
+    useGetMeQuery,
+    useGetEventParticipantsQuery,
+    useDeleteParticipantMutation,
+    useUpdateParticipantRoleMutation
+} from '@/store/api/api';
+import { UserRole, UserInEvent } from '@/types/api';
+import ParticipantTable from './ParticipantTable';
 
 const { Title } = Typography;
 
 export default function ParticipantsPage({ params }: EventIdPathParam) {
     const { eventId } = React.use(params);
+    const { message } = App.useApp();
+
+    // Получаем информацию о мероприятии, текущем пользователе и участниках
+    const { data: event, isLoading: eventLoading, error: eventError } = useGetEventQuery(eventId);
+    const { data: currentUser, isLoading: userLoading, error: userError } = useGetMeQuery();
+    const {
+        data: participants,
+        isLoading: participantsLoading,
+        isFetching: participantsFetching,
+        error: participantsError
+    } = useGetEventParticipantsQuery(eventId);
+
+    // Мутации для работы с участниками
+    const [deleteParticipant, { isLoading: isDeleting }] = useDeleteParticipantMutation();
+    const [updateParticipantRole, { isLoading: isUpdatingRole }] = useUpdateParticipantRoleMutation();
+
+    // Обработчики
+    const handleRoleChange = async (participant: UserInEvent, newRole: UserRole) => {
+        try {
+            await updateParticipantRole({
+                eventId,
+                participantId: participant.id,
+                role: newRole,
+            }).unwrap();
+            message.success(`Роль пользователя "${participant.name}" успешно изменена!`);
+        } catch (error) {
+            message.error('Не удалось изменить роль участника');
+            console.error('Error updating participant role:', error);
+        }
+    };
+
+    const handleDeleteParticipant = async (participant: UserInEvent) => {
+        try {
+            await deleteParticipant({
+                eventId,
+                participantId: participant.id,
+            }).unwrap();
+            message.success(`Участник "${participant.name}" удален из мероприятия`);
+        } catch (error) {
+            message.error('Не удалось удалить участника');
+            console.error('Error deleting participant:', error);
+        }
+    };
+
+    // Показываем спиннер пока загружаются данные или идет обновление/удаление
+    const isLoadingOrFetching = eventLoading || userLoading || participantsLoading || participantsFetching || isUpdatingRole || isDeleting;
+
+    // Определяем содержимое
+    let content;
+
+    if (isLoadingOrFetching) {
+        content = (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '200px'
+            }}>
+                <Spin size="large" />
+            </div>
+        );
+    } else if (eventError || userError || participantsError || !event || !currentUser || !participants) {
+        content = (
+            <Alert
+                message="Ошибка загрузки"
+                description="Не удалось загрузить информацию о мероприятии"
+                type="error"
+                showIcon
+            />
+        );
+    } else {
+        content = (
+            <ParticipantTable
+                participants={participants}
+                event={event}
+                currentUser={currentUser}
+                onRoleChange={handleRoleChange}
+                onDeleteParticipant={handleDeleteParticipant}
+            />
+        );
+    }
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}>
@@ -17,12 +107,7 @@ export default function ParticipantsPage({ params }: EventIdPathParam) {
                 Участники
             </Title>
 
-            <Alert
-                message="Страница в разработке"
-                description="Здесь будет отображаться список участников мероприятия, их роли и возможность управления участниками."
-                type="info"
-                showIcon
-            />
+            {content}
         </div>
     );
 } 

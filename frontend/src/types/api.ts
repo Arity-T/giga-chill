@@ -42,6 +42,11 @@ export interface UpdateEventRequest {
   description?: string;
 }
 
+export interface UserInEvent extends User {
+  user_role: UserRole;
+  balance: number;
+}
+
 export enum UserRole {
   OWNER = 'owner',
   ADMIN = 'admin',

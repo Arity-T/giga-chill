@@ -316,7 +316,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UserInEvent"
         "400":
-          description: Невалидные данные (например, пользователь с таким логином не найден)
+          description: Невалидные данные (например, недопустимые символы в логине)
           content:
             application/json:
               schema:
@@ -334,7 +334,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
         "404":
-          description: Мероприятие не найдено
+          description: Мероприятие или участник с таким логином не найден
           content:
             application/json:
               schema:
