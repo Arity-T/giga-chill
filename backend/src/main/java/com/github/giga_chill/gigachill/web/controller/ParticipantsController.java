@@ -45,7 +45,7 @@ public class ParticipantsController {
     }
 
     @PostMapping("/{eventId}/participants")
-    // ACCESS: owner
+    // ACCESS: owner, admin
     public ResponseEntity<ParticipantInfo> postParticipant(Authentication authentication,
                                                            @PathVariable String eventId,
                                                            @RequestBody Map<String, Object> body) {
@@ -63,7 +63,7 @@ public class ParticipantsController {
             throw new ForbiddenException("User with id " + user.id +
                     " is not a participant of event with id " + eventId);
         }
-        if (!participantsService.isOwner(eventId, user.id)) {
+        if (!participantsService.isOwner(eventId, user.id) && !participantsService.isAdmin(eventId, user.id) ) {
             throw new ForbiddenException("User with id " + user.id +
                     " does not have permission to add participants to event with id " + eventId);
         }
