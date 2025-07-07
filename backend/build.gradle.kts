@@ -64,6 +64,14 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
+val dbHost = System.getenv("DB_HOST") ?: "localhost"
+val dbPort = System.getenv("DB_PORT") ?: "5432"
+val dbName = System.getenv("DB_NAME") ?: "gigachill"
+val dbUser = System.getenv("DB_USER") ?: "postgres"
+val dbPassword = System.getenv("DB_PASSWORD") ?: "postgres"
+val jdbcUrl = "jdbc:postgresql://$dbHost:$dbPort/$dbName"
+
+
 sourceSets["main"].java.srcDir("build/generated-sources/jooq")
 
 // === jOOQ codegen конфигурация ===
@@ -77,9 +85,9 @@ jooq {
 
                 jdbc.apply {
                     driver = "org.postgresql.Driver"
-                    url = "jdbc:postgresql://localhost:5432/gigachill"
-                    user = "postgres"
-                    password = "postgres"
+                    url = jdbcUrl
+                    user = dbUser
+                    password = dbPassword
                 }
 
                 generator.apply {
