@@ -377,7 +377,7 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
 
   /events/{eventId}/participants/{participantId}/role:
-    post:
+    patch:
       summary: Изменить роль участника
       tags: [Participants]
       operationId: updateParticipantRole

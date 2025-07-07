@@ -111,7 +111,7 @@ export const api = createApi({
     updateParticipantRole: builder.mutation<UserInEvent, { eventId: string; participantId: string; role: UserRole }>({
       query: ({ eventId, participantId, role }) => ({
         url: `/events/${eventId}/participants/${participantId}/role`,
-        method: 'POST',
+        method: 'PATCH',
         body: { role },
       }),
       invalidatesTags: (_result, _error, { eventId }) => [
