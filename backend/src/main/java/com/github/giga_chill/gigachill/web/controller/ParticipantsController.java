@@ -68,7 +68,7 @@ public class ParticipantsController {
                     " does not have permission to add participants to event with id " + eventId);
         }
         if (userToAdd == null) {
-            throw new UnauthorizedException("User with login '" + participantLogin + "' not found");
+            throw new NotFoundException("User with login '" + participantLogin + "' not found");
         }
         if (participantsService.isParticipant(eventId, userToAdd.id)) {
             throw new ConflictException("User with login '" + participantLogin +
