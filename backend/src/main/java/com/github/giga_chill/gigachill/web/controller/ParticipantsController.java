@@ -81,7 +81,7 @@ public class ParticipantsController {
     }
 
     @DeleteMapping("/{eventId}/participants/{participantId}")
-    // ACCESS: owner
+    // ACCESS: owner, admin
     public ResponseEntity<Void> deleteParticipant(Authentication authentication,
                                                   @PathVariable String eventId,
                                                   @PathVariable String participantId) {
@@ -96,7 +96,7 @@ public class ParticipantsController {
             throw new ForbiddenException("User with id " + user.id +
                     " is not a participant of event with id " + eventId);
         }
-        if (!participantsService.isOwner(eventId, user.id)) {
+        if (!participantsService.isOwner(eventId, user.id) && !participantsService.isAdmin(eventId, user.id)) {
             throw new ForbiddenException("User with id " + user.id +
                     " does not have permission to remove participants from event with id " + eventId);
         }
