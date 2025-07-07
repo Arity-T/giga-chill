@@ -19,12 +19,22 @@
 ### Миграции
 В файле `/backend/.env` указываем переменные окружения, например:
 ```
+# Database
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=gigachill
 DB_USER=postgres
 DB_USER=postgres
 DB_PASSWORD=postgres
+
+# Backend server
+SERVER_PORT=3000
+
+# Jwt
+JWT_EXPIRATION=1d
+
+# Frontend server
+FRONTEND_ORIGIN=*
 ``` 
 
 Теперь можем запустить миграции, для этого запускаем скрипт из папки `/backend`:
