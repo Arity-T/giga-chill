@@ -16,9 +16,20 @@ export default function ParticipantRoleSelect({
     onRoleChange,
     disabled = false
 }: ParticipantRoleSelectProps) {
+    const selectWidth = 170;
+
     if (disabled) {
         return (
-            <div style={{ padding: '0 7px' }}>
+            <div
+                style={{
+                    width: selectWidth,
+                    height: 24, // Высота как у Select size="small"
+                    display: 'flex',
+                    alignItems: 'center',
+                    paddingLeft: 7, // Отступ как у Select
+                    paddingRight: 32, // Компенсируем место для стрелочки
+                }}
+            >
                 <UserRoleTag role={participant.user_role} tooltip="" />
             </div>
         );
@@ -27,7 +38,7 @@ export default function ParticipantRoleSelect({
     return (
         <Select
             value={participant.user_role}
-            style={{ width: 170 }}
+            style={{ width: selectWidth }}
             onChange={(newRole) => onRoleChange(participant, newRole)}
             size="small"
             variant="borderless"

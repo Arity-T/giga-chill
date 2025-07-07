@@ -1,70 +1,75 @@
 'use client';
 
 import React from 'react';
-import { Typography, Alert, Spin } from 'antd';
+import { Typography, Alert, Spin, App } from 'antd';
 import { TeamOutlined } from '@ant-design/icons';
 import { EventIdPathParam } from '@/types/path-params';
-import { useGetEventQuery, useGetMeQuery } from '@/store/api/api';
+import {
+    useGetEventQuery,
+    useGetMeQuery,
+    useGetEventParticipantsQuery,
+    useDeleteParticipantMutation,
+    useUpdateParticipantRoleMutation
+} from '@/store/api/api';
 import { UserRole, UserInEvent } from '@/types/api';
 import ParticipantTable from './ParticipantTable';
 
 const { Title } = Typography;
 
-// Моковые данные для демонстрации
-const mockParticipants: UserInEvent[] = [
-    {
-        id: '1',
-        login: 'owner_user',
-        name: 'Владелец Мероприятия',
-        user_role: UserRole.OWNER,
-        balance: 0,
-    },
-    {
-        id: '2',
-        login: 'admin_user',
-        name: 'Администратор Петров',
-        user_role: UserRole.ADMIN,
-        balance: -150,
-    },
-    {
-        id: '1108dddd-b3e5-4b2d-87de-6d8ef392a1d7',
-        login: 'participant1',
-        name: 'Участник Иванов',
-        user_role: UserRole.PARTICIPANT,
-        balance: 300,
-    },
-    {
-        id: '4',
-        login: 'participant2',
-        name: 'Участница Сидорова',
-        user_role: UserRole.PARTICIPANT,
-        balance: -75,
-    },
-    {
-        id: '5',
-        login: 'participant3',
-        name: 'Участник Козлов',
-        user_role: UserRole.PARTICIPANT,
-        balance: 0,
-    },
-];
-
 export default function ParticipantsPage({ params }: EventIdPathParam) {
     const { eventId } = React.use(params);
+    const { message } = App.useApp();
 
-    // Получаем информацию о мероприятии и текущем пользователе
+    // Получаем информацию о мероприятии, текущем пользователе и участниках
     const { data: event, isLoading: eventLoading, error: eventError } = useGetEventQuery(eventId);
     const { data: currentUser, isLoading: userLoading, error: userError } = useGetMeQuery();
+    const {
+        data: participants,
+        isLoading: participantsLoading,
+        isFetching: participantsFetching,
+        error: participantsError
+    } = useGetEventParticipantsQuery(eventId);
 
-    // В будущем будем использовать реальные данные:
-    // const { data: participants, isLoading: participantsLoading } = useGetEventParticipantsQuery(eventId);
-    // Пока используем моковые данные
-    const participants = mockParticipants;
-    const participantsLoading = false;
+    // Мутации для работы с участниками
+    const [deleteParticipant, { isLoading: isDeleting }] = useDeleteParticipantMutation();
+    const [updateParticipantRole, { isLoading: isUpdatingRole }] = useUpdateParticipantRoleMutation();
 
-    // Показываем спиннер пока загружаются данные
-    if (eventLoading || userLoading || participantsLoading) {
-        return (
+    // Обработчики
+    const handleRoleChange = async (participant: UserInEvent, newRole: UserRole) => {
+        try {
+            await updateParticipantRole({
+                eventId,
+                participantId: participant.id,
+                role: newRole,
+            }).unwrap();
+            message.success(`Роль пользователя "${participant.name}" успешно изменена!`);
+        } catch (error) {
+            message.error('Не удалось изменить роль участника');
+            console.error('Error updating participant role:', error);
+        }
+    };
+
+    const handleDeleteParticipant = async (participant: UserInEvent) => {
+        try {
+            await deleteParticipant({
+                eventId,
+                participantId: participant.id,
+            }).unwrap();
+            message.success(`Участник "${participant.name}" удален из мероприятия`);
+        } catch (error) {
+            message.error('Не удалось удалить участника');
+            console.error('Error deleting participant:', error);
+        }
+    };
+
+    // Показываем спиннер пока загружаются данные или идет обновление/удаление
+    const isLoadingOrFetching = eventLoading || userLoading || participantsLoading || participantsFetching || isUpdatingRole || isDeleting;
+
+    // Определяем содержимое
+    let content;
+
+    if (isLoadingOrFetching) {
+        content = (
             <div style={{
                 display: 'flex',
                 justifyContent: 'center',
@@ -74,41 +79,24 @@ export default function ParticipantsPage({ params }: EventIdPathParam) {
                 <Spin size="large" />
             </div>
         );
-    }
-
-    // Показываем ошибку если что-то пошло не так
-    if (eventError || userError) {
-        return (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}>
-                <Title level={3} style={{ margin: 0 }}>
-                    <TeamOutlined style={{ marginRight: '8px' }} />
-                    Участники
-                </Title>
-                <Alert
-                    message="Ошибка загрузки"
-                    description="Не удалось загрузить информацию о мероприятии или текущем пользователе"
-                    type="error"
-                    showIcon
-                />
-            </div>
+    } else if (eventError || userError || participantsError || !event || !currentUser || !participants) {
+        content = (
+            <Alert
+                message="Ошибка загрузки"
+                description="Не удалось загрузить информацию о мероприятии"
+                type="error"
+                showIcon
+            />
         );
-    }
-
-    // Проверяем что все данные загружены
-    if (!event || !currentUser) {
-        return (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}>
-                <Title level={3} style={{ margin: 0 }}>
-                    <TeamOutlined style={{ marginRight: '8px' }} />
-                    Участники
-                </Title>
-                <Alert
-                    message="Данные недоступны"
-                    description="Информация о мероприятии или пользователе недоступна"
-                    type="warning"
-                    showIcon
-                />
-            </div>
+    } else {
+        content = (
+            <ParticipantTable
+                participants={participants}
+                event={event}
+                currentUser={currentUser}
+                onRoleChange={handleRoleChange}
+                onDeleteParticipant={handleDeleteParticipant}
+            />
         );
     }
 
@@ -119,12 +107,7 @@ export default function ParticipantsPage({ params }: EventIdPathParam) {
                 Участники
             </Title>
 
-            <ParticipantTable
-                participants={participants}
-                event={event}
-                currentUser={currentUser}
-                isLoading={participantsLoading}
-            />
+            {content}
         </div>
     );
 } 

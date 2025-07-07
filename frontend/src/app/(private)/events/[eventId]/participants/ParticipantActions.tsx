@@ -6,7 +6,7 @@ import { UserInEvent, Event } from '@/types/api';
 interface ParticipantActionsProps {
     participant: UserInEvent;
     event: Event;
-    onDeleteParticipant: (participant: UserInEvent) => void;
+    onDeleteParticipant: (participant: UserInEvent) => Promise<void>;
     canDelete: boolean;
 }
 

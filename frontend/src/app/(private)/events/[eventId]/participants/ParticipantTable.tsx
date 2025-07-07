@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Space, Tag, App } from 'antd';
+import { Table, Space, Tag } from 'antd';
 import { UserRole, UserInEvent, Event, User } from '@/types/api';
 import ParticipantRoleSelect from './ParticipantRoleSelect';
 import ParticipantActions from './ParticipantActions';
@@ -8,32 +8,20 @@ interface ParticipantTableProps {
     participants: UserInEvent[];
     event: Event;
     currentUser: User;
-    isLoading: boolean;
+    onRoleChange: (participant: UserInEvent, newRole: UserRole) => Promise<void>;
+    onDeleteParticipant: (participant: UserInEvent) => Promise<void>;
 }
 
 export default function ParticipantTable({
     participants,
     event,
     currentUser,
-    isLoading
+    onRoleChange,
+    onDeleteParticipant
 }: ParticipantTableProps) {
-    const { message } = App.useApp();
-
     const currentUserRole = event.user_role;
     const isOwner = currentUserRole === UserRole.OWNER;
     const isAdmin = currentUserRole === UserRole.ADMIN;
-
-    const handleRoleChange = (participant: UserInEvent, newRole: UserRole) => {
-        // TODO: Реализовать API запрос для изменения роли
-        message.success(`Роль пользователя "${participant.name}" успешно изменена!`);
-        console.log(`Changing role for user ${participant.id} to ${newRole}`);
-    };
-
-    const handleDeleteParticipant = (participant: UserInEvent) => {
-        // TODO: Реализовать API запрос для удаления участника
-        message.success(`Участник ${participant.name} удален из мероприятия`);
-        console.log(`Deleting participant ${participant.id}`);
-    };
 
     const columns = [
         {
@@ -62,7 +50,7 @@ export default function ParticipantTable({
                 return (
                     <ParticipantRoleSelect
                         participant={record}
-                        onRoleChange={handleRoleChange}
+                        onRoleChange={onRoleChange}
                         disabled={!canChangeRole}
                     />
                 );
@@ -84,7 +72,7 @@ export default function ParticipantTable({
                     <ParticipantActions
                         participant={record}
                         event={event}
-                        onDeleteParticipant={handleDeleteParticipant}
+                        onDeleteParticipant={onDeleteParticipant}
                         canDelete={canDelete}
                     />
                 );
@@ -97,7 +85,6 @@ export default function ParticipantTable({
             dataSource={participants}
             columns={columns}
             rowKey="id"
-            loading={isLoading}
             pagination={false}
             size="middle"
         />
