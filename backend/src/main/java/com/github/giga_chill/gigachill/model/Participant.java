@@ -13,4 +13,5 @@ public class Participant {
     private String login;
     private String name;
     private String role;
+    private Integer balance;
 }

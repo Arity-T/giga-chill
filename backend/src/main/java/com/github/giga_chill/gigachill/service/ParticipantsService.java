@@ -35,7 +35,7 @@ public class ParticipantsService {
 
         //TEMPORARY:
         Participant participant = new Participant(user.id, user.login, user.name,
-                env.getProperty("roles.participant").toString());
+                env.getProperty("roles.participant").toString(), 0);
         EVENT_PARTICIPANTS.get(eventId).add(participant);
         return participant;
     }
@@ -45,7 +45,8 @@ public class ParticipantsService {
         //TODO: связь с бд
 
         //TEMPORARY:
-        Participant participant = new Participant(user.id, user.login, user.name, env.getProperty("roles.owner").toString());
+        Participant participant = new Participant(user.id, user.login, user.name,
+                env.getProperty("roles.owner").toString(), 0);
         EVENT_PARTICIPANTS.put(eventId, new ArrayList<>());
         EVENT_PARTICIPANTS.get(eventId).add(participant);
     }
