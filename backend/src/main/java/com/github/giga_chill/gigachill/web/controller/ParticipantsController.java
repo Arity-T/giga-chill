@@ -107,9 +107,9 @@ public class ParticipantsController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{eventId}/participants/{participantId}/role")
+    @PatchMapping("/{eventId}/participants/{participantId}/role")
     // ACCESS: owner
-    public ResponseEntity<ParticipantInfo> postParticipant(Authentication authentication,
+    public ResponseEntity<ParticipantInfo> patchParticipantRole(Authentication authentication,
                                                             @PathVariable String eventId,
                                                             @PathVariable String participantId,
                                                             @RequestBody Map<String, Object> body) {
