@@ -108,7 +108,7 @@ public class EventsController {
             throw new ForbiddenException("User with id " + user.id +
                     " does not have permission to delete event with id " + eventId);
         }
-        eventService.deleteEvent(eventId, user.id);
+        eventService.deleteEvent(eventId);
 
         return ResponseEntity.noContent().build();
     }
