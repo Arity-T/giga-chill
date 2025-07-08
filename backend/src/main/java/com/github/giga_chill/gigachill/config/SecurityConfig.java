@@ -1,12 +1,16 @@
-package com.github.giga_chill.gigachill.security;
+package com.github.giga_chill.gigachill.config;
 
 import com.github.giga_chill.gigachill.properties.FrontendProperties;
+import com.github.giga_chill.gigachill.security.CustomAuthenticationEntryPoint;
+import com.github.giga_chill.gigachill.security.JwtFilter;
 import org.springframework.context.annotation.*;
 import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.authentication.configuration.*;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.*;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -24,6 +28,11 @@ public class SecurityConfig {
         this.jwtFilter = jwtFilter;
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
         this.frontendProperties = frontendProperties;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean

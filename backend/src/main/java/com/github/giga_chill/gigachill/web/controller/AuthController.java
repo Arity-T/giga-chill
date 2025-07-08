@@ -4,7 +4,7 @@ import com.github.giga_chill.gigachill.model.*;
 import com.github.giga_chill.gigachill.exception.*;
 import com.github.giga_chill.gigachill.web.info.UserInfo;
 import com.github.giga_chill.gigachill.security.JwtService;
-import com.github.giga_chill.gigachill.service.InMemoryUserService;
+import com.github.giga_chill.gigachill.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
@@ -16,10 +16,9 @@ import org.springframework.http.ResponseEntity;
 @RestController
 public class AuthController {
     private final JwtService jwtService;
-    private final InMemoryUserService userService;
+    private final UserService userService;
 
-
-    public AuthController(JwtService jwtService, InMemoryUserService userService) {
+    public AuthController(JwtService jwtService, UserService userService) {
         this.jwtService = jwtService;
         this.userService = userService;
     }
@@ -84,12 +83,13 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<UserInfo> me(Authentication authentication) {
-        var user = userService.getByLogin(authentication.getName());
-        if (user == null) {
+        var user = userService.findByLogin(authentication.getName());
+        if (user.isEmpty()) {
             throw new UnauthorizedException("Пользователь не найден");
         }
 
-        return ResponseEntity.ok(new UserInfo(user.login, user.name, user.id));
+        return ResponseEntity.ok(new UserInfo(user.get().getLogin(), user.get().getName(),
+                user.get().getUserId().toString()));
     }
 
 }
