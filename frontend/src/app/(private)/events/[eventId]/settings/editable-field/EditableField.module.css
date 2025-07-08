@@ -1,0 +1,36 @@
+.fieldContainer {
+    margin-bottom: 16px;
+    max-width: 500px;
+}
+
+.label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.inputWrapper {
+    position: relative;
+}
+
+.inputContent {
+    width: 100%;
+    padding-right: 72px;
+}
+
+.buttonContainer {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 4px;
+    transition: opacity 0.2s ease;
+}
+
+.buttonContainer.visible {
+    opacity: 1;
+}
+
+.buttonContainer.hidden {
+    opacity: 0;
+} 

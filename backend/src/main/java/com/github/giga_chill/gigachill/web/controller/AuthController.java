@@ -1,19 +1,23 @@
-package com.github.giga_chill.gigachill.controller;
+package com.github.giga_chill.gigachill.web.controller;
 
 import com.github.giga_chill.gigachill.model.*;
 import com.github.giga_chill.gigachill.exception.*;
+import com.github.giga_chill.gigachill.web.info.UserInfo;
 import com.github.giga_chill.gigachill.security.JwtService;
-import com.github.giga_chill.gigachill.security.InMemoryUserService;
+import com.github.giga_chill.gigachill.service.InMemoryUserService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
+
+
 @RestController
 public class AuthController {
     private final JwtService jwtService;
     private final InMemoryUserService userService;
+
 
     public AuthController(JwtService jwtService, InMemoryUserService userService) {
         this.jwtService = jwtService;
