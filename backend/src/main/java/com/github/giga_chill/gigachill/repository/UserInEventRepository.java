@@ -22,6 +22,13 @@ public class UserInEventRepository {
         .execute();
   }
 
+  public List<UserInEventRecord> findById(UUID eventId, UUID userId) {
+    return dsl.selectFrom(UserInEvent.USER_IN_EVENT)
+    .where(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId))
+    .and(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId))
+    .fetch();
+  }
+
   public List<UserInEventRecord> findByEventId(UUID eventId) {
     return dsl.selectFrom(UserInEvent.USER_IN_EVENT)
             .where(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId))
@@ -32,5 +39,12 @@ public class UserInEventRepository {
     return dsl.selectFrom(UserInEvent.USER_IN_EVENT)
             .where(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId))
             .fetch();
+  }
+
+  public void deleteById(UUID eventId, UUID userId) {
+    List<UserInEventRecord> records = findById(eventId, userId);
+    for (UserInEventRecord record : records) {
+      record.delete();
+    }
   }
 }
