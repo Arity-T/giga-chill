@@ -95,12 +95,16 @@ public class ParticipantsService {
                 .orElse(null).getRole();
     }
 
-    public boolean isOwner(String eventId, String participantId) {
+    public boolean isOwnerRole(String eventId, String participantId) {
         return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.owner").toString());
     }
 
-    public boolean isAdmin(String eventId, String participantId) {
+    public boolean isAdminRole(String eventId, String participantId) {
         return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.admin").toString());
+    }
+
+    public boolean isParticipantRole(String eventId, String participantId) {
+        return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.participant").toString());
     }
 
 }
