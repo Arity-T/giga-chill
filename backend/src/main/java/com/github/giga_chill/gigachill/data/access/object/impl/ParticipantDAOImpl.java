@@ -89,4 +89,10 @@ public class ParticipantDAOImpl implements ParticipantDAO {
     }
     return null;
   }
+
+  //TEMPORARY: заглушка на время
+  @Override
+  public ParticipantDTO getParticipantById(String eventId, String participantId) {
+    return null;
+  }
 }
