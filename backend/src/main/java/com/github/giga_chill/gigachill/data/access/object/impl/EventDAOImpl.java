@@ -96,9 +96,7 @@ public class EventDAOImpl implements EventDAO {
 
   @Override
   public void deleteEvent(String eventId) {
-    eventRepository.findById(UUID.fromString(eventId)).ifPresent(eventRecord -> {
-      eventRecord.delete();
-    });
+    eventRepository.deleteById(UUID.fromString(eventId));
   }
 
   @Override

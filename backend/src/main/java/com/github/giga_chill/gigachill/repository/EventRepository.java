@@ -28,4 +28,10 @@ public class EventRepository {
         .where(Events.EVENTS.EVENT_ID.eq(eventId))
         .fetchOptional();
   }
+
+  public void deleteById(UUID eventId) {
+    findById(eventId).ifPresent(eventRecord -> {
+      eventRecord.delete();
+    });
+  }
 }
