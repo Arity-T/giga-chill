@@ -50,7 +50,6 @@ public class EventsController {
 
         User user = userService.userAuthentication(authentication);
         Event event = eventService.createEvent(user.id, requestEventInfo);
-        participantsService.createEvent(event.getEventId(), user);
         return ResponseEntity.created(URI.create("/events/" + event.getEventId()))
                 .body(toResponseEventInfo(event,
                         participantsService.getParticipantRoleInEvent(event.getEventId(), user.id)));
