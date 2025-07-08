@@ -7,6 +7,6 @@ public record ShoppingListInfo(String shopping_list_id,
                                String title,
                                String description,
                                String status,
-                               List<ShoppingItem> shopping_items,
+                               List<ShoppingItemInfo> shopping_items,
                                List<ConsumerInfo> consumers) {
 }
