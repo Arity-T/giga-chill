@@ -1,16 +1,19 @@
 spring:
   application:
     name: gigachill
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
 
 server:
-  port: 3000
+  port: ${SERVER_PORT}
 
 jwt:
-  expiration: 1d
+  expiration: ${JWT_EXPIRATION}
 
 frontend:
-  origin: "*"
-
+  origin: ${FRONTEND_ORIGIN}
 
 roles:
   owner: owner

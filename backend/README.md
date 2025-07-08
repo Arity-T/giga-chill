@@ -16,28 +16,57 @@
 - `GlobalExceptionHandler` для обработки ошибок.
 
 ## Запуск приложения
-Перед запуском необходимо сбилдить приложение:
-```pwsh
-./gradlew build
+
+### Автоматизированный скрипт (рекомендуется)
+В файле `/backend/.env` указываем переменные окружения (см. `.env.example`).
+
+Для удобства создан скрипт `dev-setup.sh`, который может выполнять различные этапы подготовки и запуска приложения:
+
+```bash
+# На Windows команды можно выполнить через Git Bash
+# Запуск только приложения (по умолчанию)
+./dev-setup.sh
+
+# Выполнить миграции (база данных будет удалена и создана заново) и запустить приложение
+./dev-setup.sh -m
+
+# Сгенерировать Jooq классы и запустить приложение
+./dev-setup.sh -g
+
+# Собрать приложение и запустить
+./dev-setup.sh -b
+
+# Полный цикл: миграции + генерация + сборка + запуск
+./dev-setup.sh -m -g -b
+# или короче:
+./dev-setup.sh -mgb
+
+# Подготовка БЕЗ запуска приложения
+./dev-setup.sh -mgbS    # Полный цикл без запуска
+./dev-setup.sh -mS      # Только миграции без запуска
+./dev-setup.sh -gS      # Только генерация без запуска
+
+# Показать справку
+./dev-setup.sh -h
 ```
 
-Далее можем его запустить:
-```pwsh
-./gradlew bootRun
-```
-
-После запуска приложения можем перейти к проверке эндпоинтов.
+**Доступные флаги:**
+- `-m` — выполнить миграции базы данных
+- `-g` — сгенерировать классы Jooq
+- `-b` — собрать приложение
+- `-S` — не запускать приложение (только выполнить указанные операции)
+- `-h` — показать справку
 
 ## Проверка эндпоинтов
 - **Регистрация:**
 ```pwsh
-curl -i -X POST http://localhost:3000/auth/register -H "Content-Type: application/json" -d '{"login":"vlad", "password":"securepass"}' -c cookies.txt
+curl -i -X POST http://localhost:3000/auth/register -H "Content-Type: application/json" -d '{"login":"vlad", "password":"1234", "name":"Владислав Гаар"}' -c cookies.txt
 ```
 Регистрирует пользователя. JWT-токен будет отправлен в Set-Cookie и сохранён в cookies.txt.
 
 - **Логин:**
 ```pwsh
-curl -i -X POST http://localhost:3000/auth/login -H "Content-Type: application/json" -d '{"login":"vlad", "password":"securepass"}' -c cookies.txt
+curl -i -X POST http://localhost:3000/auth/login -H "Content-Type: application/json" -d '{"login":"vlad", "password":"1234"}' -c cookies.txt
 ```
 Логинится с уже зарегистрированным пользователем. JWT тоже сохранится в cookies.txt.
 

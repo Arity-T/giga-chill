@@ -9,7 +9,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 public class GigachillApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GigachillApplication.class, args);
+			SpringApplication app = new SpringApplication(GigachillApplication.class);
+			app.run(args);
 	}
 
 }
