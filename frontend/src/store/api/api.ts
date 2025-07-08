@@ -14,7 +14,7 @@ import type {
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:3000',
+    baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000',
     credentials: 'include',
   }),
   tagTypes: ['Me', 'Events', 'EventParticipants'],
