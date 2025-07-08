@@ -6,7 +6,7 @@ import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.model.Event;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
-import com.github.giga_chill.gigachill.service.InMemoryUserService;
+import com.github.giga_chill.gigachill.service.UserService;
 import com.github.giga_chill.gigachill.service.ParticipantsService;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
 import com.github.giga_chill.gigachill.web.info.ResponseEventInfo;
@@ -24,13 +24,13 @@ import java.util.List;
 public class EventsController {
 
     private final EventService eventService;
-    private final InMemoryUserService inMemoryUserService;
+    private final UserService userService;
     private final ParticipantsService participantsService;
 
     @GetMapping
     //ACCESS: ALL
     public ResponseEntity<List<ResponseEventInfo>> getEvents(Authentication authentication){
-        User user = inMemoryUserService.userAuthentication(authentication);
+        User user = userService.userAuthentication(authentication);
 
         var userEvents = eventService.getAllUserEvents(user.id);
 
@@ -48,7 +48,7 @@ public class EventsController {
     public ResponseEntity<ResponseEventInfo> postEvents(@RequestBody RequestEventInfo requestEventInfo,
                                                         Authentication authentication){
 
-        User user = inMemoryUserService.userAuthentication(authentication);
+        User user = userService.userAuthentication(authentication);
         Event event = eventService.createEvent(user.id, requestEventInfo);
         participantsService.createEvent(event.getEventId(), user);
         return ResponseEntity.created(URI.create("/events/" + event.getEventId()))
@@ -59,7 +59,7 @@ public class EventsController {
     @GetMapping("/{eventId}")
     //ACCESS: owner, admin, participant
     public ResponseEntity<ResponseEventInfo> getEventById(Authentication authentication, @PathVariable String eventId){
-        User user = inMemoryUserService.userAuthentication(authentication);
+        User user = userService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)){
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
@@ -75,7 +75,7 @@ public class EventsController {
     //ACCESS: owner, admin
     public ResponseEntity<ResponseEventInfo> patchEventById(@RequestBody RequestEventInfo requestEventInfo,
                                                             Authentication authentication, @PathVariable String eventId){
-        User user = inMemoryUserService.userAuthentication(authentication);
+        User user = userService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)){
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
@@ -96,7 +96,7 @@ public class EventsController {
     @DeleteMapping("/{eventId}")
     //ACCESS: owner
     public ResponseEntity<Void> deleteEventById(Authentication authentication, @PathVariable String eventId){
-        User user = inMemoryUserService.userAuthentication(authentication);
+        User user = userService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)){
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
