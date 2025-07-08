@@ -65,26 +65,11 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
-fun loadEnvFile(path: String = ".env") {
-    val envFile = rootProject.file(path)
-    if (!envFile.exists()) return
-
-    envFile.forEachLine { line ->
-        val parts = line.split("=", limit = 2)
-        if (parts.size == 2) {
-            val key = parts[0].trim()
-            val value = parts[1].trim()
-            System.setProperty(key, value)
-        }
-    }
-}
-loadEnvFile()
-
-val dbHost = System.getProperty("DB_HOST")
-val dbPort = System.getProperty("DB_PORT")
-val dbName = System.getProperty("DB_NAME")
-val dbUser = System.getProperty("DB_USER")
-val dbPassword = System.getProperty("DB_PASSWORD")
+val dbHost = System.getenv("DB_HOST")
+val dbPort = System.getenv("DB_PORT")
+val dbName = System.getenv("DB_NAME")
+val dbUser = System.getenv("DB_USER")
+val dbPassword = System.getenv("DB_PASSWORD")
 
 val jdbcUrl = "jdbc:postgresql://$dbHost:$dbPort/$dbName"
 
