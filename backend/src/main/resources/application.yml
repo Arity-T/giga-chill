@@ -14,3 +14,8 @@ jwt:
 
 frontend:
   origin: ${FRONTEND_ORIGIN}
+
+roles:
+  owner: owner
+  admin: admin
+  participant: participant

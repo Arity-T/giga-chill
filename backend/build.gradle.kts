@@ -32,6 +32,7 @@ dependencies {
     // Spring Boot
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+	implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-jooq")
     implementation("io.github.cdimascio:dotenv-java:3.2.0")

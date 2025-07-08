@@ -13,6 +13,8 @@ security:
 tags:
   - name: Auth
   - name: Me
+  - name: Events
+  - name: Participants
 
 paths:
   /auth/login:
@@ -99,7 +101,347 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /events:
+    get:
+      summary: Список моих мероприятий
+      description:
+        Возвращает все мероприятия, в которых участвует аутентифицированный
+        пользователь, вместе с его ролью в этих мероприятиях.
+      tags: [Events]
+      operationId: getEvents
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Events"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      summary: Создать мероприятие
+      description: Автор запроса автоматически становится **owner**.
+      tags: [Events]
+      operationId: createEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Event"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "400":
+          description: Невалидные данные мероприятия
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /events/{eventId}:
+    get:
+      summary: Получить мероприятие
+      description:
+        Возвращает мероприятие, в котором участвует аутентифицированный
+        пользователь, вместе с его ролью в этом мероприятии.
+      tags: [Events]
+      operationId: getEvent
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Пользователь не является участником данного мероприятия
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие не найдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    patch:
+      summary: Обновить мероприятие
+      tags: [Events]
+      operationId: updateEvent
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Event"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "400":
+          description: Невалидные данные мероприятия
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для изменения мероприятия (требуется роль owner или admin)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие не найдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    delete:
+      summary: Удалить мероприятие
+      tags: [Events]
+      operationId: deleteEvent
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для удаления мероприятия (требуется роль owner)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие не найдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /events/{eventId}/participants:
+    get:
+      summary: Список участников
+      tags: [Participants]
+      operationId: getParticipants
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersInEvent"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Пользователь не является участником данного мероприятия
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие не найдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      summary: Добавить участника
+      description: Добавление по логину. Роль по умолчанию — **participant**.
+      tags: [Participants]
+      operationId: addParticipant
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLogin"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserInEvent"
+        "400":
+          description: Невалидные данные (например, недопустимые символы в логине)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для добавления участников (требуется роль owner или admin)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие или участник с таким логином не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Пользователь уже является участником мероприятия
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /events/{eventId}/participants/{participantId}:
+    delete:
+      summary: Удалить участника
+      tags: [Participants]
+      operationId: deleteParticipant
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/participantId"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для удаления участников (требуется роль owner или admin)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие или участник не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /events/{eventId}/participants/{participantId}/role:
+    patch:
+      summary: Изменить роль участника
+      tags: [Participants]
+      operationId: updateParticipantRole
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/participantId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRole"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserInEvent"
+        "400":
+          description: Невалидная роль или попытка изменить роль owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для изменения ролей (требуется роль owner или admin)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие или участник не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
+  parameters:
+    eventId:
+      name: eventId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      example: c014cfe2-7a69-4959-88f7-4a2b795c2a20
+
+    participantId:
+      name: participantId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      example: 0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c
+
   securitySchemes:
     CookieAuth:
       type: apiKey
@@ -161,3 +503,78 @@ components:
               type: string
               description: Идентификатор пользователя
               example: c014cfe2-7a69-4959-88f7-4a2b795c2a20
+
+    UserRole:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [owner, admin, participant]
+          description: Роль пользователя в мероприятии
+          example: owner
+
+    UserInEvent:
+      allOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          properties:
+            user_role:
+              readOnly: true
+              type: string
+              enum: [owner, admin, participant]
+              description: Роль пользователя в мероприятии
+              example: owner
+            balance:
+              type: number
+              description: Баланс пользователя в мероприятии (сумма долгов)
+              example: 200
+
+    UsersInEvent:
+      type: array
+      items:
+        $ref: "#/components/schemas/UserInEvent"
+
+    Event:
+      type: object
+      properties:
+        event_id:
+          readOnly: true
+          type: string
+          description: Идентификатор мероприятия
+          example: 123e4567-e89b-12d3-a456-426614174000
+        user_role:
+          readOnly: true
+          type: string
+          enum: [owner, admin, participant]
+          description: Роль пользователя в мероприятии
+          example: owner
+        title:
+          type: string
+          description: Название мероприятия
+          example: "Встреча с друзьями"
+        location:
+          type: string
+          description: Место мероприятия
+          example: Политехническая улица, 29 лит П
+        start_datetime:
+          type: string
+          description: Дата и время начала мероприятия
+          example: "2025-01-01T10:00:00Z"
+        end_datetime:
+          type: string
+          description: Дата и время окончания мероприятия
+          example: "2025-01-01T12:00:00Z"
+        description:
+          type: string
+          description: Описание мероприятия
+          example: "Встреча с друзьями в кафе"
+        budget:
+          readOnly: true
+          type: number
+          description: Бюджет мероприятия
+          example: 10000
+
+    Events:
+      type: array
+      items:
+        $ref: "#/components/schemas/Event"

@@ -9,7 +9,10 @@ import javax.crypto.SecretKey;
 import java.security.Key;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
