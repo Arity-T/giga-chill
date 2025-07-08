@@ -4,6 +4,7 @@ import com.github.giga_chill.gigachill.data.access.object.EventDAO;
 import com.github.giga_chill.gigachill.data.transfer.object.EventDTO;
 import com.github.giga_chill.gigachill.model.Event;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -11,9 +12,10 @@ import java.util.*;
 
 
 @Service
+@RequiredArgsConstructor
 public class EventService {
 
-    private EventDAO eventDAO;
+    private final EventDAO eventDAO;
 
     //TEMPORARY:
 //    private final Map<String, Event> EVENTS = new HashMap<>();
