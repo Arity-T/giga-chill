@@ -16,7 +16,7 @@ public class ShoppingListsService {
     private Map<String, Map<String, ShoppingList>> SHOPPING_LISTS = new HashMap<>();
 
     public List<ShoppingList> getAllShoppingLists(String eventId){
-        //TODO: связь с бд
+        //TODO: связь с бд (Заменить eventId на taskId)
 
         //TEMPORARY:
         if (!SHOPPING_LISTS.containsKey(eventId)){
@@ -38,6 +38,26 @@ public class ShoppingListsService {
         return shoppingList;
     }
 
+    public void deleteShoppingList(String eventId, String shoppingListId){
+        //TODO: связь с бд (убрать eventId)
 
 
+        //TEMPORARY:
+        SHOPPING_LISTS.get(eventId).remove(shoppingListId);
+    }
+
+    public boolean isExisted(String eventId, String shoppingListId){
+        //TODO: связь с бд (убрать eventId)
+
+        //TEMPORARY:
+        return SHOPPING_LISTS.get(eventId).containsKey(shoppingListId);
+    }
+
+    public boolean isConsumer(String eventId, String shoppingListId, String consumerId){
+        //TODO: связь с бд (убрать eventId)
+
+        //TEMPORARY:
+        return SHOPPING_LISTS.get(eventId).get(shoppingListId).getConsumers().stream()
+                .anyMatch(item -> item.getId().equals(consumerId));
+    }
 }
