@@ -52,12 +52,11 @@ public class ShoppingListsController {
 
     @PostMapping
     // ACCESS: owner, admin, participant
-    public ResponseEntity<ShoppingListInfo> postShoppingList(Authentication authentication,
+    public ResponseEntity<Void> postShoppingList(Authentication authentication,
                                                              @PathVariable String eventId,
                                                              @RequestBody Map<String, Object> body){
 
         //TODO: привязка к task id
-        //TODO: Возвращать список списков
         User user = userService.userAuthentication(authentication);
         String title = (String) body.get("title");
         String description = (String) body.get("description");
@@ -71,9 +70,8 @@ public class ShoppingListsController {
             throw new ForbiddenException("User with id " + user.id +
                     " is not a participant of event with id " + eventId);
         }
-
-        return ResponseEntity.ok(toShoppingListInfo(
-                shoppingListsService.createShoppingList(eventId, title, description)));
+        shoppingListsService.createShoppingList(eventId, title, description);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{shoppingListId}")
@@ -107,7 +105,7 @@ public class ShoppingListsController {
 
     @PostMapping("/{shoppingListId}/shopping-items")
     // ACCESS: owner, admin, participant(если потребитель)
-    public ResponseEntity<ShoppingItemInfo> postShoppingItem(Authentication authentication,
+    public ResponseEntity<Void> postShoppingItem(Authentication authentication,
                                                               @PathVariable String eventId,
                                                               @PathVariable String shoppingListId,
                                                               @RequestBody Map<String, Object> body){
@@ -135,9 +133,8 @@ public class ShoppingListsController {
                     " is not a consumer of shopping list with id " + shoppingListId);
         }
 
-
-        return ResponseEntity.ok(toShoppingItemInfo(shoppingListsService.addShoppingItem(eventId, shoppingListId,
-                title, quantity, unit)));
+        shoppingListsService.addShoppingItem(eventId, shoppingListId, title, quantity, unit);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{shoppingListId}/shopping-items/{shoppingItemId}")
@@ -172,7 +169,7 @@ public class ShoppingListsController {
 
     @PatchMapping("/{shoppingListId}/shopping-items/{shoppingItemId}/purchased-state")
     // ACCESS: owner, admin, participant(если потребитель)
-    public ResponseEntity<ShoppingItemInfo> patchShoppingItem(Authentication authentication,
+    public ResponseEntity<Void> patchShoppingItem(Authentication authentication,
                                                               @PathVariable String eventId,
                                                               @PathVariable String shoppingListId,
                                                               @PathVariable String shoppingItemId,
@@ -201,13 +198,12 @@ public class ShoppingListsController {
             throw new ForbiddenException("User with id " + user.id +
                     " is not a consumer of shopping list with id " + shoppingListId);
         }
-
-        return ResponseEntity.ok(toShoppingItemInfo(shoppingListsService.updateShoppingItemStatus(eventId,
-                shoppingListId, shoppingItemId, isPurchased)));
+        shoppingListsService.updateShoppingItemStatus(eventId, shoppingListId, shoppingItemId, isPurchased);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{shoppingListId}/consumers")
-    public ResponseEntity<ConsumerInfo> putConsumers(Authentication authentication,
+    public ResponseEntity<Void> putConsumers(Authentication authentication,
                                                      @PathVariable String eventId,
                                                      @PathVariable String shoppingListId,
                                                      @RequestBody Map<String, Object> body){

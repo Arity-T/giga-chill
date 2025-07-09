@@ -17,7 +17,7 @@ public class ShoppingListsService {
     private Map<String, Map<String, ShoppingList>> SHOPPING_LISTS = new HashMap<>();
 
     public List<ShoppingList> getAllShoppingLists(String eventId){
-        //TODO: связь с бд
+        //TODO: связь с бд (убрать eventId)
 
         //TEMPORARY:
         if (!SHOPPING_LISTS.containsKey(eventId)){
@@ -26,9 +26,15 @@ public class ShoppingListsService {
         return SHOPPING_LISTS.get(eventId).values().stream().toList();
     }
 
+    public ShoppingList getShoppingListById(String eventId, String shoppingListId){
+        //TODO: связь с бд (убрать eventId)
 
-    public ShoppingList createShoppingList(String eventId, String title, String description){
-        //TODO: связь с бд
+        //TEMPORARY:
+        return SHOPPING_LISTS.get(eventId).get(shoppingListId);
+    }
+
+    public void createShoppingList(String eventId, String title, String description){
+        //TODO: связь с бд (убрать eventId)
         ShoppingList shoppingList = new ShoppingList(UUID.randomUUID().toString(), "not yet", title, description,
                 env.getProperty("shopping_list_status.unassigned").toString(), new ArrayList<>(), new ArrayList<>());
 
@@ -36,7 +42,6 @@ public class ShoppingListsService {
         SHOPPING_LISTS.computeIfAbsent(eventId, k -> new HashMap<>())
                 .put(shoppingList.getShoppingListId(), shoppingList);
 
-        return shoppingList;
     }
 
     public void deleteShoppingList(String eventId, String shoppingListId){
@@ -48,7 +53,7 @@ public class ShoppingListsService {
     }
 
 
-    public ShoppingItem addShoppingItem(String eventId, String shoppingListId,
+    public void addShoppingItem(String eventId, String shoppingListId,
                                         String title, Integer quantity, String unit){
         //TODO: связь с бд (убрать eventId)
         ShoppingItem shoppingItem = new ShoppingItem(UUID.randomUUID().toString(), title,
@@ -57,7 +62,6 @@ public class ShoppingListsService {
 
         //TEMPORARY:
         SHOPPING_LISTS.get(eventId).get(shoppingListId).getShoppingItems().add(shoppingItem);
-        return shoppingItem;
     }
 
 
@@ -70,14 +74,13 @@ public class ShoppingListsService {
                 .removeIf(item -> item.getShoppingItemId().equals(shoppingItemId));
     }
 
-    public ShoppingItem updateShoppingItemStatus(String eventId, String shoppingListId, String shoppingItemId,
+    public void updateShoppingItemStatus(String eventId, String shoppingListId, String shoppingItemId,
                                                  boolean status){
         //TODO: связь с бд (убрать eventId и shoppingListId)
         ShoppingItem shoppingItem = getShoppingItemById(eventId, shoppingListId, shoppingItemId);
 
         //TEMPORARY:
         shoppingItem.setIsPurchased(status);
-        return shoppingItem;
     }
 
     public ShoppingItem getShoppingItemById(String eventId, String shoppingListId,
