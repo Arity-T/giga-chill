@@ -9,6 +9,7 @@ import com.github.giga_chill.jooq.generated.enums.EventRole;
 import java.util.UUID;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -90,9 +91,30 @@ public class ParticipantDAOImpl implements ParticipantDAO {
     return null;
   }
 
-  //TEMPORARY: заглушка на время
   @Override
   public ParticipantDTO getParticipantById(String eventId, String participantId) {
-    return null;
+    // Получаем Optional<UserInEventRecord>
+    Optional<UserInEventRecord> userInEventOpt = userInEventRepository.findById(
+        UUID.fromString(eventId), UUID.fromString(participantId)
+    );
+    if (userInEventOpt.isEmpty()) {
+        return null;
+    }
+    UserInEventRecord userInEvent = userInEventOpt.get();
+
+    Optional<UsersRecord> userRecordOpt = userRepository.findById(UUID.fromString(participantId));
+    if (userRecordOpt.isEmpty()) {
+        return null;
+    }
+    UsersRecord userRecord = userRecordOpt.get();
+
+    EventRole userRole = userInEvent.getRole();
+
+    return new ParticipantDTO(
+        userRecord.getUserId().toString(),
+        userRecord.getLogin(),
+        userRecord.getName(),
+        userRole != null ? userRole.getLiteral() : null
+    );
   }
 }
