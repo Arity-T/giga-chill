@@ -5,6 +5,7 @@ import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,5 +34,18 @@ public class UserRepository {
         return dsl.selectFrom(Users.USERS)
                 .where(Users.USERS.USER_ID.eq(id))
                 .fetchOptional();
+    }
+
+    /**
+     * Возвращает количество пользователей с переданными id
+     */
+    public int countByIds(List<UUID> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return 0;
+        }
+        return dsl.selectCount()
+                .from(Users.USERS)
+                .where(Users.USERS.USER_ID.in(ids))
+                .fetchOne(0, int.class);
     }
 }

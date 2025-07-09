@@ -49,7 +49,7 @@ public class ShoppingListsController {
                     " is not a participant of event with id " + eventId);
         }
 
-        return ResponseEntity.ok(shoppingListsService.getAllShoppingLists(eventId).stream()
+        return ResponseEntity.ok(shoppingListsService.getAllShoppingListsFromEvent(eventId).stream()
                 .map(this::toShoppingListInfo).toList());
     }
 
@@ -261,14 +261,48 @@ public class ShoppingListsController {
         return ResponseEntity.noContent().build();
     }
 
-//    @PutMapping("/{shoppingListId}/consumers")
-//    public ResponseEntity<Void> putConsumers(Authentication authentication,
-//                                                     @PathVariable String eventId,
-//                                                     @PathVariable String shoppingListId,
-//                                                     @RequestBody Map<String, Object> body){
-//
-//      //TODO: Добавить проверку статуса
-//    }
+    @PutMapping("/{shoppingListId}/consumers")
+    // ACCESS: owner, admin, participant(если потребитель)
+    public ResponseEntity<Void> putConsumers(Authentication authentication,
+                                                     @PathVariable String eventId,
+                                                     @PathVariable String shoppingListId,
+                                                     @RequestBody List<Map<String, String>> body){
+
+        User user = userService.userAuthentication(authentication);
+        if (body == null || body.isEmpty()) {
+            throw new BadRequestException("Invalid request body: " + body);
+        }
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+            throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a participant of event with id " + eventId);
+        }
+        if (participantsService.isParticipantRole(eventId, user.id)
+                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a consumer of shopping list with id " + shoppingListId);
+        }
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
+        if(!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
+                !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))){
+            throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
+                    " have unassigned or assigned status");
+        }
+        List<String> allUserId = body.stream()
+                .flatMap(map -> map.values().stream())
+                .toList();
+        if(!userService.allUsersExistByIds(allUserId)){
+            throw new NotFoundException("The list contains a user that is not in the database");
+        }
+
+        shoppingListsService.updateShoppingListConsumers(eventId, shoppingListId, allUserId);
+        return ResponseEntity.noContent().build();
+    }
 
 
 

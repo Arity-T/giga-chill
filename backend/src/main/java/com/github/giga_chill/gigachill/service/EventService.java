@@ -18,7 +18,7 @@ public class EventService {
     private final EventDAO eventDAO;
 
 
-    public boolean isExisted(String eventId){
+    public boolean isExisted(String eventId) {
         return eventDAO.isExisted(eventId);
     }
 
@@ -32,30 +32,27 @@ public class EventService {
 
     }
 
-    public Event updateEvent(String eventId, RequestEventInfo requestEventInfo) {
+    public void updateEvent(String eventId, RequestEventInfo requestEventInfo) {
         EventDTO event = new EventDTO(eventId, requestEventInfo.title(),
                 requestEventInfo.location(), requestEventInfo.start_datetime(), requestEventInfo.end_datetime(),
                 requestEventInfo.description(), BigDecimal.valueOf(0));
         eventDAO.updateEvent(eventId, event);
-        return getEventById(eventId);
-
     }
 
 
-    public Event createEvent(String userId, RequestEventInfo requestEventInfo) {
+    public void createEvent(String userId, RequestEventInfo requestEventInfo) {
         Event event = new Event(UUID.randomUUID().toString(), requestEventInfo.title(),
                 requestEventInfo.location(), requestEventInfo.start_datetime(), requestEventInfo.end_datetime(),
                 requestEventInfo.description(), BigDecimal.valueOf(0));
 
         eventDAO.createEvent(userId, toDto(event));
-        return event;
     }
 
     public void deleteEvent(String eventId) {
         eventDAO.deleteEvent(eventId);
     }
 
-    private Event toEntity(EventDTO eventDTO){
+    private Event toEntity(EventDTO eventDTO) {
         return new Event(eventDTO.event_id(),
                 eventDTO.title(),
                 eventDTO.location(),
@@ -65,7 +62,7 @@ public class EventService {
                 eventDTO.budget());
     }
 
-    private EventDTO toDto(Event event){
+    private EventDTO toDto(Event event) {
         return new EventDTO(event.getEventId(),
                 event.getTitle(),
                 event.getLocation(),

@@ -16,7 +16,7 @@ public class ShoppingListsService {
     //TEMPORARY:
     private Map<String, Map<String, ShoppingList>> SHOPPING_LISTS = new HashMap<>();
 
-    public List<ShoppingList> getAllShoppingLists(String eventId){
+    public List<ShoppingList> getAllShoppingListsFromEvent(String eventId){
         //TODO: связь с бд (убрать eventId)
 
         //TEMPORARY:
@@ -103,6 +103,14 @@ public class ShoppingListsService {
                 .filter(item-> item.getShoppingItemId().equals(shoppingItemId)).findFirst().orElse(null);
     }
 
+    public void updateShoppingListConsumers(String eventId, String shoppingListId, List<String> allUserId){
+        //TODO: связь с бд (убрать eventId)
+
+
+        //TEMPORARY:
+        SHOPPING_LISTS.get(eventId).get(shoppingListId).getConsumers().clear();
+    }
+
     public String getShoppingListStatus(String eventId, String shoppingListId){
         //TODO: связь с бд (убрать eventId)
 
@@ -127,7 +135,6 @@ public class ShoppingListsService {
 
     public boolean isShoppingItemExisted(String shoppingListId, String shoppingItemId) {
         //TODO: связь с бд (убрать shoppingListId)
-        // Вопрос: Нужна ли проверка связи shoppingListId и shoppingItemId, или же для каждого свой продукт?
 
         //TEMPORARY:
         return true;
