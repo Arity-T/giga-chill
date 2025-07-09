@@ -58,7 +58,7 @@ public class EventServiceLoggerAspect {
                                  String userId, RequestEventInfo requestEventInfo) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(POST_COLOR + "User with id: {} created event with id: {}" + RESET_COLOR, userId, ((Event) result).getEventId());
+            LOGGER.info(POST_COLOR + "User with id: {} created event with id: {}" + RESET_COLOR, userId, ((String) result));
             return result;
         } catch (Throwable ex) {
             throw ex;

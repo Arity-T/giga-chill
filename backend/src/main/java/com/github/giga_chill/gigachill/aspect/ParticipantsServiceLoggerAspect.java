@@ -79,7 +79,8 @@ public class ParticipantsServiceLoggerAspect {
                                        String eventId, String participantId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(DELETE_COLOR + "User with id: {} was deleted from event with id: {}" + RESET_COLOR, participantId, eventId);
+            LOGGER.info(DELETE_COLOR + "User with id: {} was deleted from event with id: {}" + RESET_COLOR,
+                    participantId, eventId);
             return result;
         } catch (Throwable ex) {
             throw ex;

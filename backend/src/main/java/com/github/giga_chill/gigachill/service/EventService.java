@@ -40,12 +40,13 @@ public class EventService {
     }
 
 
-    public void createEvent(String userId, RequestEventInfo requestEventInfo) {
+    public String createEvent(String userId, RequestEventInfo requestEventInfo) {
         Event event = new Event(UUID.randomUUID().toString(), requestEventInfo.title(),
                 requestEventInfo.location(), requestEventInfo.start_datetime(), requestEventInfo.end_datetime(),
                 requestEventInfo.description(), BigDecimal.valueOf(0));
 
         eventDAO.createEvent(userId, toDto(event));
+        return event.getEventId();
     }
 
     public void deleteEvent(String eventId) {
