@@ -26,7 +26,7 @@ public class ParticipantsService {
 
     public Participant addParticipantToEvent(String eventId, User user) {
         Participant participant = new Participant(user.id, user.login, user.name,
-                env.getProperty("roles.participant").toString(), 0);
+                env.getProperty("roles.participant").toString(), BigDecimal.valueOf(0));
 
         participantDAO.addParticipantToEvent(eventId, toDto(participant));
         return participant;
@@ -57,8 +57,11 @@ public class ParticipantsService {
         return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.admin").toString());
     }
 
+    public boolean isParticipantRole(String eventId, String participantId) {
+        return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.participant").toString());
+    }
 
-    private Participant toEntity(ParticipantDTO participantDTO){
+    private Participant toEntity(ParticipantDTO participantDTO) {
         return new Participant(participantDTO.id(),
                 participantDTO.login(),
                 participantDTO.name(),
@@ -66,16 +69,12 @@ public class ParticipantsService {
                 participantDTO.balance());
     }
 
-    private ParticipantDTO toDto(Participant participant){
+    private ParticipantDTO toDto(Participant participant) {
         return new ParticipantDTO(participant.getId(),
                 participant.getLogin(),
                 participant.getName(),
                 participant.getRole(),
                 participant.getBalance());
-    }
-
-    public boolean isParticipantRole(String eventId, String participantId) {
-        return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.participant").toString());
     }
 
 }
