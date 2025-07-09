@@ -24,6 +24,10 @@ public class ParticipantsService {
                 .toList();
     }
 
+    public Participant getParticipantById(String eventId, String participantId){
+        return toEntity(participantDAO.getParticipantById(eventId, participantId));
+    }
+
     public void addParticipantToEvent(String eventId, User user) {
         Participant participant = new Participant(user.id, user.login, user.name,
                 env.getProperty("roles.participant").toString(), BigDecimal.valueOf(0));
