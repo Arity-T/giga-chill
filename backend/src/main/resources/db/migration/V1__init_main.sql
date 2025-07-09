@@ -33,7 +33,6 @@ CREATE TABLE IF NOT EXISTS user_in_event (
   event_id UUID NOT NULL REFERENCES events(event_id),
   role event_role NOT NULL DEFAULT 'participant',
   balance NUMERIC(12, 2) DEFAULT NULL,
-  is_active BOOLEAN DEFAULT TRUE,
   PRIMARY KEY (user_id, event_id)
 );
 
