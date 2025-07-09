@@ -296,7 +296,7 @@ public class ShoppingListsController {
         List<String> allUserId = body.stream()
                 .flatMap(map -> map.values().stream())
                 .toList();
-        if(userService.allUsersExistByIds(allUserId)){
+        if(!userService.allUsersExistByIds(allUserId)){
             throw new NotFoundException("The list contains a user that is not in the database");
         }
 
