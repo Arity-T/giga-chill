@@ -26,6 +26,7 @@ paths:
       description: Возвращает JWT токен при успешной аутентификации.
       tags: [Auth]
       operationId: loginUser
+      security: []
       requestBody:
         required: true
         content:
@@ -47,6 +48,7 @@ paths:
       summary: Регистрация нового пользователя
       tags: [Auth]
       operationId: registerUser
+      security: []
       requestBody:
         required: true
         content:
@@ -498,7 +500,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ShoppingListsWithItems"
+              $ref: "#/components/schemas/ShoppingListWithItems"
       responses:
         "204":
           description: No Content
@@ -727,7 +729,6 @@ paths:
       parameters:
         - $ref: "#/components/parameters/eventId"
         - $ref: "#/components/parameters/shoppingListId"
-        - $ref: "#/components/parameters/shoppingItemId"
       requestBody:
         required: true
         content:
@@ -929,10 +930,12 @@ components:
           example: Политехническая улица, 29 лит П
         start_datetime:
           type: string
+          format: date-time
           description: Дата и время начала мероприятия
           example: "2025-01-01T10:00:00Z"
         end_datetime:
           type: string
+          format: date-time
           description: Дата и время окончания мероприятия
           example: "2025-01-01T12:00:00Z"
         description:
