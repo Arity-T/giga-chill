@@ -9,9 +9,7 @@ export interface User {
   name: string;
 }
 
-export interface UserId {
-  id: string;
-}
+export type UserId = string;
 
 export interface RegisterRequest {
   name: string;

@@ -868,7 +868,9 @@ components:
     UserIdList:
       type: array
       items:
-        $ref: "#/components/schemas/UserId"
+        type: string
+        format: uuid
+        description: Идентификатор пользователя
 
     User:
       allOf:
