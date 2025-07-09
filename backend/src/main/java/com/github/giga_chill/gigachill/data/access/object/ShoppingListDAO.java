@@ -2,6 +2,7 @@ package com.github.giga_chill.gigachill.data.access.object;
 
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingItemDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingListDTO;
+import com.github.giga_chill.gigachill.model.ShoppingItem;
 import jakarta.annotation.Nullable;
 
 import java.util.List;
@@ -127,5 +128,13 @@ public interface ShoppingListDAO {
      * @return {@code true} if the shopping item exists; {@code false} otherwise
      */
     boolean isShoppingItemExisted(String shoppingItemId);
+
+    /**
+     * Updates the details of an existing shopping item.
+     *
+     * @param shoppingItemId   the unique identifier of the shopping item to update
+     * @param shoppingItemDTO  the {@link ShoppingItemDTO} containing the new field values for the item
+     */
+    void updateShoppingItem(String shoppingItemId, ShoppingItemDTO shoppingItemDTO);
 
 }
