@@ -13,6 +13,7 @@ public class LoggerColorConfig {
     private final String GET_COLOR = "\u001b[36m";
     private final String DELETE_COLOR = "\u001b[31m";
     private final String PATCH_COLOR = "\u001b[35m";
+    private final String PUT_COLOR = "\u001B[91m";
     private final String RESET_COLOR = "\u001B[0m";
     private final String EXCEPTION_COLOR = "\u001b[33m";
     private final String REPO_COLOR = "\u001b[94m";  // Светло-синий
