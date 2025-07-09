@@ -63,4 +63,13 @@ public interface ParticipantDAO {
      */
     String getParticipantRoleInEvent(String eventId, String participantId);
 
+
+    /**
+     * Retrieves participant by id for a given event.
+     *
+     * @param eventId the unique identifier of the event
+     * @return {@link ParticipantDTO} object for the specified event;
+     */
+    ParticipantDTO getParticipantById(String eventId, String participantId);
+
 }

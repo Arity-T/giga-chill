@@ -50,7 +50,6 @@ public class EventsController {
 
         User user = userService.userAuthentication(authentication);
         Event event = eventService.createEvent(user.id, requestEventInfo);
-        participantsService.createEvent(event.getEventId(), user);
         return ResponseEntity.created(URI.create("/events/" + event.getEventId()))
                 .body(toResponseEventInfo(event,
                         participantsService.getParticipantRoleInEvent(event.getEventId(), user.id)));
@@ -108,7 +107,7 @@ public class EventsController {
             throw new ForbiddenException("User with id " + user.id +
                     " does not have permission to delete event with id " + eventId);
         }
-        eventService.deleteEvent(eventId, user.id);
+        eventService.deleteEvent(eventId);
 
         return ResponseEntity.noContent().build();
     }

@@ -22,9 +22,10 @@ CREATE TABLE IF NOT EXISTS events (
   title VARCHAR(50) NOT NULL,
   location VARCHAR(50) NOT NULL,
   description VARCHAR(500) DEFAULT NULL,
-  start_datetime TIMESTAMP DEFAULT NULL,
-  end_datetime TIMESTAMP DEFAULT NULL,
-  budget NUMERIC(12, 2) DEFAULT NULL
+  start_datetime TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  end_datetime TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  budget NUMERIC(12, 2) DEFAULT NULL,
+  is_deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS user_in_event (
@@ -32,11 +33,10 @@ CREATE TABLE IF NOT EXISTS user_in_event (
   event_id UUID NOT NULL REFERENCES events(event_id),
   role event_role NOT NULL DEFAULT 'participant',
   balance NUMERIC(12, 2) DEFAULT NULL,
-  is_active BOOLEAN DEFAULT TRUE,
   PRIMARY KEY (user_id, event_id)
 );
 
-CREATE TABLE IF NOT EXISTS task (
+CREATE TABLE IF NOT EXISTS tasks (
   task_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   event_id UUID NOT NULL REFERENCES events(event_id), 
   author_id UUID NOT NULL REFERENCES users(user_id),
@@ -44,47 +44,47 @@ CREATE TABLE IF NOT EXISTS task (
   title VARCHAR(50) NOT NULL,
   description VARCHAR(500) DEFAULT NULL,
   status task_status NOT NULL DEFAULT 'open',
-  deadline_datetime TIMESTAMP NOT NULL
+  deadline_datetime TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS task_approval (
+CREATE TABLE IF NOT EXISTS task_approvals (
   task_approval_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  task_id UUID NOT NULL REFERENCES task(task_id) ON DELETE CASCADE, 
+  task_id UUID NOT NULL REFERENCES tasks(task_id) ON DELETE CASCADE, 
   executor_comment VARCHAR(500) DEFAULT NULL,
   reviewer_comment VARCHAR(500) DEFAULT NULL
 );
 
 -- Отдельно добавляем цикличную связь 1-к-1
-ALTER TABLE task
-ADD COLUMN actual_approval_id UUID DEFAULT NULL REFERENCES task_approval(task_approval_id);
+ALTER TABLE tasks
+ADD COLUMN actual_approval_id UUID DEFAULT NULL REFERENCES task_approvals(task_approval_id);
 
-CREATE TABLE IF NOT EXISTS purchase_list (
-  purchase_list_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  task_id UUID DEFAULT NULL REFERENCES task(task_id),
+CREATE TABLE IF NOT EXISTS shopping_lists (
+  shopping_list_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  task_id UUID DEFAULT NULL REFERENCES tasks(task_id),
   event_id UUID NOT NULL REFERENCES events(event_id),
   title VARCHAR(50) NOT NULL,
   description VARCHAR(500) DEFAULT NULL
 );
 
-CREATE TABLE IF NOT EXISTS purchase (
-  purchase_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  purchase_list_id UUID NOT NULL REFERENCES purchase_list(purchase_list_id),
+CREATE TABLE IF NOT EXISTS shopping_items (
+  shopping_item_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  shopping_list_id UUID NOT NULL REFERENCES shopping_lists(shopping_list_id),
   title VARCHAR(50) NOT NULL,
-  quantity INTEGER NOT NULL,
+  quantity NUMERIC(5, 2) NOT NULL,
   unit VARCHAR(20) NOT NULL,
   is_purchased BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS consumer_in_list (
   user_id UUID NOT NULL REFERENCES users(user_id),
-  purchase_list_id UUID NOT NULL REFERENCES purchase_list(purchase_list_id) ON DELETE CASCADE,
-  PRIMARY KEY (user_id, purchase_list_id)
+  shopping_list_id UUID NOT NULL REFERENCES shopping_lists(shopping_list_id),
+  PRIMARY KEY (user_id, shopping_list_id)
 );
 
-CREATE TABLE IF NOT EXISTS purchase_list_approval (
-  purchase_list_approval_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  task_approval_id UUID NOT NULL REFERENCES task_approval(task_approval_id) ON DELETE CASCADE,
-  purchase_list_id UUID NOT NULL REFERENCES purchase_list(purchase_list_id) ON DELETE CASCADE,
+CREATE TABLE IF NOT EXISTS shopping_list_approvals (
+  shopping_list_approval_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  task_approval_id UUID NOT NULL REFERENCES task_approvals(task_approval_id) ON DELETE CASCADE,
+  shopping_list_id UUID NOT NULL REFERENCES shopping_lists(shopping_list_id) ON DELETE CASCADE,
   budget NUMERIC(12, 2) NOT NULL,
   file_link TEXT NOT NULL
 );

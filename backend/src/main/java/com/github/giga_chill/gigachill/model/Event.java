@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,5 +17,5 @@ public class Event {
     private String startDatetime;
     private String endDatetime;
     private String description;
-    private Integer budget;
+    private BigDecimal budget;
 }
