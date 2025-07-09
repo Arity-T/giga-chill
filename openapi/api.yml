@@ -138,12 +138,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Event"
       responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Event"
+        "204":
+          description: No Content
         "400":
           description: Невалидные данные мероприятия
           content:
@@ -206,12 +202,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Event"
       responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Event"
+        "204":
+          description: No Content
         "400":
           description: Невалидные данные мероприятия
           content:
@@ -312,12 +304,8 @@ paths:
             schema:
               $ref: "#/components/schemas/UserLogin"
       responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserInEvent"
+        "204":
+          description: No Content
         "400":
           description: Невалидные данные (например, недопустимые символы в логине)
           content:
@@ -394,12 +382,8 @@ paths:
             schema:
               $ref: "#/components/schemas/UserRole"
       responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserInEvent"
+        "204":
+          description: No Content
         "400":
           description: Невалидная роль или попытка изменить роль owner
           content:
@@ -474,12 +458,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ShoppingListWithItems"
       responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ShoppingListWithItems"
+        "204":
+          description: No Content
         "400":
           description: Невалидные данные
           content:
@@ -518,14 +498,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ShoppingListWithItems"
+              $ref: "#/components/schemas/ShoppingListsWithItems"
       responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ShoppingListWithItems"
+        "204":
+          description: No Content
         "400":
           description: Невалидные данные
           content:
@@ -595,12 +571,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ShoppingItem"
       responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ShoppingItem"
+        "204":
+          description: No Content
         "400":
           description: Невалидные данные
           content:
@@ -627,6 +599,48 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
 
   /events/{eventId}/shopping-lists/{shoppingListId}/shopping-items/{shoppingItemId}:
+    patch:
+      summary: Изменить элемент списка покупок
+      tags: [Shopping List Items]
+      operationId: updateShoppingItem
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/shoppingListId"
+        - $ref: "#/components/parameters/shoppingItemId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShoppingItem"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для изменения элемента списка покупок
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие, список покупок или элемент списка покупок не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
     delete:
       summary: Удалить элемент из списка покупок
       tags: [Shopping List Items]
@@ -673,12 +687,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ShoppingItemPurchasedState"
       responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ShoppingItem"
+        "204":
+          description: No Content
         "400":
           description: Невалидные данные
           content:
@@ -725,12 +735,8 @@ paths:
             schema:
               $ref: "#/components/schemas/UserIdList"
       responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ShoppingListsWithItems"
+        "204":
+          description: No Content
         "400":
           description: Невалидные данные
           content:
