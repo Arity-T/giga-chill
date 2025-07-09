@@ -11,9 +11,11 @@ import com.github.giga_chill.gigachill.repository.UserInEventRepository;
 import com.github.giga_chill.jooq.generated.tables.records.EventsRecord;
 import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
 import com.github.giga_chill.jooq.generated.enums.EventRole;
+
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Service
 public class EventDAOImpl implements EventDAO {
@@ -65,8 +67,8 @@ public class EventDAOImpl implements EventDAO {
     eventRepository.findById(UUID.fromString(eventId)).ifPresent(eventRecord -> {
       if (event.title() != null) eventRecord.setTitle(event.title());
       if (event.location() != null) eventRecord.setLocation(event.location());
-      if (event.start_datetime() != null) eventRecord.setStartDatetime(LocalDateTime.parse(event.start_datetime()));
-      if (event.end_datetime() != null) eventRecord.setEndDatetime(LocalDateTime.parse(event.end_datetime()));
+      if (event.start_datetime() != null) eventRecord.setStartDatetime(OffsetDateTime.parse(event.start_datetime()));
+      if (event.end_datetime() != null) eventRecord.setEndDatetime(OffsetDateTime.parse(event.end_datetime()));
       if (event.description() != null) eventRecord.setDescription(event.description());
       if (event.budget() != null) eventRecord.setBudget(event.budget());
       // Обновление через dsl
@@ -80,8 +82,8 @@ public class EventDAOImpl implements EventDAO {
     eventRecord.setEventId(UUID.fromString(event.event_id()));
     eventRecord.setTitle(event.title());
     eventRecord.setLocation(event.location());
-    eventRecord.setStartDatetime(event.start_datetime() != null ? LocalDateTime.parse(event.start_datetime()) : null);
-    eventRecord.setEndDatetime(event.end_datetime() != null ? LocalDateTime.parse(event.end_datetime()) : null);
+    eventRecord.setStartDatetime(event.start_datetime() != null ? OffsetDateTime.parse(event.start_datetime()) : null);
+    eventRecord.setEndDatetime(event.end_datetime() != null ? OffsetDateTime.parse(event.end_datetime()) : null);
     eventRecord.setDescription(event.description());
     eventRecord.setBudget(event.budget());
     eventRepository.save(eventRecord);
