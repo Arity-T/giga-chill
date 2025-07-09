@@ -76,6 +76,7 @@ public class ShoppingListsController {
     }
 
     @DeleteMapping("/{shoppingListId}")
+    // ACCESS: owner, admin, participant(если потребитель)
     public ResponseEntity<Void> deleteShoppingList(Authentication authentication,
                                                   @PathVariable String eventId,
                                                   @PathVariable String shoppingListId){
@@ -104,7 +105,8 @@ public class ShoppingListsController {
     }
 
     @PostMapping("/{shoppingListId}/shopping-items")
-    private ResponseEntity<ShoppingItemInfo> postShoppingItem(Authentication authentication,
+    // ACCESS: owner, admin, participant(если потребитель)
+    public ResponseEntity<ShoppingItemInfo> postShoppingItem(Authentication authentication,
                                                               @PathVariable String eventId,
                                                               @PathVariable String shoppingListId,
                                                               @RequestBody Map<String, Object> body){
@@ -137,6 +139,7 @@ public class ShoppingListsController {
     }
 
     @DeleteMapping("/{shoppingListId}/shopping-items/{shoppingItemId}")
+    // ACCESS: owner, admin, participant(если потребитель)
     public ResponseEntity<Void> deleteShoppingItem(Authentication authentication,
                                                    @PathVariable String eventId,
                                                    @PathVariable String shoppingListId,
@@ -166,6 +169,7 @@ public class ShoppingListsController {
     }
 
     @PatchMapping("/{shoppingListId}/shopping-items/{shoppingItemId}/purchased-state")
+    // ACCESS: owner, admin, participant(если потребитель)
     public ResponseEntity<ShoppingItemInfo> patchShoppingItem(Authentication authentication,
                                                               @PathVariable String eventId,
                                                               @PathVariable String shoppingListId,
