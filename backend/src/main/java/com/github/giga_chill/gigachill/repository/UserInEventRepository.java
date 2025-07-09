@@ -24,8 +24,10 @@ public class UserInEventRepository {
 
   public List<UserInEventRecord> findById(UUID eventId, UUID userId) {
     return dsl.selectFrom(UserInEvent.USER_IN_EVENT)
-    .where(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId))
-    .and(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId))
+    .where(
+        UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId)
+        .and(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId))
+    )
     .fetch();
   }
 
