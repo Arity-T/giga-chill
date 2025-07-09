@@ -1,8 +1,10 @@
 package com.github.giga_chill.gigachill.aspect;
 
 
+import com.github.giga_chill.gigachill.config.LoggerColorConfig;
 import com.github.giga_chill.gigachill.model.Event;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
+import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Pointcut;
@@ -14,13 +16,10 @@ import org.aspectj.lang.annotation.Aspect;
 
 @Component
 @Aspect
+@RequiredArgsConstructor
 public class EventServiceLoggerAspect {
     private static final Logger LOGGER = LoggerFactory.getLogger(EventServiceLoggerAspect.class);
-    private static final String POST_COLOR = "\u001b[32m";
-    private static final String GET_COLOR = "\u001b[36m";
-    private static final String DELETE_COLOR = "\u001b[31m";
-    private static final String PATCH_COLOR = "\u001b[35m";
-    private static final String RESET_COLOR = "\u001B[0m";
+    private final LoggerColorConfig loggerColorConfig;
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.EventService.createEvent(..)) " +
             "&& args(userId, requestEventInfo)")
@@ -58,7 +57,8 @@ public class EventServiceLoggerAspect {
                                  String userId, RequestEventInfo requestEventInfo) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(POST_COLOR + "User with id: {} created event with id: {}" + RESET_COLOR, userId, ((String) result));
+            LOGGER.info(loggerColorConfig.getPOST_COLOR() + "User with id: {} created event with id: {}"
+                    + loggerColorConfig.getRESET_COLOR(), userId, ((String) result));
             return result;
         } catch (Throwable ex) {
             throw ex;
@@ -71,7 +71,8 @@ public class EventServiceLoggerAspect {
 
         try {
             Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(GET_COLOR + "User with id: {} got all his events" + RESET_COLOR, userId);
+            LOGGER.info(loggerColorConfig.getGET_COLOR() + "User with id: {} got all his events"
+                    + loggerColorConfig.getRESET_COLOR(), userId);
             return result;
         } catch (Throwable ex) {
             throw ex;
@@ -83,7 +84,8 @@ public class EventServiceLoggerAspect {
                                   String eventId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(GET_COLOR + "Information about the event with id: {} received" + RESET_COLOR, eventId);
+            LOGGER.info(loggerColorConfig.getGET_COLOR() + "Information about the event with id: {} received"
+                    + loggerColorConfig.getRESET_COLOR(), eventId);
             return result;
         } catch (Throwable ex) {
             throw ex;
@@ -95,7 +97,8 @@ public class EventServiceLoggerAspect {
                                  String eventId, String userId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(DELETE_COLOR + "Event with id: {} has been deleted" + RESET_COLOR, eventId);
+            LOGGER.info(loggerColorConfig.getDELETE_COLOR() + "Event with id: {} has been deleted"
+                    + loggerColorConfig.getRESET_COLOR(), eventId);
             return result;
         } catch (Throwable ex) {
             throw ex;
@@ -107,7 +110,8 @@ public class EventServiceLoggerAspect {
                                  String eventId, RequestEventInfo requestEventInfo) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(PATCH_COLOR + "Event with id: {} has been changed" + RESET_COLOR, eventId);
+            LOGGER.info(loggerColorConfig.getPATCH_COLOR() + "Event with id: {} has been changed"
+                    + loggerColorConfig.getRESET_COLOR(), eventId);
             return result;
         } catch (Throwable ex) {
             throw ex;
@@ -119,9 +123,11 @@ public class EventServiceLoggerAspect {
         try {
             Object result = proceedingJoinPoint.proceed();
             if ((Boolean) result) {
-                LOGGER.info(GET_COLOR + "Event with id: {} exists" + RESET_COLOR, eventId);
+                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Event with id: {} exists"
+                        + loggerColorConfig.getRESET_COLOR(), eventId);
             } else {
-                LOGGER.info(GET_COLOR + "Event with id: {} does not exist" + RESET_COLOR, eventId);
+                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Event with id: {} does not exist"
+                        + loggerColorConfig.getRESET_COLOR(), eventId);
             }
             return result;
         } catch (Throwable ex) {
