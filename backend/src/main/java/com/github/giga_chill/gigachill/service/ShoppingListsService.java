@@ -44,6 +44,17 @@ public class ShoppingListsService {
 
     }
 
+    public void updateShoppingList(String eventId, String shoppingListId, String title, String description){
+        //TODO: связь с бд (убрать eventId)
+
+        //TEMPORARY:
+        ShoppingList shoppingList = SHOPPING_LISTS.get(eventId).get(shoppingListId);
+        shoppingList.setTitle(title);
+        shoppingList.setDescription(description);
+
+    }
+
+
     public void deleteShoppingList(String eventId, String shoppingListId){
         //TODO: связь с бд (убрать eventId)
 

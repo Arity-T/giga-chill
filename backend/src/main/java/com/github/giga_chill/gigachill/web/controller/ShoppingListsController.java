@@ -74,6 +74,40 @@ public class ShoppingListsController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{shoppingListId}")
+    // ACCESS: owner, admin, participant(если потребитель)
+    public ResponseEntity<Void> patchShoppingList(Authentication authentication,
+                                                   @PathVariable String eventId,
+                                                   @PathVariable String shoppingListId,
+                                                   @RequestBody Map<String, Object> body){
+
+        //TODO: проверка, что статус Свободен или Открыт
+        User user = userService.userAuthentication(authentication);
+        String title = (String) body.get("title");
+        String description = (String) body.get("description");
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+            throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a participant of event with id " + eventId);
+        }
+        if (participantsService.isParticipantRole(eventId, user.id)
+                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a consumer of shopping list with id " + shoppingListId);
+        }
+
+        shoppingListsService.updateShoppingList(eventId, shoppingListId, title, description);
+
+        return ResponseEntity.noContent().build();
+    }
+
+
+
     @DeleteMapping("/{shoppingListId}")
     // ACCESS: owner, admin, participant(если потребитель)
     public ResponseEntity<Void> deleteShoppingList(Authentication authentication,
@@ -202,14 +236,14 @@ public class ShoppingListsController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{shoppingListId}/consumers")
-    public ResponseEntity<Void> putConsumers(Authentication authentication,
-                                                     @PathVariable String eventId,
-                                                     @PathVariable String shoppingListId,
-                                                     @RequestBody Map<String, Object> body){
-
-
-    }
+//    @PutMapping("/{shoppingListId}/consumers")
+//    public ResponseEntity<Void> putConsumers(Authentication authentication,
+//                                                     @PathVariable String eventId,
+//                                                     @PathVariable String shoppingListId,
+//                                                     @RequestBody Map<String, Object> body){
+//
+//
+//    }
 
 
 
