@@ -132,7 +132,7 @@ public class ParticipantsController {
         if (!participantsService.isParticipant(eventId, participantId)) {
             throw new NotFoundException("Participant with id " + participantId + " not found in event " + eventId);
         }
-        if (participantsService.isOwner(eventId, participantId)) {
+        if (participantsService.isOwnerRole(eventId, participantId)) {
             throw new ConflictException("The role: owner of the user with id: "+ participantId
                     +" cannot be replaced");
         }

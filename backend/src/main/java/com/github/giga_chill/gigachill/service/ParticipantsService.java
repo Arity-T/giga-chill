@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -25,7 +26,7 @@ public class ParticipantsService {
 
     public Participant addParticipantToEvent(String eventId, User user) {
         Participant participant = new Participant(user.id, user.login, user.name,
-                env.getProperty("roles.participant").toString());
+                env.getProperty("roles.participant").toString(), 0);
 
         participantDAO.addParticipantToEvent(eventId, toDto(participant));
         return participant;
@@ -61,14 +62,16 @@ public class ParticipantsService {
         return new Participant(participantDTO.id(),
                 participantDTO.login(),
                 participantDTO.name(),
-                participantDTO.role());
+                participantDTO.role(),
+                participantDTO.balance());
     }
 
     private ParticipantDTO toDto(Participant participant){
         return new ParticipantDTO(participant.getId(),
                 participant.getLogin(),
                 participant.getName(),
-                participant.getRole());
+                participant.getRole(),
+                participant.getBalance());
     }
 
     public boolean isParticipantRole(String eventId, String participantId) {
