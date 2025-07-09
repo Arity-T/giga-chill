@@ -9,6 +9,10 @@ export interface User {
   name: string;
 }
 
+export interface UserId {
+  id: string;
+}
+
 export interface RegisterRequest {
   name: string;
   login: string;
@@ -75,6 +79,11 @@ export interface ShoppingListWithItems {
   consumers: UserInEvent[];
 }
 
+export interface ShoppingListRequest {
+  title: string;
+  description: string;
+}
+
 export enum ShoppingListStatus {
   UNASSIGNED = 'unassigned',
   ASSIGNED = 'assigned',
@@ -82,4 +91,14 @@ export enum ShoppingListStatus {
   BOUGHT = 'bought',
   PARTIALLY_BOUGHT = 'partially_bought',
   CANCELLED = 'cancelled',
+}
+
+export interface ShoppingItemRequest {
+  title: string;
+  quantity: number;
+  unit: string;
+}
+
+export interface ShoppingItemPurchasedStateRequest {
+  is_purchased: boolean;
 }
