@@ -262,12 +262,12 @@ public class ShoppingListsController {
     }
 
     @PutMapping("/{shoppingListId}/consumers")
+    // ACCESS: owner, admin, participant(если потребитель)
     public ResponseEntity<Void> putConsumers(Authentication authentication,
                                                      @PathVariable String eventId,
                                                      @PathVariable String shoppingListId,
                                                      @RequestBody List<Map<String, String>> body){
 
-      //TODO: Добавить проверку статуса
         User user = userService.userAuthentication(authentication);
         if (body == null || body.isEmpty()) {
             throw new BadRequestException("Invalid request body: " + body);
@@ -296,8 +296,7 @@ public class ShoppingListsController {
         List<String> allUserId = body.stream()
                 .flatMap(map -> map.values().stream())
                 .toList();
-        //TODO: сделать проверку иным методом
-        if(!allUserId.stream().allMatch(userService::checkById)){
+        if(userService.allUsersExistByIds(allUserId)){
             throw new NotFoundException("The list contains a user that is not in the database");
         }
 
