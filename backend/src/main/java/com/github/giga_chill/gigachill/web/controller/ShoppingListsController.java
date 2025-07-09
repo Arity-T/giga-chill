@@ -76,7 +76,7 @@ public class ShoppingListsController {
     }
 
     @DeleteMapping("/{shoppingListId}")
-    public ResponseEntity<Void> deleteShoppinList(Authentication authentication,
+    public ResponseEntity<Void> deleteShoppingList(Authentication authentication,
                                                   @PathVariable String eventId,
                                                   @PathVariable String shoppingListId){
 
@@ -101,6 +101,102 @@ public class ShoppingListsController {
         shoppingListsService.deleteShoppingList(eventId, shoppingListId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{shoppingListId}/shopping-items")
+    private ResponseEntity<ShoppingItemInfo> postShoppingItem(Authentication authentication,
+                                                              @PathVariable String eventId,
+                                                              @PathVariable String shoppingListId,
+                                                              @RequestBody Map<String, Object> body){
+        User user = userService.userAuthentication(authentication);
+        String title = (String) body.get("title");
+        Integer quantity = (Integer) body.get("quantity");
+        String unit = (String) body.get("unit");
+        if (title == null || quantity == null || unit == null) {
+            throw new BadRequestException("Invalid request body: " + body);
+        }
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+            throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a participant of event with id " + eventId);
+        }
+        if (participantsService.isParticipantRole(eventId, user.id)
+                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a consumer of shopping list with id " + shoppingListId);
+        }
+
+
+        return ResponseEntity.ok(toShoppingItemInfo(shoppingListsService.addShoppingItem(eventId, shoppingListId,
+                title, quantity, unit)));
+    }
+
+    @DeleteMapping("/{shoppingListId}/shopping-items/{shoppingItemId}")
+    public ResponseEntity<Void> deleteShoppingItem(Authentication authentication,
+                                                   @PathVariable String eventId,
+                                                   @PathVariable String shoppingListId,
+                                                   @PathVariable String shoppingItemId){
+        User user = userService.userAuthentication(authentication);
+        if (!shoppingListsService.isShoppingItemExisted(shoppingListId, shoppingItemId)) {
+            throw new NotFoundException("Shopping item with id " + shoppingItemId + " not found");
+        }
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+            throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a participant of event with id " + eventId);
+        }
+        if (participantsService.isParticipantRole(eventId, user.id)
+                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a consumer of shopping list with id " + shoppingListId);
+        }
+
+        shoppingListsService.deleteShoppingItemFromShoppingList(eventId, shoppingListId, shoppingItemId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{shoppingListId}/shopping-items/{shoppingItemId}/purchased-state")
+    public ResponseEntity<ShoppingItemInfo> patchShoppingItem(Authentication authentication,
+                                                              @PathVariable String eventId,
+                                                              @PathVariable String shoppingListId,
+                                                              @PathVariable String shoppingItemId,
+                                                              @RequestBody Map<String, Object> body){
+        User user = userService.userAuthentication(authentication);
+        Boolean isPurchased = (Boolean) body.get("is_purchased");
+        if (isPurchased == null) {
+            throw new BadRequestException("Invalid request body: " + body);
+        }
+        if (!shoppingListsService.isShoppingItemExisted(shoppingListId, shoppingItemId)) {
+            throw new NotFoundException("Shopping item with id " + shoppingItemId + " not found");
+        }
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+            throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a participant of event with id " + eventId);
+        }
+        if (participantsService.isParticipantRole(eventId, user.id)
+                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a consumer of shopping list with id " + shoppingListId);
+        }
+
+        return ResponseEntity.ok(toShoppingItemInfo(shoppingListsService.updateShoppingItemStatus(eventId,
+                shoppingListId, shoppingItemId, isPurchased)));
     }
 
 

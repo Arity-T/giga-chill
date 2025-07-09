@@ -1,5 +1,6 @@
 package com.github.giga_chill.gigachill.service;
 
+import com.github.giga_chill.gigachill.model.ShoppingItem;
 import com.github.giga_chill.gigachill.model.ShoppingList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -46,6 +47,49 @@ public class ShoppingListsService {
         SHOPPING_LISTS.get(eventId).remove(shoppingListId);
     }
 
+
+    public ShoppingItem addShoppingItem(String eventId, String shoppingListId,
+                                        String title, Integer quantity, String unit){
+        //TODO: связь с бд (убрать eventId)
+        ShoppingItem shoppingItem = new ShoppingItem(UUID.randomUUID().toString(), title,
+                quantity, unit, false);
+
+
+        //TEMPORARY:
+        SHOPPING_LISTS.get(eventId).get(shoppingListId).getShoppingItems().add(shoppingItem);
+        return shoppingItem;
+    }
+
+
+    public void deleteShoppingItemFromShoppingList(String eventId, String shoppingListId, String shoppingItemId){
+        //TODO: связь с бд (убрать eventId)
+
+
+        //TEMPORARY:
+        SHOPPING_LISTS.get(eventId).get(shoppingListId).getShoppingItems()
+                .removeIf(item -> item.getShoppingItemId().equals(shoppingItemId));
+    }
+
+    public ShoppingItem updateShoppingItemStatus(String eventId, String shoppingListId, String shoppingItemId,
+                                                 boolean status){
+        //TODO: связь с бд (убрать eventId и shoppingListId)
+        ShoppingItem shoppingItem = getShoppingItemById(eventId, shoppingListId, shoppingItemId);
+
+        //TEMPORARY:
+        shoppingItem.setIsPurchased(status);
+        return shoppingItem;
+    }
+
+    public ShoppingItem getShoppingItemById(String eventId, String shoppingListId,
+                                                            String shoppingItemId){
+        //TODO: связь с бд (убрать eventId и shoppingListId)
+
+        //TEMPORARY:
+        return SHOPPING_LISTS.get(eventId).get(shoppingListId).getShoppingItems().stream()
+                .filter(item-> item.getShoppingItemId().equals(shoppingItemId)).findFirst().orElse(null);
+    }
+
+
     public boolean isExisted(String eventId, String shoppingListId){
         //TODO: связь с бд (убрать eventId)
 
@@ -59,5 +103,13 @@ public class ShoppingListsService {
         //TEMPORARY:
         return SHOPPING_LISTS.get(eventId).get(shoppingListId).getConsumers().stream()
                 .anyMatch(item -> item.getId().equals(consumerId));
+    }
+
+    public boolean isShoppingItemExisted(String shoppingListId, String shoppingItemId) {
+        //TODO: связь с бд (убрать shoppingListId)
+        // Вопрос: Нужна ли проверка связи shoppingListId и shoppingItemId, или же для каждого свой продукт?
+
+        //TEMPORARY:
+        return true;
     }
 }
