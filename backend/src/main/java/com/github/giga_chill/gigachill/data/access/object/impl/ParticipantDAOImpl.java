@@ -37,7 +37,8 @@ public class ParticipantDAOImpl implements ParticipantDAO {
         record.getUserId().toString(),
         userRecord.getLogin(),
         userRecord.getName(),
-        record.getRole() != null ? record.getRole().getLiteral() : null
+        record.getRole() != null ? record.getRole().getLiteral() : null,
+        record.getBalance()
       ));
     }
     return participants;
@@ -114,7 +115,8 @@ public class ParticipantDAOImpl implements ParticipantDAO {
         userRecord.getUserId().toString(),
         userRecord.getLogin(),
         userRecord.getName(),
-        userRole != null ? userRole.getLiteral() : null
+        userRole != null ? userRole.getLiteral() : null,
+        userInEvent.getBalance()
     );
   }
 }
