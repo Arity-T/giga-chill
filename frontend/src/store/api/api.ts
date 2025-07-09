@@ -55,7 +55,7 @@ export const api = createApi({
       providesTags: [{ type: 'Events', id: 'LIST' }],
     }),
 
-    createEvent: builder.mutation<Event, CreateEventRequest>({
+    createEvent: builder.mutation<void, CreateEventRequest>({
       query: (body) => ({
         url: '/events',
         method: 'POST',
@@ -79,7 +79,7 @@ export const api = createApi({
       // будет отправляться лишний запрос.
     }),
 
-    updateEvent: builder.mutation<Event, { eventId: string; event: UpdateEventRequest }>({
+    updateEvent: builder.mutation<void, { eventId: string; event: UpdateEventRequest }>({
       query: ({ eventId, event }) => ({
         url: `/events/${eventId}`,
         method: 'PATCH',
@@ -108,7 +108,7 @@ export const api = createApi({
       ],
     }),
 
-    updateParticipantRole: builder.mutation<UserInEvent, { eventId: string; participantId: string; role: UserRole }>({
+    updateParticipantRole: builder.mutation<void, { eventId: string; participantId: string; role: UserRole }>({
       query: ({ eventId, participantId, role }) => ({
         url: `/events/${eventId}/participants/${participantId}/role`,
         method: 'PATCH',
@@ -119,7 +119,7 @@ export const api = createApi({
       ],
     }),
 
-    addParticipant: builder.mutation<UserInEvent, { eventId: string; login: string }>({
+    addParticipant: builder.mutation<void, { eventId: string; login: string }>({
       query: ({ eventId, login }) => ({
         url: `/events/${eventId}/participants`,
         method: 'POST',
