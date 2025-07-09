@@ -186,6 +186,45 @@ public class ShoppingListsController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{shoppingListId}/shopping-items/{shoppingItemId}")
+    // ACCESS: owner, admin, participant(если потребитель)
+    public ResponseEntity<Void> patchShoppingItem(Authentication authentication,
+                                                 @PathVariable String eventId,
+                                                 @PathVariable String shoppingListId,
+                                                  @PathVariable String shoppingItemId,
+                                                 @RequestBody Map<String, Object> body){
+        User user = userService.userAuthentication(authentication);
+        String title = (String) body.get("title");
+        Integer quantity = (Integer) body.get("quantity");
+        String unit = (String) body.get("unit");
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+            throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
+        }
+        if (!shoppingListsService.isShoppingItemExisted(shoppingListId, shoppingItemId)) {
+            throw new NotFoundException("Shopping item with id " + shoppingItemId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a participant of event with id " + eventId);
+        }
+        if (participantsService.isParticipantRole(eventId, user.id)
+                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.id)) {
+            throw new ForbiddenException("User with id " + user.id +
+                    " is not a consumer of shopping list with id " + shoppingListId);
+        }
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
+        if(!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
+                !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))){
+            throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
+                    " have unassigned or assigned status");
+        }
+        shoppingListsService.updateShoppingItem(eventId, shoppingListId, shoppingItemId, title, quantity, unit);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{shoppingListId}/shopping-items/{shoppingItemId}")
     // ACCESS: owner, admin, participant(если потребитель)
     public ResponseEntity<Void> deleteShoppingItem(Authentication authentication,
@@ -223,7 +262,7 @@ public class ShoppingListsController {
 
     @PatchMapping("/{shoppingListId}/shopping-items/{shoppingItemId}/purchased-state")
     // ACCESS: owner, admin, participant(если потребитель)
-    public ResponseEntity<Void> patchShoppingItem(Authentication authentication,
+    public ResponseEntity<Void> patchShoppingItemState(Authentication authentication,
                                                               @PathVariable String eventId,
                                                               @PathVariable String shoppingListId,
                                                               @PathVariable String shoppingItemId,

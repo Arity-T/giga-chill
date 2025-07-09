@@ -75,6 +75,19 @@ public class ShoppingListsService {
         SHOPPING_LISTS.get(eventId).get(shoppingListId).getShoppingItems().add(shoppingItem);
     }
 
+    public void updateShoppingItem(String eventId, String shoppingListId, String shoppingItemId,
+                                String title, Integer quantity, String unit){
+        //TODO: связь с бд (убрать eventId и shoppingListId)
+
+        //TEMPORARY:
+        ShoppingItem shoppingItem = SHOPPING_LISTS.get(eventId).get(shoppingListId).getShoppingItems().stream()
+                .filter(item-> item.getShoppingItemId().equals(shoppingItemId))
+                .findFirst().orElse(null);
+        shoppingItem.setTitle(title);
+        shoppingItem.setQuantity(quantity);
+        shoppingItem.setUnit(unit);
+    }
+
 
     public void deleteShoppingItemFromShoppingList(String eventId, String shoppingListId, String shoppingItemId){
         //TODO: связь с бд (убрать eventId)
