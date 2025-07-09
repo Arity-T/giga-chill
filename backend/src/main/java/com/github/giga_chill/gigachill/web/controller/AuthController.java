@@ -44,7 +44,7 @@ public class AuthController {
 
     @PostMapping("/auth/register")
     public ResponseEntity<Void> register(@RequestBody AuthRequest request, HttpServletResponse response) {
-        if (userService.userExists(request.login)) {
+        if (userService.userExistsById(request.login)) {
             throw new ConflictException("Пользователь с таким логином уже существует");
         }
 
