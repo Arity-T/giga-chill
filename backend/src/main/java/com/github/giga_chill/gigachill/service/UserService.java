@@ -13,6 +13,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.github.giga_chill.gigachill.exception.BadRequestException;
+
 @Service
 public class UserService {
 
@@ -79,9 +81,17 @@ public class UserService {
      * Проверяет, что все пользователи из списка userIds существуют в базе.
      * @param userIds список id пользователей
      * @return true, если все пользователи существуют, иначе false
+     * @throws BadRequestException если хотя бы один id отсутствует в базе
      */
     public boolean allUsersExistByIds(List<String> userIds) {
-        List<UUID> uuids = userIds.stream().map(UUID::fromString).toList();
+        List<UUID> uuids = new java.util.ArrayList<>();
+        for (String id : userIds) {
+            try {
+                uuids.add(UUID.fromString(id));
+            } catch (IllegalArgumentException e) {
+                throw new BadRequestException("Некорректный формат id пользователя: " + id);
+            }
+        }
         int count = userRepository.countByIds(uuids);
         return count == userIds.size();
     }
