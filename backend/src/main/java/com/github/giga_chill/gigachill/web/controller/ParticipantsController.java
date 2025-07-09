@@ -4,7 +4,7 @@ import com.github.giga_chill.gigachill.exception.*;
 import com.github.giga_chill.gigachill.model.Participant;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
-import com.github.giga_chill.gigachill.service.InMemoryUserService;
+import com.github.giga_chill.gigachill.service.UserService;
 import com.github.giga_chill.gigachill.service.ParticipantsService;
 import com.github.giga_chill.gigachill.web.info.ParticipantInfo;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import java.util.Map;
 public class ParticipantsController {
 
     private final EventService eventService;
-    private final InMemoryUserService inMemoryUserService;
+    private final UserService userService;
     private final ParticipantsService participantsService;
 
 
@@ -30,7 +30,7 @@ public class ParticipantsController {
     // ACCESS: owner, admin, participant
     public ResponseEntity<List<ParticipantInfo>> getParticipants(Authentication authentication,
                                                                  @PathVariable String eventId) {
-        User user = inMemoryUserService.userAuthentication(authentication);
+        User user = userService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
@@ -50,12 +50,12 @@ public class ParticipantsController {
                                                            @PathVariable String eventId,
                                                            @RequestBody Map<String, Object> body) {
 
-        User user = inMemoryUserService.userAuthentication(authentication);
+        User user = userService.userAuthentication(authentication);
         String participantLogin = (String) body.get("login");
         if (participantLogin == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
-        User userToAdd = inMemoryUserService.getByLogin(participantLogin);
+        User userToAdd = userService.getByLogin(participantLogin);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
@@ -63,7 +63,7 @@ public class ParticipantsController {
             throw new ForbiddenException("User with id " + user.id +
                     " is not a participant of event with id " + eventId);
         }
-        if (!participantsService.isOwner(eventId, user.id) && !participantsService.isAdmin(eventId, user.id) ) {
+        if (!participantsService.isOwnerRole(eventId, user.id) && !participantsService.isAdminRole(eventId, user.id) ) {
             throw new ForbiddenException("User with id " + user.id +
                     " does not have permission to add participants to event with id " + eventId);
         }
@@ -85,7 +85,7 @@ public class ParticipantsController {
     public ResponseEntity<Void> deleteParticipant(Authentication authentication,
                                                   @PathVariable String eventId,
                                                   @PathVariable String participantId) {
-        User user = inMemoryUserService.userAuthentication(authentication);
+        User user = userService.userAuthentication(authentication);
         if (user.id.equals(participantId)) {
             throw new BadRequestException("User with id " + participantId + " cannot delete themselves");
         }
@@ -96,7 +96,7 @@ public class ParticipantsController {
             throw new ForbiddenException("User with id " + user.id +
                     " is not a participant of event with id " + eventId);
         }
-        if (!participantsService.isOwner(eventId, user.id) && !participantsService.isAdmin(eventId, user.id)) {
+        if (!participantsService.isOwnerRole(eventId, user.id) && !participantsService.isAdminRole(eventId, user.id)) {
             throw new ForbiddenException("User with id " + user.id +
                     " does not have permission to remove participants from event with id " + eventId);
         }
@@ -113,7 +113,7 @@ public class ParticipantsController {
                                                             @PathVariable String eventId,
                                                             @PathVariable String participantId,
                                                             @RequestBody Map<String, Object> body) {
-        User user = inMemoryUserService.userAuthentication(authentication);
+        User user = userService.userAuthentication(authentication);
         String newRole = (String) body.get("role");
         if (newRole == null) {
             throw new BadRequestException("Invalid request body: " + body);
@@ -125,7 +125,7 @@ public class ParticipantsController {
             throw new ForbiddenException("User with id " + user.id +
                     " is not a participant of event with id " + eventId);
         }
-        if (!participantsService.isOwner(eventId, user.id)) {
+        if (!participantsService.isOwnerRole(eventId, user.id)) {
             throw new ForbiddenException("User with id " + user.id +
                     " does not have permission to change participant roles in event with id " + eventId);
         }

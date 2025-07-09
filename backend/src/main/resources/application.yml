@@ -19,3 +19,6 @@ roles:
   owner: owner
   admin: admin
   participant: participant
+
+shopping_list_status:
+  unassigned: unassigned

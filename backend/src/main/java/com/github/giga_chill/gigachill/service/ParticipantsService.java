@@ -35,7 +35,7 @@ public class ParticipantsService {
 
         //TEMPORARY:
         Participant participant = new Participant(user.id, user.login, user.name,
-                env.getProperty("roles.participant").toString());
+                env.getProperty("roles.participant").toString(), 0);
         EVENT_PARTICIPANTS.get(eventId).add(participant);
         return participant;
     }
@@ -45,7 +45,8 @@ public class ParticipantsService {
         //TODO: связь с бд
 
         //TEMPORARY:
-        Participant participant = new Participant(user.id, user.login, user.name, env.getProperty("roles.owner").toString());
+        Participant participant = new Participant(user.id, user.login, user.name,
+                env.getProperty("roles.owner").toString(), 0);
         EVENT_PARTICIPANTS.put(eventId, new ArrayList<>());
         EVENT_PARTICIPANTS.get(eventId).add(participant);
     }
@@ -94,12 +95,16 @@ public class ParticipantsService {
                 .orElse(null).getRole();
     }
 
-    public boolean isOwner(String eventId, String participantId) {
+    public boolean isOwnerRole(String eventId, String participantId) {
         return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.owner").toString());
     }
 
-    public boolean isAdmin(String eventId, String participantId) {
+    public boolean isAdminRole(String eventId, String participantId) {
         return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.admin").toString());
+    }
+
+    public boolean isParticipantRole(String eventId, String participantId) {
+        return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.participant").toString());
     }
 
 }

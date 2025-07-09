@@ -8,10 +8,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Participant {
-    private String id;
-    private String login;
-    private String name;
-    private String role;
-    private Integer balance;
+public class ShoppingItem {
+    private String shoppingItemId;
+    private String title;
+    private Integer quantity;
+    private String unit;
+    private Boolean isPurchased;
+
 }
