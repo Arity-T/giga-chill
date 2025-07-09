@@ -17,7 +17,7 @@ public class ShoppingListsService {
     private Map<String, Map<String, ShoppingList>> SHOPPING_LISTS = new HashMap<>();
 
     public List<ShoppingList> getAllShoppingListsFromEvent(String eventId){
-        //TODO: связь с бд (убрать eventId)
+        //TODO: связь с бд
 
         //TEMPORARY:
         if (!SHOPPING_LISTS.containsKey(eventId)){
@@ -27,13 +27,13 @@ public class ShoppingListsService {
     }
 
     public ShoppingList getShoppingListById(String eventId, String shoppingListId){
-        //TODO: связь с бд (убрать eventId)
+        //TODO: связь с бд (убрать eventId) (Из логгера тоже)
 
         //TEMPORARY:
         return SHOPPING_LISTS.get(eventId).get(shoppingListId);
     }
 
-    public void createShoppingList(String eventId, String title, String description){
+    public String createShoppingList(String eventId, String title, String description){
         //TODO: связь с бд (убрать eventId)
         ShoppingList shoppingList = new ShoppingList(UUID.randomUUID().toString(), "not yet", title, description,
                 env.getProperty("shopping_list_status.unassigned").toString(), new ArrayList<>(), new ArrayList<>());
@@ -41,7 +41,7 @@ public class ShoppingListsService {
         //TEMPORARY:
         SHOPPING_LISTS.computeIfAbsent(eventId, k -> new HashMap<>())
                 .put(shoppingList.getShoppingListId(), shoppingList);
-
+        return shoppingList.getShoppingListId();
     }
 
     public void updateShoppingList(String eventId, String shoppingListId, String title, String description){
@@ -64,7 +64,7 @@ public class ShoppingListsService {
     }
 
 
-    public void addShoppingItem(String eventId, String shoppingListId,
+    public String addShoppingItem(String eventId, String shoppingListId,
                                         String title, Integer quantity, String unit){
         //TODO: связь с бд (убрать eventId)
         ShoppingItem shoppingItem = new ShoppingItem(UUID.randomUUID().toString(), title,
@@ -73,6 +73,7 @@ public class ShoppingListsService {
 
         //TEMPORARY:
         SHOPPING_LISTS.get(eventId).get(shoppingListId).getShoppingItems().add(shoppingItem);
+        return shoppingItem.getShoppingItemId();
     }
 
     public void updateShoppingItem(String eventId, String shoppingListId, String shoppingItemId,
