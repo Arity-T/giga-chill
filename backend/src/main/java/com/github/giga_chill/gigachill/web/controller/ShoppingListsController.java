@@ -57,6 +57,7 @@ public class ShoppingListsController {
                                                              @RequestBody Map<String, Object> body){
 
         //TODO: привязка к task id
+        //TODO: Возвращать список списков
         User user = userService.userAuthentication(authentication);
         String title = (String) body.get("title");
         String description = (String) body.get("description");
@@ -110,6 +111,7 @@ public class ShoppingListsController {
                                                               @PathVariable String eventId,
                                                               @PathVariable String shoppingListId,
                                                               @RequestBody Map<String, Object> body){
+        //TODO: Возвращать список списков
         User user = userService.userAuthentication(authentication);
         String title = (String) body.get("title");
         Integer quantity = (Integer) body.get("quantity");
@@ -175,6 +177,7 @@ public class ShoppingListsController {
                                                               @PathVariable String shoppingListId,
                                                               @PathVariable String shoppingItemId,
                                                               @RequestBody Map<String, Object> body){
+        //TODO: Возвращать список списков
         User user = userService.userAuthentication(authentication);
         Boolean isPurchased = (Boolean) body.get("is_purchased");
         if (isPurchased == null) {
@@ -202,6 +205,16 @@ public class ShoppingListsController {
         return ResponseEntity.ok(toShoppingItemInfo(shoppingListsService.updateShoppingItemStatus(eventId,
                 shoppingListId, shoppingItemId, isPurchased)));
     }
+
+    @PutMapping("/{shoppingListId}/consumers")
+    public ResponseEntity<ConsumerInfo> putConsumers(Authentication authentication,
+                                                     @PathVariable String eventId,
+                                                     @PathVariable String shoppingListId,
+                                                     @RequestBody Map<String, Object> body){
+
+
+    }
+
 
 
     private ShoppingListInfo toShoppingListInfo(ShoppingList shoppingList) {

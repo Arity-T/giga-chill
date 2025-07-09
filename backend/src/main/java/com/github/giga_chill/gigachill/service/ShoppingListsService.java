@@ -17,7 +17,7 @@ public class ShoppingListsService {
     private Map<String, Map<String, ShoppingList>> SHOPPING_LISTS = new HashMap<>();
 
     public List<ShoppingList> getAllShoppingLists(String eventId){
-        //TODO: связь с бд (Заменить eventId на taskId)
+        //TODO: связь с бд
 
         //TEMPORARY:
         if (!SHOPPING_LISTS.containsKey(eventId)){
