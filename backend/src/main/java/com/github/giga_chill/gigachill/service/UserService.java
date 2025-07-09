@@ -1,11 +1,16 @@
 package com.github.giga_chill.gigachill.service;
 
+import com.github.giga_chill.gigachill.exception.UnauthorizedException;
+import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.repository.UserRepository;
 import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -26,6 +31,10 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public Optional<UsersRecord> findById(String id) {
+        return userRepository.findById(UUID.fromString(id));
+    }
+
     public Optional<UsersRecord> findByLogin(String login) {
         return userRepository.findByLogin(login);
     }
@@ -39,4 +48,21 @@ public class UserService {
     public boolean userExists(String login) {
         return userRepository.findByLogin(login).isPresent();
     }
+
+    public User userAuthentication(Authentication authentication) {
+        var login = authentication.getName();
+        if (!userExists(login)) {
+            throw new UnauthorizedException("User not found");
+        }
+        return usersRecordToUser(Objects.requireNonNull(findByLogin(login).orElse(null)));
+    }
+
+    private User usersRecordToUser(UsersRecord user){
+        return new User(user.getUserId().toString(), user.getLogin(), user.getName());
+    }
+
+    public User getByLogin(String login){
+        return usersRecordToUser(Objects.requireNonNull(findByLogin(login).orElse(null)));
+    }
+
 }
