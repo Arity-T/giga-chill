@@ -103,6 +103,12 @@ public class ShoppingListsService {
                 .filter(item-> item.getShoppingItemId().equals(shoppingItemId)).findFirst().orElse(null);
     }
 
+    public String getShoppingListStatus(String eventId, String shoppingListId){
+        //TODO: связь с бд (убрать eventId)
+
+        //TEMPORARY:
+        return SHOPPING_LISTS.get(eventId).get(shoppingListId).getStatus();
+    }
 
     public boolean isExisted(String eventId, String shoppingListId){
         //TODO: связь с бд (убрать eventId)

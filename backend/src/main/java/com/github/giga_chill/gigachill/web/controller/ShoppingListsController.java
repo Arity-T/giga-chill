@@ -2,6 +2,7 @@ package com.github.giga_chill.gigachill.web.controller;
 
 
 import com.github.giga_chill.gigachill.exception.BadRequestException;
+import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.ForbiddenException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.model.Participant;
@@ -16,6 +17,7 @@ import com.github.giga_chill.gigachill.web.info.ConsumerInfo;
 import com.github.giga_chill.gigachill.web.info.ShoppingItemInfo;
 import com.github.giga_chill.gigachill.web.info.ShoppingListInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +30,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ShoppingListsController {
 
+    private final Environment env;
     private final EventService eventService;
     private final UserService userService;
     private final ParticipantsService participantsService;
@@ -81,7 +84,6 @@ public class ShoppingListsController {
                                                    @PathVariable String shoppingListId,
                                                    @RequestBody Map<String, Object> body){
 
-        //TODO: проверка, что статус Свободен или Открыт
         User user = userService.userAuthentication(authentication);
         String title = (String) body.get("title");
         String description = (String) body.get("description");
@@ -100,7 +102,12 @@ public class ShoppingListsController {
             throw new ForbiddenException("User with id " + user.id +
                     " is not a consumer of shopping list with id " + shoppingListId);
         }
-
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
+        if(!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
+                !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))){
+            throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
+                    " have unassigned or assigned status");
+        }
         shoppingListsService.updateShoppingList(eventId, shoppingListId, title, description);
 
         return ResponseEntity.noContent().build();
@@ -114,7 +121,6 @@ public class ShoppingListsController {
                                                   @PathVariable String eventId,
                                                   @PathVariable String shoppingListId){
 
-        //TODO: проверка, что статус Свободен или Открыт
         User user = userService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
@@ -131,7 +137,12 @@ public class ShoppingListsController {
             throw new ForbiddenException("User with id " + user.id +
                     " is not a consumer of shopping list with id " + shoppingListId);
         }
-
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
+        if(!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
+                !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))){
+            throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
+                    " have unassigned or assigned status");
+        }
         shoppingListsService.deleteShoppingList(eventId, shoppingListId);
 
         return ResponseEntity.noContent().build();
@@ -143,7 +154,6 @@ public class ShoppingListsController {
                                                               @PathVariable String eventId,
                                                               @PathVariable String shoppingListId,
                                                               @RequestBody Map<String, Object> body){
-        //TODO: Возвращать список списков
         User user = userService.userAuthentication(authentication);
         String title = (String) body.get("title");
         Integer quantity = (Integer) body.get("quantity");
@@ -166,7 +176,12 @@ public class ShoppingListsController {
             throw new ForbiddenException("User with id " + user.id +
                     " is not a consumer of shopping list with id " + shoppingListId);
         }
-
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
+        if(!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
+                !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))){
+            throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
+                    " have unassigned or assigned status");
+        }
         shoppingListsService.addShoppingItem(eventId, shoppingListId, title, quantity, unit);
         return ResponseEntity.noContent().build();
     }
@@ -196,7 +211,12 @@ public class ShoppingListsController {
             throw new ForbiddenException("User with id " + user.id +
                     " is not a consumer of shopping list with id " + shoppingListId);
         }
-
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
+        if(!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
+                !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))){
+            throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
+                    " have unassigned or assigned status");
+        }
         shoppingListsService.deleteShoppingItemFromShoppingList(eventId, shoppingListId, shoppingItemId);
         return ResponseEntity.noContent().build();
     }
@@ -208,7 +228,6 @@ public class ShoppingListsController {
                                                               @PathVariable String shoppingListId,
                                                               @PathVariable String shoppingItemId,
                                                               @RequestBody Map<String, Object> body){
-        //TODO: Возвращать список списков
         User user = userService.userAuthentication(authentication);
         Boolean isPurchased = (Boolean) body.get("is_purchased");
         if (isPurchased == null) {
@@ -232,6 +251,12 @@ public class ShoppingListsController {
             throw new ForbiddenException("User with id " + user.id +
                     " is not a consumer of shopping list with id " + shoppingListId);
         }
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
+        if(!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
+                !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))){
+            throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
+                    " have unassigned or assigned status");
+        }
         shoppingListsService.updateShoppingItemStatus(eventId, shoppingListId, shoppingItemId, isPurchased);
         return ResponseEntity.noContent().build();
     }
@@ -242,7 +267,7 @@ public class ShoppingListsController {
 //                                                     @PathVariable String shoppingListId,
 //                                                     @RequestBody Map<String, Object> body){
 //
-//
+//      //TODO: Добавить проверку статуса
 //    }
 
 
