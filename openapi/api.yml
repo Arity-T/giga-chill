@@ -685,7 +685,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserInEvent"
+                $ref: "#/components/schemas/ShoppingListsWithItems"
         "400":
           description: Невалидные данные
           content:
