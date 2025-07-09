@@ -46,7 +46,7 @@ public class ParticipantsController {
 
     @PostMapping("/{eventId}/participants")
     // ACCESS: owner, admin
-    public ResponseEntity<ParticipantInfo> postParticipant(Authentication authentication,
+    public ResponseEntity<Void> postParticipant(Authentication authentication,
                                                            @PathVariable String eventId,
                                                            @RequestBody Map<String, Object> body) {
 
@@ -75,9 +75,8 @@ public class ParticipantsController {
                     "' is already a participant of event with id " + eventId);
         }
 
-        Participant participant = participantsService.addParticipantToEvent(eventId, userToAdd);
-        return ResponseEntity.created(URI.create("events/" + eventId + "/participants"))
-                .body(toParticipantInfo(participant));
+        participantsService.addParticipantToEvent(eventId, userToAdd);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{eventId}/participants/{participantId}")
@@ -109,7 +108,7 @@ public class ParticipantsController {
 
     @PatchMapping("/{eventId}/participants/{participantId}/role")
     // ACCESS: owner
-    public ResponseEntity<ParticipantInfo> patchParticipantRole(Authentication authentication,
+    public ResponseEntity<Void> patchParticipantRole(Authentication authentication,
                                                             @PathVariable String eventId,
                                                             @PathVariable String participantId,
                                                             @RequestBody Map<String, Object> body) {
@@ -136,9 +135,9 @@ public class ParticipantsController {
             throw new ConflictException("The role: owner of the user with id: "+ participantId
                     +" cannot be replaced");
         }
-        Participant participant = participantsService.updateParticipantRole(eventId, participantId, newRole);
+        participantsService.updateParticipantRole(eventId, participantId, newRole);
 
-        return ResponseEntity.ok(toParticipantInfo(participant));
+        return ResponseEntity.noContent().build();
     }
 
     private ParticipantInfo toParticipantInfo(Participant participant) {

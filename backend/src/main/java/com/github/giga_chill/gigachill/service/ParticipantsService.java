@@ -24,12 +24,11 @@ public class ParticipantsService {
                 .toList();
     }
 
-    public Participant addParticipantToEvent(String eventId, User user) {
+    public void addParticipantToEvent(String eventId, User user) {
         Participant participant = new Participant(user.id, user.login, user.name,
                 env.getProperty("roles.participant").toString(), BigDecimal.valueOf(0));
 
         participantDAO.addParticipantToEvent(eventId, toDto(participant));
-        return participant;
     }
 
     public void deleteParticipant(String eventId, String participantId) {
@@ -40,9 +39,8 @@ public class ParticipantsService {
         return participantDAO.isParticipant(eventId, userId);
     }
 
-    public Participant updateParticipantRole(String eventId, String participantId, String role) {
+    public void updateParticipantRole(String eventId, String participantId, String role) {
         participantDAO.updateParticipantRole(eventId, participantId, role);
-        return toEntity(participantDAO.getParticipantById(eventId, participantId));
     }
 
     public String getParticipantRoleInEvent(String eventId, String participantId) {
