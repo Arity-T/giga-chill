@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,13 +46,17 @@ public class UserService {
         .orElse(false);
     }
 
-    public boolean userExists(String login) {
+    public boolean userExistsById(String userId) {
+        return findById(userId).isPresent();
+    }
+
+    public boolean userExistsByLogin(String login) {
         return userRepository.findByLogin(login).isPresent();
     }
 
     public User userAuthentication(Authentication authentication) {
         var login = authentication.getName();
-        if (!userExists(login)) {
+        if (!userExistsByLogin(login)) {
             throw new UnauthorizedException("User not found");
         }
         return usersRecordToUser(Objects.requireNonNull(findByLogin(login).orElse(null)));
@@ -70,4 +75,14 @@ public class UserService {
         return usersRecordToUser(Objects.requireNonNull(findByLogin(login).orElse(null)));
     }
 
+    /**
+     * Проверяет, что все пользователи из списка userIds существуют в базе.
+     * @param userIds список id пользователей
+     * @return true, если все пользователи существуют, иначе false
+     */
+    public boolean allUsersExistByIds(List<String> userIds) {
+        List<UUID> uuids = userIds.stream().map(UUID::fromString).toList();
+        int count = userRepository.countByIds(uuids);
+        return count == userIds.size();
+    }
 }
