@@ -52,3 +52,34 @@ export enum UserRole {
   ADMIN = 'admin',
   PARTICIPANT = 'participant',
 }
+
+export interface ShoppingItemPurchasedState {
+  is_purchased: boolean;
+}
+
+export interface ShoppingItem {
+  shopping_item_id: string;
+  title: string;
+  quantity: number;
+  unit: string;
+  is_purchased: boolean;
+}
+
+export interface ShoppingListWithItems {
+  shopping_list_id: string;
+  task_id: string;
+  title: string;
+  description: string;
+  status: ShoppingListStatus;
+  shopping_items: ShoppingItem[];
+  consumers: UserInEvent[];
+}
+
+export enum ShoppingListStatus {
+  UNASSIGNED = 'unassigned',
+  ASSIGNED = 'assigned',
+  IN_PROGRESS = 'in_progress',
+  BOUGHT = 'bought',
+  PARTIALLY_BOUGHT = 'partially_bought',
+  CANCELLED = 'cancelled',
+}

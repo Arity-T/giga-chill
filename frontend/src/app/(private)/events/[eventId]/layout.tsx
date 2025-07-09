@@ -73,7 +73,7 @@ export default function EventLayout({ children, params }: EventLayoutProps) {
             icon: <ShoppingCartOutlined />,
             label: (
                 <Link href={PAGES.EVENT_SHOPPING(eventId)}>
-                    Список покупок
+                    Списки покупок
                 </Link>
             ),
         },
