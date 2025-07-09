@@ -5,6 +5,7 @@ import org.jooq.DSLContext;
 import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
 import com.github.giga_chill.jooq.generated.tables.UserInEvent;
 
+import java.util.Optional;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,13 +23,13 @@ public class UserInEventRepository {
         .execute();
   }
 
-  public List<UserInEventRecord> findById(UUID eventId, UUID userId) {
+  public Optional<UserInEventRecord> findById(UUID eventId, UUID userId) {
     return dsl.selectFrom(UserInEvent.USER_IN_EVENT)
     .where(
         UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId)
         .and(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId))
     )
-    .fetch();
+    .fetchOptional();
   }
 
   public List<UserInEventRecord> findByEventId(UUID eventId) {
@@ -44,9 +45,11 @@ public class UserInEventRepository {
   }
 
   public void deleteById(UUID eventId, UUID userId) {
-    List<UserInEventRecord> records = findById(eventId, userId);
-    for (UserInEventRecord record : records) {
-      record.delete();
-    }
+    dsl.delete(UserInEvent.USER_IN_EVENT)
+    .where(
+      UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId)
+      .and(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId))
+    )
+    .execute();
   }
 }
