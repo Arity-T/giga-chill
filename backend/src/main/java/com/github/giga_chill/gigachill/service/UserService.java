@@ -57,6 +57,11 @@ public class UserService {
         return usersRecordToUser(Objects.requireNonNull(findByLogin(login).orElse(null)));
     }
 
+
+    public boolean checkById(String id){
+        return findById(id).isPresent();
+    }
+
     private User usersRecordToUser(UsersRecord user){
         return new User(user.getUserId().toString(), user.getLogin(), user.getName());
     }
