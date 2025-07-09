@@ -25,13 +25,17 @@ public class EventRepository {
 
   public Optional<EventsRecord> findById(UUID eventId) {
     return dsl.selectFrom(Events.EVENTS)
-        .where(Events.EVENTS.EVENT_ID.eq(eventId))
+        .where(
+            Events.EVENTS.EVENT_ID.eq(eventId)
+            .and(Events.EVENTS.IS_DELETED.eq(false))
+        )
         .fetchOptional();
   }
 
   public void deleteById(UUID eventId) {
-    findById(eventId).ifPresent(eventRecord -> {
-      eventRecord.delete();
-    });
+    dsl.update(Events.EVENTS)
+        .set(Events.EVENTS.IS_DELETED, true)
+        .where(Events.EVENTS.EVENT_ID.eq(eventId))
+        .execute();
   }
 }
