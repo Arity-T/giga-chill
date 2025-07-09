@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -28,6 +29,10 @@ public class UserService {
         user.setPasswordHash(passwordEncoder.encode(password));
         user.setName(name);
         userRepository.save(user);
+    }
+
+    public Optional<UsersRecord> findById(String id) {
+        return userRepository.findById(UUID.fromString(id));
     }
 
     public Optional<UsersRecord> findByLogin(String login) {
