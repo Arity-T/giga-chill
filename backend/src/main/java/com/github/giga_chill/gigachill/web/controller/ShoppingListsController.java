@@ -266,7 +266,7 @@ public class ShoppingListsController {
     public ResponseEntity<Void> putConsumers(Authentication authentication,
                                                      @PathVariable String eventId,
                                                      @PathVariable String shoppingListId,
-                                                     @RequestBody List<Map<String, String>> body){
+                                                     @RequestBody List<String> body){
 
         User user = userService.userAuthentication(authentication);
         if (body == null || body.isEmpty()) {
@@ -293,14 +293,11 @@ public class ShoppingListsController {
             throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
                     " have unassigned or assigned status");
         }
-        List<String> allUserId = body.stream()
-                .flatMap(map -> map.values().stream())
-                .toList();
-        if(!userService.allUsersExistByIds(allUserId)){
+        if(!userService.allUsersExistByIds(body)){
             throw new NotFoundException("The list contains a user that is not in the database");
         }
 
-        shoppingListsService.updateShoppingListConsumers(eventId, shoppingListId, allUserId);
+        shoppingListsService.updateShoppingListConsumers(eventId, shoppingListId, body);
         return ResponseEntity.noContent().build();
     }
 
