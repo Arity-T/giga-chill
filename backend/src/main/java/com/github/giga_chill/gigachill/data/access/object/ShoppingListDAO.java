@@ -2,7 +2,6 @@ package com.github.giga_chill.gigachill.data.access.object;
 
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingItemDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingListDTO;
-import com.github.giga_chill.gigachill.model.ShoppingItem;
 import jakarta.annotation.Nullable;
 
 import java.util.List;
@@ -33,12 +32,16 @@ public interface ShoppingListDAO {
     ShoppingListDTO getShoppingListById(UUID shoppingListId);
 
     /**
-     * Creates a new shopping list with the given title and description.
+     * Creates a new shopping list within the specified event.
      *
-     * @param title       the title of the new shopping list
-     * @param description the description of the new shopping list
+     * @param eventId        the unique identifier of the event to which the shopping list belongs
+     * @param shoppingListId the unique identifier to assign to the new shopping list
+     * @param userId         the unique identifier of the user creating the shopping list
+     * @param title          the title of the shopping list
+     * @param description    the description of the shopping list
      */
-    void createShoppingList(String title, String description);
+    void createShoppingList(UUID eventId, UUID shoppingListId, UUID userId, String title, String description);
+
 
     /**
      * Updates the title and/or description of an existing shopping list.
@@ -60,8 +63,8 @@ public interface ShoppingListDAO {
     /**
      * Adds a new shopping item to the specified shopping list.
      *
-     * @param shoppingListId    the unique identifier of the shopping list
-     * @param shoppingItemDTO   the {@link ShoppingItemDTO} representing the new item
+     * @param shoppingListId  the unique identifier of the shopping list
+     * @param shoppingItemDTO the {@link ShoppingItemDTO} representing the new item
      */
     void addShoppingItem(UUID shoppingListId, ShoppingItemDTO shoppingItemDTO);
 
@@ -133,8 +136,8 @@ public interface ShoppingListDAO {
     /**
      * Updates the details of an existing shopping item.
      *
-     * @param shoppingItemId   the unique identifier of the shopping item to update
-     * @param shoppingItemDTO  the {@link ShoppingItemDTO} containing the new field values for the item
+     * @param shoppingItemId  the unique identifier of the shopping item to update
+     * @param shoppingItemDTO the {@link ShoppingItemDTO} containing the new field values for the item
      */
     void updateShoppingItem(UUID shoppingItemId, ShoppingItemDTO shoppingItemDTO);
 
