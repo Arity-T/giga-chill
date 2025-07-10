@@ -119,7 +119,7 @@ public class ShoppingListsService {
                 .filter(item -> item.getShoppingItemId().equals(shoppingItemId)).findFirst().orElse(null);
     }
 
-    public void updateShoppingListConsumers(UUID eventId, UUID shoppingListId, List<String> allUserId) {
+    public void updateShoppingListConsumers(UUID eventId, UUID shoppingListId, List<UUID> allUserId) {
         //TODO: связь с бд (убрать eventId)
 
 

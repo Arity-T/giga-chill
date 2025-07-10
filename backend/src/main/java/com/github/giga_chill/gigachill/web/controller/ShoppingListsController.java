@@ -50,9 +50,11 @@ public class ShoppingListsController {
             throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventId);
         }
+        List<ShoppingListInfo> shoppingLists = shoppingListsService.getAllShoppingListsFromEvent(eventId).stream()
+                .map(item -> toShoppingListInfo(item, canEdit(eventId, item.getShoppingListId(), user.getId())))
+                .toList();
 
-        return ResponseEntity.ok(shoppingListsService.getAllShoppingListsFromEvent(eventId).stream()
-                .map(this::toShoppingListInfo).toList());
+        return ResponseEntity.ok(shoppingLists);
     }
 
     @PostMapping
@@ -340,17 +342,18 @@ public class ShoppingListsController {
             throw new NotFoundException("The list contains a user that is not in the database");
         }
 
-        shoppingListsService.updateShoppingListConsumers(eventId, shoppingListId, body);
+        shoppingListsService.updateShoppingListConsumers(eventId, shoppingListId, allUsersIds);
         return ResponseEntity.noContent().build();
     }
 
 
-    private ShoppingListInfo toShoppingListInfo(ShoppingList shoppingList) {
+    private ShoppingListInfo toShoppingListInfo(ShoppingList shoppingList, Boolean canEdit) {
         return new ShoppingListInfo(shoppingList.getShoppingListId().toString(),
                 shoppingList.getTaskId().toString(),
                 shoppingList.getTitle(),
                 shoppingList.getDescription(),
                 shoppingList.getStatus(),
+                canEdit,
                 shoppingList.getShoppingItems().stream()
                         .map(this::toShoppingItemInfo)
                         .toList(),
@@ -382,6 +385,19 @@ public class ShoppingListsController {
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("Invalid UUID: " + raw);
         }
+    }
+
+    public boolean canEdit(UUID eventId, UUID shoppingListId, UUID userId) {
+        boolean isParticipant = participantsService.isParticipantRole(eventId, userId);
+        boolean isConsumer   = shoppingListsService.isConsumer(eventId, shoppingListId, userId);
+        if (isParticipant && !isConsumer) {
+            return false;
+        }
+
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
+        boolean isUnassigned = shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned"));
+        boolean isAssigned= shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"));
+        return (isUnassigned || isAssigned);
     }
 
 }
