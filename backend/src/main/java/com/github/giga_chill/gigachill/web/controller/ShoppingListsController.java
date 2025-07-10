@@ -159,7 +159,7 @@ public class ShoppingListsController {
         User user = userService.userAuthentication(authentication);
         String title = (String) body.get("title");
         BigDecimal quantity = body.get("quantity") != null
-                ? BigDecimal.valueOf((Double) body.get("quantity"))
+                ? new BigDecimal(String.valueOf((Number) body.get("quantity")))
                 : null;
         String unit = (String) body.get("unit");
         if (title == null || quantity == null || unit == null) {
@@ -200,7 +200,7 @@ public class ShoppingListsController {
         User user = userService.userAuthentication(authentication);
         String title = (String) body.get("title");
         BigDecimal quantity = body.get("quantity") != null
-                ? BigDecimal.valueOf((Double) body.get("quantity"))
+                ? new BigDecimal(String.valueOf((Number) body.get("quantity")))
                 : null;
         String unit = (String) body.get("unit");
         if (!eventService.isExisted(eventId)) {
