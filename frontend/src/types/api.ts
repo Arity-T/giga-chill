@@ -73,6 +73,7 @@ export interface ShoppingListWithItems {
   title: string;
   description: string;
   status: ShoppingListStatus;
+  can_edit: boolean;
   shopping_items: ShoppingItem[];
   consumers: UserInEvent[];
 }

@@ -15,6 +15,7 @@ interface ShoppingListHeaderProps {
     onEdit: () => void;
     onDelete: () => void;
     onAddConsumers: () => void;
+    canEdit: boolean;
 }
 
 export default function ShoppingListHeader({
@@ -24,7 +25,8 @@ export default function ShoppingListHeader({
     totalCount,
     onEdit,
     onDelete,
-    onAddConsumers
+    onAddConsumers,
+    canEdit
 }: ShoppingListHeaderProps) {
     return (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
@@ -32,10 +34,12 @@ export default function ShoppingListHeader({
                 <Title level={4} style={{ margin: 0 }}>
                     {shoppingList.title}
                 </Title>
-                <ConsumerButton
-                    consumersCount={shoppingList.consumers.length}
-                    onAddConsumers={onAddConsumers}
-                />
+                {canEdit && (
+                    <ConsumerButton
+                        consumersCount={shoppingList.consumers.length}
+                        onAddConsumers={onAddConsumers}
+                    />
+                )}
                 <Tooltip title={getStatusTooltip(shoppingList.status)}>
                     <Tag color={getStatusColor(shoppingList.status)}>
                         {getStatusText(shoppingList.status)}
@@ -46,19 +50,21 @@ export default function ShoppingListHeader({
                 <Text
                     type="secondary"
                     style={{
-                        marginRight: isHovered ? '8px' : '0px',
+                        marginRight: isHovered && canEdit ? '8px' : '0px',
                         transition: 'margin-right 0.2s ease'
                     }}
                 >
                     {purchasedCount}/{totalCount}
                 </Text>
-                <div style={{ width: isHovered ? 'auto' : '0px', overflow: 'hidden', transition: 'width 0.2s ease' }}>
-                    <ActionButtons
-                        isVisible={isHovered}
-                        onEdit={onEdit}
-                        onDelete={onDelete}
-                    />
-                </div>
+                {canEdit && (
+                    <div style={{ width: isHovered ? 'auto' : '0px', overflow: 'hidden', transition: 'width 0.2s ease' }}>
+                        <ActionButtons
+                            isVisible={isHovered}
+                            onEdit={onEdit}
+                            onDelete={onDelete}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

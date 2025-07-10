@@ -10,9 +10,10 @@ interface ShoppingListItemProps {
     onTogglePurchased: (itemId: string, isPurchased: boolean) => void;
     onDeleteItem: (itemId: string) => void;
     onEditItem: (itemId: string) => void;
+    canEdit: boolean;
 }
 
-export default function ShoppingListItem({ item, onTogglePurchased, onDeleteItem, onEditItem }: ShoppingListItemProps) {
+export default function ShoppingListItem({ item, onTogglePurchased, onDeleteItem, onEditItem, canEdit }: ShoppingListItemProps) {
     const [isHovered, setIsHovered] = useState(false);
 
     return (
@@ -32,6 +33,13 @@ export default function ShoppingListItem({ item, onTogglePurchased, onDeleteItem
                     <Checkbox
                         checked={item.is_purchased}
                         onChange={(e) => onTogglePurchased(item.shopping_item_id, e.target.checked)}
+                        disabled={!canEdit}
+                        style={{
+                            ...((!canEdit && item.is_purchased) && {
+                                // Серый цвет для отмеченного чекбокса когда нельзя редактировать
+                                opacity: 0.6,
+                            })
+                        }}
                     />
                     <Text
                         style={{
@@ -45,28 +53,30 @@ export default function ShoppingListItem({ item, onTogglePurchased, onDeleteItem
                         {item.quantity} {item.unit}
                     </Text>
                 </Space>
-                <Space>
-                    <Button
-                        type="text"
-                        icon={<EditOutlined style={{ color: '#8c8c8c' }} />}
-                        size="small"
-                        style={{
-                            opacity: isHovered ? 1 : 0,
-                            transition: 'opacity 0.2s ease'
-                        }}
-                        onClick={() => onEditItem(item.shopping_item_id)}
-                    />
-                    <Button
-                        type="text"
-                        icon={<DeleteOutlined style={{ color: '#8c8c8c' }} />}
-                        size="small"
-                        style={{
-                            opacity: isHovered ? 1 : 0,
-                            transition: 'opacity 0.2s ease'
-                        }}
-                        onClick={() => onDeleteItem(item.shopping_item_id)}
-                    />
-                </Space>
+                {canEdit && (
+                    <Space>
+                        <Button
+                            type="text"
+                            icon={<EditOutlined style={{ color: '#8c8c8c' }} />}
+                            size="small"
+                            style={{
+                                opacity: isHovered ? 1 : 0,
+                                transition: 'opacity 0.2s ease'
+                            }}
+                            onClick={() => onEditItem(item.shopping_item_id)}
+                        />
+                        <Button
+                            type="text"
+                            icon={<DeleteOutlined style={{ color: '#8c8c8c' }} />}
+                            size="small"
+                            style={{
+                                opacity: isHovered ? 1 : 0,
+                                transition: 'opacity 0.2s ease'
+                            }}
+                            onClick={() => onDeleteItem(item.shopping_item_id)}
+                        />
+                    </Space>
+                )}
             </Space>
         </Card>
     );

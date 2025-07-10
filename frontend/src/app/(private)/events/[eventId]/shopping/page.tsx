@@ -210,6 +210,7 @@ export default function ShoppingPage({ params }: EventIdPathParam) {
                         onAddItem={handleAddItem}
                         onDeleteItem={handleDeleteItem}
                         onEditItem={handleEditItem}
+                        canEdit={list.can_edit}
                     />
                 ))
             ) : (
