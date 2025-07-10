@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -65,7 +66,7 @@ public class ShoppingListsService {
 
 
     public String addShoppingItem(String eventId, String shoppingListId,
-                                        String title, Integer quantity, String unit){
+                                  String title, BigDecimal quantity, String unit){
         //TODO: связь с бд (убрать eventId)
         ShoppingItem shoppingItem = new ShoppingItem(UUID.randomUUID().toString(), title,
                 quantity, unit, false);
@@ -77,7 +78,7 @@ public class ShoppingListsService {
     }
 
     public void updateShoppingItem(String eventId, String shoppingListId, String shoppingItemId,
-                                String title, Integer quantity, String unit){
+                                String title, BigDecimal quantity, String unit){
         //TODO: связь с бд (убрать eventId и shoppingListId)
 
         //TEMPORARY:

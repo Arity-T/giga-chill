@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -156,7 +157,7 @@ public class ShoppingListsController {
                                                               @RequestBody Map<String, Object> body){
         User user = userService.userAuthentication(authentication);
         String title = (String) body.get("title");
-        Integer quantity = (Integer) body.get("quantity");
+        BigDecimal quantity = (BigDecimal) body.get("quantity");
         String unit = (String) body.get("unit");
         if (title == null || quantity == null || unit == null) {
             throw new BadRequestException("Invalid request body: " + body);
@@ -195,7 +196,7 @@ public class ShoppingListsController {
                                                  @RequestBody Map<String, Object> body){
         User user = userService.userAuthentication(authentication);
         String title = (String) body.get("title");
-        Integer quantity = (Integer) body.get("quantity");
+        BigDecimal quantity = (BigDecimal) body.get("quantity");
         String unit = (String) body.get("unit");
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
