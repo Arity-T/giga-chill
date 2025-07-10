@@ -349,7 +349,8 @@ public class ShoppingListsController {
 
     private ShoppingListInfo toShoppingListInfo(ShoppingList shoppingList, Boolean canEdit) {
         return new ShoppingListInfo(shoppingList.getShoppingListId().toString(),
-                shoppingList.getTaskId().toString(),
+                // TODO: when tasks are added
+                shoppingList.getTaskId() != null ? shoppingList.getTaskId().toString() : null,
                 shoppingList.getTitle(),
                 shoppingList.getDescription(),
                 shoppingList.getStatus(),
