@@ -136,9 +136,8 @@ public interface ShoppingListDAO {
     /**
      * Updates the details of an existing shopping item.
      *
-     * @param shoppingItemId  the unique identifier of the shopping item to update
      * @param shoppingItemDTO the {@link ShoppingItemDTO} containing the new field values for the item
      */
-    void updateShoppingItem(UUID shoppingItemId, ShoppingItemDTO shoppingItemDTO);
+    void updateShoppingItem(ShoppingItemDTO shoppingItemDTO);
 
 }
