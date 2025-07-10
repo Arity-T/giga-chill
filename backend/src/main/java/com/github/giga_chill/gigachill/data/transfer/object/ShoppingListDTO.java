@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 public record ShoppingListDTO(UUID shoppingListId,
-                              String taskId,
+                              UUID taskId,
                               String title,
                               String description,
                               String status,
