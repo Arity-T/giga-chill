@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Modal, Input, Checkbox, List, Typography, Space, App } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useGetEventParticipantsQuery, useSetShoppingListConsumersMutation } from '@/store/api/api';
@@ -26,6 +26,11 @@ export default function AddConsumersModal({
         currentConsumers.map(consumer => consumer.id)
     );
     const { message } = App.useApp();
+
+    // Обновляем selectedConsumerIds при изменении currentConsumers
+    useEffect(() => {
+        setSelectedConsumerIds(currentConsumers.map(consumer => consumer.id));
+    }, [currentConsumers]);
 
     const { data: participants = [], isLoading } = useGetEventParticipantsQuery(eventId);
     const [setShoppingListConsumers, { isLoading: isUpdating }] = useSetShoppingListConsumersMutation();
