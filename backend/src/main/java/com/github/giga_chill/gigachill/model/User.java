@@ -10,9 +10,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-    public UUID id;
-    public String login;
-    public String name;
+    private UUID id;
+    private String login;
+    private String name;
 
     public User(String login, String name){
         this.id = UUID.randomUUID();

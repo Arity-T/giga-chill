@@ -33,14 +33,14 @@ public class EventsController {
     public ResponseEntity<List<ResponseEventInfo>> getEvents(Authentication authentication) {
         User user = userService.userAuthentication(authentication);
 
-        var userEvents = eventService.getAllUserEvents(user.id);
+        var userEvents = eventService.getAllUserEvents(user.getId());
 
         if (userEvents.isEmpty()) {
             ResponseEntity.ok(null);
         }
         return ResponseEntity.ok(userEvents.stream()
                 .map(event -> toResponseEventInfo(event,
-                        participantsService.getParticipantRoleInEvent(event.getEventId(), user.id)))
+                        participantsService.getParticipantRoleInEvent(event.getEventId(), user.getId())))
                 .toList());
     }
 
@@ -50,7 +50,7 @@ public class EventsController {
                                            Authentication authentication) {
 
         User user = userService.userAuthentication(authentication);
-        eventService.createEvent(user.id, requestEventInfo);
+        eventService.createEvent(user.getId(), requestEventInfo);
         return ResponseEntity.noContent().build();
     }
 
@@ -62,13 +62,13 @@ public class EventsController {
         if (!eventService.isExisted(eventUuid)) {
             throw new NotFoundException("Event with id " + eventUuid + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventUuid);
         }
         Event event = eventService.getEventById(eventUuid);
         return ResponseEntity.ok(toResponseEventInfo(event,
-                participantsService.getParticipantRoleInEvent(event.getEventId(), user.id)));
+                participantsService.getParticipantRoleInEvent(event.getEventId(), user.getId())));
     }
 
     @PatchMapping("/{eventId}")
@@ -80,12 +80,12 @@ public class EventsController {
         if (!eventService.isExisted(eventUuid)) {
             throw new NotFoundException("Event with id " + eventUuid + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventUuid);
         }
-        if (!participantsService.isOwnerRole(eventUuid, user.id) && !participantsService.isAdminRole(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isOwnerRole(eventUuid, user.getId()) && !participantsService.isAdminRole(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " does not have permission to patch event with id " + eventUuid);
         }
         eventService.updateEvent(eventUuid, requestEventInfo);
@@ -100,12 +100,12 @@ public class EventsController {
         if (!eventService.isExisted(eventUuid)) {
             throw new NotFoundException("Event with id " + eventUuid + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventUuid);
         }
-        if (!participantsService.isOwnerRole(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isOwnerRole(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " does not have permission to delete event with id " + eventUuid);
         }
         eventService.deleteEvent(eventUuid);

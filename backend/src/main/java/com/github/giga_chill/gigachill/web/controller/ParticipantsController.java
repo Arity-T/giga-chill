@@ -37,8 +37,8 @@ public class ParticipantsController {
         if (!eventService.isExisted(eventUuid)) {
             throw new NotFoundException("Event with id " + eventUuid + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventUuid);
         }
         return ResponseEntity.ok(participantsService.getAllParticipantsByEventId(eventUuid)
@@ -63,18 +63,18 @@ public class ParticipantsController {
         if (!eventService.isExisted(eventUuid)) {
             throw new NotFoundException("Event with id " + eventUuid + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventUuid);
         }
-        if (!participantsService.isOwnerRole(eventUuid, user.id) && !participantsService.isAdminRole(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isOwnerRole(eventUuid, user.getId()) && !participantsService.isAdminRole(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " does not have permission to add participants to event with id " + eventUuid);
         }
         if (userToAdd == null) {
             throw new NotFoundException("User with login '" + participantLogin + "' not found");
         }
-        if (participantsService.isParticipant(eventUuid, userToAdd.id)) {
+        if (participantsService.isParticipant(eventUuid, userToAdd.getId())) {
             throw new ConflictException("User with login '" + participantLogin +
                     "' is already a participant of event with id " + eventUuid);
         }
@@ -91,18 +91,18 @@ public class ParticipantsController {
         User user = userService.userAuthentication(authentication);
         UUID eventUuid = UUIDUtils.safeUUID(eventId);
         UUID participantUuid = UUIDUtils.safeUUID(participantId);
-        if (user.id.equals(participantUuid)) {
+        if (user.getId().equals(participantUuid)) {
             throw new BadRequestException("User with id " + participantUuid + " cannot delete themselves");
         }
         if (!eventService.isExisted(eventUuid)) {
             throw new NotFoundException("Event with id " + eventUuid + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventUuid);
         }
-        if (!participantsService.isOwnerRole(eventUuid, user.id) && !participantsService.isAdminRole(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isOwnerRole(eventUuid, user.getId()) && !participantsService.isAdminRole(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " does not have permission to remove participants from event with id " + eventUuid);
         }
         if (!participantsService.isParticipant(eventUuid, participantUuid)) {
@@ -128,12 +128,12 @@ public class ParticipantsController {
         if (!eventService.isExisted(eventUuid)) {
             throw new NotFoundException("Event with id " + eventUuid + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventUuid);
         }
-        if (!participantsService.isOwnerRole(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isOwnerRole(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " does not have permission to change participant roles in event with id " + eventUuid);
         }
         if (!participantsService.isParticipant(eventUuid, participantUuid)) {

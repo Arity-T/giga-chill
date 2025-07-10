@@ -30,7 +30,7 @@ public class ParticipantsService {
     }
 
     public void addParticipantToEvent(UUID eventId, User user) {
-        Participant participant = new Participant(user.id, user.login, user.name,
+        Participant participant = new Participant(user.getId(), user.getLogin(), user.getName(),
                 env.getProperty("roles.participant").toString(), BigDecimal.valueOf(0));
 
         participantDAO.addParticipantToEvent(eventId, toDto(participant));

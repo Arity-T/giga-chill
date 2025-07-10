@@ -48,8 +48,8 @@ public class ShoppingListsController {
         if (!eventService.isExisted(eventUuid)) {
             throw new NotFoundException("Event with id " + eventUuid + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventUuid);
         }
 
@@ -73,8 +73,8 @@ public class ShoppingListsController {
         if (!eventService.isExisted(eventUuid)) {
             throw new NotFoundException("Event with id " + eventUuid + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventUuid);
         }
         shoppingListsService.createShoppingList(eventUuid, title, description);
@@ -99,13 +99,13 @@ public class ShoppingListsController {
         if (!shoppingListsService.isExisted(eventUuid, shoppingListUuid)) {
             throw new NotFoundException("Shopping list with id " + shoppingListUuid + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventUuid);
         }
-        if (participantsService.isParticipantRole(eventUuid, user.id)
-                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (participantsService.isParticipantRole(eventUuid, user.getId())
+                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a consumer of shopping list with id " + shoppingListUuid);
         }
         String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventUuid, shoppingListUuid);
@@ -135,13 +135,13 @@ public class ShoppingListsController {
         if (!shoppingListsService.isExisted(eventUuid, shoppingListUuid)) {
             throw new NotFoundException("Shopping list with id " + shoppingListUuid + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventUuid);
         }
-        if (participantsService.isParticipantRole(eventUuid, user.id)
-                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (participantsService.isParticipantRole(eventUuid, user.getId())
+                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a consumer of shopping list with id " + shoppingListUuid);
         }
         String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventUuid, shoppingListUuid);
@@ -176,13 +176,13 @@ public class ShoppingListsController {
         if (!shoppingListsService.isExisted(eventUuid, shoppingListUuid)) {
             throw new NotFoundException("Shopping list with id " + shoppingListUuid + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventUuid);
         }
-        if (participantsService.isParticipantRole(eventUuid, user.id)
-                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (participantsService.isParticipantRole(eventUuid, user.getId())
+                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a consumer of shopping list with id " + shoppingListUuid);
         }
         String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventUuid, shoppingListUuid);
@@ -218,13 +218,13 @@ public class ShoppingListsController {
         if (!shoppingListsService.isShoppingItemExisted(shoppingListUuid, shoppingItemUuid)) {
             throw new NotFoundException("Shopping item with id " + shoppingItemUuid + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventUuid);
         }
-        if (participantsService.isParticipantRole(eventUuid, user.id)
-                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (participantsService.isParticipantRole(eventUuid, user.getId())
+                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a consumer of shopping list with id " + shoppingListUuid);
         }
         String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventUuid, shoppingListUuid);
@@ -256,13 +256,13 @@ public class ShoppingListsController {
         if (!shoppingListsService.isExisted(eventUuid, shoppingListUuid)) {
             throw new NotFoundException("Shopping list with id " + shoppingListUuid + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventUuid);
         }
-        if (participantsService.isParticipantRole(eventUuid, user.id)
-                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (participantsService.isParticipantRole(eventUuid, user.getId())
+                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a consumer of shopping list with id " + shoppingListUuid);
         }
         String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventUuid, shoppingListUuid);
@@ -299,13 +299,13 @@ public class ShoppingListsController {
         if (!shoppingListsService.isExisted(eventUuid, shoppingListUuid)) {
             throw new NotFoundException("Shopping list with id " + shoppingListUuid + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventUuid);
         }
-        if (participantsService.isParticipantRole(eventUuid, user.id)
-                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (participantsService.isParticipantRole(eventUuid, user.getId())
+                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a consumer of shopping list with id " + shoppingListUuid);
         }
         String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventUuid, shoppingListUuid);
@@ -337,13 +337,13 @@ public class ShoppingListsController {
         if (!shoppingListsService.isExisted(eventUuid, shoppingListUuid)) {
             throw new NotFoundException("Shopping list with id " + shoppingListUuid + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventUuid);
         }
-        if (participantsService.isParticipantRole(eventUuid, user.id)
-                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (participantsService.isParticipantRole(eventUuid, user.getId())
+                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a consumer of shopping list with id " + shoppingListUuid);
         }
         String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventUuid, shoppingListUuid);
