@@ -34,8 +34,8 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public Optional<UsersRecord> findById(String id) {
-        return userRepository.findById(UUID.fromString(id));
+    public Optional<UsersRecord> findById(UUID id) {
+        return userRepository.findById(id);
     }
 
     public Optional<UsersRecord> findByLogin(String login) {
@@ -48,7 +48,7 @@ public class UserService {
         .orElse(false);
     }
 
-    public boolean userExistsById(String userId) {
+    public boolean userExistsById(UUID userId) {
         return findById(userId).isPresent();
     }
 
@@ -64,13 +64,8 @@ public class UserService {
         return usersRecordToUser(Objects.requireNonNull(findByLogin(login).orElse(null)));
     }
 
-
-    public boolean checkById(String id){
-        return findById(id).isPresent();
-    }
-
     private User usersRecordToUser(UsersRecord user){
-        return new User(user.getUserId().toString(), user.getLogin(), user.getName());
+        return new User(user.getUserId(), user.getLogin(), user.getName());
     }
 
     public User getByLogin(String login){
@@ -83,11 +78,11 @@ public class UserService {
      * @return true, если все пользователи существуют, иначе false
      * @throws BadRequestException если хотя бы один id отсутствует в базе
      */
-    public boolean allUsersExistByIds(List<String> userIds) {
+    public boolean allUsersExistByIds(List<UUID> userIds) {
         List<UUID> uuids = new java.util.ArrayList<>();
-        for (String id : userIds) {
+        for (UUID id : userIds) {
             try {
-                uuids.add(UUID.fromString(id));
+                uuids.add(id);
             } catch (IllegalArgumentException e) {
                 throw new BadRequestException("Некорректный формат id пользователя: " + id);
             }

@@ -5,13 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ShoppingList {
-    private String shoppingListId;
-    private String taskId;
+    private UUID shoppingListId;
+    private UUID taskId;
     private String title;
     private String description;
     private String status;
