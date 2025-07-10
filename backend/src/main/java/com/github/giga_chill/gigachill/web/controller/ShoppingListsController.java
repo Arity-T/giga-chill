@@ -41,79 +41,75 @@ public class ShoppingListsController {
     @GetMapping
     // ACCESS: owner, admin, participant
     public ResponseEntity<List<ShoppingListInfo>> getShoppingList(Authentication authentication,
-                                                                  @PathVariable String eventId) {
+                                                                  @PathVariable UUID eventId) {
         User user = userService.userAuthentication(authentication);
-        UUID eventUuid = UUIDUtils.safeUUID(eventId);
-        if (!eventService.isExisted(eventUuid)) {
-            throw new NotFoundException("Event with id " + eventUuid + " not found");
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+        if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a participant of event with id " + eventUuid);
+                    " is not a participant of event with id " + eventId);
         }
 
-        return ResponseEntity.ok(shoppingListsService.getAllShoppingListsFromEvent(eventUuid).stream()
+        return ResponseEntity.ok(shoppingListsService.getAllShoppingListsFromEvent(eventId).stream()
                 .map(this::toShoppingListInfo).toList());
     }
 
     @PostMapping
     // ACCESS: owner, admin, participant
     public ResponseEntity<Void> postShoppingList(Authentication authentication,
-                                                 @PathVariable String eventId,
+                                                 @PathVariable UUID eventId,
                                                  @RequestBody Map<String, Object> body) {
         //TODO: привязка к task id
         User user = userService.userAuthentication(authentication);
-        UUID eventUuid = UUIDUtils.safeUUID(eventId);
         String title = (String) body.get("title");
         String description = (String) body.get("description");
         if (title == null || description == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
-        if (!eventService.isExisted(eventUuid)) {
-            throw new NotFoundException("Event with id " + eventUuid + " not found");
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+        if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a participant of event with id " + eventUuid);
+                    " is not a participant of event with id " + eventId);
         }
-        shoppingListsService.createShoppingList(eventUuid, user.getId(), title, description);
+        shoppingListsService.createShoppingList(eventId, user.getId(), title, description);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{shoppingListId}")
     // ACCESS: owner, admin, participant(если потребитель)
     public ResponseEntity<Void> patchShoppingList(Authentication authentication,
-                                                  @PathVariable String eventId,
-                                                  @PathVariable String shoppingListId,
+                                                  @PathVariable UUID eventId,
+                                                  @PathVariable UUID shoppingListId,
                                                   @RequestBody Map<String, Object> body) {
 
         User user = userService.userAuthentication(authentication);
-        UUID eventUuid = UUIDUtils.safeUUID(eventId);
-        UUID shoppingListUuid = UUIDUtils.safeUUID(shoppingListId);
         String title = (String) body.get("title");
         String description = (String) body.get("description");
-        if (!eventService.isExisted(eventUuid)) {
-            throw new NotFoundException("Event with id " + eventUuid + " not found");
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!shoppingListsService.isExisted(eventUuid, shoppingListUuid)) {
-            throw new NotFoundException("Shopping list with id " + shoppingListUuid + " not found");
+        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+            throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+        if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a participant of event with id " + eventUuid);
+                    " is not a participant of event with id " + eventId);
         }
-        if (participantsService.isParticipantRole(eventUuid, user.getId())
-                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.getId())) {
+        if (participantsService.isParticipantRole(eventId, user.getId())
+                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a consumer of shopping list with id " + shoppingListUuid);
+                    " is not a consumer of shopping list with id " + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventUuid, shoppingListUuid);
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
                 !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
-            throw new ConflictException("Shopping list with id: " + shoppingListUuid + " does not" +
+            throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
                     " have unassigned or assigned status");
         }
-        shoppingListsService.updateShoppingList(eventUuid, shoppingListUuid, title, description);
+        shoppingListsService.updateShoppingList(eventId, shoppingListId, title, description);
 
         return ResponseEntity.noContent().build();
     }
@@ -122,34 +118,32 @@ public class ShoppingListsController {
     @DeleteMapping("/{shoppingListId}")
     // ACCESS: owner, admin, participant(если потребитель)
     public ResponseEntity<Void> deleteShoppingList(Authentication authentication,
-                                                   @PathVariable String eventId,
-                                                   @PathVariable String shoppingListId) {
+                                                   @PathVariable UUID eventId,
+                                                   @PathVariable UUID shoppingListId) {
 
         User user = userService.userAuthentication(authentication);
-        UUID eventUuid = UUIDUtils.safeUUID(eventId);
-        UUID shoppingListUuid = UUIDUtils.safeUUID(shoppingListId);
-        if (!eventService.isExisted(eventUuid)) {
-            throw new NotFoundException("Event with id " + eventUuid + " not found");
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!shoppingListsService.isExisted(eventUuid, shoppingListUuid)) {
-            throw new NotFoundException("Shopping list with id " + shoppingListUuid + " not found");
+        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+            throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+        if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a participant of event with id " + eventUuid);
+                    " is not a participant of event with id " + eventId);
         }
-        if (participantsService.isParticipantRole(eventUuid, user.getId())
-                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.getId())) {
+        if (participantsService.isParticipantRole(eventId, user.getId())
+                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a consumer of shopping list with id " + shoppingListUuid);
+                    " is not a consumer of shopping list with id " + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventUuid, shoppingListUuid);
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
                 !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
-            throw new ConflictException("Shopping list with id: " + shoppingListUuid + " does not" +
+            throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
                     " have unassigned or assigned status");
         }
-        shoppingListsService.deleteShoppingList(eventUuid, shoppingListUuid);
+        shoppingListsService.deleteShoppingList(eventId, shoppingListId);
 
         return ResponseEntity.noContent().build();
     }
@@ -157,209 +151,196 @@ public class ShoppingListsController {
     @PostMapping("/{shoppingListId}/shopping-items")
     // ACCESS: owner, admin, participant(если потребитель)
     public ResponseEntity<Void> postShoppingItem(Authentication authentication,
-                                                 @PathVariable String eventId,
-                                                 @PathVariable String shoppingListId,
+                                                 @PathVariable UUID eventId,
+                                                 @PathVariable UUID shoppingListId,
                                                  @RequestBody Map<String, Object> body) {
         User user = userService.userAuthentication(authentication);
-        UUID eventUuid = UUIDUtils.safeUUID(eventId);
-        UUID shoppingListUuid = UUIDUtils.safeUUID(shoppingListId);
         String title = (String) body.get("title");
         BigDecimal quantity = (BigDecimal) body.get("quantity");
         String unit = (String) body.get("unit");
         if (title == null || quantity == null || unit == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
-        if (!eventService.isExisted(eventUuid)) {
-            throw new NotFoundException("Event with id " + eventUuid + " not found");
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!shoppingListsService.isExisted(eventUuid, shoppingListUuid)) {
-            throw new NotFoundException("Shopping list with id " + shoppingListUuid + " not found");
+        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+            throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+        if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a participant of event with id " + eventUuid);
+                    " is not a participant of event with id " + eventId);
         }
-        if (participantsService.isParticipantRole(eventUuid, user.getId())
-                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.getId())) {
+        if (participantsService.isParticipantRole(eventId, user.getId())
+                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a consumer of shopping list with id " + shoppingListUuid);
+                    " is not a consumer of shopping list with id " + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventUuid, shoppingListUuid);
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
                 !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
-            throw new ConflictException("Shopping list with id: " + shoppingListUuid + " does not" +
+            throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
                     " have unassigned or assigned status");
         }
-        shoppingListsService.addShoppingItem(eventUuid, shoppingListUuid, title, quantity, unit);
+        shoppingListsService.addShoppingItem(eventId, shoppingListId, title, quantity, unit);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{shoppingListId}/shopping-items/{shoppingItemId}")
     // ACCESS: owner, admin, participant(если потребитель)
     public ResponseEntity<Void> patchShoppingItem(Authentication authentication,
-                                                  @PathVariable String eventId,
-                                                  @PathVariable String shoppingListId,
-                                                  @PathVariable String shoppingItemId,
+                                                  @PathVariable UUID eventId,
+                                                  @PathVariable UUID shoppingListId,
+                                                  @PathVariable UUID shoppingItemId,
                                                   @RequestBody Map<String, Object> body) {
         User user = userService.userAuthentication(authentication);
-        UUID eventUuid = UUIDUtils.safeUUID(eventId);
-        UUID shoppingListUuid = UUIDUtils.safeUUID(shoppingListId);
-        UUID shoppingItemUuid = UUIDUtils.safeUUID(shoppingItemId);
         String title = (String) body.get("title");
         BigDecimal quantity = (BigDecimal) body.get("quantity");
         String unit = (String) body.get("unit");
-        if (!eventService.isExisted(eventUuid)) {
-            throw new NotFoundException("Event with id " + eventUuid + " not found");
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!shoppingListsService.isExisted(eventUuid, shoppingListUuid)) {
-            throw new NotFoundException("Shopping list with id " + shoppingListUuid + " not found");
+        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+            throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
-        if (!shoppingListsService.isShoppingItemExisted(shoppingListUuid, shoppingItemUuid)) {
-            throw new NotFoundException("Shopping item with id " + shoppingItemUuid + " not found");
+        if (!shoppingListsService.isShoppingItemExisted(shoppingListId, shoppingItemId)) {
+            throw new NotFoundException("Shopping item with id " + shoppingItemId + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+        if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a participant of event with id " + eventUuid);
+                    " is not a participant of event with id " + eventId);
         }
-        if (participantsService.isParticipantRole(eventUuid, user.getId())
-                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.getId())) {
+        if (participantsService.isParticipantRole(eventId, user.getId())
+                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a consumer of shopping list with id " + shoppingListUuid);
+                    " is not a consumer of shopping list with id " + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventUuid, shoppingListUuid);
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
                 !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
-            throw new ConflictException("Shopping list with id: " + shoppingListUuid + " does not" +
+            throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
                     " have unassigned or assigned status");
         }
-        shoppingListsService.updateShoppingItem(eventUuid, shoppingListUuid, shoppingItemUuid, title, quantity, unit);
+        shoppingListsService.updateShoppingItem(eventId, shoppingListId, shoppingItemId, title, quantity, unit);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{shoppingListId}/shopping-items/{shoppingItemId}")
     // ACCESS: owner, admin, participant(если потребитель)
     public ResponseEntity<Void> deleteShoppingItem(Authentication authentication,
-                                                   @PathVariable String eventId,
-                                                   @PathVariable String shoppingListId,
-                                                   @PathVariable String shoppingItemId) {
+                                                   @PathVariable UUID eventId,
+                                                   @PathVariable UUID shoppingListId,
+                                                   @PathVariable UUID shoppingItemId) {
         User user = userService.userAuthentication(authentication);
-        UUID eventUuid = UUIDUtils.safeUUID(eventId);
-        UUID shoppingListUuid = UUIDUtils.safeUUID(shoppingListId);
-        UUID shoppingItemUuid = UUIDUtils.safeUUID(shoppingItemId);
-        if (!shoppingListsService.isShoppingItemExisted(shoppingListUuid, shoppingItemUuid)) {
-            throw new NotFoundException("Shopping item with id " + shoppingItemUuid + " not found");
+        if (!shoppingListsService.isShoppingItemExisted(shoppingListId, shoppingItemId)) {
+            throw new NotFoundException("Shopping item with id " + shoppingItemId + " not found");
         }
-        if (!eventService.isExisted(eventUuid)) {
-            throw new NotFoundException("Event with id " + eventUuid + " not found");
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!shoppingListsService.isExisted(eventUuid, shoppingListUuid)) {
-            throw new NotFoundException("Shopping list with id " + shoppingListUuid + " not found");
+        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+            throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+        if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a participant of event with id " + eventUuid);
+                    " is not a participant of event with id " + eventId);
         }
-        if (participantsService.isParticipantRole(eventUuid, user.getId())
-                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.getId())) {
+        if (participantsService.isParticipantRole(eventId, user.getId())
+                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a consumer of shopping list with id " + shoppingListUuid);
+                    " is not a consumer of shopping list with id " + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventUuid, shoppingListUuid);
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
                 !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
-            throw new ConflictException("Shopping list with id: " + shoppingListUuid + " does not" +
+            throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
                     " have unassigned or assigned status");
         }
-        shoppingListsService.deleteShoppingItemFromShoppingList(eventUuid, shoppingListUuid, shoppingItemUuid);
+        shoppingListsService.deleteShoppingItemFromShoppingList(eventId, shoppingListId, shoppingItemId);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{shoppingListId}/shopping-items/{shoppingItemId}/purchased-state")
     // ACCESS: owner, admin, participant(если потребитель)
     public ResponseEntity<Void> patchShoppingItemState(Authentication authentication,
-                                                       @PathVariable String eventId,
-                                                       @PathVariable String shoppingListId,
-                                                       @PathVariable String shoppingItemId,
+                                                       @PathVariable UUID eventId,
+                                                       @PathVariable UUID shoppingListId,
+                                                       @PathVariable UUID shoppingItemId,
                                                        @RequestBody Map<String, Object> body) {
         User user = userService.userAuthentication(authentication);
-        UUID eventUuid = UUIDUtils.safeUUID(eventId);
-        UUID shoppingListUuid = UUIDUtils.safeUUID(shoppingListId);
-        UUID shoppingItemUuid = UUIDUtils.safeUUID(shoppingItemId);
         Boolean isPurchased = (Boolean) body.get("is_purchased");
         if (isPurchased == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
-        if (!shoppingListsService.isShoppingItemExisted(shoppingListUuid, shoppingItemUuid)) {
-            throw new NotFoundException("Shopping item with id " + shoppingItemUuid + " not found");
+        if (!shoppingListsService.isShoppingItemExisted(shoppingListId, shoppingItemId)) {
+            throw new NotFoundException("Shopping item with id " + shoppingItemId + " not found");
         }
-        if (!eventService.isExisted(eventUuid)) {
+        if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!shoppingListsService.isExisted(eventUuid, shoppingListUuid)) {
-            throw new NotFoundException("Shopping list with id " + shoppingListUuid + " not found");
+        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+            throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+        if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a participant of event with id " + eventUuid);
+                    " is not a participant of event with id " + eventId);
         }
-        if (participantsService.isParticipantRole(eventUuid, user.getId())
-                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.getId())) {
+        if (participantsService.isParticipantRole(eventId, user.getId())
+                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a consumer of shopping list with id " + shoppingListUuid);
+                    " is not a consumer of shopping list with id " + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventUuid, shoppingListUuid);
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
                 !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
-            throw new ConflictException("Shopping list with id: " + shoppingListUuid + " does not" +
+            throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
                     " have unassigned or assigned status");
         }
-        shoppingListsService.updateShoppingItemStatus(eventUuid, shoppingListUuid, shoppingItemUuid, isPurchased);
+        shoppingListsService.updateShoppingItemStatus(eventId, shoppingListId, shoppingItemId, isPurchased);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{shoppingListId}/consumers")
     // ACCESS: owner, admin, participant(если потребитель)
     public ResponseEntity<Void> putConsumers(Authentication authentication,
-                                             @PathVariable String eventId,
-                                             @PathVariable String shoppingListId,
+                                             @PathVariable UUID eventId,
+                                             @PathVariable UUID shoppingListId,
                                              @RequestBody List<String> body) {
 
         User user = userService.userAuthentication(authentication);
-        UUID eventUuid = UUIDUtils.safeUUID(eventId);
-        UUID shoppingListUuid = UUIDUtils.safeUUID(shoppingListId);
         if (body == null || body.isEmpty()) {
             throw new BadRequestException("Invalid request body: " + body);
         }
-        if (!eventService.isExisted(eventUuid)) {
-            throw new NotFoundException("Event with id " + eventUuid + " not found");
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!shoppingListsService.isExisted(eventUuid, shoppingListUuid)) {
-            throw new NotFoundException("Shopping list with id " + shoppingListUuid + " not found");
+        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+            throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+        if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a participant of event with id " + eventUuid);
+                    " is not a participant of event with id " + eventId);
         }
-        if (participantsService.isParticipantRole(eventUuid, user.getId())
-                && !shoppingListsService.isConsumer(eventUuid, shoppingListUuid, user.getId())) {
+        if (participantsService.isParticipantRole(eventId, user.getId())
+                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a consumer of shopping list with id " + shoppingListUuid);
+                    " is not a consumer of shopping list with id " + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventUuid, shoppingListUuid);
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
                 !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
-            throw new ConflictException("Shopping list with id: " + shoppingListUuid + " does not" +
+            throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
                     " have unassigned or assigned status");
         }
 
         List<UUID> allUsersIds = body.stream()
-                .map(UUIDUtils::safeUUID)
+                .map(this::safeUUID)
                 .toList();
         if (!userService.allUsersExistByIds(allUsersIds)) {
             throw new NotFoundException("The list contains a user that is not in the database");
         }
 
-        shoppingListsService.updateShoppingListConsumers(eventUuid, shoppingListUuid, body);
+        shoppingListsService.updateShoppingListConsumers(eventId, shoppingListId, body);
         return ResponseEntity.noContent().build();
     }
 
@@ -392,6 +373,15 @@ public class ShoppingListsController {
                 shoppingItem.getQuantity(),
                 shoppingItem.getUnit(),
                 shoppingItem.getIsPurchased());
+    }
+
+
+    private UUID safeUUID(String raw) {
+        try {
+            return UUID.fromString(raw);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Invalid UUID: " + raw);
+        }
     }
 
 }

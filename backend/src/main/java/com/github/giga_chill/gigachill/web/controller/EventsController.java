@@ -8,7 +8,6 @@ import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.UserService;
 import com.github.giga_chill.gigachill.service.ParticipantsService;
-import com.github.giga_chill.gigachill.util.UUIDUtils;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
 import com.github.giga_chill.gigachill.web.info.ResponseEventInfo;
 import lombok.RequiredArgsConstructor;
@@ -56,17 +55,16 @@ public class EventsController {
 
     @GetMapping("/{eventId}")
     //ACCESS: owner, admin, participant
-    public ResponseEntity<ResponseEventInfo> getEventById(Authentication authentication, @PathVariable String eventId) {
+    public ResponseEntity<ResponseEventInfo> getEventById(Authentication authentication, @PathVariable UUID eventId) {
         User user = userService.userAuthentication(authentication);
-        UUID eventUuid = UUIDUtils.safeUUID(eventId);
-        if (!eventService.isExisted(eventUuid)) {
-            throw new NotFoundException("Event with id " + eventUuid + " not found");
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+        if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a participant of event with id " + eventUuid);
+                    " is not a participant of event with id " + eventId);
         }
-        Event event = eventService.getEventById(eventUuid);
+        Event event = eventService.getEventById(eventId);
         return ResponseEntity.ok(toResponseEventInfo(event,
                 participantsService.getParticipantRoleInEvent(event.getEventId(), user.getId())));
     }
@@ -74,41 +72,39 @@ public class EventsController {
     @PatchMapping("/{eventId}")
     //ACCESS: owner, admin
     public ResponseEntity<Void> patchEventById(@RequestBody RequestEventInfo requestEventInfo,
-                                               Authentication authentication, @PathVariable String eventId) {
+                                               Authentication authentication, @PathVariable UUID eventId) {
         User user = userService.userAuthentication(authentication);
-        UUID eventUuid = UUIDUtils.safeUUID(eventId);
-        if (!eventService.isExisted(eventUuid)) {
-            throw new NotFoundException("Event with id " + eventUuid + " not found");
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+        if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a participant of event with id " + eventUuid);
+                    " is not a participant of event with id " + eventId);
         }
-        if (!participantsService.isOwnerRole(eventUuid, user.getId()) && !participantsService.isAdminRole(eventUuid, user.getId())) {
+        if (!participantsService.isOwnerRole(eventId, user.getId()) && !participantsService.isAdminRole(eventId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " does not have permission to patch event with id " + eventUuid);
+                    " does not have permission to patch event with id " + eventId);
         }
-        eventService.updateEvent(eventUuid, requestEventInfo);
+        eventService.updateEvent(eventId, requestEventInfo);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{eventId}")
     //ACCESS: owner
-    public ResponseEntity<Void> deleteEventById(Authentication authentication, @PathVariable String eventId) {
+    public ResponseEntity<Void> deleteEventById(Authentication authentication, @PathVariable UUID eventId) {
         User user = userService.userAuthentication(authentication);
-        UUID eventUuid = UUIDUtils.safeUUID(eventId);
-        if (!eventService.isExisted(eventUuid)) {
-            throw new NotFoundException("Event with id " + eventUuid + " not found");
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!participantsService.isParticipant(eventUuid, user.getId())) {
+        if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " is not a participant of event with id " + eventUuid);
+                    " is not a participant of event with id " + eventId);
         }
-        if (!participantsService.isOwnerRole(eventUuid, user.getId())) {
+        if (!participantsService.isOwnerRole(eventId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
-                    " does not have permission to delete event with id " + eventUuid);
+                    " does not have permission to delete event with id " + eventId);
         }
-        eventService.deleteEvent(eventUuid);
+        eventService.deleteEvent(eventId);
 
         return ResponseEntity.noContent().build();
     }
