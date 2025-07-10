@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -18,48 +19,48 @@ public class ParticipantsService {
     private final Environment env;
     private final ParticipantDAO participantDAO;
 
-    public List<Participant> getAllParticipantsByEventId(String eventId) {
+    public List<Participant> getAllParticipantsByEventId(UUID eventId) {
         return participantDAO.getAllParticipantsByEventId(eventId).stream()
                 .map(this::toEntity)
                 .toList();
     }
 
-    public Participant getParticipantById(String eventId, String participantId){
+    public Participant getParticipantById(UUID eventId, UUID participantId) {
         return toEntity(participantDAO.getParticipantById(eventId, participantId));
     }
 
-    public void addParticipantToEvent(String eventId, User user) {
+    public void addParticipantToEvent(UUID eventId, User user) {
         Participant participant = new Participant(user.id, user.login, user.name,
                 env.getProperty("roles.participant").toString(), BigDecimal.valueOf(0));
 
         participantDAO.addParticipantToEvent(eventId, toDto(participant));
     }
 
-    public void deleteParticipant(String eventId, String participantId) {
+    public void deleteParticipant(UUID eventId, UUID participantId) {
         participantDAO.deleteParticipant(eventId, participantId);
     }
 
-    public boolean isParticipant(String eventId, String userId) {
+    public boolean isParticipant(UUID eventId, UUID userId) {
         return participantDAO.isParticipant(eventId, userId);
     }
 
-    public void updateParticipantRole(String eventId, String participantId, String role) {
+    public void updateParticipantRole(UUID eventId, UUID participantId, String role) {
         participantDAO.updateParticipantRole(eventId, participantId, role);
     }
 
-    public String getParticipantRoleInEvent(String eventId, String participantId) {
+    public String getParticipantRoleInEvent(UUID eventId, UUID participantId) {
         return participantDAO.getParticipantRoleInEvent(eventId, participantId);
     }
 
-    public boolean isOwnerRole(String eventId, String participantId) {
+    public boolean isOwnerRole(UUID eventId, UUID participantId) {
         return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.owner").toString());
     }
 
-    public boolean isAdminRole(String eventId, String participantId) {
+    public boolean isAdminRole(UUID eventId, UUID participantId) {
         return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.admin").toString());
     }
 
-    public boolean isParticipantRole(String eventId, String participantId) {
+    public boolean isParticipantRole(UUID eventId, UUID participantId) {
         return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.participant").toString());
     }
 

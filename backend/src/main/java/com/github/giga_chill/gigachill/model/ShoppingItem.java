@@ -6,12 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ShoppingItem {
-    private String shoppingItemId;
+    private UUID shoppingItemId;
     private String title;
     private BigDecimal quantity;
     private String unit;

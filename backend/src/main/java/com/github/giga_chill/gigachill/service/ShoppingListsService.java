@@ -15,37 +15,38 @@ public class ShoppingListsService {
 
     private final Environment env;
     //TEMPORARY:
-    private Map<String, Map<String, ShoppingList>> SHOPPING_LISTS = new HashMap<>();
+    private Map<UUID, Map<UUID, ShoppingList>> SHOPPING_LISTS = new HashMap<>();
 
-    public List<ShoppingList> getAllShoppingListsFromEvent(String eventId){
+    public List<ShoppingList> getAllShoppingListsFromEvent(UUID eventId) {
         //TODO: связь с бд
 
         //TEMPORARY:
-        if (!SHOPPING_LISTS.containsKey(eventId)){
+        if (!SHOPPING_LISTS.containsKey(eventId)) {
             return List.of();
         }
         return SHOPPING_LISTS.get(eventId).values().stream().toList();
     }
 
-    public ShoppingList getShoppingListById(String eventId, String shoppingListId){
+    public ShoppingList getShoppingListById(UUID eventId, UUID shoppingListId) {
         //TODO: связь с бд (убрать eventId) (Из логгера тоже)
 
         //TEMPORARY:
         return SHOPPING_LISTS.get(eventId).get(shoppingListId);
     }
 
-    public String createShoppingList(String eventId, String title, String description){
+    public String createShoppingList(UUID eventId, String title, String description) {
         //TODO: связь с бд (убрать eventId)
-        ShoppingList shoppingList = new ShoppingList(UUID.randomUUID().toString(), "not yet", title, description,
+        //TODO: сделать привязку к task_id
+        ShoppingList shoppingList = new ShoppingList(UUID.randomUUID(), UUID.randomUUID(), title, description,
                 env.getProperty("shopping_list_status.unassigned").toString(), new ArrayList<>(), new ArrayList<>());
 
         //TEMPORARY:
         SHOPPING_LISTS.computeIfAbsent(eventId, k -> new HashMap<>())
                 .put(shoppingList.getShoppingListId(), shoppingList);
-        return shoppingList.getShoppingListId();
+        return shoppingList.getShoppingListId().toString();
     }
 
-    public void updateShoppingList(String eventId, String shoppingListId, String title, String description){
+    public void updateShoppingList(UUID eventId, UUID shoppingListId, String title, String description) {
         //TODO: связь с бд (убрать eventId)
 
         //TEMPORARY:
@@ -56,7 +57,7 @@ public class ShoppingListsService {
     }
 
 
-    public void deleteShoppingList(String eventId, String shoppingListId){
+    public void deleteShoppingList(UUID eventId, UUID shoppingListId) {
         //TODO: связь с бд (убрать eventId)
 
 
@@ -65,25 +66,25 @@ public class ShoppingListsService {
     }
 
 
-    public String addShoppingItem(String eventId, String shoppingListId,
-                                  String title, BigDecimal quantity, String unit){
+    public String addShoppingItem(UUID eventId, UUID shoppingListId,
+                                  String title, BigDecimal quantity, String unit) {
         //TODO: связь с бд (убрать eventId)
-        ShoppingItem shoppingItem = new ShoppingItem(UUID.randomUUID().toString(), title,
+        ShoppingItem shoppingItem = new ShoppingItem(UUID.randomUUID(), title,
                 quantity, unit, false);
 
 
         //TEMPORARY:
         SHOPPING_LISTS.get(eventId).get(shoppingListId).getShoppingItems().add(shoppingItem);
-        return shoppingItem.getShoppingItemId();
+        return shoppingItem.getShoppingItemId().toString();
     }
 
-    public void updateShoppingItem(String eventId, String shoppingListId, String shoppingItemId,
-                                String title, BigDecimal quantity, String unit){
+    public void updateShoppingItem(UUID eventId, UUID shoppingListId, UUID shoppingItemId,
+                                   String title, BigDecimal quantity, String unit) {
         //TODO: связь с бд (убрать eventId и shoppingListId)
 
         //TEMPORARY:
         ShoppingItem shoppingItem = SHOPPING_LISTS.get(eventId).get(shoppingListId).getShoppingItems().stream()
-                .filter(item-> item.getShoppingItemId().equals(shoppingItemId))
+                .filter(item -> item.getShoppingItemId().equals(shoppingItemId))
                 .findFirst().orElse(null);
         shoppingItem.setTitle(title);
         shoppingItem.setQuantity(quantity);
@@ -91,7 +92,7 @@ public class ShoppingListsService {
     }
 
 
-    public void deleteShoppingItemFromShoppingList(String eventId, String shoppingListId, String shoppingItemId){
+    public void deleteShoppingItemFromShoppingList(UUID eventId, UUID shoppingListId, UUID shoppingItemId) {
         //TODO: связь с бд (убрать eventId)
 
 
@@ -100,8 +101,8 @@ public class ShoppingListsService {
                 .removeIf(item -> item.getShoppingItemId().equals(shoppingItemId));
     }
 
-    public void updateShoppingItemStatus(String eventId, String shoppingListId, String shoppingItemId,
-                                                 boolean status){
+    public void updateShoppingItemStatus(UUID eventId, UUID shoppingListId, UUID shoppingItemId,
+                                         boolean status) {
         //TODO: связь с бд (убрать eventId и shoppingListId)
         ShoppingItem shoppingItem = getShoppingItemById(eventId, shoppingListId, shoppingItemId);
 
@@ -109,16 +110,16 @@ public class ShoppingListsService {
         shoppingItem.setIsPurchased(status);
     }
 
-    public ShoppingItem getShoppingItemById(String eventId, String shoppingListId,
-                                                            String shoppingItemId){
+    public ShoppingItem getShoppingItemById(UUID eventId, UUID shoppingListId,
+                                            UUID shoppingItemId) {
         //TODO: связь с бд (убрать eventId и shoppingListId)
 
         //TEMPORARY:
         return SHOPPING_LISTS.get(eventId).get(shoppingListId).getShoppingItems().stream()
-                .filter(item-> item.getShoppingItemId().equals(shoppingItemId)).findFirst().orElse(null);
+                .filter(item -> item.getShoppingItemId().equals(shoppingItemId)).findFirst().orElse(null);
     }
 
-    public void updateShoppingListConsumers(String eventId, String shoppingListId, List<String> allUserId){
+    public void updateShoppingListConsumers(UUID eventId, UUID shoppingListId, List<String> allUserId) {
         //TODO: связь с бд (убрать eventId)
 
 
@@ -126,21 +127,21 @@ public class ShoppingListsService {
         SHOPPING_LISTS.get(eventId).get(shoppingListId).getConsumers().clear();
     }
 
-    public String getShoppingListStatus(String eventId, String shoppingListId){
+    public String getShoppingListStatus(UUID eventId, UUID shoppingListId) {
         //TODO: связь с бд (убрать eventId)
 
         //TEMPORARY:
         return SHOPPING_LISTS.get(eventId).get(shoppingListId).getStatus();
     }
 
-    public boolean isExisted(String eventId, String shoppingListId){
+    public boolean isExisted(UUID eventId, UUID shoppingListId) {
         //TODO: связь с бд (убрать eventId)
 
         //TEMPORARY:
         return SHOPPING_LISTS.get(eventId).containsKey(shoppingListId);
     }
 
-    public boolean isConsumer(String eventId, String shoppingListId, String consumerId){
+    public boolean isConsumer(UUID eventId, UUID shoppingListId, UUID consumerId) {
         //TODO: связь с бд (убрать eventId)
 
         //TEMPORARY:
@@ -148,7 +149,7 @@ public class ShoppingListsService {
                 .anyMatch(item -> item.getId().equals(consumerId));
     }
 
-    public boolean isShoppingItemExisted(String shoppingListId, String shoppingItemId) {
+    public boolean isShoppingItemExisted(UUID shoppingListId, UUID shoppingItemId) {
         //TODO: связь с бд (убрать shoppingListId)
 
         //TEMPORARY:

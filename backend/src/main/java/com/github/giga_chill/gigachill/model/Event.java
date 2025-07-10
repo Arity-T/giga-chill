@@ -5,13 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Event {
 
-    private String eventId;
+    private UUID eventId;
     private String title;
     private String location;
     private String startDatetime;

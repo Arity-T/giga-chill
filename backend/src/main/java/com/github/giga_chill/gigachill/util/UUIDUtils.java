@@ -1,8 +1,10 @@
 package com.github.giga_chill.gigachill.util;
 
 import com.github.giga_chill.gigachill.exception.BadRequestException;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
+
 
 public class UUIDUtils {
     public static UUID safeUUID(String raw) {
