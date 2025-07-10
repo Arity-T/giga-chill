@@ -1,5 +1,7 @@
 package com.github.giga_chill.gigachill.aspect;
 
+import com.github.giga_chill.gigachill.config.LoggerColorConfig;
+import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
@@ -10,10 +12,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Aspect
+@RequiredArgsConstructor
 public class GlobalExceptionHandlerLoggerAspect {
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandlerLoggerAspect.class);
-    private static final String EXCEPTION_COLOR = "\u001b[33m";
-    private static final String RESET_COLOR = "\u001B[0m";
+    private final LoggerColorConfig loggerColorConfig;
 
     @Pointcut("within(com.github.giga_chill.gigachill.web.controller..*)")
     public void exceptionController() {
@@ -26,13 +28,15 @@ public class GlobalExceptionHandlerLoggerAspect {
     @AfterThrowing(pointcut = "exceptionController()", throwing = "ex")
     public void logExceptionController(JoinPoint joinPoint, Throwable ex) {
         String method = joinPoint.getSignature().toShortString();
-        LOGGER.error(EXCEPTION_COLOR + "Method {} threw exception: {}" + RESET_COLOR, method, ex.toString());
+        LOGGER.error(loggerColorConfig.getEXCEPTION_COLOR() + "Method {} threw exception: {}"
+                + loggerColorConfig.getRESET_COLOR(), method, ex.toString());
     }
 
     @AfterThrowing(pointcut = "exceptionService()", throwing = "ex")
     public void logExceptionService(JoinPoint joinPoint, Throwable ex) {
         String method = joinPoint.getSignature().toShortString();
-        LOGGER.error(EXCEPTION_COLOR + "Method {} threw exception: {}" + RESET_COLOR, method, ex.toString());
+        LOGGER.error(loggerColorConfig.getEXCEPTION_COLOR() + "Method {} threw exception: {}"
+                + loggerColorConfig.getRESET_COLOR(), method, ex.toString());
     }
 
 }

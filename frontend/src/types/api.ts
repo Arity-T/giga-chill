@@ -9,6 +9,8 @@ export interface User {
   name: string;
 }
 
+export type UserId = string;
+
 export interface RegisterRequest {
   name: string;
   login: string;
@@ -51,4 +53,51 @@ export enum UserRole {
   OWNER = 'owner',
   ADMIN = 'admin',
   PARTICIPANT = 'participant',
+}
+
+export interface ShoppingItemPurchasedState {
+  is_purchased: boolean;
+}
+
+export interface ShoppingItem {
+  shopping_item_id: string;
+  title: string;
+  quantity: number;
+  unit: string;
+  is_purchased: boolean;
+}
+
+export interface ShoppingListWithItems {
+  shopping_list_id: string;
+  task_id: string;
+  title: string;
+  description: string;
+  status: ShoppingListStatus;
+  can_edit: boolean;
+  shopping_items: ShoppingItem[];
+  consumers: UserInEvent[];
+}
+
+export interface ShoppingListRequest {
+  title: string;
+  description: string;
+}
+
+export enum ShoppingListStatus {
+  UNASSIGNED = 'unassigned',
+  ASSIGNED = 'assigned',
+  IN_PROGRESS = 'in_progress',
+  BOUGHT = 'bought',
+  PARTIALLY_BOUGHT = 'partially_bought',
+  CANCELLED = 'cancelled',
+}
+
+export interface ShoppingItemRequest {
+  title: string;
+  quantity: number;
+  unit: string;
+}
+
+export interface ShoppingItemPurchasedStateRequest {
+  is_purchased: boolean;
 }

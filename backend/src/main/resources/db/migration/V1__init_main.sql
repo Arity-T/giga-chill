@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS shopping_lists (
 
 CREATE TABLE IF NOT EXISTS shopping_items (
   shopping_item_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  shopping_list_id UUID NOT NULL REFERENCES shopping_lists(shopping_list_id),
+  shopping_list_id UUID NOT NULL REFERENCES shopping_lists(shopping_list_id) ON DELETE CASCADE,
   title VARCHAR(50) NOT NULL,
   quantity NUMERIC(5, 2) NOT NULL,
   unit VARCHAR(20) NOT NULL,
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS shopping_items (
 
 CREATE TABLE IF NOT EXISTS consumer_in_list (
   user_id UUID NOT NULL REFERENCES users(user_id),
-  shopping_list_id UUID NOT NULL REFERENCES shopping_lists(shopping_list_id),
+  shopping_list_id UUID NOT NULL REFERENCES shopping_lists(shopping_list_id) ON DELETE CASCADE,
   PRIMARY KEY (user_id, shopping_list_id)
 );
 

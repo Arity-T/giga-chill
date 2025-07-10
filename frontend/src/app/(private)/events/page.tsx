@@ -1,6 +1,6 @@
 'use client';
 
-import { Row, Col, Typography, Button, Flex } from "antd";
+import { Row, Col, Typography, Button, Flex, Empty } from "antd";
 import { PlusOutlined } from '@ant-design/icons';
 import { useState } from "react";
 import styles from "./page.module.css";
@@ -28,11 +28,20 @@ export default function EventsPage() {
             </Flex>
 
             <Row gutter={[16, 16]}>
-                {events?.map((event) => (
-                    <Col xs={24} sm={12} lg={8} key={event.event_id}>
-                        <EventCard event={event} />
+                {events && events.length > 0 ? (
+                    events.map((event) => (
+                        <Col xs={24} sm={12} lg={8} key={event.event_id}>
+                            <EventCard event={event} />
+                        </Col>
+                    ))
+                ) : (
+                    <Col span={24}>
+                        <Empty
+                            description="Нет мероприятий"
+                            image={Empty.PRESENTED_IMAGE_SIMPLE}
+                        />
                     </Col>
-                ))}
+                )}
             </Row>
 
             <CreateEventModal

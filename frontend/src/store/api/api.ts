@@ -9,15 +9,20 @@ import type {
   UpdateEventRequest,
   UserInEvent,
   UserRole,
+  ShoppingListWithItems,
+  ShoppingListRequest,
+  ShoppingItemRequest,
+  ShoppingItemPurchasedStateRequest,
+  UserId,
 } from '@/types/api'
 
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:3000',
+    baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000',
     credentials: 'include',
   }),
-  tagTypes: ['Me', 'Events', 'EventParticipants'],
+  tagTypes: ['Me', 'Events', 'EventParticipants', 'ShoppingLists'],
   endpoints: (builder) => ({
     login: builder.mutation<void, UserLoginPassword>({
       query: (body) => ({
@@ -55,7 +60,7 @@ export const api = createApi({
       providesTags: [{ type: 'Events', id: 'LIST' }],
     }),
 
-    createEvent: builder.mutation<Event, CreateEventRequest>({
+    createEvent: builder.mutation<void, CreateEventRequest>({
       query: (body) => ({
         url: '/events',
         method: 'POST',
@@ -79,7 +84,7 @@ export const api = createApi({
       // будет отправляться лишний запрос.
     }),
 
-    updateEvent: builder.mutation<Event, { eventId: string; event: UpdateEventRequest }>({
+    updateEvent: builder.mutation<void, { eventId: string; event: UpdateEventRequest }>({
       query: ({ eventId, event }) => ({
         url: `/events/${eventId}`,
         method: 'PATCH',
@@ -108,7 +113,7 @@ export const api = createApi({
       ],
     }),
 
-    updateParticipantRole: builder.mutation<UserInEvent, { eventId: string; participantId: string; role: UserRole }>({
+    updateParticipantRole: builder.mutation<void, { eventId: string; participantId: string; role: UserRole }>({
       query: ({ eventId, participantId, role }) => ({
         url: `/events/${eventId}/participants/${participantId}/role`,
         method: 'PATCH',
@@ -119,7 +124,7 @@ export const api = createApi({
       ],
     }),
 
-    addParticipant: builder.mutation<UserInEvent, { eventId: string; login: string }>({
+    addParticipant: builder.mutation<void, { eventId: string; login: string }>({
       query: ({ eventId, login }) => ({
         url: `/events/${eventId}/participants`,
         method: 'POST',
@@ -127,6 +132,99 @@ export const api = createApi({
       }),
       invalidatesTags: (_result, _error, { eventId }) => [
         { type: 'EventParticipants', id: eventId }
+      ],
+    }),
+
+    getShoppingLists: builder.query<ShoppingListWithItems[], string>({
+      query: (eventId) => `/events/${eventId}/shopping-lists`,
+      providesTags: (_result, _error, eventId) => [
+        { type: 'ShoppingLists', id: eventId }
+      ],
+    }),
+
+    createShoppingList: builder.mutation<void, { eventId: string; shoppingList: ShoppingListRequest }>({
+      query: ({ eventId, shoppingList }) => ({
+        url: `/events/${eventId}/shopping-lists`,
+        method: 'POST',
+        body: shoppingList,
+      }),
+      invalidatesTags: (_result, _error, { eventId }) => [
+        { type: 'ShoppingLists', id: eventId }
+      ],
+    }),
+
+    updateShoppingList: builder.mutation<void, { eventId: string; shoppingListId: string; shoppingList: ShoppingListRequest }>({
+      query: ({ eventId, shoppingListId, shoppingList }) => ({
+        url: `/events/${eventId}/shopping-lists/${shoppingListId}`,
+        method: 'PATCH',
+        body: shoppingList,
+      }),
+      invalidatesTags: (_result, _error, { eventId }) => [
+        { type: 'ShoppingLists', id: eventId }
+      ],
+    }),
+
+    deleteShoppingList: builder.mutation<void, { eventId: string; shoppingListId: string }>({
+      query: ({ eventId, shoppingListId }) => ({
+        url: `/events/${eventId}/shopping-lists/${shoppingListId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_result, _error, { eventId }) => [
+        { type: 'ShoppingLists', id: eventId }
+      ],
+    }),
+
+    addShoppingItem: builder.mutation<void, { eventId: string; shoppingListId: string; shoppingItem: ShoppingItemRequest }>({
+      query: ({ eventId, shoppingListId, shoppingItem }) => ({
+        url: `/events/${eventId}/shopping-lists/${shoppingListId}/shopping-items`,
+        method: 'POST',
+        body: shoppingItem,
+      }),
+      invalidatesTags: (_result, _error, { eventId }) => [
+        { type: 'ShoppingLists', id: eventId }
+      ],
+    }),
+
+    updateShoppingItem: builder.mutation<void, { eventId: string; shoppingListId: string; shoppingItemId: string; shoppingItem: ShoppingItemRequest }>({
+      query: ({ eventId, shoppingListId, shoppingItemId, shoppingItem }) => ({
+        url: `/events/${eventId}/shopping-lists/${shoppingListId}/shopping-items/${shoppingItemId}`,
+        method: 'PATCH',
+        body: shoppingItem,
+      }),
+      invalidatesTags: (_result, _error, { eventId }) => [
+        { type: 'ShoppingLists', id: eventId }
+      ],
+    }),
+
+    deleteShoppingItem: builder.mutation<void, { eventId: string; shoppingListId: string; shoppingItemId: string }>({
+      query: ({ eventId, shoppingListId, shoppingItemId }) => ({
+        url: `/events/${eventId}/shopping-lists/${shoppingListId}/shopping-items/${shoppingItemId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_result, _error, { eventId }) => [
+        { type: 'ShoppingLists', id: eventId }
+      ],
+    }),
+
+    updateShoppingItemPurchasedState: builder.mutation<void, { eventId: string; shoppingListId: string; shoppingItemId: string; shoppingItem: ShoppingItemPurchasedStateRequest }>({
+      query: ({ eventId, shoppingListId, shoppingItemId, shoppingItem }) => ({
+        url: `/events/${eventId}/shopping-lists/${shoppingListId}/shopping-items/${shoppingItemId}/purchased-state`,
+        method: 'PATCH',
+        body: shoppingItem,
+      }),
+      invalidatesTags: (_result, _error, { eventId }) => [
+        { type: 'ShoppingLists', id: eventId }
+      ],
+    }),
+
+    setShoppingListConsumers: builder.mutation<void, { eventId: string; shoppingListId: string; consumers: UserId[] }>({
+      query: ({ eventId, shoppingListId, consumers }) => ({
+        url: `/events/${eventId}/shopping-lists/${shoppingListId}/consumers`,
+        method: 'PUT',
+        body: consumers,
+      }),
+      invalidatesTags: (_result, _error, { eventId }) => [
+        { type: 'ShoppingLists', id: eventId }
       ],
     }),
   }),
@@ -146,4 +244,13 @@ export const {
   useDeleteParticipantMutation,
   useUpdateParticipantRoleMutation,
   useAddParticipantMutation,
+  useGetShoppingListsQuery,
+  useCreateShoppingListMutation,
+  useUpdateShoppingListMutation,
+  useDeleteShoppingListMutation,
+  useAddShoppingItemMutation,
+  useUpdateShoppingItemMutation,
+  useDeleteShoppingItemMutation,
+  useUpdateShoppingItemPurchasedStateMutation,
+  useSetShoppingListConsumersMutation,
 } = api;

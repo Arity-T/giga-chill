@@ -12,26 +12,23 @@ import com.github.giga_chill.jooq.generated.tables.records.EventsRecord;
 import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
 import com.github.giga_chill.jooq.generated.enums.EventRole;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.time.OffsetDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class EventDAOImpl implements EventDAO {
   private final EventRepository eventRepository;
   private final UserInEventRepository userInEventRepository;
 
-  public EventDAOImpl(EventRepository eventRepository, UserInEventRepository userInEventRepository) {
-      this.eventRepository = eventRepository;
-      this.userInEventRepository = userInEventRepository;
-  }
-
   @Override
-  public EventDTO getEventById(String eventId) {
-    return eventRepository.findById(UUID.fromString(eventId))
+  public EventDTO getEventById(UUID eventId) {
+    return eventRepository.findById(eventId)
             .map(eventRecord -> new EventDTO(
-                    eventRecord.getEventId().toString(),
+                    eventRecord.getEventId(),
                     eventRecord.getTitle(),
                     eventRecord.getLocation(),
                     eventRecord.getStartDatetime() != null ? eventRecord.getStartDatetime().toString() : null,
@@ -43,13 +40,13 @@ public class EventDAOImpl implements EventDAO {
   }
 
   @Override
-  public List<EventDTO> getAllUserEvents(String userId) {
-    List<UserInEventRecord> participants = userInEventRepository.findByUserId(UUID.fromString(userId));
+  public List<EventDTO> getAllUserEvents(UUID userId) {
+    List<UserInEventRecord> participants = userInEventRepository.findByUserId(userId);
     List<EventDTO> events = new ArrayList<>();
     for (UserInEventRecord participant : participants) {
       eventRepository.findById(participant.getEventId()).ifPresent(eventRecord -> {
         events.add(new EventDTO(
-                eventRecord.getEventId().toString(),
+                eventRecord.getEventId(),
                 eventRecord.getTitle(),
                 eventRecord.getLocation(),
                 eventRecord.getStartDatetime() != null ? eventRecord.getStartDatetime().toString() : null,
@@ -63,8 +60,8 @@ public class EventDAOImpl implements EventDAO {
   }
 
   @Override
-  public void updateEvent(String eventId, EventDTO event) {
-    eventRepository.findById(UUID.fromString(eventId)).ifPresent(eventRecord -> {
+  public void updateEvent(UUID eventId, EventDTO event) {
+    eventRepository.findById(eventId).ifPresent(eventRecord -> {
       if (event.title() != null) eventRecord.setTitle(event.title());
       if (event.location() != null) eventRecord.setLocation(event.location());
       if (event.start_datetime() != null) eventRecord.setStartDatetime(OffsetDateTime.parse(event.start_datetime()));
@@ -77,9 +74,9 @@ public class EventDAOImpl implements EventDAO {
   }
 
   @Override
-  public void createEvent(String userId, EventDTO event) {
+  public void createEvent(UUID userId, EventDTO event) {
     EventsRecord eventRecord = new EventsRecord();
-    eventRecord.setEventId(UUID.fromString(event.event_id()));
+    eventRecord.setEventId(event.event_id());
     eventRecord.setTitle(event.title());
     eventRecord.setLocation(event.location());
     eventRecord.setStartDatetime(event.start_datetime() != null ? OffsetDateTime.parse(event.start_datetime()) : null);
@@ -90,20 +87,21 @@ public class EventDAOImpl implements EventDAO {
     
     // Привязка пользователя к событию
     UserInEventRecord userInEventRecord = new UserInEventRecord();
-    userInEventRecord.setUserId(UUID.fromString(userId));
-    userInEventRecord.setEventId(UUID.fromString(event.event_id()));
+    userInEventRecord.setUserId(userId);
+    userInEventRecord.setEventId(event.event_id());
     userInEventRecord.setRole(EventRole.owner);
     userInEventRepository.save(userInEventRecord);
   }
 
   @Override
-  public void deleteEvent(String eventId) {
-    eventRepository.deleteById(UUID.fromString(eventId));
+  public void deleteEvent(UUID eventId) {
+    eventRepository.deleteById(eventId);
   }
 
+  // todo: optimized method exists() in eventRepository
   @Override
-  public boolean isExisted(String eventId) {
-    return eventRepository.findById(UUID.fromString(eventId)).isPresent();
+  public boolean isExisted(UUID eventId) {
+    return eventRepository.findById(eventId).isPresent();
   }
 
 }

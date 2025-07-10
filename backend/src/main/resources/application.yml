@@ -19,3 +19,11 @@ roles:
   owner: owner
   admin: admin
   participant: participant
+
+shopping_list_status:
+  unassigned: unassigned
+  assigned: assigned
+  in_progress: in_progress
+  bought: bought
+  partially_bought: partially_bought
+  cancelled: cancelled

@@ -4,19 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Event {
-
-    private UUID eventId;
+public class ShoppingList {
+    private UUID shoppingListId;
+    private UUID taskId;
     private String title;
-    private String location;
-    private String startDatetime;
-    private String endDatetime;
     private String description;
-    private BigDecimal budget;
+    private String status;
+    private List<ShoppingItem> shoppingItems;
+    private List<Participant> consumers;
 }

@@ -8,9 +8,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.github.giga_chill.gigachill.exception.BadRequestException;
 
 @Service
 public class UserService {
@@ -31,8 +34,8 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public Optional<UsersRecord> findById(String id) {
-        return userRepository.findById(UUID.fromString(id));
+    public Optional<UsersRecord> findById(UUID id) {
+        return userRepository.findById(id);
     }
 
     public Optional<UsersRecord> findByLogin(String login) {
@@ -45,24 +48,46 @@ public class UserService {
         .orElse(false);
     }
 
-    public boolean userExists(String login) {
+    public boolean userExistsById(UUID userId) {
+        return findById(userId).isPresent();
+    }
+
+    public boolean userExistsByLogin(String login) {
         return userRepository.findByLogin(login).isPresent();
     }
 
     public User userAuthentication(Authentication authentication) {
         var login = authentication.getName();
-        if (!userExists(login)) {
+        if (!userExistsByLogin(login)) {
             throw new UnauthorizedException("User not found");
         }
         return usersRecordToUser(Objects.requireNonNull(findByLogin(login).orElse(null)));
     }
 
     private User usersRecordToUser(UsersRecord user){
-        return new User(user.getUserId().toString(), user.getLogin(), user.getName());
+        return new User(user.getUserId(), user.getLogin(), user.getName());
     }
 
     public User getByLogin(String login){
         return usersRecordToUser(Objects.requireNonNull(findByLogin(login).orElse(null)));
     }
 
+    /**
+     * Проверяет, что все пользователи из списка userIds существуют в базе.
+     * @param userIds список id пользователей
+     * @return true, если все пользователи существуют, иначе false
+     * @throws BadRequestException если хотя бы один id отсутствует в базе
+     */
+    public boolean allUsersExistByIds(List<UUID> userIds) {
+        List<UUID> uuids = new java.util.ArrayList<>();
+        for (UUID id : userIds) {
+            try {
+                uuids.add(id);
+            } catch (IllegalArgumentException e) {
+                throw new BadRequestException("Некорректный формат id пользователя: " + id);
+            }
+        }
+        int count = userRepository.countByIds(uuids);
+        return count == userIds.size();
+    }
 }

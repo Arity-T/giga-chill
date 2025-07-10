@@ -18,44 +18,42 @@ public class EventService {
     private final EventDAO eventDAO;
 
 
-    public boolean isExisted(String eventId){
+    public boolean isExisted(UUID eventId) {
         return eventDAO.isExisted(eventId);
     }
 
-    public Event getEventById(String eventId) {
+    public Event getEventById(UUID eventId) {
         return toEntity(eventDAO.getEventById(eventId));
     }
 
-    public List<Event> getAllUserEvents(String userId) {
+    public List<Event> getAllUserEvents(UUID userId) {
         return eventDAO.getAllUserEvents(userId).stream()
                 .map(this::toEntity).toList();
 
     }
 
-    public Event updateEvent(String eventId, RequestEventInfo requestEventInfo) {
+    public void updateEvent(UUID eventId, RequestEventInfo requestEventInfo) {
         EventDTO event = new EventDTO(eventId, requestEventInfo.title(),
                 requestEventInfo.location(), requestEventInfo.start_datetime(), requestEventInfo.end_datetime(),
                 requestEventInfo.description(), BigDecimal.valueOf(0));
         eventDAO.updateEvent(eventId, event);
-        return getEventById(eventId);
-
     }
 
 
-    public Event createEvent(String userId, RequestEventInfo requestEventInfo) {
-        Event event = new Event(UUID.randomUUID().toString(), requestEventInfo.title(),
+    public String createEvent(UUID userId, RequestEventInfo requestEventInfo) {
+        Event event = new Event(UUID.randomUUID(), requestEventInfo.title(),
                 requestEventInfo.location(), requestEventInfo.start_datetime(), requestEventInfo.end_datetime(),
                 requestEventInfo.description(), BigDecimal.valueOf(0));
 
         eventDAO.createEvent(userId, toDto(event));
-        return event;
+        return event.getEventId().toString();
     }
 
-    public void deleteEvent(String eventId) {
+    public void deleteEvent(UUID eventId) {
         eventDAO.deleteEvent(eventId);
     }
 
-    private Event toEntity(EventDTO eventDTO){
+    private Event toEntity(EventDTO eventDTO) {
         return new Event(eventDTO.event_id(),
                 eventDTO.title(),
                 eventDTO.location(),
@@ -65,7 +63,7 @@ public class EventService {
                 eventDTO.budget());
     }
 
-    private EventDTO toDto(Event event){
+    private EventDTO toDto(Event event) {
         return new EventDTO(event.getEventId(),
                 event.getTitle(),
                 event.getLocation(),

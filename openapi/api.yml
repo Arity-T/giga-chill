@@ -15,6 +15,9 @@ tags:
   - name: Me
   - name: Events
   - name: Participants
+  - name: Shopping Lists
+  - name: Shopping List Items
+  - name: Shopping List Consumers
 
 paths:
   /auth/login:
@@ -23,6 +26,7 @@ paths:
       description: Возвращает JWT токен при успешной аутентификации.
       tags: [Auth]
       operationId: loginUser
+      security: []
       requestBody:
         required: true
         content:
@@ -44,6 +48,7 @@ paths:
       summary: Регистрация нового пользователя
       tags: [Auth]
       operationId: registerUser
+      security: []
       requestBody:
         required: true
         content:
@@ -135,12 +140,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Event"
       responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Event"
+        "204":
+          description: No Content
         "400":
           description: Невалидные данные мероприятия
           content:
@@ -203,12 +204,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Event"
       responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Event"
+        "204":
+          description: No Content
         "400":
           description: Невалидные данные мероприятия
           content:
@@ -309,12 +306,8 @@ paths:
             schema:
               $ref: "#/components/schemas/UserLogin"
       responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserInEvent"
+        "204":
+          description: No Content
         "400":
           description: Невалидные данные (например, недопустимые символы в логине)
           content:
@@ -391,12 +384,8 @@ paths:
             schema:
               $ref: "#/components/schemas/UserRole"
       responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserInEvent"
+        "204":
+          description: No Content
         "400":
           description: Невалидная роль или попытка изменить роль owner
           content:
@@ -422,6 +411,363 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /events/{eventId}/shopping-lists:
+    get:
+      summary: Получение списков покупок
+      description:
+        Возвращает все списки покупок, связанные с указанным мероприятием,
+        вместе с элементами списков покупок и потребителями.
+      tags: [Shopping Lists]
+      operationId: getShoppingLists
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShoppingListsWithItems"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Пользователь не является участником данного мероприятия
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие не найдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      summary: Добавить список покупок
+      tags: [Shopping Lists]
+      operationId: addShoppingList
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShoppingListWithItems"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для добавления списка покупок
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие не найдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /events/{eventId}/shopping-lists/{shoppingListId}:
+    patch:
+      summary: Изменить список покупок
+      tags: [Shopping Lists]
+      operationId: updateShoppingList
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/shoppingListId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShoppingListWithItems"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для изменения списка покупок
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие или список покупок не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    delete:
+      summary: Удалить список покупок
+      tags: [Shopping Lists]
+      operationId: deleteShoppingList
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/shoppingListId"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для удаления списка покупок
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие или список покупок не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /events/{eventId}/shopping-lists/{shoppingListId}/shopping-items:
+    post:
+      summary: Добавить элемент в список покупок
+      tags: [Shopping List Items]
+      operationId: addShoppingItem
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/shoppingListId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShoppingItem"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для добавления элемента в список покупок
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие или список покупок не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /events/{eventId}/shopping-lists/{shoppingListId}/shopping-items/{shoppingItemId}:
+    patch:
+      summary: Изменить элемент списка покупок
+      tags: [Shopping List Items]
+      operationId: updateShoppingItem
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/shoppingListId"
+        - $ref: "#/components/parameters/shoppingItemId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShoppingItem"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для изменения элемента списка покупок
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие, список покупок или элемент списка покупок не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    delete:
+      summary: Удалить элемент из списка покупок
+      tags: [Shopping List Items]
+      operationId: deleteShoppingItem
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/shoppingListId"
+        - $ref: "#/components/parameters/shoppingItemId"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для удаления элемента из списка покупок
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие, список покупок или элемент списка покупок не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /events/{eventId}/shopping-lists/{shoppingListId}/shopping-items/{shoppingItemId}/purchased-state:
+    patch:
+      summary: Изменить статус элемента списка покупок
+      tags: [Shopping List Items]
+      operationId: updateShoppingItemPurchasedStatus
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/shoppingListId"
+        - $ref: "#/components/parameters/shoppingItemId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShoppingItemPurchasedState"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для изменения статуса элемента списка покупок
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие, список покупок или элемент списка покупок не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /events/{eventId}/shopping-lists/{shoppingListId}/consumers:
+    put:
+      summary: Указать потребителей для списка покупок
+      description: |
+        Идемпотентное действие - список потребителей полностью заменяется.
+
+        Есть некоторый риск, что один клиент перезапишет другого. 
+        Не критично, но стоит иметь в виду. Вариант решения - ETag/If-Match.
+      tags: [Shopping List Consumers]
+      operationId: setConsumers
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/shoppingListId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserIdList"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для добавления потребителя в список покупок
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие, список покупок или пользователь не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Статус списка покупок не позволяет изменять потребителей
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   parameters:
     eventId:
@@ -435,6 +781,24 @@ components:
 
     participantId:
       name: participantId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      example: 0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c
+
+    shoppingListId:
+      name: shoppingListId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      example: 0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c
+
+    shoppingItemId:
+      name: shoppingItemId
       in: path
       required: true
       schema:
@@ -493,16 +857,26 @@ components:
         - $ref: "#/components/schemas/UserPassword"
         - $ref: "#/components/schemas/UserName"
 
+    UserId:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Идентификатор пользователя
+          example: c014cfe2-7a69-4959-88f7-4a2b795c2a20
+
+    UserIdList:
+      type: array
+      items:
+        type: string
+        format: uuid
+        description: Идентификатор пользователя
+
     User:
       allOf:
         - $ref: "#/components/schemas/UserLogin"
         - $ref: "#/components/schemas/UserName"
-        - type: object
-          properties:
-            id:
-              type: string
-              description: Идентификатор пользователя
-              example: c014cfe2-7a69-4959-88f7-4a2b795c2a20
+        - $ref: "#/components/schemas/UserId"
 
     UserRole:
       type: object
@@ -558,10 +932,12 @@ components:
           example: Политехническая улица, 29 лит П
         start_datetime:
           type: string
+          format: date-time
           description: Дата и время начала мероприятия
           example: "2025-01-01T10:00:00Z"
         end_datetime:
           type: string
+          format: date-time
           description: Дата и время окончания мероприятия
           example: "2025-01-01T12:00:00Z"
         description:
@@ -578,3 +954,98 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Event"
+
+    ShoppingItem:
+      type: object
+      properties:
+        shopping_item_id:
+          readOnly: true
+          type: string
+          description: Идентификатор элемента списка покупок
+          example: 123e4567-e89b-12d3-a456-426614174000
+        title:
+          type: string
+          description: Название элемента списка покупок
+          example: "Яблоки"
+        quantity:
+          type: number
+          description: Количество элемента списка покупок
+          example: 10
+        unit:
+          type: string
+          description: Единицы измерения
+          example: "шт"
+        is_purchased:
+          readOnly: true
+          type: boolean
+          description: Признак того, что элемент списка покупок куплен
+          example: false
+
+    ShoppingItems:
+      type: array
+      items:
+        $ref: "#/components/schemas/ShoppingItem"
+
+    ShoppingItemPurchasedState:
+      type: object
+      properties:
+        is_purchased:
+          type: boolean
+          description: Признак того, что элемент списка покупок куплен
+          example: false
+
+    ShoppingListWithItems:
+      type: object
+      properties:
+        shopping_list_id:
+          readOnly: true
+          type: string
+          description: Идентификатор списка покупок
+          example: 123e4567-e89b-12d3-a456-426614174000
+        task_id:
+          readOnly: true
+          type: string
+          description: Идентификатор связанной задачи
+          example: 123e4567-e89b-12d3-a456-426614174000
+        title:
+          type: string
+          description: Название задачи
+          example: "Купить фрукты"
+        description:
+          type: string
+          description: Описание списка покупок
+          example: "Купить фрукты для вечеринки"
+        status:
+          readOnly: true
+          type: string
+          enum:
+            [
+              unassigned,
+              assigned,
+              in_progress,
+              bought,
+              partially_bought,
+              cancelled,
+            ]
+          description: Статус списка покупок
+          example: unassigned
+        can_edit:
+          readOnly: true
+          type: boolean
+          description: Может ли пользователь редактировать список покупок
+          example: true
+        shopping_items:
+          readOnly: true
+          type: array
+          items:
+            $ref: "#/components/schemas/ShoppingItem"
+        consumers:
+          readOnly: true
+          type: array
+          items:
+            $ref: "#/components/schemas/UserInEvent"
+
+    ShoppingListsWithItems:
+      type: array
+      items:
+        $ref: "#/components/schemas/ShoppingListWithItems"
