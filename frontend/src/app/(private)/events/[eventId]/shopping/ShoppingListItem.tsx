@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Checkbox, Typography, Space, Button } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { ShoppingItem } from '@/types/api';
 
 const { Text } = Typography;
@@ -9,9 +9,10 @@ interface ShoppingListItemProps {
     item: ShoppingItem;
     onTogglePurchased: (itemId: string, isPurchased: boolean) => void;
     onDeleteItem: (itemId: string) => void;
+    onEditItem: (itemId: string) => void;
 }
 
-export default function ShoppingListItem({ item, onTogglePurchased, onDeleteItem }: ShoppingListItemProps) {
+export default function ShoppingListItem({ item, onTogglePurchased, onDeleteItem, onEditItem }: ShoppingListItemProps) {
     const [isHovered, setIsHovered] = useState(false);
 
     return (
@@ -44,16 +45,28 @@ export default function ShoppingListItem({ item, onTogglePurchased, onDeleteItem
                         {item.quantity} {item.unit}
                     </Text>
                 </Space>
-                <Button
-                    type="text"
-                    icon={<DeleteOutlined style={{ color: '#8c8c8c' }} />}
-                    size="small"
-                    style={{
-                        opacity: isHovered ? 1 : 0,
-                        transition: 'opacity 0.2s ease'
-                    }}
-                    onClick={() => onDeleteItem(item.shopping_item_id)}
-                />
+                <Space>
+                    <Button
+                        type="text"
+                        icon={<EditOutlined style={{ color: '#8c8c8c' }} />}
+                        size="small"
+                        style={{
+                            opacity: isHovered ? 1 : 0,
+                            transition: 'opacity 0.2s ease'
+                        }}
+                        onClick={() => onEditItem(item.shopping_item_id)}
+                    />
+                    <Button
+                        type="text"
+                        icon={<DeleteOutlined style={{ color: '#8c8c8c' }} />}
+                        size="small"
+                        style={{
+                            opacity: isHovered ? 1 : 0,
+                            transition: 'opacity 0.2s ease'
+                        }}
+                        onClick={() => onDeleteItem(item.shopping_item_id)}
+                    />
+                </Space>
             </Space>
         </Card>
     );

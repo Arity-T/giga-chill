@@ -12,6 +12,7 @@ interface ShoppingListContentProps {
     onToggleItemPurchased: (itemId: string, isPurchased: boolean) => void;
     onAddItem: () => void;
     onDeleteItem: (itemId: string) => void;
+    onEditItem: (itemId: string) => void;
 }
 
 export default function ShoppingListContent({
@@ -19,7 +20,8 @@ export default function ShoppingListContent({
     items,
     onToggleItemPurchased,
     onAddItem,
-    onDeleteItem
+    onDeleteItem,
+    onEditItem
 }: ShoppingListContentProps) {
     return (
         <div style={{ padding: '16px 24px 16px' }}>
@@ -36,7 +38,8 @@ export default function ShoppingListContent({
                             key={item.shopping_item_id}
                             item={item}
                             onTogglePurchased={onToggleItemPurchased}
-                            onDeleteItem={onDeleteItem}
+                            onDeleteItem={() => onDeleteItem(item.shopping_item_id)}
+                            onEditItem={() => onEditItem(item.shopping_item_id)}
                         />
                     ))}
                     <div style={{ marginTop: '16px', textAlign: 'center' }}>

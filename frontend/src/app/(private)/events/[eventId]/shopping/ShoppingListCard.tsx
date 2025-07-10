@@ -12,7 +12,8 @@ interface ShoppingListCardProps {
     onEditList: (listId: string) => void;
     onAddConsumers: (listId: string) => void;
     onAddItem: (listId: string) => void;
-    onDeleteItem: (itemId: string) => void;
+    onDeleteItem: (itemId: string, shoppingListId: string) => void;
+    onEditItem: (itemId: string, shoppingListId: string) => void;
 }
 
 export default function ShoppingListCard({
@@ -22,7 +23,8 @@ export default function ShoppingListCard({
     onEditList,
     onAddConsumers,
     onAddItem,
-    onDeleteItem
+    onDeleteItem,
+    onEditItem
 }: ShoppingListCardProps) {
     const [activeKey, setActiveKey] = useState<string | string[]>([]);
     const [isHovered, setIsHovered] = useState(false);
@@ -75,7 +77,8 @@ export default function ShoppingListCard({
                         items={shoppingList.shopping_items}
                         onToggleItemPurchased={onToggleItemPurchased}
                         onAddItem={() => onAddItem(shoppingList.shopping_list_id)}
-                        onDeleteItem={onDeleteItem}
+                        onDeleteItem={(itemId) => onDeleteItem(itemId, shoppingList.shopping_list_id)}
+                        onEditItem={(itemId) => onEditItem(itemId, shoppingList.shopping_list_id)}
                     />
                 )}
             </div>
