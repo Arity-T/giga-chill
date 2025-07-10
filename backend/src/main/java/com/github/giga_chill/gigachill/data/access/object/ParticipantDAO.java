@@ -2,6 +2,7 @@ package com.github.giga_chill.gigachill.data.access.object;
 
 import com.github.giga_chill.gigachill.data.transfer.object.ParticipantDTO;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Data Access Object (DAO) interface for {@link ParticipantDTO} entities.
@@ -18,7 +19,7 @@ public interface ParticipantDAO {
      * @return a {@link List} of {@link ParticipantDTO} objects for the specified event;
      *         an empty list if there are no participants
      */
-    List<ParticipantDTO> getAllParticipantsByEventId(String eventId);
+    List<ParticipantDTO> getAllParticipantsByEventId(UUID eventId);
 
     /**
      * Adds a participant to the specified event.
@@ -26,7 +27,7 @@ public interface ParticipantDAO {
      * @param eventId     the unique identifier of the event
      * @param participant the {@link ParticipantDTO} to add to the event
      */
-    void addParticipantToEvent(String eventId, ParticipantDTO participant);
+    void addParticipantToEvent(UUID eventId, ParticipantDTO participant);
 
     /**
      * Removes a participant from the specified event.
@@ -34,7 +35,7 @@ public interface ParticipantDAO {
      * @param eventId       the unique identifier of the event
      * @param participantId the unique identifier of the participant to remove
      */
-    void deleteParticipant(String eventId, String participantId);
+    void deleteParticipant(UUID eventId, String participantId);
 
     /**
      * Checks whether a user is a participant in the specified event.
@@ -43,7 +44,7 @@ public interface ParticipantDAO {
      * @param userId  the unique identifier of the user
      * @return {@code true} if the user is a participant in the event, {@code false} otherwise
      */
-    boolean isParticipant(String eventId, String userId);
+    boolean isParticipant(UUID eventId, UUID userId);
 
     /**
      * Updates the role of a specific participant in an event.
@@ -52,7 +53,7 @@ public interface ParticipantDAO {
      * @param participantId the unique identifier of the participant
      * @param role          the new role to assign to the participant
      */
-    void updateParticipantRole(String eventId, String participantId, String role);
+    void updateParticipantRole(UUID eventId, UUID participantId, String role);
 
     /**
      * Retrieves the role of a participant in a specific event.
@@ -61,7 +62,7 @@ public interface ParticipantDAO {
      * @param participantId  the unique identifier of the participant
      * @return the role name of the user in the event, or {@code null} if none
      */
-    String getParticipantRoleInEvent(String eventId, String participantId);
+    String getParticipantRoleInEvent(UUID eventId, UUID participantId);
 
 
     /**
@@ -70,6 +71,6 @@ public interface ParticipantDAO {
      * @param eventId the unique identifier of the event
      * @return {@link ParticipantDTO} object for the specified event;
      */
-    ParticipantDTO getParticipantById(String eventId, String participantId);
+    ParticipantDTO getParticipantById(UUID eventId, UUID participantId);
 
 }

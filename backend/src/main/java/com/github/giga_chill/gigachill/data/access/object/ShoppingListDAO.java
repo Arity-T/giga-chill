@@ -6,6 +6,7 @@ import com.github.giga_chill.gigachill.model.ShoppingItem;
 import jakarta.annotation.Nullable;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Data Access Object (DAO) interface for managing shopping lists and their items within events.
@@ -21,7 +22,7 @@ public interface ShoppingListDAO {
      * @param eventId the unique identifier of the event
      * @return a list of {@link ShoppingListDTO} objects for the event; empty list if none found
      */
-    List<ShoppingListDTO> getAllShoppingListsFromEvent(String eventId);
+    List<ShoppingListDTO> getAllShoppingListsFromEvent(UUID eventId);
 
     /**
      * Retrieves a specific shopping list by its identifier.
@@ -29,7 +30,7 @@ public interface ShoppingListDAO {
      * @param shoppingListId the unique identifier of the shopping list
      * @return the {@link ShoppingListDTO} matching the given ID
      */
-    ShoppingListDTO getShoppingListById(String shoppingListId);
+    ShoppingListDTO getShoppingListById(UUID shoppingListId);
 
     /**
      * Creates a new shopping list with the given title and description.
@@ -47,14 +48,14 @@ public interface ShoppingListDAO {
      * @param title          the new title, or {@code null} to leave unchanged
      * @param description    the new description, or {@code null} to leave unchanged
      */
-    void updateShoppingList(String shoppingListId, @Nullable String title, @Nullable String description);
+    void updateShoppingList(UUID shoppingListId, @Nullable String title, @Nullable String description);
 
     /**
      * Deletes the specified shopping list.
      *
      * @param shoppingListId the unique identifier of the shopping list to delete
      */
-    void deleteShoppingList(String shoppingListId);
+    void deleteShoppingList(UUID shoppingListId);
 
     /**
      * Adds a new shopping item to the specified shopping list.
@@ -62,7 +63,7 @@ public interface ShoppingListDAO {
      * @param shoppingListId    the unique identifier of the shopping list
      * @param shoppingItemDTO   the {@link ShoppingItemDTO} representing the new item
      */
-    void addShoppingItem(String shoppingListId, ShoppingItemDTO shoppingItemDTO);
+    void addShoppingItem(UUID shoppingListId, ShoppingItemDTO shoppingItemDTO);
 
     /**
      * Removes an item from a shopping list.
@@ -70,7 +71,7 @@ public interface ShoppingListDAO {
      * @param shoppingListId the unique identifier of the shopping list
      * @param shoppingItemId the unique identifier of the item to remove
      */
-    void deleteShoppingItemFromShoppingList(String shoppingListId, String shoppingItemId);
+    void deleteShoppingItemFromShoppingList(UUID shoppingListId, UUID shoppingItemId);
 
     /**
      * Updates the purchase status of a shopping item.
@@ -78,7 +79,7 @@ public interface ShoppingListDAO {
      * @param shoppingItemId the unique identifier of the shopping item
      * @param status         {@code true} if the item is purchased; {@code false} otherwise
      */
-    void updateShoppingItemStatus(String shoppingItemId, boolean status);
+    void updateShoppingItemStatus(UUID shoppingItemId, boolean status);
 
     /**
      * Retrieves a shopping item by its identifier.
@@ -86,7 +87,7 @@ public interface ShoppingListDAO {
      * @param shoppingItemId the unique identifier of the shopping item
      * @return the {@link ShoppingItemDTO} matching the given ID
      */
-    ShoppingItemDTO getShoppingItemById(String shoppingItemId);
+    ShoppingItemDTO getShoppingItemById(UUID shoppingItemId);
 
     /**
      * Updates the list of consumer user IDs for a shopping list.
@@ -94,7 +95,7 @@ public interface ShoppingListDAO {
      * @param shoppingListId the unique identifier of the shopping list
      * @param allUserId      the list of user IDs who are allowed to consume this list
      */
-    void updateShoppingListConsumers(String shoppingListId, List<String> allUserId);
+    void updateShoppingListConsumers(UUID shoppingListId, List<String> allUserId);
 
     /**
      * Retrieves the current status of a shopping list (e.g., "open", "closed").
@@ -102,7 +103,7 @@ public interface ShoppingListDAO {
      * @param shoppingListId the unique identifier of the shopping list
      * @return the status string of the shopping list
      */
-    String getShoppingListStatus(String shoppingListId);
+    String getShoppingListStatus(UUID shoppingListId);
 
     /**
      * Checks whether a shopping list exists by its identifier.
@@ -110,7 +111,7 @@ public interface ShoppingListDAO {
      * @param shoppingListId the unique identifier of the shopping list
      * @return {@code true} if the shopping list exists; {@code false} otherwise
      */
-    boolean isExisted(String shoppingListId);
+    boolean isExisted(UUID shoppingListId);
 
     /**
      * Checks whether a given user is a consumer of the specified shopping list.
@@ -119,7 +120,7 @@ public interface ShoppingListDAO {
      * @param consumerId     the unique identifier of the user
      * @return {@code true} if the user is a consumer; {@code false} otherwise
      */
-    boolean isConsumer(String shoppingListId, String consumerId);
+    boolean isConsumer(UUID shoppingListId, UUID consumerId);
 
     /**
      * Checks whether a shopping item exists by its identifier.
@@ -127,7 +128,7 @@ public interface ShoppingListDAO {
      * @param shoppingItemId the unique identifier of the shopping item
      * @return {@code true} if the shopping item exists; {@code false} otherwise
      */
-    boolean isShoppingItemExisted(String shoppingItemId);
+    boolean isShoppingItemExisted(UUID shoppingItemId);
 
     /**
      * Updates the details of an existing shopping item.
@@ -135,6 +136,6 @@ public interface ShoppingListDAO {
      * @param shoppingItemId   the unique identifier of the shopping item to update
      * @param shoppingItemDTO  the {@link ShoppingItemDTO} containing the new field values for the item
      */
-    void updateShoppingItem(String shoppingItemId, ShoppingItemDTO shoppingItemDTO);
+    void updateShoppingItem(UUID shoppingItemId, ShoppingItemDTO shoppingItemDTO);
 
 }
