@@ -30,6 +30,13 @@ public class ConsumerInListRepository {
                 .execute();
     }
 
+    public void addConsumer(UUID shoppingListId, UUID userId) {
+        dsl.insertInto(ConsumerInList.CONSUMER_IN_LIST)
+                .set(ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID, shoppingListId)
+                .set(ConsumerInList.CONSUMER_IN_LIST.USER_ID, userId)
+                .execute();
+    }
+
     public void addConsumers(UUID shoppingListId, List<UUID> userIdsToAdd) {
         if (userIdsToAdd.isEmpty()) return;
 
