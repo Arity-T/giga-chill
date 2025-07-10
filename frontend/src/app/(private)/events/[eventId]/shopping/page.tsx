@@ -6,16 +6,21 @@ import { ShoppingCartOutlined, PlusOutlined, ExclamationCircleOutlined } from '@
 import { EventIdPathParam } from '@/types/path-params';
 import ShoppingListCard from './ShoppingListCard';
 import { useGetShoppingListsQuery, useDeleteShoppingListMutation } from '@/store/api/api';
-import CreateShoppingListModal from './CreateShoppingListModal';
+import ShoppingListModal from './ShoppingListModal';
+import { ShoppingListWithItems } from '@/types/api';
 
 const { Title } = Typography;
 
+type ModalState =
+    | { type: 'closed' }
+    | { type: 'create' }
+    | { type: 'edit'; shoppingList: ShoppingListWithItems };
+
 export default function ShoppingPage({ params }: EventIdPathParam) {
     const { eventId } = React.use(params);
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [modalState, setModalState] = useState<ModalState>({ type: 'closed' });
     const { message, modal } = App.useApp();
 
-    // Пока используем моковые данные для демонстрации верстки
     const { data: shoppingLists, isLoading } = useGetShoppingListsQuery(eventId);
     const [deleteShoppingList] = useDeleteShoppingListMutation();
 
@@ -24,21 +29,25 @@ export default function ShoppingPage({ params }: EventIdPathParam) {
     };
 
     const handleEditList = (listId: string) => {
-        console.log(`Редактировать список ${listId}`);
+        const shoppingList = shoppingLists?.find(list => list.shopping_list_id === listId);
+        if (shoppingList) {
+            setModalState({ type: 'edit', shoppingList });
+        }
     };
 
     const handleDeleteList = (listId: string) => {
         const shoppingList = shoppingLists?.find(list => list.shopping_list_id === listId);
+        if (!shoppingList) return;
 
         modal.confirm({
             title: 'Удалить список покупок?',
             content: (
                 <div>
                     <p>
-                        Вы уверены, что хотите удалить список покупок <strong>{shoppingList?.title}</strong>?
+                        Вы уверены, что хотите удалить список покупок <strong>{shoppingList.title}</strong>?
                     </p>
                     <p>
-                        Этот список содержит <strong>{shoppingList?.shopping_items.length}</strong> элементов.
+                        Этот список содержит <strong>{shoppingList.shopping_items.length}</strong> элементов.
                     </p>
                     <p>Это действие нельзя отменить.</p>
                 </div>
@@ -72,7 +81,11 @@ export default function ShoppingPage({ params }: EventIdPathParam) {
     };
 
     const handleCreateList = () => {
-        setIsCreateModalOpen(true);
+        setModalState({ type: 'create' });
+    };
+
+    const handleCloseModal = () => {
+        setModalState({ type: 'closed' });
     };
 
     if (isLoading) {
@@ -112,10 +125,11 @@ export default function ShoppingPage({ params }: EventIdPathParam) {
                 </Empty>
             )}
 
-            <CreateShoppingListModal
-                open={isCreateModalOpen}
-                onCancel={() => setIsCreateModalOpen(false)}
+            <ShoppingListModal
+                open={modalState.type !== 'closed'}
+                onCancel={handleCloseModal}
                 eventId={eventId}
+                shoppingList={modalState.type === 'edit' ? modalState.shoppingList : undefined}
             />
         </div>
     );
