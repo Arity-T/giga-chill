@@ -80,7 +80,7 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
         return shoppingListRepository.findByEventId(eventId).stream()
                 .map(list -> new ShoppingListDTO(
                         list.getShoppingListId(),
-                        list.getTaskId().toString(),
+                        list.getTaskId(),
                         list.getTitle(),
                         list.getDescription(),
                         getShoppingListStatus(list.getShoppingListId()),
@@ -111,7 +111,7 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
 
         return new ShoppingListDTO(
                 record.getShoppingListId(),
-                record.getTaskId().toString(),
+                record.getTaskId(),
                 record.getTitle(),
                 record.getDescription(),
                 getShoppingListStatus(shoppingListId),
