@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS shopping_items (
 
 CREATE TABLE IF NOT EXISTS consumer_in_list (
   user_id UUID NOT NULL REFERENCES users(user_id),
-  shopping_list_id UUID NOT NULL REFERENCES shopping_lists(shopping_list_id),
+  shopping_list_id UUID NOT NULL REFERENCES shopping_lists(shopping_list_id) ON DELETE CASCADE,
   PRIMARY KEY (user_id, shopping_list_id)
 );
 
