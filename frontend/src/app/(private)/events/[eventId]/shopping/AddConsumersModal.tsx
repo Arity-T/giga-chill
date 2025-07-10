@@ -97,6 +97,9 @@ export default function AddConsumersModal({
         filteredParticipants.every(p => selectedConsumerIds.includes(p.id));
     const someFilteredSelected = filteredParticipants.some(p => selectedConsumerIds.includes(p.id));
 
+    // Проверяем, что выбран хотя бы один потребитель
+    const hasSelectedConsumers = selectedConsumerIds.length > 0;
+
     return (
         <Modal
             title="Выбрать потребителей"
@@ -106,6 +109,7 @@ export default function AddConsumersModal({
             okText="Сохранить"
             cancelText="Отмена"
             confirmLoading={isUpdating}
+            okButtonProps={{ disabled: !hasSelectedConsumers }}
             width={600}
             styles={{
                 body: { maxHeight: '60vh', padding: '16px 0' }
@@ -177,6 +181,13 @@ export default function AddConsumersModal({
                     <Text type="secondary">
                         Выбрано: {selectedConsumerIds.length} из {participants.length} участников
                     </Text>
+                    {!hasSelectedConsumers && (
+                        <div style={{ marginTop: '4px' }}>
+                            <Text type="warning" style={{ fontSize: '12px' }}>
+                                Выберите хотя бы одного потребителя
+                            </Text>
+                        </div>
+                    )}
                 </div>
             </Space>
         </Modal>
