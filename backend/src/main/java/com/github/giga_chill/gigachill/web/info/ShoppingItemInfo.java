@@ -1,8 +1,10 @@
 package com.github.giga_chill.gigachill.web.info;
 
+import java.math.BigDecimal;
+
 public record ShoppingItemInfo(String shopping_item_id,
                                String title,
-                               Integer quantity,
+                               BigDecimal quantity,
                                String unit,
                                Boolean is_purchased) {
 }

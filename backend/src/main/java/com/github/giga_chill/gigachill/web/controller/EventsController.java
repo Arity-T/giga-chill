@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("events")
@@ -31,14 +32,14 @@ public class EventsController {
     public ResponseEntity<List<ResponseEventInfo>> getEvents(Authentication authentication) {
         User user = userService.userAuthentication(authentication);
 
-        var userEvents = eventService.getAllUserEvents(user.id);
+        var userEvents = eventService.getAllUserEvents(user.getId());
 
         if (userEvents.isEmpty()) {
             ResponseEntity.ok(null);
         }
         return ResponseEntity.ok(userEvents.stream()
                 .map(event -> toResponseEventInfo(event,
-                        participantsService.getParticipantRoleInEvent(event.getEventId(), user.id)))
+                        participantsService.getParticipantRoleInEvent(event.getEventId(), user.getId())))
                 .toList());
     }
 
@@ -48,40 +49,40 @@ public class EventsController {
                                            Authentication authentication) {
 
         User user = userService.userAuthentication(authentication);
-        eventService.createEvent(user.id, requestEventInfo);
+        eventService.createEvent(user.getId(), requestEventInfo);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{eventId}")
     //ACCESS: owner, admin, participant
-    public ResponseEntity<ResponseEventInfo> getEventById(Authentication authentication, @PathVariable String eventId) {
+    public ResponseEntity<ResponseEventInfo> getEventById(Authentication authentication, @PathVariable UUID eventId) {
         User user = userService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!participantsService.isParticipant(eventId, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventId, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventId);
         }
         Event event = eventService.getEventById(eventId);
         return ResponseEntity.ok(toResponseEventInfo(event,
-                participantsService.getParticipantRoleInEvent(event.getEventId(), user.id)));
+                participantsService.getParticipantRoleInEvent(event.getEventId(), user.getId())));
     }
 
     @PatchMapping("/{eventId}")
     //ACCESS: owner, admin
     public ResponseEntity<Void> patchEventById(@RequestBody RequestEventInfo requestEventInfo,
-                                               Authentication authentication, @PathVariable String eventId) {
+                                               Authentication authentication, @PathVariable UUID eventId) {
         User user = userService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!participantsService.isParticipant(eventId, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventId, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventId);
         }
-        if (!participantsService.isOwnerRole(eventId, user.id) && !participantsService.isAdminRole(eventId, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isOwnerRole(eventId, user.getId()) && !participantsService.isAdminRole(eventId, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " does not have permission to patch event with id " + eventId);
         }
         eventService.updateEvent(eventId, requestEventInfo);
@@ -90,17 +91,17 @@ public class EventsController {
 
     @DeleteMapping("/{eventId}")
     //ACCESS: owner
-    public ResponseEntity<Void> deleteEventById(Authentication authentication, @PathVariable String eventId) {
+    public ResponseEntity<Void> deleteEventById(Authentication authentication, @PathVariable UUID eventId) {
         User user = userService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!participantsService.isParticipant(eventId, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isParticipant(eventId, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventId);
         }
-        if (!participantsService.isOwnerRole(eventId, user.id)) {
-            throw new ForbiddenException("User with id " + user.id +
+        if (!participantsService.isOwnerRole(eventId, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
                     " does not have permission to delete event with id " + eventId);
         }
         eventService.deleteEvent(eventId);
@@ -109,7 +110,7 @@ public class EventsController {
     }
 
     private ResponseEventInfo toResponseEventInfo(Event event, String userRole) {
-        return new ResponseEventInfo(event.getEventId(), userRole, event.getTitle(), event.getLocation(),
+        return new ResponseEventInfo(event.getEventId().toString(), userRole, event.getTitle(), event.getLocation(),
                 event.getStartDatetime(), event.getEndDatetime(), event.getDescription(), event.getBudget());
     }
 

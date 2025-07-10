@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 @Aspect
 @RequiredArgsConstructor
@@ -20,42 +22,42 @@ public class ParticipantsServiceLoggerAspect {
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.getAllParticipantsByEventId(..)) " +
             "&& args(eventId)")
-    public void getAllParticipantsByEventId(String eventId) {
+    public void getAllParticipantsByEventId(UUID eventId) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.addParticipantToEvent(..)) " +
             "&& args(eventId, user)")
-    public void addParticipantToEvent(String eventId, User user) {
+    public void addParticipantToEvent(UUID eventId, User user) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.deleteParticipant(..)) " +
             "&& args(eventId, participantId)")
-    public void deleteParticipant(String eventId, String participantId) {
+    public void deleteParticipant(UUID eventId, UUID participantId) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.isParticipant(..)) " +
             "&& args(eventId, userId)")
-    public void isParticipant(String eventId, String userId) {
+    public void isParticipant(UUID eventId, UUID userId) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.updateParticipantRole(..)) " +
             "&& args(eventId, participantId, role)")
-    public void updateParticipantRole(String eventId, String participantId, String role) {
+    public void updateParticipantRole(UUID eventId, UUID participantId, String role) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.getParticipantRoleInEvent(..)) " +
             "&& args(eventId, participantId)")
-    public void getParticipantRoleInEvent(String eventId, String participantId) {
+    public void getParticipantRoleInEvent(UUID eventId, UUID participantId) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.getParticipantById(..)) " +
             "&& args(eventId, participantId)")
-    public void getParticipantById(String eventId, String participantId) {
+    public void getParticipantById(UUID eventId, UUID participantId) {
     }
 
     @Around("getAllParticipantsByEventId(eventId)")
     public Object logGetAllParticipantsByEventId(ProceedingJoinPoint proceedingJoinPoint,
-                                                 String eventId) throws Throwable {
+                                                 UUID eventId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(loggerColorConfig.getGET_COLOR() + "Event participants with: {} id received"
@@ -68,7 +70,7 @@ public class ParticipantsServiceLoggerAspect {
 
     @Around("getParticipantById(eventId, participantId)")
     public Object logGetParticipantById(ProceedingJoinPoint proceedingJoinPoint,
-                                                 String eventId, String participantId) throws Throwable {
+                                        UUID eventId, UUID participantId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(loggerColorConfig.getGET_COLOR() + "Participant with id: {} from event with id: {} received"
@@ -81,11 +83,11 @@ public class ParticipantsServiceLoggerAspect {
 
     @Around("addParticipantToEvent(eventId, user)")
     public Object logAddParticipantToEvent(ProceedingJoinPoint proceedingJoinPoint,
-                                           String eventId, User user) throws Throwable {
+                                           UUID eventId, User user) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(loggerColorConfig.getPOST_COLOR() + "User with id: {} was added to event with id: {}"
-                    + loggerColorConfig.getRESET_COLOR(), user.id, eventId);
+                    + loggerColorConfig.getRESET_COLOR(), user.getId(), eventId);
             return result;
         } catch (Throwable ex) {
             throw ex;
@@ -94,7 +96,7 @@ public class ParticipantsServiceLoggerAspect {
 
     @Around("deleteParticipant(eventId, participantId)")
     public Object logDeleteParticipant(ProceedingJoinPoint proceedingJoinPoint,
-                                       String eventId, String participantId) throws Throwable {
+                                       UUID eventId, UUID participantId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(loggerColorConfig.getDELETE_COLOR() + "User with id: {} was deleted from event with id: {}"
@@ -108,7 +110,7 @@ public class ParticipantsServiceLoggerAspect {
 
     @Around("isParticipant(eventId, userId)")
     public Object logIsParticipant(ProceedingJoinPoint proceedingJoinPoint,
-                                   String eventId, String userId) throws Throwable {
+                                   UUID eventId, UUID userId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
             if ((Boolean) result) {
@@ -128,7 +130,7 @@ public class ParticipantsServiceLoggerAspect {
 
     @Around("updateParticipantRole(eventId, participantId, role)")
     public Object logUpdateParticipantRole(ProceedingJoinPoint proceedingJoinPoint,
-                                           String eventId, String participantId, String role) throws Throwable {
+                                           UUID eventId, UUID participantId, String role) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(loggerColorConfig.getPATCH_COLOR() + "User with id: {} got role: {} in the event with id: {}"
@@ -142,7 +144,7 @@ public class ParticipantsServiceLoggerAspect {
 
     @Around("getParticipantRoleInEvent(eventId, participantId)")
     public Object logGetParticipantRoleInEvent(ProceedingJoinPoint proceedingJoinPoint,
-                                               String eventId, String participantId) throws Throwable {
+                                               UUID eventId, UUID participantId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(loggerColorConfig.getPATCH_COLOR() + "User with id: {} has role: {} in the event with id: {}"

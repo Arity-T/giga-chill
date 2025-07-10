@@ -1,8 +1,9 @@
 package com.github.giga_chill.gigachill.data.transfer.object;
 
 import java.util.List;
+import java.util.UUID;
 
-public record ShoppingListDTO(String shoppingListId,
+public record ShoppingListDTO(UUID shoppingListId,
                               String taskId,
                               String title,
                               String description,

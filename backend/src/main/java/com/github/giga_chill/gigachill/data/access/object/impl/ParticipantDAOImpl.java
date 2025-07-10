@@ -11,30 +11,26 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import com.github.giga_chill.gigachill.repository.UserRepository;
 import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 
 @Service
+@RequiredArgsConstructor
 public class ParticipantDAOImpl implements ParticipantDAO {
-
   private final UserRepository userRepository;
   private final UserInEventRepository userInEventRepository;
 
-  public ParticipantDAOImpl(UserRepository userRepository, UserInEventRepository userInEventRepository) {
-    this.userRepository = userRepository;
-    this.userInEventRepository = userInEventRepository;
-  }
-
   @Override
-  public List<ParticipantDTO> getAllParticipantsByEventId(String eventId) {
-    List<UserInEventRecord> records = userInEventRepository.findByEventId(UUID.fromString(eventId));
+  public List<ParticipantDTO> getAllParticipantsByEventId(UUID eventId) {
+    List<UserInEventRecord> records = userInEventRepository.findByEventId(eventId);
     List<ParticipantDTO> participants = new ArrayList<>();
     for (UserInEventRecord record : records) {
       UsersRecord userRecord = userRepository.findById(record.getUserId()).orElse(null);
       participants.add(new ParticipantDTO(
-        record.getUserId().toString(),
+        record.getUserId(),
         userRecord.getLogin(),
         userRecord.getName(),
         record.getRole() != null ? record.getRole().getLiteral() : null,
@@ -45,35 +41,37 @@ public class ParticipantDAOImpl implements ParticipantDAO {
   }
 
   @Override
-  public void addParticipantToEvent(String eventId, ParticipantDTO participant) {
+  public void addParticipantToEvent(UUID eventId, ParticipantDTO participant) {
     UserInEventRecord record = new UserInEventRecord();
-    record.setUserId(UUID.fromString(participant.id()));
-    record.setEventId(UUID.fromString(eventId));
+    record.setUserId(participant.id());
+    record.setEventId(eventId);
     record.setRole(participant.role() != null ? EventRole.valueOf(participant.role()) : null);
     userInEventRepository.save(record);
   }
 
   @Override
-  public void deleteParticipant(String eventId, String participantId) {
-    userInEventRepository.deleteById(UUID.fromString(eventId), UUID.fromString(participantId));
+  public void deleteParticipant(UUID eventId, UUID participantId) {
+    userInEventRepository.deleteById(eventId, participantId);
   }
 
+  // todo: optimize in the repository
   @Override
-  public boolean isParticipant(String eventId, String userId) {
-    List<UserInEventRecord> records = userInEventRepository.findByEventId(UUID.fromString(eventId));
+  public boolean isParticipant(UUID eventId, UUID userId) {
+    List<UserInEventRecord> records = userInEventRepository.findByEventId(eventId);
     for (UserInEventRecord record : records) {
-      if (record.getUserId().toString().equals(userId)) {
+      if (record.getUserId().equals(userId)) {
         return true;
       }
     }
     return false;
   }
 
+  // todo: optimize in the repository
   @Override
-  public void updateParticipantRole(String eventId, String participantId, String role) {
-    List<UserInEventRecord> records = userInEventRepository.findByEventId(UUID.fromString(eventId));
+  public void updateParticipantRole(UUID eventId, UUID participantId, String role) {
+    List<UserInEventRecord> records = userInEventRepository.findByEventId(eventId);
     for (UserInEventRecord record : records) {
-      if (record.getUserId().toString().equals(participantId)) {
+      if (record.getUserId().equals(participantId)) {
         record.setRole(EventRole.valueOf(role));
         record.update();
         break;
@@ -81,11 +79,12 @@ public class ParticipantDAOImpl implements ParticipantDAO {
     }
   }
 
+  // todo: optimize in the repository
   @Override
-  public String getParticipantRoleInEvent(String eventId, String participantId) {
-    List<UserInEventRecord> records = userInEventRepository.findByEventId(UUID.fromString(eventId));
+  public String getParticipantRoleInEvent(UUID eventId, UUID participantId) {
+    List<UserInEventRecord> records = userInEventRepository.findByEventId(eventId);
     for (UserInEventRecord record : records) {
-      if (record.getUserId().toString().equals(participantId)) {
+      if (record.getUserId().equals(participantId)) {
         return record.getRole() != null ? record.getRole().getLiteral() : null;
       }
     }
@@ -93,17 +92,17 @@ public class ParticipantDAOImpl implements ParticipantDAO {
   }
 
   @Override
-  public ParticipantDTO getParticipantById(String eventId, String participantId) {
+  public ParticipantDTO getParticipantById(UUID eventId, UUID participantId) {
     // Получаем Optional<UserInEventRecord>
     Optional<UserInEventRecord> userInEventOpt = userInEventRepository.findById(
-        UUID.fromString(eventId), UUID.fromString(participantId)
+        eventId, participantId
     );
     if (userInEventOpt.isEmpty()) {
         return null;
     }
     UserInEventRecord userInEvent = userInEventOpt.get();
 
-    Optional<UsersRecord> userRecordOpt = userRepository.findById(UUID.fromString(participantId));
+    Optional<UsersRecord> userRecordOpt = userRepository.findById(participantId);
     if (userRecordOpt.isEmpty()) {
         return null;
     }
@@ -112,7 +111,7 @@ public class ParticipantDAOImpl implements ParticipantDAO {
     EventRole userRole = userInEvent.getRole();
 
     return new ParticipantDTO(
-        userRecord.getUserId().toString(),
+        userRecord.getUserId(),
         userRecord.getLogin(),
         userRecord.getName(),
         userRole != null ? userRole.getLiteral() : null,
