@@ -1029,6 +1029,11 @@ components:
             ]
           description: Статус списка покупок
           example: unassigned
+        can_edit:
+          readOnly: true
+          type: boolean
+          description: Может ли пользователь редактировать список покупок
+          example: true
         shopping_items:
           readOnly: true
           type: array
