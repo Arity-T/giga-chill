@@ -41,7 +41,7 @@ export const getStatusText = (status: string) => {
 export const getStatusTooltip = (status: string) => {
     switch (status) {
         case ShoppingListStatus.UNASSIGNED:
-            return 'Список создан и пока не привязан к одной задаче. Можно редактировать.';
+            return 'Список создан и пока не привязан ни к одной задаче. Можно редактировать.';
         case ShoppingListStatus.ASSIGNED:
             return 'Под список заведена задача со статусом «Открыта». Можно редактировать.';
         case ShoppingListStatus.IN_PROGRESS:
