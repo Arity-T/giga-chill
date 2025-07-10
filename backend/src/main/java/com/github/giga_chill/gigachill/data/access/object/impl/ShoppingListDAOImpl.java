@@ -121,10 +121,13 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
     }
 
     /**
-     * Creates a new shopping list with the given title and description.
+     * Creates a new shopping list within the specified event.
      *
-     * @param title       the title of the new shopping list
-     * @param description the description of the new shopping list
+     * @param eventId        the unique identifier of the event to which the shopping list belongs
+     * @param shoppingListId the unique identifier to assign to the new shopping list
+     * @param userId         the unique identifier of the user creating the shopping list
+     * @param title          the title of the shopping list
+     * @param description    the description of the shopping list
      */
     @Override
     public void createShoppingList(UUID eventId, UUID shoppingListId, UUID userId, String title, String description) {
@@ -135,6 +138,8 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
                 title,
                 description)
         );
+
+        consumerInListRepository.addConsumer(shoppingListId, userId);
     }
 
     /**
