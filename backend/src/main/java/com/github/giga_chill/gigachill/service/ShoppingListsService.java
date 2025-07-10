@@ -34,7 +34,7 @@ public class ShoppingListsService {
         return SHOPPING_LISTS.get(eventId).get(shoppingListId);
     }
 
-    public String createShoppingList(UUID eventId, String title, String description) {
+    public String createShoppingList(UUID eventId, UUID userId, String title, String description) {
         //TODO: связь с бд (убрать eventId)
         //TODO: сделать привязку к task_id
         ShoppingList shoppingList = new ShoppingList(UUID.randomUUID(), UUID.randomUUID(), title, description,

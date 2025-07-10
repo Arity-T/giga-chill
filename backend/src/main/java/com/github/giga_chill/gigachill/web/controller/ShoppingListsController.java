@@ -13,7 +13,6 @@ import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.ParticipantsService;
 import com.github.giga_chill.gigachill.service.ShoppingListsService;
 import com.github.giga_chill.gigachill.service.UserService;
-import com.github.giga_chill.gigachill.util.UUIDUtils;
 import com.github.giga_chill.gigachill.web.info.ConsumerInfo;
 import com.github.giga_chill.gigachill.web.info.ShoppingItemInfo;
 import com.github.giga_chill.gigachill.web.info.ShoppingListInfo;
@@ -77,7 +76,7 @@ public class ShoppingListsController {
             throw new ForbiddenException("User with id " + user.getId() +
                     " is not a participant of event with id " + eventUuid);
         }
-        shoppingListsService.createShoppingList(eventUuid, title, description);
+        shoppingListsService.createShoppingList(eventUuid, user.getId(), title, description);
         return ResponseEntity.noContent().build();
     }
 
