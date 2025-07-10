@@ -7,6 +7,7 @@ import { EventIdPathParam } from '@/types/path-params';
 import ShoppingListCard from './ShoppingListCard';
 import { useGetShoppingListsQuery, useDeleteShoppingListMutation } from '@/store/api/api';
 import ShoppingListModal from './ShoppingListModal';
+import AddShoppingItemModal from './AddShoppingItemModal';
 import { ShoppingListWithItems } from '@/types/api';
 
 const { Title } = Typography;
@@ -19,6 +20,10 @@ type ModalState =
 export default function ShoppingPage({ params }: EventIdPathParam) {
     const { eventId } = React.use(params);
     const [modalState, setModalState] = useState<ModalState>({ type: 'closed' });
+    const [addItemModal, setAddItemModal] = useState<{ open: boolean; shoppingListId: string }>({
+        open: false,
+        shoppingListId: ''
+    });
     const { message, modal } = App.useApp();
 
     const { data: shoppingLists, isLoading } = useGetShoppingListsQuery(eventId);
@@ -73,7 +78,7 @@ export default function ShoppingPage({ params }: EventIdPathParam) {
     };
 
     const handleAddItem = (listId: string) => {
-        console.log(`Добавить товар в список ${listId}`);
+        setAddItemModal({ open: true, shoppingListId: listId });
     };
 
     const handleDeleteItem = (itemId: string) => {
@@ -86,6 +91,10 @@ export default function ShoppingPage({ params }: EventIdPathParam) {
 
     const handleCloseModal = () => {
         setModalState({ type: 'closed' });
+    };
+
+    const handleCloseAddItemModal = () => {
+        setAddItemModal({ open: false, shoppingListId: '' });
     };
 
     if (isLoading) {
@@ -130,6 +139,13 @@ export default function ShoppingPage({ params }: EventIdPathParam) {
                 onCancel={handleCloseModal}
                 eventId={eventId}
                 shoppingList={modalState.type === 'edit' ? modalState.shoppingList : undefined}
+            />
+
+            <AddShoppingItemModal
+                open={addItemModal.open}
+                onCancel={handleCloseAddItemModal}
+                eventId={eventId}
+                shoppingListId={addItemModal.shoppingListId}
             />
         </div>
     );
