@@ -158,7 +158,7 @@ public class ShoppingListsController {
                                                  @RequestBody Map<String, Object> body) {
         User user = userService.userAuthentication(authentication);
         String title = (String) body.get("title");
-        BigDecimal quantity = (BigDecimal) body.get("quantity");
+        BigDecimal quantity = new BigDecimal((String) body.get("quantity"));
         String unit = (String) body.get("unit");
         if (title == null || quantity == null || unit == null) {
             throw new BadRequestException("Invalid request body: " + body);
@@ -197,7 +197,7 @@ public class ShoppingListsController {
                                                   @RequestBody Map<String, Object> body) {
         User user = userService.userAuthentication(authentication);
         String title = (String) body.get("title");
-        BigDecimal quantity = (BigDecimal) body.get("quantity");
+        BigDecimal quantity = new BigDecimal((String) body.get("quantity"));
         String unit = (String) body.get("unit");
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
