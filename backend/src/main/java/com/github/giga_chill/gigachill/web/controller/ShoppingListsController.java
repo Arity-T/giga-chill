@@ -93,7 +93,7 @@ public class ShoppingListsController {
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+        if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -101,17 +101,17 @@ public class ShoppingListsController {
                     " is not a participant of event with id " + eventId);
         }
         if (participantsService.isParticipantRole(eventId, user.getId())
-                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.getId())) {
+                && !shoppingListsService.isConsumer(shoppingListId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
                     " is not a consumer of shopping list with id " + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
                 !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
             throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
                     " have unassigned or assigned status");
         }
-        shoppingListsService.updateShoppingList(eventId, shoppingListId, title, description);
+        shoppingListsService.updateShoppingList(shoppingListId, title, description);
 
         return ResponseEntity.noContent().build();
     }
@@ -127,7 +127,7 @@ public class ShoppingListsController {
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+        if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -135,17 +135,17 @@ public class ShoppingListsController {
                     " is not a participant of event with id " + eventId);
         }
         if (participantsService.isParticipantRole(eventId, user.getId())
-                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.getId())) {
+                && !shoppingListsService.isConsumer(shoppingListId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
                     " is not a consumer of shopping list with id " + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
                 !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
             throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
                     " have unassigned or assigned status");
         }
-        shoppingListsService.deleteShoppingList(eventId, shoppingListId);
+        shoppingListsService.deleteShoppingList(shoppingListId);
 
         return ResponseEntity.noContent().build();
     }
@@ -166,7 +166,7 @@ public class ShoppingListsController {
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+        if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -174,17 +174,17 @@ public class ShoppingListsController {
                     " is not a participant of event with id " + eventId);
         }
         if (participantsService.isParticipantRole(eventId, user.getId())
-                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.getId())) {
+                && !shoppingListsService.isConsumer(shoppingListId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
                     " is not a consumer of shopping list with id " + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
                 !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
             throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
                     " have unassigned or assigned status");
         }
-        shoppingListsService.addShoppingItem(eventId, shoppingListId, title, quantity, unit);
+        shoppingListsService.addShoppingItem(shoppingListId, title, quantity, unit);
         return ResponseEntity.noContent().build();
     }
 
@@ -202,10 +202,10 @@ public class ShoppingListsController {
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+        if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
-        if (!shoppingListsService.isShoppingItemExisted(shoppingListId, shoppingItemId)) {
+        if (!shoppingListsService.isShoppingItemExisted(shoppingItemId)) {
             throw new NotFoundException("Shopping item with id " + shoppingItemId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -213,17 +213,17 @@ public class ShoppingListsController {
                     " is not a participant of event with id " + eventId);
         }
         if (participantsService.isParticipantRole(eventId, user.getId())
-                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.getId())) {
+                && !shoppingListsService.isConsumer(shoppingListId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
                     " is not a consumer of shopping list with id " + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
                 !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
             throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
                     " have unassigned or assigned status");
         }
-        shoppingListsService.updateShoppingItem(eventId, shoppingListId, shoppingItemId, title, quantity, unit);
+        shoppingListsService.updateShoppingItem(shoppingItemId, title, quantity, unit);
         return ResponseEntity.noContent().build();
     }
 
@@ -234,13 +234,13 @@ public class ShoppingListsController {
                                                    @PathVariable UUID shoppingListId,
                                                    @PathVariable UUID shoppingItemId) {
         User user = userService.userAuthentication(authentication);
-        if (!shoppingListsService.isShoppingItemExisted(shoppingListId, shoppingItemId)) {
+        if (!shoppingListsService.isShoppingItemExisted(shoppingItemId)) {
             throw new NotFoundException("Shopping item with id " + shoppingItemId + " not found");
         }
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+        if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -248,17 +248,17 @@ public class ShoppingListsController {
                     " is not a participant of event with id " + eventId);
         }
         if (participantsService.isParticipantRole(eventId, user.getId())
-                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.getId())) {
+                && !shoppingListsService.isConsumer(shoppingListId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
                     " is not a consumer of shopping list with id " + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
                 !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
             throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
                     " have unassigned or assigned status");
         }
-        shoppingListsService.deleteShoppingItemFromShoppingList(eventId, shoppingListId, shoppingItemId);
+        shoppingListsService.deleteShoppingItemFromShoppingList(shoppingListId, shoppingItemId);
         return ResponseEntity.noContent().build();
     }
 
@@ -274,13 +274,13 @@ public class ShoppingListsController {
         if (isPurchased == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
-        if (!shoppingListsService.isShoppingItemExisted(shoppingListId, shoppingItemId)) {
+        if (!shoppingListsService.isShoppingItemExisted(shoppingItemId)) {
             throw new NotFoundException("Shopping item with id " + shoppingItemId + " not found");
         }
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+        if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -288,17 +288,17 @@ public class ShoppingListsController {
                     " is not a participant of event with id " + eventId);
         }
         if (participantsService.isParticipantRole(eventId, user.getId())
-                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.getId())) {
+                && !shoppingListsService.isConsumer(shoppingListId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
                     " is not a consumer of shopping list with id " + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
                 !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
             throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
                     " have unassigned or assigned status");
         }
-        shoppingListsService.updateShoppingItemStatus(eventId, shoppingListId, shoppingItemId, isPurchased);
+        shoppingListsService.updateShoppingItemStatus(shoppingItemId, isPurchased);
         return ResponseEntity.noContent().build();
     }
 
@@ -316,7 +316,7 @@ public class ShoppingListsController {
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!shoppingListsService.isExisted(eventId, shoppingListId)) {
+        if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -324,11 +324,11 @@ public class ShoppingListsController {
                     " is not a participant of event with id " + eventId);
         }
         if (participantsService.isParticipantRole(eventId, user.getId())
-                && !shoppingListsService.isConsumer(eventId, shoppingListId, user.getId())) {
+                && !shoppingListsService.isConsumer(shoppingListId, user.getId())) {
             throw new ForbiddenException("User with id " + user.getId() +
                     " is not a consumer of shopping list with id " + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned")) &&
                 !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
             throw new ConflictException("Shopping list with id: " + shoppingListId + " does not" +
@@ -342,7 +342,7 @@ public class ShoppingListsController {
             throw new NotFoundException("The list contains a user that is not in the database");
         }
 
-        shoppingListsService.updateShoppingListConsumers(eventId, shoppingListId, allUsersIds);
+        shoppingListsService.updateShoppingListConsumers(shoppingListId, allUsersIds);
         return ResponseEntity.noContent().build();
     }
 
@@ -389,12 +389,12 @@ public class ShoppingListsController {
 
     public boolean canEdit(UUID eventId, UUID shoppingListId, UUID userId) {
         boolean isParticipant = participantsService.isParticipantRole(eventId, userId);
-        boolean isConsumer   = shoppingListsService.isConsumer(eventId, shoppingListId, userId);
+        boolean isConsumer   = shoppingListsService.isConsumer(shoppingListId, userId);
         if (isParticipant && !isConsumer) {
             return false;
         }
 
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(eventId, shoppingListId);
+        String shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         boolean isUnassigned = shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned"));
         boolean isAssigned= shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"));
         return (isUnassigned || isAssigned);

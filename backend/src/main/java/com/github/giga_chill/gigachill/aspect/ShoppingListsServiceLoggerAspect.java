@@ -26,8 +26,8 @@ public class ShoppingListsServiceLoggerAspect {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.getShoppingListById(..)) " +
-            "&& args(eventId, shoppingListId)")
-    public void getShoppingListById(UUID eventId, UUID shoppingListId) {
+            "&& args(shoppingListId)")
+    public void getShoppingListById(UUID shoppingListId) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.createShoppingList(..))")
@@ -35,65 +35,64 @@ public class ShoppingListsServiceLoggerAspect {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.updateShoppingList(..)) " +
-            "&& args(eventId, shoppingListId, ..)")
-    public void updateShoppingList(UUID eventId, UUID shoppingListId) {
+            "&& args(shoppingListId, ..)")
+    public void updateShoppingList(UUID shoppingListId) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.deleteShoppingList(..)) " +
-            "&& args(eventId, shoppingListId)")
-    public void deleteShoppingList(UUID eventId, UUID shoppingListId) {
+            "&& args(shoppingListId)")
+    public void deleteShoppingList(UUID shoppingListId) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.addShoppingItem(..)) " +
-            "&& args(eventId, shoppingListId, ..)")
-    public void addShoppingItem(UUID eventId, UUID shoppingListId) {
+            "&& args(shoppingListId, ..)")
+    public void addShoppingItem(UUID shoppingListId) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.updateShoppingItem(..)) " +
-            "&& args(eventId, shoppingListId, shoppingItemId, ..)")
-    public void updateShoppingItem(UUID eventId, UUID shoppingListId, UUID shoppingItemId) {
+            "&& args(shoppingItemId, ..)")
+    public void updateShoppingItem(UUID shoppingItemId) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.deleteShoppingItemFromShoppingList(..)) " +
-            "&& args(eventId, shoppingListId, shoppingItemId)")
-    public void deleteShoppingItemFromShoppingList(UUID eventId, UUID shoppingListId, UUID shoppingItemId) {
+            "&& args(shoppingListId, shoppingItemId)")
+    public void deleteShoppingItemFromShoppingList(UUID shoppingListId, UUID shoppingItemId) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.updateShoppingItemStatus(..)) " +
-            "&& args(eventId, shoppingListId, shoppingItemId, status)")
-    public void updateShoppingItemStatus(UUID eventId, UUID shoppingListId, UUID shoppingItemId,
+            "&& args(shoppingItemId, status)")
+    public void updateShoppingItemStatus(UUID shoppingItemId,
                                          boolean status) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.getShoppingItemById(..)) " +
-            "&& args(eventId, shoppingListId, shoppingItemId)")
-    public void getShoppingItemById(UUID eventId, UUID shoppingListId,
-                                    UUID shoppingItemId) {
+            "&& args(shoppingItemId)")
+    public void getShoppingItemById(UUID shoppingItemId) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.updateShoppingListConsumers(..)) " +
-            "&& args(eventId, shoppingListId, ..)")
-    public void updateShoppingListConsumers(UUID eventId, UUID shoppingListId) {
+            "&& args(shoppingListId, ..)")
+    public void updateShoppingListConsumers(UUID shoppingListId) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.getShoppingListStatus(..)) " +
-            "&& args(eventId, shoppingListId)")
-    public void getShoppingListStatus(UUID eventId, UUID shoppingListId) {
+            "&& args(shoppingListId)")
+    public void getShoppingListStatus(UUID shoppingListId) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.isExisted(..)) " +
-            "&& args(eventId, shoppingListId)")
-    public void isExisted(UUID eventId, UUID shoppingListId) {
+            "&& args(shoppingListId)")
+    public void isExisted(UUID shoppingListId) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.isConsumer(..)) " +
-            "&& args(eventId, shoppingListId, consumerId)")
-    public void isConsumer(UUID eventId, UUID shoppingListId, UUID consumerId) {
+            "&& args(shoppingListId, consumerId)")
+    public void isConsumer(UUID shoppingListId, UUID consumerId) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.isShoppingItemExisted(..)) " +
-            "&& args(eventId, shoppingItemId)")
-    public void isShoppingItemExisted(UUID eventId, UUID shoppingItemId) {
+            "&& args(shoppingItemId)")
+    public void isShoppingItemExisted(UUID shoppingItemId) {
     }
 
 
@@ -110,9 +109,8 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("getShoppingListById(eventId, shoppingListId)")
+    @Around("getShoppingListById(shoppingListId)")
     public Object logGetShoppingListById(ProceedingJoinPoint proceedingJoinPoint,
-                                         UUID eventId,
                                          UUID shoppingListId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -136,9 +134,8 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("updateShoppingList(eventId, shoppingListId)")
+    @Around("updateShoppingList(shoppingListId)")
     public Object logUpdateShoppingList(ProceedingJoinPoint proceedingJoinPoint,
-                                        UUID eventId,
                                         UUID shoppingListId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -150,9 +147,8 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("deleteShoppingList(eventId, shoppingListId)")
+    @Around("deleteShoppingList(shoppingListId)")
     public Object logDeleteShoppingList(ProceedingJoinPoint proceedingJoinPoint,
-                                        UUID eventId,
                                         UUID shoppingListId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -164,9 +160,8 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("addShoppingItem(eventId, shoppingListId)")
+    @Around("addShoppingItem(shoppingListId)")
     public Object logAddShoppingItem(ProceedingJoinPoint proceedingJoinPoint,
-                                     UUID eventId,
                                      UUID shoppingListId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -178,10 +173,8 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("updateShoppingItem(eventId, shoppingListId, shoppingItemId)")
+    @Around("updateShoppingItem(shoppingItemId)")
     public Object logUpdateShoppingItem(ProceedingJoinPoint proceedingJoinPoint,
-                                        UUID eventId,
-                                        UUID shoppingListId,
                                         UUID shoppingItemId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -193,9 +186,8 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("deleteShoppingItemFromShoppingList(eventId, shoppingListId, shoppingItemId)")
+    @Around("deleteShoppingItemFromShoppingList(shoppingListId, shoppingItemId)")
     public Object logDeleteShoppingItemFromShoppingList(ProceedingJoinPoint proceedingJoinPoint,
-                                                        UUID eventId,
                                                         UUID shoppingListId,
                                                         UUID shoppingItemId) throws Throwable {
         try {
@@ -208,10 +200,8 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("updateShoppingItemStatus(eventId, shoppingListId, shoppingItemId, status)")
+    @Around("updateShoppingItemStatus(shoppingItemId, status)")
     public Object logUpdateShoppingItemStatus(ProceedingJoinPoint proceedingJoinPoint,
-                                              UUID eventId,
-                                              UUID shoppingListId,
                                               UUID shoppingItemId,
                                               boolean status) throws Throwable {
         try {
@@ -225,10 +215,8 @@ public class ShoppingListsServiceLoggerAspect {
     }
 
 
-    @Around("getShoppingItemById(eventId, shoppingListId, shoppingItemId)")
+    @Around("getShoppingItemById(shoppingItemId)")
     public Object logGetShoppingItemById(ProceedingJoinPoint proceedingJoinPoint,
-                                         UUID eventId,
-                                         UUID shoppingListId,
                                          UUID shoppingItemId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -240,9 +228,8 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("updateShoppingListConsumers(eventId, shoppingListId)")
+    @Around("updateShoppingListConsumers(shoppingListId)")
     public Object logUpdateShoppingListConsumers(ProceedingJoinPoint proceedingJoinPoint,
-                                                 UUID eventId,
                                                  UUID shoppingListId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -254,9 +241,8 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("getShoppingListStatus(eventId, shoppingListId)")
+    @Around("getShoppingListStatus(shoppingListId)")
     public Object logGetShoppingListStatus(ProceedingJoinPoint proceedingJoinPoint,
-                                           UUID eventId,
                                            UUID shoppingListId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -268,9 +254,8 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("isExisted(eventId, shoppingListId)")
+    @Around("isExisted(shoppingListId)")
     public Object logIsExisted(ProceedingJoinPoint proceedingJoinPoint,
-                               UUID eventId,
                                UUID shoppingListId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -289,9 +274,8 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("isConsumer(eventId, shoppingListId, consumerId)")
+    @Around("isConsumer(shoppingListId, consumerId)")
     public Object logIsConsumer(ProceedingJoinPoint proceedingJoinPoint,
-                                UUID eventId,
                                 UUID shoppingListId,
                                 UUID consumerId) throws Throwable {
         try {
@@ -313,9 +297,8 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("isShoppingItemExisted(eventId, shoppingItemId)")
+    @Around("isShoppingItemExisted(shoppingItemId)")
     public Object logIsShoppingItemExisted(ProceedingJoinPoint proceedingJoinPoint,
-                                           UUID eventId,
                                            UUID shoppingItemId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();

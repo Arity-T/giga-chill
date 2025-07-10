@@ -64,7 +64,7 @@ public class ParticipantsService {
         return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.participant").toString());
     }
 
-    private Participant toEntity(ParticipantDTO participantDTO) {
+    public Participant toEntity(ParticipantDTO participantDTO) {
         return new Participant(participantDTO.id(),
                 participantDTO.login(),
                 participantDTO.name(),
@@ -72,7 +72,7 @@ public class ParticipantsService {
                 participantDTO.balance());
     }
 
-    private ParticipantDTO toDto(Participant participant) {
+    public ParticipantDTO toDto(Participant participant) {
         return new ParticipantDTO(participant.getId(),
                 participant.getLogin(),
                 participant.getName(),
