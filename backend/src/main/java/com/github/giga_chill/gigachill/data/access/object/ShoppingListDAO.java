@@ -96,9 +96,9 @@ public interface ShoppingListDAO {
      * Updates the list of consumer user IDs for a shopping list.
      *
      * @param shoppingListId the unique identifier of the shopping list
-     * @param allUserId      the list of user IDs who are allowed to consume this list
+     * @param allUserIds      the list of user IDs who are allowed to consume this list
      */
-    void updateShoppingListConsumers(UUID shoppingListId, List<UUID> allUserId);
+    void updateShoppingListConsumers(UUID shoppingListId, List<UUID> allUserIds);
 
     /**
      * Retrieves the current status of a shopping list (e.g., "open", "closed").
