@@ -35,7 +35,7 @@ public interface ParticipantDAO {
      * @param eventId       the unique identifier of the event
      * @param participantId the unique identifier of the participant to remove
      */
-    void deleteParticipant(UUID eventId, String participantId);
+    void deleteParticipant(UUID eventId, UUID participantId);
 
     /**
      * Checks whether a user is a participant in the specified event.
