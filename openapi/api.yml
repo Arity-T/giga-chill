@@ -18,6 +18,7 @@ tags:
   - name: Shopping Lists
   - name: Shopping List Items
   - name: Shopping List Consumers
+  - name: Tasks
 
 paths:
   /auth/login:
@@ -517,6 +518,134 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /events/{eventId}/tasks:
+    get:
+      summary: Получить задачи
+      tags: [Tasks]
+      operationId: getTasks
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tasks"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    post:
+      summary: Создать задачу
+      tags: [Tasks]
+      operationId: createTask
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskRequest"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/InvalidDataError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /events/{eventId}/tasks/{taskId}:
+    get:
+      summary: Получить задачу
+      tags: [Tasks]
+      operationId: getTask
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/taskId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    patch:
+      summary: Обновить задачу
+      tags: [Tasks]
+      operationId: updateTask
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/taskId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskRequest"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/InvalidDataError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    delete:
+      summary: Удалить задачу
+      tags: [Tasks]
+      operationId: deleteTask
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/taskId"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /events/{eventId}/tasks/{taskId}/take-in-work:
+    post:
+      summary: Взять задачу в работу
+      description: Если исполнитель не указан, то тот кто взял задачу в работу становится её исполнителем.
+      tags: [Tasks]
+      operationId: takeTaskInWork
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/taskId"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
 components:
   responses:
     InvalidDataError:
@@ -574,6 +703,14 @@ components:
       in: path
       required: true
       description: Идентификатор элемента списка покупок
+      schema:
+        $ref: "#/components/schemas/UUID"
+
+    taskId:
+      name: taskId
+      in: path
+      required: true
+      description: Идентификатор задачи
       schema:
         $ref: "#/components/schemas/UUID"
 
@@ -810,3 +947,69 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/ShoppingListWithItems"
+
+    TaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Название задачи
+          example: "Купить фрукты"
+        description:
+          type: string
+          description: Описание задачи
+          example: "Купить фрукты для вечеринки"
+        deadline_datetime:
+          type: string
+          format: date-time
+          description: Дедлайн задачи
+          example: "2025-01-01T12:00:00Z"
+        executor_id:
+          $ref: "#/components/schemas/UUID"
+        shopping_lists_ids:
+          type: array
+          items:
+            $ref: "#/components/schemas/UUID"
+
+    Task:
+      type: object
+      properties:
+        task_id:
+          $ref: "#/components/schemas/ReadOnlyUUID"
+        title:
+          type: string
+          description: Название задачи
+          example: "Купить фрукты"
+        description:
+          type: string
+          description: Описание задачи
+          example: "Купить фрукты для вечеринки"
+        status:
+          readOnly: true
+          type: string
+          enum: [open, in_progress, under_review, completed]
+          description: Статус задачи
+        deadline_datetime:
+          type: string
+          format: date-time
+          description: Дедлайн задачи
+          example: "2025-01-01T12:00:00Z"
+        actual_approval_id:
+          $ref: "#/components/schemas/ReadOnlyUUID"
+        author:
+          readOnly: true
+          allOf:
+            - $ref: "#/components/schemas/User"
+        executor:
+          readOnly: true
+          allOf:
+            - $ref: "#/components/schemas/User"
+        shopping_lists:
+          type: array
+          items:
+            $ref: "#/components/schemas/ShoppingListsWithItems"
+
+    Tasks:
+      type: array
+      items:
+        $ref: "#/components/schemas/Task"
