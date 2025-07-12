@@ -10,7 +10,7 @@ public record TaskDTO (UUID taskId,
                        @Nullable String description,
                        @Nullable String status,
                        @Nullable String deadlineDatetime,
-                       @Nullable  String actualApprovalId,
+                       @Nullable UUID actualApprovalId,
                        UserDTO author,
                        @Nullable UserDTO executor){
 }
