@@ -13,6 +13,7 @@ import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.ParticipantsService;
 import com.github.giga_chill.gigachill.service.ShoppingListsService;
 import com.github.giga_chill.gigachill.service.UserService;
+import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.ConsumerInfo;
 import com.github.giga_chill.gigachill.web.info.ShoppingItemInfo;
 import com.github.giga_chill.gigachill.web.info.ShoppingListInfo;
@@ -340,7 +341,7 @@ public class ShoppingListsController {
         }
 
         List<UUID> allUsersIds = body.stream()
-                .map(this::safeUUID)
+                .map(UuidUtils::safeUUID)
                 .toList();
         if (!userService.allUsersExistByIds(allUsersIds)) {
             throw new NotFoundException("The list contains a user that is not in the database");
@@ -381,15 +382,6 @@ public class ShoppingListsController {
                 shoppingItem.getQuantity(),
                 shoppingItem.getUnit(),
                 shoppingItem.getIsPurchased());
-    }
-
-
-    private UUID safeUUID(String raw) {
-        try {
-            return UUID.fromString(raw);
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Invalid UUID: " + raw);
-        }
     }
 
     public boolean canEdit(UUID eventId, UUID shoppingListId, UUID userId) {
