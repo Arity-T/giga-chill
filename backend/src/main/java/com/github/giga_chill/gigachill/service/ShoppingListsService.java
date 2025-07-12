@@ -1,10 +1,8 @@
 package com.github.giga_chill.gigachill.service;
 
 import com.github.giga_chill.gigachill.data.access.object.ShoppingListDAO;
-import com.github.giga_chill.gigachill.data.transfer.object.EventDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingItemDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingListDTO;
-import com.github.giga_chill.gigachill.model.Event;
 import com.github.giga_chill.gigachill.model.ShoppingItem;
 import com.github.giga_chill.gigachill.model.ShoppingList;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +27,12 @@ public class ShoppingListsService {
 
     public ShoppingList getShoppingListById(UUID shoppingListId) {
         return toEntity(shoppingListDAO.getShoppingListById(shoppingListId));
+    }
+
+    public List<ShoppingList> getShoppingListsByIds(List<UUID> shoppingListsIds){
+        //TODO: связь с бд
+        //TODO: добавить в логгер
+        return List.of();
     }
 
     public String createShoppingList(UUID eventId, UUID userId, String title, String description) {
@@ -62,7 +66,6 @@ public class ShoppingListsService {
         shoppingListDAO.updateShoppingItem(shoppingItemToDTO(shoppingItem));
     }
 
-
     public void deleteShoppingItemFromShoppingList(UUID shoppingListId, UUID shoppingItemId) {
         shoppingListDAO.deleteShoppingItemFromShoppingList(shoppingListId, shoppingItemId);
     }
@@ -85,6 +88,12 @@ public class ShoppingListsService {
 
     public boolean isExisted(UUID shoppingListId) {
         return shoppingListDAO.isExisted(shoppingListId);
+    }
+
+    public boolean areExisted(List<UUID> shoppingListsIds) {
+        //TODO: связь с бд
+        //TODO: добавить в логгер
+        return true;
     }
 
     public boolean isConsumer(UUID shoppingListId, UUID consumerId) {

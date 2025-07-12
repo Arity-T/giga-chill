@@ -2,6 +2,7 @@ package com.github.giga_chill.gigachill.data.access.object;
 
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingItemDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingListDTO;
+import com.github.giga_chill.gigachill.model.ShoppingList;
 import jakarta.annotation.Nullable;
 
 import java.util.List;
@@ -139,5 +140,23 @@ public interface ShoppingListDAO {
      * @param shoppingItemDTO the {@link ShoppingItemDTO} containing the new field values for the item
      */
     void updateShoppingItem(ShoppingItemDTO shoppingItemDTO);
+
+
+    /**
+     * Retrieves all shopping lists corresponding to the given identifiers.
+     *
+     * @param shoppingListsIds a {@link List} of {@link UUID} representing the IDs of the shopping lists to fetch
+     * @return a {@link List} of {@link ShoppingList} instances matching the provided IDs;
+     *         if an ID does not correspond to an existing shopping list, it will be omitted
+     */
+    List<ShoppingList> getShoppingListsByIds(List<UUID> shoppingListsIds);
+
+    /**
+     * Verifies whether shopping lists with all specified identifiers exist.
+     *
+     * @param shoppingListsIds a {@link List} of {@link UUID} representing the IDs to check
+     * @return {@code true} if a shopping list exists for every ID in the list; {@code false} otherwise
+     */
+    boolean areExisted(List<UUID> shoppingListsIds);
 
 }
