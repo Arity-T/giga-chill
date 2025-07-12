@@ -1,9 +1,6 @@
 package com.github.giga_chill.gigachill.util;
 
-import com.github.giga_chill.gigachill.model.Event;
-import com.github.giga_chill.gigachill.model.Participant;
-import com.github.giga_chill.gigachill.model.ShoppingItem;
-import com.github.giga_chill.gigachill.model.ShoppingList;
+import com.github.giga_chill.gigachill.model.*;
 import com.github.giga_chill.gigachill.web.info.*;
 
 public final class InfoEntityMapper {
@@ -18,7 +15,6 @@ public final class InfoEntityMapper {
                 event.getBudget());
     }
 
-
     public static ParticipantInfo toParticipantInfo(Participant participant) {
         return new ParticipantInfo(
                 participant.getLogin(),
@@ -29,8 +25,8 @@ public final class InfoEntityMapper {
     }
 
     public static ShoppingListInfo toShoppingListInfo(ShoppingList shoppingList, Boolean canEdit) {
-        return new ShoppingListInfo(shoppingList.getShoppingListId().toString(),
-                // TODO: when tasks are added
+        return new ShoppingListInfo(
+                shoppingList.getShoppingListId().toString(),
                 shoppingList.getTaskId() != null ? shoppingList.getTaskId().toString() : null,
                 shoppingList.getTitle(),
                 shoppingList.getDescription(),
@@ -45,7 +41,8 @@ public final class InfoEntityMapper {
     }
 
     public static ConsumerInfo toConsumerInfo(Participant participant) {
-        return new ConsumerInfo(participant.getLogin(),
+        return new ConsumerInfo(
+                participant.getLogin(),
                 participant.getName(),
                 participant.getId().toString(),
                 participant.getRole(),
@@ -53,11 +50,19 @@ public final class InfoEntityMapper {
     }
 
     public static ShoppingItemInfo toShoppingItemInfo(ShoppingItem shoppingItem) {
-        return new ShoppingItemInfo(shoppingItem.getShoppingItemId().toString(),
+        return new ShoppingItemInfo(
+                shoppingItem.getShoppingItemId().toString(),
                 shoppingItem.getTitle(),
                 shoppingItem.getQuantity(),
                 shoppingItem.getUnit(),
                 shoppingItem.getIsPurchased());
+    }
+
+    public static UserInfo toUserInfo(User user){
+        return new UserInfo(
+                user.getLogin(),
+                user.getName(),
+                user.getId().toString());
     }
 
 }

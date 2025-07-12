@@ -26,6 +26,13 @@ public class TaskService {
     private final Map<UUID, Map<UUID, Task>> TASKS = new HashMap<>();
 
 
+    public List<Task> getAllTasksFromEvent(UUID eventId){
+        //TODO: связь с бд
+
+        //TEMPORARY
+        return TASKS.get(eventId).values().stream().toList();
+    }
+
     public String createTask(UUID eventId, User user, RequestTaskInfo requestTaskInfo){
         //TODO: связь с бд
         List<UUID> shoppingListsIds = requestTaskInfo.shopping_lists_ids().stream()

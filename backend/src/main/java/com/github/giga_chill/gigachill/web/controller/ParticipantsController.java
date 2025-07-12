@@ -1,7 +1,6 @@
 package com.github.giga_chill.gigachill.web.controller;
 
 import com.github.giga_chill.gigachill.exception.*;
-import com.github.giga_chill.gigachill.model.Participant;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.UserService;
