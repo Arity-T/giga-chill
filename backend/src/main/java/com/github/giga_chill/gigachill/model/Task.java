@@ -17,7 +17,7 @@ public class Task {
     private String description;
     private String status;
     private String deadlineDatetime;
-    private String actualApprovalId;
+    private UUID actualApprovalId;
     private User author;
     private User executor;
     private List<ShoppingList> shoppingLists;
