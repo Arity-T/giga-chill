@@ -1,0 +1,62 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: gigachill-db
+    restart: always
+    env_file:
+      - ./backend/.env
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gigachill-network
+
+  builder:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.builder
+    image: gigachill-builder
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./backend/.env
+    command: ["./entrypoint.sh", "-mgbS"]
+    networks:
+      - gigachill-network
+    volumes:
+      - ./build:/app/build
+
+  app:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.app
+    depends_on:
+      builder:
+        condition: service_completed_successfully
+    env_file:
+      - ./backend/.env
+    command: []
+    ports:
+      - "8081:8081"
+    networks:
+      - gigachill-network
+    volumes:
+      - ./build:/app/build
+
+volumes:
+  postgres-data:
+
+networks:
+  gigachill-network:
+    driver: bridge 
