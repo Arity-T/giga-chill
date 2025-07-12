@@ -170,6 +170,32 @@ public class TasksController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{taskId}/take-in-work")
+    public ResponseEntity<Void> postExecutorToTask(Authentication authentication,
+                                           @PathVariable UUID eventId,
+                                           @PathVariable UUID taskId) {
+        User user = userService.userAuthentication(authentication);
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!taskService.isExisted(eventId, taskId)) {
+            throw new NotFoundException("Task with id " + taskId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
+                    " is not a participant of event with id " + eventId);
+        }
+        if(!taskService.getTaskStatus(taskId).equals(env.getProperty("task_status.open"))){
+            throw new ConflictException("Task with id " + taskId + " is not open");
+        }
+        if (!taskService.canExecute(taskId, user.getId())){
+            throw new ConflictException("User with id " + user.getId() + " cannot execute " +
+                    "task with id: " + taskId);
+        }
+
+        taskService.startExecuting(user.getId());
+        return ResponseEntity.noContent().build();
+    }
 
     private ResponseTaskWithShoppingListsInfo toResponseTaskWithShoppingListsInfo(UUID eventId, UUID userI, Task task) {
         return new ResponseTaskWithShoppingListsInfo(

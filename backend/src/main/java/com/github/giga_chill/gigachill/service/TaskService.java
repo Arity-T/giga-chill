@@ -104,6 +104,11 @@ public class TaskService {
                         task.getExecutor());
     }
 
+    public void startExecuting(UUID userId){
+        //TODO: связь с бд
+
+    }
+
     public void deleteTask(UUID eventId, UUID taskID){
         //TODO: связь с бд(убрать eventID
 
@@ -129,6 +134,13 @@ public class TaskService {
 
         //TEMPORARY
         return TASKS.get(eventID).containsKey(taskId);
+    }
+
+    public boolean canExecute(UUID taskId, UUID userId){
+        //TODO: связь с бд
+
+        //TEMPORARY
+        return true;
     }
 
 }
