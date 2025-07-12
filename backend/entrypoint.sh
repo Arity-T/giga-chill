@@ -54,6 +54,14 @@ set +o allexport
 
 echo "Using DB: $DB_HOST:$DB_PORT/$DB_NAME as $DB_USER"
 
+# ===Ждём, пока Postgres не станет доступен===
+echo "Ожидание запуска Postgres..."
+until PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -U "$DB_USER" -c '\q' 2>/dev/null; do
+  >&2 echo "Postgres ещё не доступен - ждём"
+  sleep 2
+done
+echo "Postgres готов"
+
 # === Выполнение миграций ===
 if [ "$run_migrations" = true ]; then
     echo "=== Выполнение миграций ==="

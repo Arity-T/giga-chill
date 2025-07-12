@@ -23,6 +23,13 @@ public class ShoppingListRepository {
             .fetchOptional();
   }
 
+  public List<ShoppingListsRecord> findByIds(List<UUID> ids) {
+    return dsl.selectFrom(ShoppingLists.SHOPPING_LISTS)
+            .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.in(ids))
+            .fetch();
+  }
+
+
   public List<ShoppingListsRecord> findByEventId(UUID eventId) {
     return dsl.selectFrom(ShoppingLists.SHOPPING_LISTS)
             .where(ShoppingLists.SHOPPING_LISTS.EVENT_ID.eq(eventId))
@@ -76,4 +83,13 @@ public class ShoppingListRepository {
                     .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(shoppingListId))
     ) > 0;
   }
+
+  public boolean allExist(List<UUID> ids) {
+    int count = dsl.fetchCount(
+            dsl.selectFrom(ShoppingLists.SHOPPING_LISTS)
+                    .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.in(ids))
+    );
+    return count == ids.size();
+  }
+
 }
