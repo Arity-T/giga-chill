@@ -6,7 +6,6 @@ import com.github.giga_chill.gigachill.data.transfer.object.ShoppingListDTO;
 import com.github.giga_chill.gigachill.model.ShoppingItem;
 import com.github.giga_chill.gigachill.model.ShoppingList;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,7 +15,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ShoppingListsService {
 
-    private final Environment env;
     private final ShoppingListDAO shoppingListDAO;
     private final ParticipantsService participantsService;
 
@@ -30,9 +28,9 @@ public class ShoppingListsService {
     }
 
     public List<ShoppingList> getShoppingListsByIds(List<UUID> shoppingListsIds){
-        //TODO: связь с бд
         //TODO: добавить в логгер
-        return List.of();
+        return shoppingListDAO.getShoppingListsByIds(shoppingListsIds).stream()
+                .map(this::toEntity).toList();
     }
 
     public String createShoppingList(UUID eventId, UUID userId, String title, String description) {
@@ -91,9 +89,8 @@ public class ShoppingListsService {
     }
 
     public boolean areExisted(List<UUID> shoppingListsIds) {
-        //TODO: связь с бд
         //TODO: добавить в логгер
-        return true;
+        return shoppingListDAO.areExisted(shoppingListsIds);
     }
 
     public boolean isConsumer(UUID shoppingListId, UUID consumerId) {
