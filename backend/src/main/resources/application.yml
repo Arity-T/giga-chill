@@ -27,3 +27,9 @@ shopping_list_status:
   bought: bought
   partially_bought: partially_bought
   cancelled: cancelled
+
+task_status:
+  open: open
+  in_progress: in_progress
+  under_review: under_review
+  completed: completed
