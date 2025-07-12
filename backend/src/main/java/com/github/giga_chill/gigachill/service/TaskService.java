@@ -34,6 +34,13 @@ public class TaskService {
         return TASKS.get(eventId).values().stream().toList();
     }
 
+    public Task getTaskById(UUID eventId, UUID taskId){
+        //TODO: связь с бд(убрать eventID)
+
+        //TEMPORARY
+        return TASKS.get(eventId).get(taskId);
+    }
+
     public String createTask(UUID eventId, User user, RequestTaskInfo requestTaskInfo){
         //TODO: связь с бд
         List<UUID> shoppingListsIds = requestTaskInfo.shopping_lists_ids().stream()
@@ -62,6 +69,13 @@ public class TaskService {
         eventTasks.put(task.getTaskId(), task);
 
         return task.getTaskId().toString();
+    }
+
+    public boolean isExisted(UUID eventID, UUID taskId){
+        //TODO: связь с бд(убрать eventID)
+
+        //TEMPORARY
+        return TASKS.get(eventID).containsKey(taskId);
     }
 
 }

@@ -67,7 +67,7 @@ public final class InfoEntityMapper {
                 user.getId().toString());
     }
 
-    public static ResponseTaskInfo toResponseInfo (Task task) {
+    public static ResponseTaskInfo toResponseTaskInfo (Task task) {
         return new ResponseTaskInfo(
                 task.getTaskId().toString(),
                 task.getTitle(),

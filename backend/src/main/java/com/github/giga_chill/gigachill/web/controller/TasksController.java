@@ -47,7 +47,7 @@ public class TasksController {
 
 
         return ResponseEntity.ok(taskService.getAllTasksFromEvent(eventId).stream()
-                .map(InfoEntityMapper::toResponseInfo).toList());
+                .map(InfoEntityMapper::toResponseTaskInfo).toList());
     }
 
     @PostMapping
@@ -80,8 +80,28 @@ public class TasksController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{taskId}")
+    public ResponseEntity<ResponseTaskWithShoppingListsInfo> getTask(Authentication authentication,
+                                                                     @PathVariable UUID eventId,
+                                                                     @PathVariable UUID taskId) {
+        User user = userService.userAuthentication(authentication);
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!taskService.isExisted(eventId, taskId)) {
+            throw new NotFoundException("Task with id " + taskId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
+                    " is not a participant of event with id " + eventId);
+        }
 
-    private ResponseTaskWithShoppingListsInfo toResponseTaskWithShoppingListsInfo (UUID eventId, UUID userI, Task task) {
+        return ResponseEntity.ok(toResponseTaskWithShoppingListsInfo(
+                eventId, user.getId(), taskService.getTaskById(eventId, taskId)));
+    }
+
+
+    private ResponseTaskWithShoppingListsInfo toResponseTaskWithShoppingListsInfo(UUID eventId, UUID userI, Task task) {
         return new ResponseTaskWithShoppingListsInfo(
                 task.getTaskId().toString(),
                 task.getTitle(),
