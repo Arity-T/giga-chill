@@ -1,6 +1,7 @@
 package com.github.giga_chill.gigachill.model;
 
 
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,8 +18,8 @@ public class Task {
     private String description;
     private String status;
     private String deadlineDatetime;
-    private UUID actualApprovalId;
+    @Nullable private UUID actualApprovalId;
     private User author;
-    private User executor;
+    @Nullable private User executor;
     private List<ShoppingList> shoppingLists;
 }
