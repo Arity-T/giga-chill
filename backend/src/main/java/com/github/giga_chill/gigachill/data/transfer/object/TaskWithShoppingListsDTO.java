@@ -7,10 +7,10 @@ import java.util.UUID;
 
 public record TaskWithShoppingListsDTO(UUID taskId,
                                        String title,
-                                       String description,
+                                       @Nullable String description,
                                        String status,
                                        String deadlineDatetime,
-                                       UUID actualApprovalId,
+                                       @Nullable UUID actualApprovalId,
                                        UserDTO author,
                                        @Nullable UserDTO executor,
                                        List<ShoppingListDTO> shoppingLists) {
