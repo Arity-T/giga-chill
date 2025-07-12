@@ -149,7 +149,7 @@ public interface ShoppingListDAO {
      * @return a {@link List} of {@link ShoppingList} instances matching the provided IDs;
      *         if an ID does not correspond to an existing shopping list, it will be omitted
      */
-    List<ShoppingList> getShoppingListsByIds(List<UUID> shoppingListsIds);
+    List<ShoppingListDTO> getShoppingListsByIds(List<UUID> shoppingListsIds);
 
     /**
      * Verifies whether shopping lists with all specified identifiers exist.
