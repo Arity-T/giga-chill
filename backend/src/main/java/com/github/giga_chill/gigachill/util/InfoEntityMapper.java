@@ -3,6 +3,8 @@ package com.github.giga_chill.gigachill.util;
 import com.github.giga_chill.gigachill.model.*;
 import com.github.giga_chill.gigachill.web.info.*;
 
+import java.util.UUID;
+
 public final class InfoEntityMapper {
     public static ResponseEventInfo toResponseEventInfo(Event event, String userRole) {
         return new ResponseEventInfo(
@@ -63,6 +65,19 @@ public final class InfoEntityMapper {
                 user.getLogin(),
                 user.getName(),
                 user.getId().toString());
+    }
+
+    public static ResponseTaskInfo toResponseInfo (Task task) {
+        return new ResponseTaskInfo(
+                task.getTaskId().toString(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getStatus(),
+                task.getDeadlineDatetime(),
+                task.getActualApprovalId() != null ? task.getTaskId().toString() : null,
+                InfoEntityMapper.toUserInfo(task.getAuthor()),
+                task.getExecutor() != null ? InfoEntityMapper.toUserInfo(task.getExecutor()) : null
+        );
     }
 
 }

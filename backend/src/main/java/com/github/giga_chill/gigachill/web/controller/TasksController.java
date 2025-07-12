@@ -10,6 +10,7 @@ import com.github.giga_chill.gigachill.util.InfoEntityMapper;
 import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.RequestTaskInfo;
 import com.github.giga_chill.gigachill.web.info.ResponseTaskInfo;
+import com.github.giga_chill.gigachill.web.info.ResponseTaskWithShoppingListsInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +47,7 @@ public class TasksController {
 
 
         return ResponseEntity.ok(taskService.getAllTasksFromEvent(eventId).stream()
-                .map(item -> toResponseTaskInfo(eventId, user.getId(), item)).toList());
+                .map(InfoEntityMapper::toResponseInfo).toList());
     }
 
     @PostMapping
@@ -80,8 +81,8 @@ public class TasksController {
     }
 
 
-    private ResponseTaskInfo toResponseTaskInfo(UUID eventId, UUID userI, Task task) {
-        return new ResponseTaskInfo(
+    private ResponseTaskWithShoppingListsInfo toResponseTaskWithShoppingListsInfo (UUID eventId, UUID userI, Task task) {
+        return new ResponseTaskWithShoppingListsInfo(
                 task.getTaskId().toString(),
                 task.getTitle(),
                 task.getDescription(),
