@@ -6,6 +6,7 @@ import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.UserService;
 import com.github.giga_chill.gigachill.service.ParticipantsService;
+import com.github.giga_chill.gigachill.util.InfoEntityMapper;
 import com.github.giga_chill.gigachill.web.info.ParticipantInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,7 @@ public class ParticipantsController {
         }
         return ResponseEntity.ok(participantsService.getAllParticipantsByEventId(eventId)
                 .stream()
-                .map(this::toParticipantInfo)
+                .map(InfoEntityMapper::toParticipantInfo)
                 .toList());
     }
 
@@ -138,15 +139,6 @@ public class ParticipantsController {
         participantsService.updateParticipantRole(eventId, participantId, newRole);
 
         return ResponseEntity.noContent().build();
-    }
-
-    private ParticipantInfo toParticipantInfo(Participant participant) {
-        return new ParticipantInfo(
-                participant.getLogin(),
-                participant.getName(),
-                participant.getId().toString(),
-                participant.getRole()
-        );
     }
 
 }

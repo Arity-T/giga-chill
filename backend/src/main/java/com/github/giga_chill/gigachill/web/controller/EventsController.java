@@ -8,6 +8,7 @@ import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.UserService;
 import com.github.giga_chill.gigachill.service.ParticipantsService;
+import com.github.giga_chill.gigachill.util.InfoEntityMapper;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
 import com.github.giga_chill.gigachill.web.info.ResponseEventInfo;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class EventsController {
             ResponseEntity.ok(null);
         }
         return ResponseEntity.ok(userEvents.stream()
-                .map(event -> toResponseEventInfo(event,
+                .map(event -> InfoEntityMapper.toResponseEventInfo(event,
                         participantsService.getParticipantRoleInEvent(event.getEventId(), user.getId())))
                 .toList());
     }
@@ -65,7 +66,7 @@ public class EventsController {
                     " is not a participant of event with id " + eventId);
         }
         Event event = eventService.getEventById(eventId);
-        return ResponseEntity.ok(toResponseEventInfo(event,
+        return ResponseEntity.ok(InfoEntityMapper.toResponseEventInfo(event,
                 participantsService.getParticipantRoleInEvent(event.getEventId(), user.getId())));
     }
 
@@ -107,11 +108,6 @@ public class EventsController {
         eventService.deleteEvent(eventId);
 
         return ResponseEntity.noContent().build();
-    }
-
-    private ResponseEventInfo toResponseEventInfo(Event event, String userRole) {
-        return new ResponseEventInfo(event.getEventId().toString(), userRole, event.getTitle(), event.getLocation(),
-                event.getStartDatetime(), event.getEndDatetime(), event.getDescription(), event.getBudget());
     }
 
 }
