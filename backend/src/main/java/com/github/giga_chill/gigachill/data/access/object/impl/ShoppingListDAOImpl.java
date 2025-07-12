@@ -4,6 +4,7 @@ import com.github.giga_chill.gigachill.data.access.object.ShoppingListDAO;
 import com.github.giga_chill.gigachill.data.transfer.object.ParticipantDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingItemDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingListDTO;
+import com.github.giga_chill.gigachill.model.ShoppingList;
 import com.github.giga_chill.gigachill.repository.*;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingItemsRecord;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingListsRecord;
@@ -11,6 +12,7 @@ import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -313,5 +315,38 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
                 shoppingItemDTO.unit(),
                 shoppingItemDTO.isPurchased()
         );
+    }
+
+    /**
+     * Retrieves all shopping lists corresponding to the given identifiers.
+     *
+     * @param shoppingListsIds a {@link List} of {@link UUID} representing the IDs of the shopping lists to fetch
+     * @return a {@link List} of {@link ShoppingList} instances matching the provided IDs;
+     * if an ID does not correspond to an existing shopping list, it will be omitted
+     */
+    @Override
+    public List<ShoppingListDTO> getShoppingListsByIds(List<UUID> shoppingListsIds) {
+        return shoppingListRepository.findByIds(shoppingListsIds).stream()
+                .map(list -> new ShoppingListDTO(
+                        list.getShoppingListId(),
+                        list.getTaskId(),
+                        list.getTitle(),
+                        list.getDescription(),
+                        getShoppingListStatus(list.getShoppingListId()),
+                        toShoppingItemDTO(list.getShoppingListId()),
+                        toConsumerDTO(list.getShoppingListId())
+                ))
+                .toList();
+    }
+
+    /**
+     * Verifies whether shopping lists with all specified identifiers exist.
+     *
+     * @param shoppingListsIds a {@link List} of {@link UUID} representing the IDs to check
+     * @return {@code true} if a shopping list exists for every ID in the list; {@code false} otherwise
+     */
+    @Override
+    public boolean areExisted(List<UUID> shoppingListsIds) {
+        return shoppingListRepository.allExist(shoppingListsIds);
     }
 }

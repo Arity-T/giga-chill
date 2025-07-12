@@ -1,12 +1,14 @@
 package com.github.giga_chill.gigachill.data.transfer.object;
 
+import jakarta.annotation.Nullable;
+
 import java.util.List;
 import java.util.UUID;
 
 public record ShoppingListDTO(UUID shoppingListId,
-                              UUID taskId,
+                              @Nullable UUID taskId,
                               String title,
-                              String description,
+                              @Nullable String description,
                               String status,
                               List<ShoppingItemDTO> shoppingItems,
                               List<ParticipantDTO> consumers) {

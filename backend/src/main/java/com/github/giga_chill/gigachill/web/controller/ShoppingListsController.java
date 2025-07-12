@@ -5,16 +5,13 @@ import com.github.giga_chill.gigachill.exception.BadRequestException;
 import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.ForbiddenException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
-import com.github.giga_chill.gigachill.model.Participant;
-import com.github.giga_chill.gigachill.model.ShoppingItem;
-import com.github.giga_chill.gigachill.model.ShoppingList;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.ParticipantsService;
 import com.github.giga_chill.gigachill.service.ShoppingListsService;
 import com.github.giga_chill.gigachill.service.UserService;
-import com.github.giga_chill.gigachill.web.info.ConsumerInfo;
-import com.github.giga_chill.gigachill.web.info.ShoppingItemInfo;
+import com.github.giga_chill.gigachill.util.InfoEntityMapper;
+import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.ShoppingListInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -51,7 +48,8 @@ public class ShoppingListsController {
                     " is not a participant of event with id " + eventId);
         }
         List<ShoppingListInfo> shoppingLists = shoppingListsService.getAllShoppingListsFromEvent(eventId).stream()
-                .map(item -> toShoppingListInfo(item, canEdit(eventId, item.getShoppingListId(), user.getId())))
+                .map(item -> InfoEntityMapper.toShoppingListInfo(item,
+                        canEdit(eventId, item.getShoppingListId(), user.getId())))
                 .toList();
 
         return ResponseEntity.ok(shoppingLists);
@@ -340,7 +338,7 @@ public class ShoppingListsController {
         }
 
         List<UUID> allUsersIds = body.stream()
-                .map(this::safeUUID)
+                .map(UuidUtils::safeUUID)
                 .toList();
         if (!userService.allUsersExistByIds(allUsersIds)) {
             throw new NotFoundException("The list contains a user that is not in the database");
@@ -350,47 +348,6 @@ public class ShoppingListsController {
         return ResponseEntity.noContent().build();
     }
 
-
-    private ShoppingListInfo toShoppingListInfo(ShoppingList shoppingList, Boolean canEdit) {
-        return new ShoppingListInfo(shoppingList.getShoppingListId().toString(),
-                // TODO: when tasks are added
-                shoppingList.getTaskId() != null ? shoppingList.getTaskId().toString() : null,
-                shoppingList.getTitle(),
-                shoppingList.getDescription(),
-                shoppingList.getStatus(),
-                canEdit,
-                shoppingList.getShoppingItems().stream()
-                        .map(this::toShoppingItemInfo)
-                        .toList(),
-                shoppingList.getConsumers().stream()
-                        .map(this::toConsumerInfo)
-                        .toList());
-    }
-
-    private ConsumerInfo toConsumerInfo(Participant participant) {
-        return new ConsumerInfo(participant.getLogin(),
-                participant.getName(),
-                participant.getId().toString(),
-                participant.getRole(),
-                participant.getBalance());
-    }
-
-    private ShoppingItemInfo toShoppingItemInfo(ShoppingItem shoppingItem) {
-        return new ShoppingItemInfo(shoppingItem.getShoppingItemId().toString(),
-                shoppingItem.getTitle(),
-                shoppingItem.getQuantity(),
-                shoppingItem.getUnit(),
-                shoppingItem.getIsPurchased());
-    }
-
-
-    private UUID safeUUID(String raw) {
-        try {
-            return UUID.fromString(raw);
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Invalid UUID: " + raw);
-        }
-    }
 
     public boolean canEdit(UUID eventId, UUID shoppingListId, UUID userId) {
         boolean isParticipant = participantsService.isParticipantRole(eventId, userId);
