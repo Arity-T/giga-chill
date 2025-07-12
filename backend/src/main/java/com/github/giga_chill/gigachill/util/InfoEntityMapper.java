@@ -3,8 +3,6 @@ package com.github.giga_chill.gigachill.util;
 import com.github.giga_chill.gigachill.model.*;
 import com.github.giga_chill.gigachill.web.info.*;
 
-import java.util.UUID;
-
 public final class InfoEntityMapper {
     public static ResponseEventInfo toResponseEventInfo(Event event, String userRole) {
         return new ResponseEventInfo(

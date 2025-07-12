@@ -1,6 +1,7 @@
 package com.github.giga_chill.gigachill.web.controller;
 
 
+import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.ForbiddenException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.model.Task;
@@ -66,14 +67,14 @@ public class TasksController {
                     " is not a participant of event with id " + eventId);
         }
         if (executorId != null && !userService.userExistsById(executorId)) {
-            throw new NotFoundException("User with id " + requestTaskInfo.executor_id() + " not found");
+            throw new NotFoundException("User with id " + executorId + " not found");
         }
         if (executorId != null && !participantsService.isParticipant(eventId, executorId)) {
-            throw new ForbiddenException("User with id " + user.getId() +
+            throw new ForbiddenException("User with id " + executorId +
                     " is not a participant of event with id " + eventId);
         }
         if (executorId != null && participantsService.isParticipantRole(eventId, user.getId())) {
-            throw new ForbiddenException("User with id " + requestTaskInfo.executor_id() + " cannot assign executors");
+            throw new ForbiddenException("User with id " + user.getId() + " cannot assign executors");
         }
 
         taskService.createTask(eventId, user, requestTaskInfo);
@@ -100,6 +101,47 @@ public class TasksController {
                 eventId, user.getId(), taskService.getTaskById(eventId, taskId)));
     }
 
+    @PatchMapping("/{taskId}")
+    public ResponseEntity<Void> patchTask(Authentication authentication,
+                                                                       @PathVariable UUID eventId,
+                                                                       @PathVariable UUID taskId,
+                                                                       @RequestBody RequestTaskInfo requestTaskInfo) {
+        User user = userService.userAuthentication(authentication);
+        UUID executorId = requestTaskInfo.executor_id() != null ?
+                UuidUtils.safeUUID(requestTaskInfo.executor_id()) : null;
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!taskService.isExisted(eventId, taskId)) {
+            throw new NotFoundException("Task with id " + taskId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
+                    " is not a participant of event with id " + eventId);
+        }
+        if (executorId != null && !userService.userExistsById(executorId)) {
+            throw new NotFoundException("User with id " + executorId + " not found");
+        }
+        if (executorId != null && !participantsService.isParticipant(eventId, executorId)) {
+            throw new ForbiddenException("User with id " + executorId +
+                    " is not a participant of event with id " + eventId);
+        }
+        if (executorId != null && participantsService.isParticipantRole(eventId, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() + " cannot assign executors " +
+                    "to task with id: " + taskId);
+        }
+        if(taskService.getTaskStatus(taskId).equals(env.getProperty("task_status.completed"))){
+            throw new ConflictException("Task with id " + taskId + " is completed");
+        }
+        if (participantsService.isParticipantRole(eventId, user.getId())
+                && !taskService.isAuthor(taskId, user.getId())){
+            throw new ForbiddenException("User with id " + user.getId() + " cannot change " +
+                    "task with id: " + taskId);
+        }
+
+        taskService.updateTask(taskId, requestTaskInfo);
+        return ResponseEntity.noContent().build();
+    }
 
     private ResponseTaskWithShoppingListsInfo toResponseTaskWithShoppingListsInfo(UUID eventId, UUID userI, Task task) {
         return new ResponseTaskWithShoppingListsInfo(
