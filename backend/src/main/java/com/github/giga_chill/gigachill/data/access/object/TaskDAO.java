@@ -57,9 +57,9 @@ public interface TaskDAO {
     /**
      * Deletes the specified task.
      *
-     * @param taskID the unique identifier of the task to delete
+     * @param taskId the unique identifier of the task to delete
      */
-    void deleteTask(UUID taskID);
+    void deleteTask(UUID taskId);
 
     /**
      * Checks if the given user is the author (creator) of the task.
@@ -81,11 +81,11 @@ public interface TaskDAO {
     /**
      * Checks whether a task with the given identifier exists within the specified event context.
      *
-     * @param eventID the unique identifier of the event
+     * @param eventId the unique identifier of the event
      * @param taskId  the unique identifier of the task
      * @return {@code true} if the task exists within the event; {@code false} otherwise
      */
-    boolean isExisted(UUID eventID, UUID taskId);
+    boolean isExisted(UUID eventId, UUID taskId);
 
     /**
      * Determines if a user has permission to execute the specified task.
