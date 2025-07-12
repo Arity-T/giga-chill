@@ -80,6 +80,11 @@ public class TaskService {
                 requestTaskInfo.shopping_lists_ids().stream()
                         .map(UuidUtils::safeUUID).toList() : null;
 
+        if(shoppingListsIds != null && !shoppingListsService.areExisted(shoppingListsIds)){
+            throw new NotFoundException("One or more of the resources involved were not found: "
+                    + requestTaskInfo.shopping_lists_ids());
+        }
+
         Task task = new Task(
                 taskId,
                 requestTaskInfo.title(),
