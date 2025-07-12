@@ -66,9 +66,6 @@ public class UserService {
 
     public User getById(UUID id) {
         var user = userRepository.findById(id);
-        if (user.orElse(null) != null) {
-            throw new UnauthorizedException("User not found");
-        }
         return usersRecordToUser(user.orElse(null));
     }
 
