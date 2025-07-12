@@ -104,6 +104,13 @@ public class TaskService {
                         task.getExecutor());
     }
 
+    public void deleteTask(UUID eventId, UUID taskID){
+        //TODO: связь с бд(убрать eventID
+
+        //TEMPORARY
+        TASKS.get(eventId).remove(taskID);
+    }
+
     public boolean isAuthor(UUID taskId, UUID userId){
         //TODO: связь с бд
 

@@ -138,10 +138,38 @@ public class TasksController {
             throw new ForbiddenException("User with id " + user.getId() + " cannot change " +
                     "task with id: " + taskId);
         }
-
         taskService.updateTask(taskId, requestTaskInfo);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/{taskId}")
+    public ResponseEntity<Void> deleteTask(Authentication authentication,
+                                          @PathVariable UUID eventId,
+                                          @PathVariable UUID taskId) {
+        User user = userService.userAuthentication(authentication);
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!taskService.isExisted(eventId, taskId)) {
+            throw new NotFoundException("Task with id " + taskId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
+                    " is not a participant of event with id " + eventId);
+        }
+        if(taskService.getTaskStatus(taskId).equals(env.getProperty("task_status.completed"))){
+            throw new ConflictException("Task with id " + taskId + " is completed");
+        }
+        if (participantsService.isParticipantRole(eventId, user.getId())
+                && !taskService.isAuthor(taskId, user.getId())){
+            throw new ForbiddenException("User with id " + user.getId() + " cannot delete " +
+                    "task with id: " + taskId);
+        }
+
+        taskService.deleteTask(eventId, taskId);
+        return ResponseEntity.noContent().build();
+    }
+
 
     private ResponseTaskWithShoppingListsInfo toResponseTaskWithShoppingListsInfo(UUID eventId, UUID userI, Task task) {
         return new ResponseTaskWithShoppingListsInfo(
