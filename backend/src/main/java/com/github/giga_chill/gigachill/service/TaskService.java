@@ -4,7 +4,6 @@ package com.github.giga_chill.gigachill.service;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.model.Task;
 import com.github.giga_chill.gigachill.model.User;
-import com.github.giga_chill.gigachill.util.InfoEntityMapper;
 import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.RequestTaskInfo;
 import lombok.RequiredArgsConstructor;
@@ -109,7 +108,7 @@ public class TaskService {
                         task.getExecutor());
     }
 
-    public void startExecuting(UUID userId){
+    public void startExecuting(UUID taskId, UUID userId){
         //TODO: связь с бд
 
     }

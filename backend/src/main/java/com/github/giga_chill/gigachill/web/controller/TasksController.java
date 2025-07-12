@@ -193,7 +193,7 @@ public class TasksController {
                     "task with id: " + taskId);
         }
 
-        taskService.startExecuting(user.getId());
+        taskService.startExecuting(taskId, user.getId());
         return ResponseEntity.noContent().build();
     }
 
