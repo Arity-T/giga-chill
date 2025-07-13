@@ -335,7 +335,7 @@ public class ShoppingListsServiceLoggerAspect {
 
 
     @Around("getShoppingListsByIds(shoppingListsIds)")
-    public Object logSetShoppingListsByIds(ProceedingJoinPoint proceedingJoinPoint,
+    public Object logGetShoppingListsByIds(ProceedingJoinPoint proceedingJoinPoint,
                                            List<UUID> shoppingListsIds) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
