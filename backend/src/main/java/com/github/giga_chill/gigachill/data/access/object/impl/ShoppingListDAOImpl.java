@@ -84,7 +84,6 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
                         list.getTaskId(),
                         list.getTitle(),
                         list.getDescription(),
-                        getShoppingListStatus(list.getShoppingListId()),
                         toShoppingItemDTO(list.getShoppingListId()),
                         toConsumerDTO(list.getShoppingListId())
                 ))
@@ -115,7 +114,6 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
                 record.getTaskId(),
                 record.getTitle(),
                 record.getDescription(),
-                getShoppingListStatus(shoppingListId),
                 shoppingItems,
                 consumers
         );
@@ -320,7 +318,6 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
                         list.getTaskId(),
                         list.getTitle(),
                         list.getDescription(),
-                        getShoppingListStatus(list.getShoppingListId()),
                         toShoppingItemDTO(list.getShoppingListId()),
                         toConsumerDTO(list.getShoppingListId())
                 ))
