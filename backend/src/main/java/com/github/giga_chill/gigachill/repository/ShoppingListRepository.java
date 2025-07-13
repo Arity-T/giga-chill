@@ -99,4 +99,20 @@ public class ShoppingListRepository {
     return count == ids.size();
   }
 
+  public boolean canBind(UUID shoppingListId) {
+    return dsl.fetchExists(
+            dsl.selectFrom(ShoppingLists.SHOPPING_LISTS)
+                    .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(shoppingListId))
+                    .and(ShoppingLists.SHOPPING_LISTS.TASK_ID.isNull())
+    );
+  }
+
+  public boolean allCanBeBound(List<UUID> shoppingListIds) {
+    int count = dsl.fetchCount(
+            dsl.selectFrom(ShoppingLists.SHOPPING_LISTS)
+                    .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.in(shoppingListIds))
+                    .and(ShoppingLists.SHOPPING_LISTS.TASK_ID.isNull())
+    );
+    return count == shoppingListIds.size(); // true, если все свободны
+  }
 }
