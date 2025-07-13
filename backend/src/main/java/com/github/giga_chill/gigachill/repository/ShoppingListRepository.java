@@ -70,6 +70,13 @@ public class ShoppingListRepository {
     }
   }
 
+  public void updateTaskId(UUID listId, UUID taskId) {
+    dsl.update(ShoppingLists.SHOPPING_LISTS)
+            .set(ShoppingLists.SHOPPING_LISTS.TASK_ID, taskId)
+            .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(listId))
+            .execute();
+  }
+
   public void deleteById(UUID shoppingListId) {
     dsl.deleteFrom(ShoppingLists.SHOPPING_LISTS)
             .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(shoppingListId))
