@@ -9,12 +9,11 @@ import com.github.giga_chill.gigachill.repository.*;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingItemsRecord;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingListsRecord;
 import jakarta.annotation.Nullable;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -27,13 +26,14 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
 
     private List<ShoppingItemDTO> toShoppingItemDTO(UUID shoppingListId) {
         return shoppingItemRepository.findByShoppingListId(shoppingListId).stream()
-                .map(item -> new ShoppingItemDTO(
-                        item.getShoppingItemId(),
-                        item.getTitle(),
-                        item.getQuantity(),
-                        item.getUnit(),
-                        item.getIsPurchased()
-                ))
+                .map(
+                        item ->
+                                new ShoppingItemDTO(
+                                        item.getShoppingItemId(),
+                                        item.getTitle(),
+                                        item.getQuantity(),
+                                        item.getUnit(),
+                                        item.getIsPurchased()))
                 .toList();
     }
 
@@ -44,29 +44,25 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
         UUID eventId = listOpt.get().getEventId();
 
         return consumerInListRepository.findAllConsumers(shoppingListId).stream()
-                .map(userId -> {
-                    var userOpt = userRepository.findById(userId);
-                    var userInEventOpt = userInEventRepository.findById(eventId, userId);
+                .map(
+                        userId -> {
+                            var userOpt = userRepository.findById(userId);
+                            var userInEventOpt = userInEventRepository.findById(eventId, userId);
 
-                    if (userOpt.isEmpty()) {
-                        return new ParticipantDTO(userId,
-                                null,
-                                null,
-                                null,
-                                null);
-                    }
+                            if (userOpt.isEmpty()) {
+                                return new ParticipantDTO(userId, null, null, null, null);
+                            }
 
-                    var user = userOpt.get();
-                    var userInEvent = userInEventOpt.orElse(null);
+                            var user = userOpt.get();
+                            var userInEvent = userInEventOpt.orElse(null);
 
-                    return new ParticipantDTO(
-                            user.getUserId(),
-                            user.getLogin(),
-                            user.getName(),
-                            userInEvent != null ? userInEvent.getRole().name() : null,
-                            userInEvent != null ? userInEvent.getBalance() : null
-                    );
-                })
+                            return new ParticipantDTO(
+                                    user.getUserId(),
+                                    user.getLogin(),
+                                    user.getName(),
+                                    userInEvent != null ? userInEvent.getRole().name() : null,
+                                    userInEvent != null ? userInEvent.getBalance() : null);
+                        })
                 .toList();
     }
 
@@ -79,14 +75,15 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
     @Override
     public List<ShoppingListDTO> getAllShoppingListsFromEvent(UUID eventId) {
         return shoppingListRepository.findByEventId(eventId).stream()
-                .map(list -> new ShoppingListDTO(
-                        list.getShoppingListId(),
-                        list.getTaskId(),
-                        list.getTitle(),
-                        list.getDescription(),
-                        toShoppingItemDTO(list.getShoppingListId()),
-                        toConsumerDTO(list.getShoppingListId())
-                ))
+                .map(
+                        list ->
+                                new ShoppingListDTO(
+                                        list.getShoppingListId(),
+                                        list.getTaskId(),
+                                        list.getTitle(),
+                                        list.getDescription(),
+                                        toShoppingItemDTO(list.getShoppingListId()),
+                                        toConsumerDTO(list.getShoppingListId())))
                 .toList();
     }
 
@@ -115,42 +112,38 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
                 record.getTitle(),
                 record.getDescription(),
                 shoppingItems,
-                consumers
-        );
+                consumers);
     }
 
     /**
      * Creates a new shopping list within the specified event.
      *
-     * @param eventId        the unique identifier of the event to which the shopping list belongs
+     * @param eventId the unique identifier of the event to which the shopping list belongs
      * @param shoppingListId the unique identifier to assign to the new shopping list
-     * @param userId         the unique identifier of the user creating the shopping list
-     * @param title          the title of the shopping list
-     * @param description    the description of the shopping list
+     * @param userId the unique identifier of the user creating the shopping list
+     * @param title the title of the shopping list
+     * @param description the description of the shopping list
      */
     @Override
-    public void createShoppingList(UUID eventId, UUID shoppingListId, UUID userId, String title, String description) {
-        shoppingListRepository.save(new ShoppingListsRecord(
-                shoppingListId,
-                null,
-                eventId,
-                title,
-                description)
-        );
+    public void createShoppingList(
+            UUID eventId, UUID shoppingListId, UUID userId, String title, String description) {
+        shoppingListRepository.save(
+                new ShoppingListsRecord(shoppingListId, null, eventId, title, description));
 
         consumerInListRepository.addConsumer(shoppingListId, userId);
     }
 
     /**
-     * Updates the title and/or description of an existing shopping list.
-     * Only non-null parameters will be applied.
+     * Updates the title and/or description of an existing shopping list. Only non-null parameters
+     * will be applied.
      *
      * @param shoppingListId the unique identifier of the shopping list to update
-     * @param title          the new title, or {@code null} to leave unchanged
-     * @param description    the new description, or {@code null} to leave unchanged
+     * @param title the new title, or {@code null} to leave unchanged
+     * @param description the new description, or {@code null} to leave unchanged
      */
     @Override
-    public void updateShoppingList(UUID shoppingListId, @Nullable String title, @Nullable String description) {
+    public void updateShoppingList(
+            UUID shoppingListId, @Nullable String title, @Nullable String description) {
         shoppingListRepository.updateTitleAndDescription(shoppingListId, title, description);
     }
 
@@ -167,19 +160,19 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
     /**
      * Adds a new shopping item to the specified shopping list.
      *
-     * @param shoppingListId  the unique identifier of the shopping list
+     * @param shoppingListId the unique identifier of the shopping list
      * @param shoppingItemDTO the {@link ShoppingItemDTO} representing the new item
      */
     @Override
     public void addShoppingItem(UUID shoppingListId, ShoppingItemDTO shoppingItemDTO) {
-        shoppingItemRepository.save(new ShoppingItemsRecord(
-                shoppingItemDTO.shoppingItemId(),
-                shoppingListId,
-                shoppingItemDTO.title(),
-                shoppingItemDTO.quantity(),
-                shoppingItemDTO.unit(),
-                shoppingItemDTO.isPurchased()
-        ));
+        shoppingItemRepository.save(
+                new ShoppingItemsRecord(
+                        shoppingItemDTO.shoppingItemId(),
+                        shoppingListId,
+                        shoppingItemDTO.title(),
+                        shoppingItemDTO.quantity(),
+                        shoppingItemDTO.unit(),
+                        shoppingItemDTO.isPurchased()));
     }
 
     /**
@@ -197,7 +190,7 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
      * Updates the purchase status of a shopping item.
      *
      * @param shoppingItemId the unique identifier of the shopping item
-     * @param status         {@code true} if the item is purchased; {@code false} otherwise
+     * @param status {@code true} if the item is purchased; {@code false} otherwise
      */
     @Override
     public void updateShoppingItemStatus(UUID shoppingItemId, boolean status) {
@@ -225,29 +218,25 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
                 record.getTitle(),
                 record.getQuantity(),
                 record.getUnit(),
-                record.getIsPurchased()
-        );
+                record.getIsPurchased());
     }
 
     /**
      * Updates the list of consumer user IDs for a shopping list.
      *
      * @param shoppingListId the unique identifier of the shopping list
-     * @param allUserIds     the list of user IDs who are allowed to consume this list
+     * @param allUserIds the list of user IDs who are allowed to consume this list
      */
     @Override
     public void updateShoppingListConsumers(UUID shoppingListId, List<UUID> allUserIds) {
         List<UUID> currentUserIds = consumerInListRepository.findAllConsumers(shoppingListId);
 
         // Пользователи, которых нужно удалить (есть сейчас, но нет в новых)
-        List<UUID> toRemove = currentUserIds.stream()
-                .filter(id -> !allUserIds.contains(id))
-                .toList();
+        List<UUID> toRemove =
+                currentUserIds.stream().filter(id -> !allUserIds.contains(id)).toList();
 
         // Пользователи, которых нужно добавить (есть в новых, но нет сейчас)
-        List<UUID> toAdd = allUserIds.stream()
-                .filter(id -> !currentUserIds.contains(id))
-                .toList();
+        List<UUID> toAdd = allUserIds.stream().filter(id -> !currentUserIds.contains(id)).toList();
 
         consumerInListRepository.deleteConsumers(shoppingListId, toRemove);
         consumerInListRepository.addConsumers(shoppingListId, toAdd);
@@ -268,7 +257,7 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
      * Checks whether a given user is a consumer of the specified shopping list.
      *
      * @param shoppingListId the unique identifier of the shopping list
-     * @param consumerId     the unique identifier of the user
+     * @param consumerId the unique identifier of the user
      * @return {@code true} if the user is a consumer; {@code false} otherwise
      */
     @Override
@@ -290,7 +279,8 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
     /**
      * Updates the details of an existing shopping item.
      *
-     * @param shoppingItemDTO the {@link ShoppingItemDTO} containing the new field values for the item
+     * @param shoppingItemDTO the {@link ShoppingItemDTO} containing the new field values for the
+     *     item
      */
     @Override
     public void updateShoppingItem(ShoppingItemDTO shoppingItemDTO) {
@@ -299,28 +289,29 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
                 shoppingItemDTO.title(),
                 shoppingItemDTO.quantity(),
                 shoppingItemDTO.unit(),
-                shoppingItemDTO.isPurchased()
-        );
+                shoppingItemDTO.isPurchased());
     }
 
     /**
      * Retrieves all shopping lists corresponding to the given identifiers.
      *
-     * @param shoppingListsIds a {@link List} of {@link UUID} representing the IDs of the shopping lists to fetch
-     * @return a {@link List} of {@link ShoppingList} instances matching the provided IDs;
-     * if an ID does not correspond to an existing shopping list, it will be omitted
+     * @param shoppingListsIds a {@link List} of {@link UUID} representing the IDs of the shopping
+     *     lists to fetch
+     * @return a {@link List} of {@link ShoppingList} instances matching the provided IDs; if an ID
+     *     does not correspond to an existing shopping list, it will be omitted
      */
     @Override
     public List<ShoppingListDTO> getShoppingListsByIds(List<UUID> shoppingListsIds) {
         return shoppingListRepository.findByIds(shoppingListsIds).stream()
-                .map(list -> new ShoppingListDTO(
-                        list.getShoppingListId(),
-                        list.getTaskId(),
-                        list.getTitle(),
-                        list.getDescription(),
-                        toShoppingItemDTO(list.getShoppingListId()),
-                        toConsumerDTO(list.getShoppingListId())
-                ))
+                .map(
+                        list ->
+                                new ShoppingListDTO(
+                                        list.getShoppingListId(),
+                                        list.getTaskId(),
+                                        list.getTitle(),
+                                        list.getDescription(),
+                                        toShoppingItemDTO(list.getShoppingListId()),
+                                        toConsumerDTO(list.getShoppingListId())))
                 .toList();
     }
 
@@ -328,7 +319,8 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
      * Verifies whether shopping lists with all specified identifiers exist.
      *
      * @param shoppingListsIds a {@link List} of {@link UUID} representing the IDs to check
-     * @return {@code true} if a shopping list exists for every ID in the list; {@code false} otherwise
+     * @return {@code true} if a shopping list exists for every ID in the list; {@code false}
+     *     otherwise
      */
     @Override
     public boolean areExisted(List<UUID> shoppingListsIds) {
@@ -336,8 +328,8 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
     }
 
     /**
-     * Determines whether the specified shopping list is eligible to be bound to a task.
-     * The list is considered free of a task if the taskId field is null.
+     * Determines whether the specified shopping list is eligible to be bound to a task. The list is
+     * considered free of a task if the taskId field is null.
      *
      * @param shoppingListId the unique identifier of the shopping list to check
      * @return {@code true} if the shopping list can be bound to a task; {@code false} otherwise
@@ -348,11 +340,13 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
     }
 
     /**
-     * Determines whether all the specified shopping lists are eligible to be bound to a task.
-     * The list is considered free of a task if the taskId field is null.
+     * Determines whether all the specified shopping lists are eligible to be bound to a task. The
+     * list is considered free of a task if the taskId field is null.
      *
-     * @param shoppingListsIds a {@link List} of {@link UUID} values representing the shopping lists to check
-     * @return {@code true} if every shopping list in the list can be bound to a task; {@code false} if one or more cannot
+     * @param shoppingListsIds a {@link List} of {@link UUID} values representing the shopping lists
+     *     to check
+     * @return {@code true} if every shopping list in the list can be bound to a task; {@code false}
+     *     if one or more cannot
      */
     @Override
     public boolean canBindShoppingListsToTask(List<UUID> shoppingListsIds) {
@@ -363,8 +357,8 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
      * Retrieves the identifier of the task associated with the given shopping list.
      *
      * @param shoppingListId the unique identifier of the shopping list
-     * @return the {@link UUID} of the task linked to the specified shopping list.
-     * If the problem is not resolved, return null.
+     * @return the {@link UUID} of the task linked to the specified shopping list. If the problem is
+     *     not resolved, return null.
      */
     @Nullable
     @Override
@@ -378,15 +372,17 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
     }
 
     /**
-     * Determines whether all products in this list are purchased (The is_purchased field of all products is true).
+     * Determines whether all products in this list are purchased (The is_purchased field of all
+     * products is true).
      *
      * @param shoppingListId the unique identifier of the task
-     * @return {@code true} if all is_purchased fields of the lists are true;
-     * {@code false} otherwise
+     * @return {@code true} if all is_purchased fields of the lists are true; {@code false}
+     *     otherwise
      */
     @Override
     public boolean isBought(UUID shoppingListId) {
-        List<ShoppingItemsRecord> shoppingItems = shoppingItemRepository.findByShoppingListId(shoppingListId);
+        List<ShoppingItemsRecord> shoppingItems =
+                shoppingItemRepository.findByShoppingListId(shoppingListId);
 
         for (ShoppingItemsRecord item : shoppingItems) {
             if (!item.getIsPurchased()) {

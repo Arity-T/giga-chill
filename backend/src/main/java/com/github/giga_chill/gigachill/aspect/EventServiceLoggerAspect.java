@@ -1,19 +1,16 @@
 package com.github.giga_chill.gigachill.aspect;
 
-
 import com.github.giga_chill.gigachill.config.LoggerColorConfig;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.aspectj.lang.annotation.Aspect;
-
-import java.util.UUID;
-
 
 @Component
 @Aspect
@@ -22,44 +19,48 @@ public class EventServiceLoggerAspect {
     private static final Logger LOGGER = LoggerFactory.getLogger(EventServiceLoggerAspect.class);
     private final LoggerColorConfig loggerColorConfig;
 
-    @Pointcut("execution(public * com.github.giga_chill.gigachill.service.EventService.createEvent(..)) " +
-            "&& args(userId, requestEventInfo)")
-    public void createEvent(UUID userId, RequestEventInfo requestEventInfo) {
-    }
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.EventService.createEvent(..)) "
+                    + "&& args(userId, requestEventInfo)")
+    public void createEvent(UUID userId, RequestEventInfo requestEventInfo) {}
 
-    @Pointcut("execution(public * com.github.giga_chill.gigachill.service.EventService.getAllUserEvents(..)) " +
-            "&& args(userId)")
-    public void getAllUserEvents(UUID userId) {
-    }
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.EventService.getAllUserEvents(..)) "
+                    + "&& args(userId)")
+    public void getAllUserEvents(UUID userId) {}
 
-    @Pointcut("execution(public * com.github.giga_chill.gigachill.service.EventService.getEventById(..)) " +
-            "&& args(eventId)")
-    public void getEventById(UUID eventId) {
-    }
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.EventService.getEventById(..)) "
+                    + "&& args(eventId)")
+    public void getEventById(UUID eventId) {}
 
-    @Pointcut("execution(public * com.github.giga_chill.gigachill.service.EventService.deleteEvent(..)) " +
-            "&& args(eventId, userId)")
-    public void deleteEvent(UUID eventId, UUID userId) {
-    }
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.EventService.deleteEvent(..)) "
+                    + "&& args(eventId, userId)")
+    public void deleteEvent(UUID eventId, UUID userId) {}
 
-    @Pointcut("execution(public * com.github.giga_chill.gigachill.service.EventService.updateEvent(..)) " +
-            "&& args(eventId, requestEventInfo)")
-    public void updateEvent(UUID eventId, RequestEventInfo requestEventInfo) {
-    }
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.EventService.updateEvent(..)) "
+                    + "&& args(eventId, requestEventInfo)")
+    public void updateEvent(UUID eventId, RequestEventInfo requestEventInfo) {}
 
-    @Pointcut("execution(public * com.github.giga_chill.gigachill.service.EventService.isExisted(..)) " +
-            "&& args(eventId)")
-    public void isExisted(UUID eventId) {
-    }
-
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.EventService.isExisted(..)) "
+                    + "&& args(eventId)")
+    public void isExisted(UUID eventId) {}
 
     @Around("createEvent(userId, requestEventInfo)")
-    public Object logCreateEvent(ProceedingJoinPoint proceedingJoinPoint,
-                                 UUID userId, RequestEventInfo requestEventInfo) throws Throwable {
+    public Object logCreateEvent(
+            ProceedingJoinPoint proceedingJoinPoint, UUID userId, RequestEventInfo requestEventInfo)
+            throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(loggerColorConfig.getPOST_COLOR() + "User with id: {} created event with id: {}"
-                    + loggerColorConfig.getRESET_COLOR(), userId, ((String) result));
+            LOGGER.info(
+                    loggerColorConfig.getPOST_COLOR()
+                            + "User with id: {} created event with id: {}"
+                            + loggerColorConfig.getRESET_COLOR(),
+                    userId,
+                    ((String) result));
             return result;
         } catch (Throwable ex) {
             throw ex;
@@ -67,13 +68,16 @@ public class EventServiceLoggerAspect {
     }
 
     @Around("getAllUserEvents(userId)")
-    public Object logGetAllUserEvents(ProceedingJoinPoint proceedingJoinPoint,
-                                      UUID userId) throws Throwable {
+    public Object logGetAllUserEvents(ProceedingJoinPoint proceedingJoinPoint, UUID userId)
+            throws Throwable {
 
         try {
             Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(loggerColorConfig.getGET_COLOR() + "User with id: {} got all his events"
-                    + loggerColorConfig.getRESET_COLOR(), userId);
+            LOGGER.info(
+                    loggerColorConfig.getGET_COLOR()
+                            + "User with id: {} got all his events"
+                            + loggerColorConfig.getRESET_COLOR(),
+                    userId);
             return result;
         } catch (Throwable ex) {
             throw ex;
@@ -81,12 +85,15 @@ public class EventServiceLoggerAspect {
     }
 
     @Around("getEventById(eventId)")
-    public Object logGetEventById(ProceedingJoinPoint proceedingJoinPoint,
-                                  UUID eventId) throws Throwable {
+    public Object logGetEventById(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
+            throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(loggerColorConfig.getGET_COLOR() + "Information about the event with id: {} received"
-                    + loggerColorConfig.getRESET_COLOR(), eventId);
+            LOGGER.info(
+                    loggerColorConfig.getGET_COLOR()
+                            + "Information about the event with id: {} received"
+                            + loggerColorConfig.getRESET_COLOR(),
+                    eventId);
             return result;
         } catch (Throwable ex) {
             throw ex;
@@ -94,12 +101,15 @@ public class EventServiceLoggerAspect {
     }
 
     @Around("deleteEvent(eventId, userId)")
-    public Object logDeleteEvent(ProceedingJoinPoint proceedingJoinPoint,
-                                 UUID eventId, UUID userId) throws Throwable {
+    public Object logDeleteEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UUID userId)
+            throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(loggerColorConfig.getDELETE_COLOR() + "Event with id: {} has been deleted"
-                    + loggerColorConfig.getRESET_COLOR(), eventId);
+            LOGGER.info(
+                    loggerColorConfig.getDELETE_COLOR()
+                            + "Event with id: {} has been deleted"
+                            + loggerColorConfig.getRESET_COLOR(),
+                    eventId);
             return result;
         } catch (Throwable ex) {
             throw ex;
@@ -107,12 +117,18 @@ public class EventServiceLoggerAspect {
     }
 
     @Around("updateEvent(eventId, requestEventInfo)")
-    public Object logUpdateEvent(ProceedingJoinPoint proceedingJoinPoint,
-                                 UUID eventId, RequestEventInfo requestEventInfo) throws Throwable {
+    public Object logUpdateEvent(
+            ProceedingJoinPoint proceedingJoinPoint,
+            UUID eventId,
+            RequestEventInfo requestEventInfo)
+            throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(loggerColorConfig.getPATCH_COLOR() + "Event with id: {} has been changed"
-                    + loggerColorConfig.getRESET_COLOR(), eventId);
+            LOGGER.info(
+                    loggerColorConfig.getPATCH_COLOR()
+                            + "Event with id: {} has been changed"
+                            + loggerColorConfig.getRESET_COLOR(),
+                    eventId);
             return result;
         } catch (Throwable ex) {
             throw ex;
@@ -120,21 +136,26 @@ public class EventServiceLoggerAspect {
     }
 
     @Around("isExisted(eventId)")
-    public Object logIsExisted(ProceedingJoinPoint proceedingJoinPoint, UUID eventId) throws Throwable {
+    public Object logIsExisted(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
+            throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
             if ((Boolean) result) {
-                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Event with id: {} exists"
-                        + loggerColorConfig.getRESET_COLOR(), eventId);
+                LOGGER.info(
+                        loggerColorConfig.getGET_COLOR()
+                                + "Event with id: {} exists"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        eventId);
             } else {
-                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Event with id: {} does not exist"
-                        + loggerColorConfig.getRESET_COLOR(), eventId);
+                LOGGER.info(
+                        loggerColorConfig.getGET_COLOR()
+                                + "Event with id: {} does not exist"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        eventId);
             }
             return result;
         } catch (Throwable ex) {
             throw ex;
         }
     }
-
-
 }

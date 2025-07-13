@@ -1,19 +1,17 @@
 package com.github.giga_chill.gigachill.service;
 
+import com.github.giga_chill.gigachill.exception.BadRequestException;
 import com.github.giga_chill.gigachill.exception.UnauthorizedException;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.repository.UserRepository;
 import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-
-import com.github.giga_chill.gigachill.exception.BadRequestException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
@@ -43,9 +41,10 @@ public class UserService {
     }
 
     public boolean validate(String login, String password) {
-        return userRepository.findByLogin(login)
-        .map(user -> passwordEncoder.matches(password, user.getPasswordHash()))
-        .orElse(false);
+        return userRepository
+                .findByLogin(login)
+                .map(user -> passwordEncoder.matches(password, user.getPasswordHash()))
+                .orElse(false);
     }
 
     public boolean userExistsById(UUID userId) {
@@ -69,16 +68,17 @@ public class UserService {
         return usersRecordToUser(user.orElse(null));
     }
 
-    private User usersRecordToUser(UsersRecord user){
+    private User usersRecordToUser(UsersRecord user) {
         return new User(user.getUserId(), user.getLogin(), user.getName());
     }
 
-    public User getByLogin(String login){
+    public User getByLogin(String login) {
         return usersRecordToUser(Objects.requireNonNull(findByLogin(login).orElse(null)));
     }
 
     /**
      * Проверяет, что все пользователи из списка userIds существуют в базе.
+     *
      * @param userIds список id пользователей
      * @return true, если все пользователи существуют, иначе false
      * @throws BadRequestException если хотя бы один id отсутствует в базе

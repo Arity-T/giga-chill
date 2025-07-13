@@ -1,17 +1,15 @@
 package com.github.giga_chill.gigachill.repository;
 
 import com.github.giga_chill.gigachill.data.transfer.object.TaskDTO;
-import com.github.giga_chill.gigachill.data.transfer.object.TaskWithShoppingListsDTO;
 import com.github.giga_chill.jooq.generated.enums.TaskStatus;
 import com.github.giga_chill.jooq.generated.tables.Tasks;
 import com.github.giga_chill.jooq.generated.tables.records.TasksRecord;
+import java.time.OffsetDateTime;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.springframework.stereotype.Repository;
-
-import java.time.OffsetDateTime;
-import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -19,21 +17,15 @@ public class TaskRepository {
     private final DSLContext dsl;
 
     public Optional<TasksRecord> findById(UUID taskId) {
-        return dsl.selectFrom(Tasks.TASKS)
-                .where(Tasks.TASKS.TASK_ID.eq(taskId))
-                .fetchOptional();
+        return dsl.selectFrom(Tasks.TASKS).where(Tasks.TASKS.TASK_ID.eq(taskId)).fetchOptional();
     }
 
     public List<TasksRecord> findAllByEventId(UUID eventId) {
-        return dsl.selectFrom(Tasks.TASKS)
-                .where(Tasks.TASKS.EVENT_ID.eq(eventId))
-                .fetch();
+        return dsl.selectFrom(Tasks.TASKS).where(Tasks.TASKS.EVENT_ID.eq(eventId)).fetch();
     }
 
     public void save(TasksRecord taskRecord) {
-        dsl.insertInto(Tasks.TASKS)
-                .set(taskRecord)
-                .execute();
+        dsl.insertInto(Tasks.TASKS).set(taskRecord).execute();
     }
 
     public void update(TasksRecord taskRecord) {
@@ -61,42 +53,38 @@ public class TaskRepository {
             updates.put(Tasks.TASKS.STATUS, TaskStatus.valueOf(dto.status()));
         }
         if (dto.deadlineDatetime() != null) {
-            updates.put(Tasks.TASKS.DEADLINE_DATETIME, OffsetDateTime.parse(dto.deadlineDatetime()));
+            updates.put(
+                    Tasks.TASKS.DEADLINE_DATETIME, OffsetDateTime.parse(dto.deadlineDatetime()));
         }
         if (dto.actualApprovalId() != null) {
             updates.put(Tasks.TASKS.ACTUAL_APPROVAL_ID, dto.actualApprovalId());
         }
 
-        dsl.update(Tasks.TASKS)
-                .set(updates)
-                .where(Tasks.TASKS.TASK_ID.eq(taskId))
-                .execute();
+        dsl.update(Tasks.TASKS).set(updates).where(Tasks.TASKS.TASK_ID.eq(taskId)).execute();
     }
 
     public boolean isAuthor(UUID taskId, UUID authorId) {
         return dsl.fetchExists(
                 dsl.selectFrom(Tasks.TASKS)
                         .where(
-                                Tasks.TASKS.TASK_ID.eq(taskId)
-                                        .and(Tasks.TASKS.AUTHOR_ID.eq(authorId))
-                        )
-        );
+                                Tasks.TASKS
+                                        .TASK_ID
+                                        .eq(taskId)
+                                        .and(Tasks.TASKS.AUTHOR_ID.eq(authorId))));
     }
 
     public boolean exists(UUID eventId, UUID taskId) {
         return dsl.fetchExists(
                 dsl.selectFrom(Tasks.TASKS)
                         .where(
-                                Tasks.TASKS.EVENT_ID.eq(eventId)
-                                        .and(Tasks.TASKS.TASK_ID.eq(taskId))
-                        )
-        );
+                                Tasks.TASKS
+                                        .EVENT_ID
+                                        .eq(eventId)
+                                        .and(Tasks.TASKS.TASK_ID.eq(taskId))));
     }
 
     public void deleteById(UUID taskId) {
-        dsl.deleteFrom(Tasks.TASKS)
-                .where(Tasks.TASKS.TASK_ID.eq(taskId))
-                .execute();
+        dsl.deleteFrom(Tasks.TASKS).where(Tasks.TASKS.TASK_ID.eq(taskId)).execute();
     }
 
     public boolean canExecute(UUID taskId, UUID userId) {
@@ -104,21 +92,25 @@ public class TaskRepository {
                 dsl.selectFrom(Tasks.TASKS)
                         .where(Tasks.TASKS.TASK_ID.eq(taskId))
                         .and(
-                                Tasks.TASKS.EXECUTOR_ID.isNull()
-                                        .or(Tasks.TASKS.EXECUTOR_ID.eq(userId))
-                        )
-        );
+                                Tasks.TASKS
+                                        .EXECUTOR_ID
+                                        .isNull()
+                                        .or(Tasks.TASKS.EXECUTOR_ID.eq(userId))));
     }
 
     public void setExecutorIfNotAlready(UUID taskId, UUID executorId) {
         dsl.update(Tasks.TASKS)
                 .set(Tasks.TASKS.EXECUTOR_ID, executorId)
                 .set(Tasks.TASKS.STATUS, TaskStatus.in_progress)
-                .where(Tasks.TASKS.TASK_ID.eq(taskId)
-                        .and(Tasks.TASKS.EXECUTOR_ID.isNull()
-                                .or(Tasks.TASKS.EXECUTOR_ID.ne(executorId)))
-                )
+                .where(
+                        Tasks.TASKS
+                                .TASK_ID
+                                .eq(taskId)
+                                .and(
+                                        Tasks.TASKS
+                                                .EXECUTOR_ID
+                                                .isNull()
+                                                .or(Tasks.TASKS.EXECUTOR_ID.ne(executorId))))
                 .execute();
     }
-
 }

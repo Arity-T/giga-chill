@@ -7,7 +7,8 @@ public final class InfoEntityMapper {
     public static ResponseEventInfo toResponseEventInfo(Event event, String userRole) {
         return new ResponseEventInfo(
                 event.getEventId().toString(),
-                userRole, event.getTitle(),
+                userRole,
+                event.getTitle(),
                 event.getLocation(),
                 event.getStartDatetime(),
                 event.getEndDatetime(),
@@ -20,8 +21,7 @@ public final class InfoEntityMapper {
                 participant.getLogin(),
                 participant.getName(),
                 participant.getId().toString(),
-                participant.getRole()
-        );
+                participant.getRole());
     }
 
     public static ShoppingListInfo toShoppingListInfo(ShoppingList shoppingList, Boolean canEdit) {
@@ -58,14 +58,11 @@ public final class InfoEntityMapper {
                 shoppingItem.getIsPurchased());
     }
 
-    public static UserInfo toUserInfo(User user){
-        return new UserInfo(
-                user.getLogin(),
-                user.getName(),
-                user.getId().toString());
+    public static UserInfo toUserInfo(User user) {
+        return new UserInfo(user.getLogin(), user.getName(), user.getId().toString());
     }
 
-    public static ResponseTaskInfo toResponseTaskInfo (Task task) {
+    public static ResponseTaskInfo toResponseTaskInfo(Task task) {
         return new ResponseTaskInfo(
                 task.getTaskId().toString(),
                 task.getTitle(),
@@ -74,8 +71,8 @@ public final class InfoEntityMapper {
                 task.getDeadlineDatetime(),
                 task.getActualApprovalId() != null ? task.getTaskId().toString() : null,
                 InfoEntityMapper.toUserInfo(task.getAuthor()),
-                task.getExecutor() != null ? InfoEntityMapper.toUserInfo(task.getExecutor()) : null
-        );
+                task.getExecutor() != null
+                        ? InfoEntityMapper.toUserInfo(task.getExecutor())
+                        : null);
     }
-
 }

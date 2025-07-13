@@ -4,12 +4,11 @@ import com.github.giga_chill.gigachill.data.access.object.ShoppingListDAO;
 import com.github.giga_chill.gigachill.model.ShoppingItem;
 import com.github.giga_chill.gigachill.model.ShoppingList;
 import com.github.giga_chill.gigachill.util.DtoEntityMapper;
+import java.math.BigDecimal;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -27,8 +26,9 @@ public class ShoppingListsService {
     }
 
     public ShoppingList getShoppingListById(UUID shoppingListId) {
-        ShoppingList shoppingList = DtoEntityMapper.toShoppingListEntity(
-                shoppingListDAO.getShoppingListById(shoppingListId));
+        ShoppingList shoppingList =
+                DtoEntityMapper.toShoppingListEntity(
+                        shoppingListDAO.getShoppingListById(shoppingListId));
         shoppingList.setStatus(getShoppingListStatus(shoppingListId));
         return shoppingList;
     }
@@ -50,23 +50,23 @@ public class ShoppingListsService {
         shoppingListDAO.updateShoppingList(shoppingListId, title, description);
     }
 
-
     public void deleteShoppingList(UUID shoppingListId) {
         shoppingListDAO.deleteShoppingList(shoppingListId);
     }
 
-
-    public String addShoppingItem(UUID shoppingListId, String title, BigDecimal quantity, String unit) {
-        ShoppingItem shoppingItem = new ShoppingItem(UUID.randomUUID(), title,
-                quantity, unit, false);
-        shoppingListDAO.addShoppingItem(shoppingListId, DtoEntityMapper.toShoppingItemDto(shoppingItem));
+    public String addShoppingItem(
+            UUID shoppingListId, String title, BigDecimal quantity, String unit) {
+        ShoppingItem shoppingItem =
+                new ShoppingItem(UUID.randomUUID(), title, quantity, unit, false);
+        shoppingListDAO.addShoppingItem(
+                shoppingListId, DtoEntityMapper.toShoppingItemDto(shoppingItem));
         return shoppingItem.getShoppingItemId().toString();
     }
 
-    public void updateShoppingItem(UUID shoppingItemId, String title, BigDecimal quantity, String unit) {
+    public void updateShoppingItem(
+            UUID shoppingItemId, String title, BigDecimal quantity, String unit) {
 
-        ShoppingItem shoppingItem = new ShoppingItem(shoppingItemId, title,
-                quantity, unit, null);
+        ShoppingItem shoppingItem = new ShoppingItem(shoppingItemId, title, quantity, unit, null);
         shoppingListDAO.updateShoppingItem(DtoEntityMapper.toShoppingItemDto(shoppingItem));
     }
 
@@ -79,7 +79,8 @@ public class ShoppingListsService {
     }
 
     public ShoppingItem getShoppingItemById(UUID shoppingItemId) {
-        return DtoEntityMapper.toShoppingItemEntity(shoppingListDAO.getShoppingItemById(shoppingItemId));
+        return DtoEntityMapper.toShoppingItemEntity(
+                shoppingListDAO.getShoppingItemById(shoppingItemId));
     }
 
     public void updateShoppingListConsumers(UUID shoppingListId, List<UUID> allUserId) {
@@ -91,7 +92,7 @@ public class ShoppingListsService {
     }
 
     public String getShoppingListStatus(UUID shoppingListId) {
-        //TODO: Подумать про cancelled
+        // TODO: Подумать про cancelled
         UUID taskId = getTaskIdForShoppingList(shoppingListId);
         if (taskId == null) {
             return env.getProperty("shopping_list_status.unassigned");
@@ -133,5 +134,4 @@ public class ShoppingListsService {
     public boolean canBindShoppingListsToTask(List<UUID> shoppingListsIds) {
         return shoppingListDAO.canBindShoppingListsToTask(shoppingListsIds);
     }
-
 }

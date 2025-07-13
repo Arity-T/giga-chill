@@ -5,12 +5,10 @@ import com.github.giga_chill.gigachill.data.transfer.object.EventDTO;
 import com.github.giga_chill.gigachill.model.Event;
 import com.github.giga_chill.gigachill.util.DtoEntityMapper;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.*;
-
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -28,22 +26,33 @@ public class EventService {
 
     public List<Event> getAllUserEvents(UUID userId) {
         return eventDAO.getAllUserEvents(userId).stream()
-                .map(DtoEntityMapper::toEventEntity).toList();
-
+                .map(DtoEntityMapper::toEventEntity)
+                .toList();
     }
 
     public void updateEvent(UUID eventId, RequestEventInfo requestEventInfo) {
-        EventDTO event = new EventDTO(eventId, requestEventInfo.title(),
-                requestEventInfo.location(), requestEventInfo.start_datetime(), requestEventInfo.end_datetime(),
-                requestEventInfo.description(), BigDecimal.valueOf(0));
+        EventDTO event =
+                new EventDTO(
+                        eventId,
+                        requestEventInfo.title(),
+                        requestEventInfo.location(),
+                        requestEventInfo.start_datetime(),
+                        requestEventInfo.end_datetime(),
+                        requestEventInfo.description(),
+                        BigDecimal.valueOf(0));
         eventDAO.updateEvent(eventId, event);
     }
 
-
     public String createEvent(UUID userId, RequestEventInfo requestEventInfo) {
-        Event event = new Event(UUID.randomUUID(), requestEventInfo.title(),
-                requestEventInfo.location(), requestEventInfo.start_datetime(), requestEventInfo.end_datetime(),
-                requestEventInfo.description(), BigDecimal.valueOf(0));
+        Event event =
+                new Event(
+                        UUID.randomUUID(),
+                        requestEventInfo.title(),
+                        requestEventInfo.location(),
+                        requestEventInfo.start_datetime(),
+                        requestEventInfo.end_datetime(),
+                        requestEventInfo.description(),
+                        BigDecimal.valueOf(0));
 
         eventDAO.createEvent(userId, DtoEntityMapper.toEventDto(event));
         return event.getEventId().toString();
@@ -52,5 +61,4 @@ public class EventService {
     public void deleteEvent(UUID eventId) {
         eventDAO.deleteEvent(eventId);
     }
-
 }

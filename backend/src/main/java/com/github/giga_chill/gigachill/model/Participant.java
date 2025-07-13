@@ -1,12 +1,10 @@
 package com.github.giga_chill.gigachill.model;
 
-
+import java.math.BigDecimal;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor

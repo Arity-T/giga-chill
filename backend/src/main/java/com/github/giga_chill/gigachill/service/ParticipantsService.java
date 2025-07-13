@@ -4,13 +4,12 @@ import com.github.giga_chill.gigachill.data.access.object.ParticipantDAO;
 import com.github.giga_chill.gigachill.model.Participant;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.util.DtoEntityMapper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -25,14 +24,21 @@ public class ParticipantsService {
     }
 
     public Participant getParticipantById(UUID eventId, UUID participantId) {
-        return DtoEntityMapper.toParticipantEntity(participantDAO.getParticipantById(eventId, participantId));
+        return DtoEntityMapper.toParticipantEntity(
+                participantDAO.getParticipantById(eventId, participantId));
     }
 
     public void addParticipantToEvent(UUID eventId, User user) {
-        Participant participant = new Participant(user.getId(), user.getLogin(), user.getName(),
-                env.getProperty("roles.participant").toString(), BigDecimal.valueOf(0));
+        Participant participant =
+                new Participant(
+                        user.getId(),
+                        user.getLogin(),
+                        user.getName(),
+                        env.getProperty("roles.participant").toString(),
+                        BigDecimal.valueOf(0));
 
-        participantDAO.addParticipantToEvent(eventId, DtoEntityMapper.toParticipantDto(participant));
+        participantDAO.addParticipantToEvent(
+                eventId, DtoEntityMapper.toParticipantDto(participant));
     }
 
     public void deleteParticipant(UUID eventId, UUID participantId) {
@@ -52,15 +58,17 @@ public class ParticipantsService {
     }
 
     public boolean isOwnerRole(UUID eventId, UUID participantId) {
-        return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.owner").toString());
+        return getParticipantRoleInEvent(eventId, participantId)
+                .equals(env.getProperty("roles.owner").toString());
     }
 
     public boolean isAdminRole(UUID eventId, UUID participantId) {
-        return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.admin").toString());
+        return getParticipantRoleInEvent(eventId, participantId)
+                .equals(env.getProperty("roles.admin").toString());
     }
 
     public boolean isParticipantRole(UUID eventId, UUID participantId) {
-        return getParticipantRoleInEvent(eventId, participantId).equals(env.getProperty("roles.participant").toString());
+        return getParticipantRoleInEvent(eventId, participantId)
+                .equals(env.getProperty("roles.participant").toString());
     }
-
 }

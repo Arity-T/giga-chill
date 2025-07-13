@@ -1,13 +1,5 @@
 package com.github.giga_chill.gigachill.data.access.object.impl;
 
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import com.github.giga_chill.jooq.generated.enums.TaskStatus;
-import org.springframework.stereotype.Service;
-
 import com.github.giga_chill.gigachill.data.access.object.TaskDAO;
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingListDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.TaskDTO;
@@ -16,10 +8,15 @@ import com.github.giga_chill.gigachill.data.transfer.object.UserDTO;
 import com.github.giga_chill.gigachill.repository.ShoppingListRepository;
 import com.github.giga_chill.gigachill.repository.TaskRepository;
 import com.github.giga_chill.gigachill.repository.UserRepository;
+import com.github.giga_chill.jooq.generated.enums.TaskStatus;
 import com.github.giga_chill.jooq.generated.tables.records.TasksRecord;
 import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
-
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +31,7 @@ public class TaskDAOImpl implements TaskDAO {
         UsersRecord authorRecord = userRepository.findById(authorId).get();
 
         return new UserDTO(
-                authorRecord.getUserId(),
-                authorRecord.getLogin(),
-                authorRecord.getName()
-        );
+                authorRecord.getUserId(), authorRecord.getLogin(), authorRecord.getName());
     }
 
     private UserDTO getExecutorDTO(UUID executorId) {
@@ -46,11 +40,11 @@ public class TaskDAOImpl implements TaskDAO {
         if (executorId != null) {
             UsersRecord executorRecord = userRepository.findById(executorId).orElse(null);
             if (executorRecord != null) {
-                executor = new UserDTO(
-                        executorRecord.getUserId(),
-                        executorRecord.getLogin(),
-                        executorRecord.getName()
-                );
+                executor =
+                        new UserDTO(
+                                executorRecord.getUserId(),
+                                executorRecord.getLogin(),
+                                executorRecord.getName());
             }
         }
         return executor;
@@ -65,14 +59,11 @@ public class TaskDAOImpl implements TaskDAO {
                 record.getDeadlineDatetime().toString(),
                 record.getActualApprovalId(),
                 getAuthorDTO(record.getAuthorId()),
-                getExecutorDTO(record.getExecutorId())
-        );
+                getExecutorDTO(record.getExecutorId()));
     }
 
     private TaskWithShoppingListsDTO convertToTaskWithShoppingListsDTO(
-            TasksRecord record,
-            List<ShoppingListDTO> shoppingLists
-    ) {
+            TasksRecord record, List<ShoppingListDTO> shoppingLists) {
         return new TaskWithShoppingListsDTO(
                 record.getTaskId(),
                 record.getTitle(),
@@ -82,15 +73,15 @@ public class TaskDAOImpl implements TaskDAO {
                 record.getActualApprovalId(),
                 getAuthorDTO(record.getAuthorId()),
                 getExecutorDTO(record.getExecutorId()),
-                shoppingLists
-        );
+                shoppingLists);
     }
 
     /**
      * Retrieves all tasks associated with the specified event.
      *
      * @param eventId the unique identifier of the event
-     * @return a {@link List} of {@link TaskDTO} representing all tasks in the event; empty list if none found
+     * @return a {@link List} of {@link TaskDTO} representing all tasks in the event; empty list if
+     *     none found
      */
     @Override
     public List<TaskDTO> getAllTasksFromEvent(UUID eventId) {
@@ -103,17 +94,18 @@ public class TaskDAOImpl implements TaskDAO {
      * Retrieves a task by its unique identifier, including its associated shopping lists.
      *
      * @param taskId the unique identifier of the task
-     * @return a {@link TaskWithShoppingListsDTO} containing task details and its shopping list references
+     * @return a {@link TaskWithShoppingListsDTO} containing task details and its shopping list
+     *     references
      */
     @Override
     public TaskWithShoppingListsDTO getTaskById(UUID taskId) {
         TasksRecord taskRecord = taskRepository.findById(taskId).orElse(null);
         if (taskRecord == null) return null;
 
-        List<ShoppingListDTO> shoppingLists = shoppingListDAOImpl
-                .getAllShoppingListsFromEvent(taskRecord.getEventId()).stream()
-                .filter(list -> taskId.equals(list.taskId()))
-                .toList();
+        List<ShoppingListDTO> shoppingLists =
+                shoppingListDAOImpl.getAllShoppingListsFromEvent(taskRecord.getEventId()).stream()
+                        .filter(list -> taskId.equals(list.taskId()))
+                        .toList();
 
         return convertToTaskWithShoppingListsDTO(taskRecord, shoppingLists);
     }
@@ -121,23 +113,26 @@ public class TaskDAOImpl implements TaskDAO {
     /**
      * Creates a new task for the specified event and associates it with the given shopping lists.
      *
-     * @param eventId          the unique identifier of the event in which to create the task
-     * @param taskDTO          the {@link TaskDTO} containing details of the task to create
-     * @param shoppingListsIds a {@link List} of {@link UUID} values representing shopping lists to attach to the task
+     * @param eventId the unique identifier of the event in which to create the task
+     * @param taskDTO the {@link TaskDTO} containing details of the task to create
+     * @param shoppingListsIds a {@link List} of {@link UUID} values representing shopping lists to
+     *     attach to the task
      */
     @Override
     public void createTask(UUID eventId, TaskDTO taskDTO, List<UUID> shoppingListsIds) {
-        taskRepository.save(new TasksRecord(
-                taskDTO.taskId(),
-                eventId,
-                taskDTO.author().id(),
-                taskDTO.executor() != null ? taskDTO.executor().id() : null,
-                taskDTO.title(),
-                taskDTO.description(),
-                taskDTO.status() != null ? TaskStatus.valueOf(taskDTO.status()) : null,
-                taskDTO.deadlineDatetime() != null ? OffsetDateTime.parse(taskDTO.deadlineDatetime()) : null,
-                taskDTO.actualApprovalId()
-        ));
+        taskRepository.save(
+                new TasksRecord(
+                        taskDTO.taskId(),
+                        eventId,
+                        taskDTO.author().id(),
+                        taskDTO.executor() != null ? taskDTO.executor().id() : null,
+                        taskDTO.title(),
+                        taskDTO.description(),
+                        taskDTO.status() != null ? TaskStatus.valueOf(taskDTO.status()) : null,
+                        taskDTO.deadlineDatetime() != null
+                                ? OffsetDateTime.parse(taskDTO.deadlineDatetime())
+                                : null,
+                        taskDTO.actualApprovalId()));
 
         // Привязываем shopping lists к задаче
         for (UUID shoppingListId : shoppingListsIds) {
@@ -148,9 +143,10 @@ public class TaskDAOImpl implements TaskDAO {
     /**
      * Updates an existing task’s data and rebinds it to the specified shopping lists.
      *
-     * @param taskId           the unique identifier of the task to update
-     * @param taskDTO          the {@link TaskDTO} containing the updated task information
-     * @param shoppingListsIds a {@link List} of {@link UUID} values representing the new set of shopping lists to attach
+     * @param taskId the unique identifier of the task to update
+     * @param taskDTO the {@link TaskDTO} containing the updated task information
+     * @param shoppingListsIds a {@link List} of {@link UUID} values representing the new set of
+     *     shopping lists to attach
      */
     @Override
     public void updateTask(UUID taskId, TaskDTO taskDTO, List<UUID> shoppingListsIds) {
@@ -224,7 +220,7 @@ public class TaskDAOImpl implements TaskDAO {
      * Checks whether a task with the given identifier exists within the specified event context.
      *
      * @param eventId the unique identifier of the event
-     * @param taskId  the unique identifier of the task
+     * @param taskId the unique identifier of the task
      * @return {@code true} if the task exists within the event; {@code false} otherwise
      */
     @Override
@@ -238,7 +234,7 @@ public class TaskDAOImpl implements TaskDAO {
      * @param taskId the unique identifier of the task
      * @param userId the unique identifier of the user
      * @return {@code true} if the user can execute the task(if he is executor or executor is null);
-     * {@code false} otherwise
+     *     {@code false} otherwise
      */
     @Override
     public boolean canExecute(UUID taskId, UUID userId) {

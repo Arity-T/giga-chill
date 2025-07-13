@@ -2,12 +2,11 @@ package com.github.giga_chill.gigachill.repository;
 
 import com.github.giga_chill.jooq.generated.tables.ConsumerInList;
 import com.github.giga_chill.jooq.generated.tables.records.ConsumerInListRecord;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -40,14 +39,17 @@ public class ConsumerInListRepository {
     public void addConsumers(UUID shoppingListId, List<UUID> userIdsToAdd) {
         if (userIdsToAdd.isEmpty()) return;
 
-        List<ConsumerInListRecord> records = userIdsToAdd.stream()
-                .map(userId -> {
-                    ConsumerInListRecord record = dsl.newRecord(ConsumerInList.CONSUMER_IN_LIST);
-                    record.setShoppingListId(shoppingListId);
-                    record.setUserId(userId);
-                    return record;
-                })
-                .toList();
+        List<ConsumerInListRecord> records =
+                userIdsToAdd.stream()
+                        .map(
+                                userId -> {
+                                    ConsumerInListRecord record =
+                                            dsl.newRecord(ConsumerInList.CONSUMER_IN_LIST);
+                                    record.setShoppingListId(shoppingListId);
+                                    record.setUserId(userId);
+                                    return record;
+                                })
+                        .toList();
 
         dsl.batchInsert(records).execute();
     }
@@ -55,12 +57,14 @@ public class ConsumerInListRepository {
     public boolean isConsumer(UUID shoppingListId, UUID consumerId) {
         // Сделано через count для оптимизации
         return dsl.fetchCount(
-                dsl.selectFrom(ConsumerInList.CONSUMER_IN_LIST)
-                        .where(
-                                ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID.eq(shoppingListId)
-                                        .and(ConsumerInList.CONSUMER_IN_LIST.USER_ID.eq(consumerId))
-
-                        )
-        ) > 0;
+                        dsl.selectFrom(ConsumerInList.CONSUMER_IN_LIST)
+                                .where(
+                                        ConsumerInList.CONSUMER_IN_LIST
+                                                .SHOPPING_LIST_ID
+                                                .eq(shoppingListId)
+                                                .and(
+                                                        ConsumerInList.CONSUMER_IN_LIST.USER_ID.eq(
+                                                                consumerId))))
+                > 0;
     }
 }

@@ -1,7 +1,6 @@
 package com.github.giga_chill.gigachill.web.info;
 
 import jakarta.annotation.Nullable;
-
 import java.util.List;
 
 public record ResponseTaskWithShoppingListsInfo(
@@ -13,6 +12,4 @@ public record ResponseTaskWithShoppingListsInfo(
         String actualApprovalId,
         UserInfo author,
         @Nullable UserInfo executor,
-        List<ShoppingListInfo> shoppingLists
-) {
-}
+        List<ShoppingListInfo> shoppingLists) {}
