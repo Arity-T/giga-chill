@@ -91,6 +91,7 @@ fi
 # === Сборка приложения ===
 if [ "$build_app" = true ]; then
     echo "=== Сборка приложения ==="
+    ./gradlew spotlessApply
     ./gradlew build
     if [ $? -ne 0 ]; then
         echo "Ошибка при сборке приложения"

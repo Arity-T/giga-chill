@@ -3,6 +3,7 @@ plugins {
 	id("org.springframework.boot") version "3.5.3"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("nu.studer.jooq") version "10.1"
+    id("com.diffplug.spotless") version "6.19.0"
 }
 
 group = "com.github.giga-chill"
@@ -26,6 +27,21 @@ repositories {
 }
 
 val jooqVersion = "3.20.5"
+
+// === spotless конфигурация ===
+spotless {
+    java {
+        target("src/**/*.java")
+        // Форматирование для Java файлов
+        googleJavaFormat().aosp()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+
+        // Исключить сгенерированные JOOQ файлы
+        targetExclude("**/build/generated-sources/**", "**/build/generated/**")
+    }
+}
 
 // === Зависимости приложения и тестов ===
 dependencies {
@@ -120,3 +136,6 @@ jooq {
         }
     }
 }
+
+
+
