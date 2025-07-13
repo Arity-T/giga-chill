@@ -12,7 +12,6 @@ import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -348,5 +347,29 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
     @Override
     public boolean areExisted(List<UUID> shoppingListsIds) {
         return shoppingListRepository.allExist(shoppingListsIds);
+    }
+
+    /**
+     * Determines whether the specified shopping list is eligible to be bound to a task.
+     * The list is considered free of a task if the taskId field is null.
+     *
+     * @param shoppingListId the unique identifier of the shopping list to check
+     * @return {@code true} if the shopping list can be bound to a task; {@code false} otherwise
+     */
+    @Override
+    public boolean canBindShoppingListToTask(UUID shoppingListId) {
+        return shoppingListRepository.canBind(shoppingListId);
+    }
+
+    /**
+     * Determines whether all the specified shopping lists are eligible to be bound to a task.
+     * The list is considered free of a task if the taskId field is null.
+     *
+     * @param shoppingListsIds a {@link List} of {@link UUID} values representing the shopping lists to check
+     * @return {@code true} if every shopping list in the list can be bound to a task; {@code false} if one or more cannot
+     */
+    @Override
+    public boolean canBindShoppingListsToTask(List<UUID> shoppingListsIds) {
+        return shoppingListRepository.allCanBeBound(shoppingListsIds);
     }
 }
