@@ -15,7 +15,7 @@ import java.util.UUID;
 public class Task {
     private UUID taskId;
     private String title;
-    private String description;
+    @Nullable private String description;
     private String status;
     private String deadlineDatetime;
     @Nullable private UUID actualApprovalId;

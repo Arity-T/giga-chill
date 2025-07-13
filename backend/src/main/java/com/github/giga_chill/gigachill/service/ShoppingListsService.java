@@ -1,10 +1,9 @@
 package com.github.giga_chill.gigachill.service;
 
 import com.github.giga_chill.gigachill.data.access.object.ShoppingListDAO;
-import com.github.giga_chill.gigachill.data.transfer.object.ShoppingItemDTO;
-import com.github.giga_chill.gigachill.data.transfer.object.ShoppingListDTO;
 import com.github.giga_chill.gigachill.model.ShoppingItem;
 import com.github.giga_chill.gigachill.model.ShoppingList;
+import com.github.giga_chill.gigachill.util.DtoEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,20 +15,19 @@ import java.util.*;
 public class ShoppingListsService {
 
     private final ShoppingListDAO shoppingListDAO;
-    private final ParticipantsService participantsService;
 
     public List<ShoppingList> getAllShoppingListsFromEvent(UUID eventId) {
         return shoppingListDAO.getAllShoppingListsFromEvent(eventId).stream()
-                .map(this::toEntity).toList();
+                .map(DtoEntityMapper::toShoppingListEntity).toList();
     }
 
     public ShoppingList getShoppingListById(UUID shoppingListId) {
-        return toEntity(shoppingListDAO.getShoppingListById(shoppingListId));
+        return DtoEntityMapper.toShoppingListEntity(shoppingListDAO.getShoppingListById(shoppingListId));
     }
 
-    public List<ShoppingList> getShoppingListsByIds(List<UUID> shoppingListsIds){
+    public List<ShoppingList> getShoppingListsByIds(List<UUID> shoppingListsIds) {
         return shoppingListDAO.getShoppingListsByIds(shoppingListsIds).stream()
-                .map(this::toEntity).toList();
+                .map(DtoEntityMapper::toShoppingListEntity).toList();
     }
 
     public String createShoppingList(UUID eventId, UUID userId, String title, String description) {
@@ -51,7 +49,7 @@ public class ShoppingListsService {
     public String addShoppingItem(UUID shoppingListId, String title, BigDecimal quantity, String unit) {
         ShoppingItem shoppingItem = new ShoppingItem(UUID.randomUUID(), title,
                 quantity, unit, false);
-        shoppingListDAO.addShoppingItem(shoppingListId, shoppingItemToDTO(shoppingItem));
+        shoppingListDAO.addShoppingItem(shoppingListId, DtoEntityMapper.toShoppingItemDto(shoppingItem));
         return shoppingItem.getShoppingItemId().toString();
     }
 
@@ -59,7 +57,7 @@ public class ShoppingListsService {
 
         ShoppingItem shoppingItem = new ShoppingItem(shoppingItemId, title,
                 quantity, unit, null);
-        shoppingListDAO.updateShoppingItem(shoppingItemToDTO(shoppingItem));
+        shoppingListDAO.updateShoppingItem(DtoEntityMapper.toShoppingItemDto(shoppingItem));
     }
 
     public void deleteShoppingItemFromShoppingList(UUID shoppingListId, UUID shoppingItemId) {
@@ -71,7 +69,7 @@ public class ShoppingListsService {
     }
 
     public ShoppingItem getShoppingItemById(UUID shoppingItemId) {
-        return shoppingItemToEntity(shoppingListDAO.getShoppingItemById(shoppingItemId));
+        return DtoEntityMapper.toShoppingItemEntity(shoppingListDAO.getShoppingItemById(shoppingItemId));
     }
 
     public void updateShoppingListConsumers(UUID shoppingListId, List<UUID> allUserId) {
@@ -98,59 +96,8 @@ public class ShoppingListsService {
         return shoppingListDAO.isShoppingItemExisted(shoppingItemId);
     }
 
-    public boolean canBindShoppingListsToTask(List<UUID> shoppingListsIds){
+    public boolean canBindShoppingListsToTask(List<UUID> shoppingListsIds) {
         return shoppingListDAO.canBindShoppingListsToTask(shoppingListsIds);
     }
 
-    private ShoppingList toEntity(ShoppingListDTO shoppingListDTO) {
-        return new ShoppingList(
-                shoppingListDTO.shoppingListId(),
-                shoppingListDTO.taskId(),
-                shoppingListDTO.title(),
-                shoppingListDTO.description(),
-                shoppingListDTO.status(),
-                shoppingListDTO.shoppingItems().stream()
-                        .map(this::shoppingItemToEntity)
-                        .toList(),
-                shoppingListDTO.consumers().stream()
-                        .map(participantsService::toEntity)
-                        .toList()
-        );
-    }
-
-    private ShoppingListDTO toDto(ShoppingList shoppingList) {
-        return new ShoppingListDTO(
-                shoppingList.getShoppingListId(),
-                shoppingList.getTaskId(),
-                shoppingList.getTitle(),
-                shoppingList.getDescription(),
-                shoppingList.getStatus(),
-                shoppingList.getShoppingItems().stream()
-                        .map(this::shoppingItemToDTO)
-                        .toList(),
-                shoppingList.getConsumers().stream()
-                        .map(participantsService::toDto)
-                        .toList()
-        );
-    }
-
-    private ShoppingItemDTO shoppingItemToDTO(ShoppingItem shoppingItem){
-        return new ShoppingItemDTO(
-                shoppingItem.getShoppingItemId(),
-                shoppingItem.getTitle(),
-                shoppingItem.getQuantity(),
-                shoppingItem.getUnit(),
-                shoppingItem.getIsPurchased()
-        );
-    }
-
-    private ShoppingItem shoppingItemToEntity(ShoppingItemDTO shoppingItemDTO){
-        return new ShoppingItem(
-                shoppingItemDTO.shoppingItemId(),
-                shoppingItemDTO.title(),
-                shoppingItemDTO.quantity(),
-                shoppingItemDTO.unit(),
-                shoppingItemDTO.isPurchased()
-        );
-    }
 }
