@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -94,6 +95,17 @@ public class ShoppingListsServiceLoggerAspect {
             "&& args(shoppingItemId)")
     public void isShoppingItemExisted(UUID shoppingItemId) {
     }
+
+    @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.getShoppingListsByIds(..)) " +
+            "&& args(shoppingListsIds)")
+    public void getShoppingListsByIds(List<UUID> shoppingListsIds) {
+    }
+
+    @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.areExisted(..)) " +
+            "&& args(shoppingListsIds)")
+    public void areExisted(List<UUID> shoppingListsIds) {
+    }
+
 
 
     @Around("getAllShoppingListsFromEvent(eventId)")
@@ -316,4 +328,40 @@ public class ShoppingListsServiceLoggerAspect {
             throw ex;
         }
     }
+
+
+    @Around("getShoppingListsByIds(shoppingListsIds)")
+    public Object logSetShoppingListsByIds(ProceedingJoinPoint proceedingJoinPoint,
+                                           List<UUID> shoppingListsIds) throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            LOGGER.info(loggerColorConfig.getGET_COLOR() + "Shopping lists with ids: {} received"
+                    + loggerColorConfig.getRESET_COLOR(), shoppingListsIds.toString());
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("areExisted(shoppingListsIds)")
+    public Object logAreExisted(ProceedingJoinPoint proceedingJoinPoint,
+                                List<UUID> shoppingListsIds) throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            if ((Boolean) result) {
+                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Shopping lists with ids: {} exist"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        shoppingListsIds.toString());
+            } else {
+                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Shopping lists with ids: {} do not exist"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        shoppingListsIds.toString());
+            }
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+
 }

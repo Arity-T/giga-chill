@@ -28,13 +28,11 @@ public class ShoppingListsService {
     }
 
     public List<ShoppingList> getShoppingListsByIds(List<UUID> shoppingListsIds){
-        //TODO: добавить в логгер
         return shoppingListDAO.getShoppingListsByIds(shoppingListsIds).stream()
                 .map(this::toEntity).toList();
     }
 
     public String createShoppingList(UUID eventId, UUID userId, String title, String description) {
-        //TODO: сделать привязку к task_id
         UUID shoppingListId = UUID.randomUUID();
         shoppingListDAO.createShoppingList(eventId, shoppingListId, userId, title, description);
         return shoppingListId.toString();
@@ -89,7 +87,6 @@ public class ShoppingListsService {
     }
 
     public boolean areExisted(List<UUID> shoppingListsIds) {
-        //TODO: добавить в логгер
         return shoppingListDAO.areExisted(shoppingListsIds);
     }
 
