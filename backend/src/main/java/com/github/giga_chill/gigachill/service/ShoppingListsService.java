@@ -1,6 +1,7 @@
 package com.github.giga_chill.gigachill.service;
 
 import com.github.giga_chill.gigachill.data.access.object.ShoppingListDAO;
+import com.github.giga_chill.gigachill.data.access.object.TaskDAO;
 import com.github.giga_chill.gigachill.model.ShoppingItem;
 import com.github.giga_chill.gigachill.model.ShoppingList;
 import com.github.giga_chill.gigachill.util.DtoEntityMapper;
@@ -16,7 +17,7 @@ public class ShoppingListsService {
 
     private final Environment env;
     private final ShoppingListDAO shoppingListDAO;
-    private final TaskService taskService;
+    private final TaskDAO taskDAO;
 
     public List<ShoppingList> getAllShoppingListsFromEvent(UUID eventId) {
         return shoppingListDAO.getAllShoppingListsFromEvent(eventId).stream()
@@ -97,7 +98,7 @@ public class ShoppingListsService {
         if (taskId == null) {
             return env.getProperty("shopping_list_status.unassigned");
         }
-        String taskStatus = taskService.getTaskStatus(taskId);
+        String taskStatus = taskDAO.getTaskStatus(taskId);
         if (taskStatus.equals(env.getProperty("task_status.open"))) {
             return env.getProperty("shopping_list_status.assigned");
         }
