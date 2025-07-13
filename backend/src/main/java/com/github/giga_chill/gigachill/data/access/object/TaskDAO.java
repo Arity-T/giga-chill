@@ -96,4 +96,14 @@ public interface TaskDAO {
      * {@code false} otherwise
      */
     boolean canExecute(UUID taskId, UUID userId);
+
+    /**
+     * Determines whether all products in this list are purchased (The is_purchased field of all products is true).
+     *
+     * @param taskId the unique identifier of the task
+     *
+     * @return {@code true} if all is_purchased fields of the lists are true;
+     * {@code false} otherwise
+     */
+    boolean isBought(UUID taskId);
 }
