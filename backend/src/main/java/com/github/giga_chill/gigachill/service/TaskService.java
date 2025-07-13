@@ -123,11 +123,11 @@ public class TaskService {
 
     }
 
-    public void deleteTask(UUID eventId, UUID taskID){
+    public void deleteTask(UUID eventId, UUID taskId){
         //TODO: связь с бд(убрать eventID
 
         //TEMPORARY
-        TASKS.get(eventId).remove(taskID);
+        TASKS.get(eventId).remove(taskId);
     }
 
     public boolean isAuthor(UUID taskId, UUID userId){
@@ -143,11 +143,11 @@ public class TaskService {
         return "open";
     }
 
-    public boolean isExisted(UUID eventID, UUID taskId){
+    public boolean isExisted(UUID eventId, UUID taskId){
         //TODO: связь с бд(убрать eventID)
 
         //TEMPORARY
-        return TASKS.get(eventID).containsKey(taskId);
+        return TASKS.get(eventId).containsKey(taskId);
     }
 
     public boolean canExecute(UUID taskId, UUID userId){
