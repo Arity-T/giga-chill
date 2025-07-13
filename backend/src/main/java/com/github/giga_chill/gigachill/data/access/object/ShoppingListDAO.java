@@ -159,4 +159,22 @@ public interface ShoppingListDAO {
      */
     boolean areExisted(List<UUID> shoppingListsIds);
 
+
+    /**
+     * Determines whether the specified shopping list is eligible to be bound to a task.
+     * The list is considered free of a task if the taskId field is null.
+     *
+     * @param shoppingListId the unique identifier of the shopping list to check
+     * @return {@code true} if the shopping list can be bound to a task; {@code false} otherwise
+     */
+    boolean canBindShoppingListToTask(UUID shoppingListId);
+
+    /**
+     * Determines whether all of the specified shopping lists are eligible to be bound to a task.
+     * The list is considered free of a task if the taskId field is null.
+     *
+     * @param shoppingListsIds a {@link List} of {@link UUID} values representing the shopping lists to check
+     * @return {@code true} if every shopping list in the list can be bound to a task; {@code false} if one or more cannot
+     */
+    boolean canBindShoppingListsToTask(List<UUID> shoppingListsIds);
 }
