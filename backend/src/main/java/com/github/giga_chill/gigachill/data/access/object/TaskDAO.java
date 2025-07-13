@@ -31,20 +31,23 @@ public interface TaskDAO {
     TaskWithShoppingListsDTO getTaskById(UUID taskId);
 
     /**
-     * Creates a new task under the given event, with optional associated shopping lists.
+     * Creates a new task for the specified event and associates it with the given shopping lists.
      *
-     * @param eventId                  the unique identifier of the event
-     * @param taskWithShoppingListsDTO the {@link TaskWithShoppingListsDTO} containing task data and shopping lists
+     * @param eventId            the unique identifier of the event in which to create the task
+     * @param taskDTO            the {@link TaskDTO} containing details of the task to create
+     * @param shoppingListsIds   a {@link List} of {@link UUID} values representing shopping lists to attach to the task
      */
-    void createTask(UUID eventId, TaskWithShoppingListsDTO taskWithShoppingListsDTO);
+    void createTask(UUID eventId, TaskDTO taskDTO, List<UUID> shoppingListsIds);
 
     /**
-     * Updates an existing task's details and its associated shopping lists.
+     * Updates an existing task’s data and rebinds it to the specified shopping lists.
      *
-     * @param taskId                   the unique identifier of the task to update
-     * @param taskWithShoppingListsDTO the updated {@link TaskWithShoppingListsDTO} data
+     * @param taskId             the unique identifier of the task to update
+     * @param taskDTO            the {@link TaskDTO} containing the updated task information
+     * @param shoppingListsIds   a {@link List} of {@link UUID} values representing the new set of shopping lists to attach
      */
-    void updateTask(UUID taskId, TaskWithShoppingListsDTO taskWithShoppingListsDTO);
+    void updateTask(UUID taskId, TaskDTO taskDTO, List<UUID> shoppingListsIds);
+
 
     /**
      * Marks a task as started by a specific user, indicating execution has begun.
