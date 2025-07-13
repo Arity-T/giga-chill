@@ -19,7 +19,6 @@ public class TaskServiceLoggerAspect {
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskServiceLoggerAspect.class);
     private final LoggerColorConfig loggerColorConfig;
 
-    // TODO: убрать в некоторых методах eventId
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.getAllTasksFromEvent(..)) "
                     + "&& args(eventId)")
