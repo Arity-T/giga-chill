@@ -169,4 +169,15 @@ public interface ShoppingListDAO {
      * @return {@code true} if every shopping list in the list can be bound to a task; {@code false} if one or more cannot
      */
     boolean canBindShoppingListsToTask(List<UUID> shoppingListsIds);
+
+    /**
+     * Retrieves the identifier of the task associated with the given shopping list.
+     *
+     * @param shoppingListId the unique identifier of the shopping list
+     * @return the {@link UUID} of the task linked to the specified shopping list.
+     * If the problem is not resolved, return null.
+     */
+    @Nullable
+    UUID getTaskIdForShoppingList(UUID shoppingListId);
+
 }
