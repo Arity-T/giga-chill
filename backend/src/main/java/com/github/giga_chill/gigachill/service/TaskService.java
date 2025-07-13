@@ -1,6 +1,7 @@
 package com.github.giga_chill.gigachill.service;
 
 
+import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.model.Task;
 import com.github.giga_chill.gigachill.model.User;
@@ -50,6 +51,10 @@ public class TaskService {
             throw new NotFoundException("One or more of the resources involved were not found: "
                     + requestTaskInfo.shopping_lists_ids());
         }
+        if (!shoppingListsService.canBindShoppingListsToTask(shoppingListsIds)){
+            throw new ConflictException("One or more lists are already linked to the task: "
+                    + requestTaskInfo.shopping_lists_ids());
+        }
 
 
         Task task = new Task(
@@ -81,6 +86,11 @@ public class TaskService {
 
         if(shoppingListsIds != null && !shoppingListsService.areExisted(shoppingListsIds)){
             throw new NotFoundException("One or more of the resources involved were not found: "
+                    + requestTaskInfo.shopping_lists_ids());
+        }
+        if (shoppingListsIds != null &&
+                !shoppingListsService.canBindShoppingListsToTask(shoppingListsIds)){
+            throw new ConflictException("One or more lists are already linked to the task: "
                     + requestTaskInfo.shopping_lists_ids());
         }
 

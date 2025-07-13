@@ -98,6 +98,10 @@ public class ShoppingListsService {
         return shoppingListDAO.isShoppingItemExisted(shoppingItemId);
     }
 
+    public boolean canBindShoppingListsToTask(List<UUID> shoppingListsIds){
+        return shoppingListDAO.canBindShoppingListsToTask(shoppingListsIds);
+    }
+
     private ShoppingList toEntity(ShoppingListDTO shoppingListDTO) {
         return new ShoppingList(
                 shoppingListDTO.shoppingListId(),

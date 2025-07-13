@@ -106,6 +106,10 @@ public class ShoppingListsServiceLoggerAspect {
     public void areExisted(List<UUID> shoppingListsIds) {
     }
 
+    @Pointcut("execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.canBindShoppingListsToTask(..)) " +
+            "&& args(shoppingListsIds)")
+    public void canBindShoppingListsToTask(List<UUID> shoppingListsIds) {
+    }
 
 
     @Around("getAllShoppingListsFromEvent(eventId)")
@@ -354,6 +358,26 @@ public class ShoppingListsServiceLoggerAspect {
                         shoppingListsIds.toString());
             } else {
                 LOGGER.info(loggerColorConfig.getGET_COLOR() + "Shopping lists with ids: {} do not exist"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        shoppingListsIds.toString());
+            }
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("areExisted(shoppingListsIds)")
+    public Object logCanBindShoppingListsToTask(ProceedingJoinPoint proceedingJoinPoint,
+                                List<UUID> shoppingListsIds) throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            if ((Boolean) result) {
+                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Shopping lists with ids: {} can bind to task"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        shoppingListsIds.toString());
+            } else {
+                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Shopping lists with ids: {} can not bind to task"
                                 + loggerColorConfig.getRESET_COLOR(),
                         shoppingListsIds.toString());
             }
