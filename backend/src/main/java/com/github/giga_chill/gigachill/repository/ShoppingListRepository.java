@@ -115,4 +115,11 @@ public class ShoppingListRepository {
     );
     return count == shoppingListIds.size(); // true, если все свободны
   }
+
+  public void detachFromTask(UUID taskId) {
+    dsl.update(ShoppingLists.SHOPPING_LISTS)
+            .set(ShoppingLists.SHOPPING_LISTS.TASK_ID, (UUID) null)
+            .where(ShoppingLists.SHOPPING_LISTS.TASK_ID.eq(taskId))
+            .execute();
+  }
 }
