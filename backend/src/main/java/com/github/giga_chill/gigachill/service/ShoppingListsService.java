@@ -5,6 +5,7 @@ import com.github.giga_chill.gigachill.model.ShoppingItem;
 import com.github.giga_chill.gigachill.model.ShoppingList;
 import com.github.giga_chill.gigachill.util.DtoEntityMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -14,23 +15,29 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ShoppingListsService {
 
+    private final Environment env;
     private final ShoppingListDAO shoppingListDAO;
+    private final TaskService taskService;
 
     public List<ShoppingList> getAllShoppingListsFromEvent(UUID eventId) {
-        //TODO: сделать связь со статусом задачи
         return shoppingListDAO.getAllShoppingListsFromEvent(eventId).stream()
-                .map(DtoEntityMapper::toShoppingListEntity).toList();
+                .map(DtoEntityMapper::toShoppingListEntity)
+                .peek(item -> item.setStatus(getShoppingListStatus(item.getShoppingListId())))
+                .toList();
     }
 
     public ShoppingList getShoppingListById(UUID shoppingListId) {
-        //TODO: сделать связь со статусом задачи
-        return DtoEntityMapper.toShoppingListEntity(shoppingListDAO.getShoppingListById(shoppingListId));
+        ShoppingList shoppingList = DtoEntityMapper.toShoppingListEntity(
+                shoppingListDAO.getShoppingListById(shoppingListId));
+        shoppingList.setStatus(getShoppingListStatus(shoppingListId));
+        return shoppingList;
     }
 
     public List<ShoppingList> getShoppingListsByIds(List<UUID> shoppingListsIds) {
-        //TODO: сделать связь со статусом задачи
         return shoppingListDAO.getShoppingListsByIds(shoppingListsIds).stream()
-                .map(DtoEntityMapper::toShoppingListEntity).toList();
+                .map(DtoEntityMapper::toShoppingListEntity)
+                .peek(item -> item.setStatus(getShoppingListStatus(item.getShoppingListId())))
+                .toList();
     }
 
     public String createShoppingList(UUID eventId, UUID userId, String title, String description) {
@@ -40,7 +47,6 @@ public class ShoppingListsService {
     }
 
     public void updateShoppingList(UUID shoppingListId, String title, String description) {
-        //TODO: сделать связь со статусом задачи
         shoppingListDAO.updateShoppingList(shoppingListId, title, description);
     }
 
@@ -80,9 +86,32 @@ public class ShoppingListsService {
         shoppingListDAO.updateShoppingListConsumers(shoppingListId, allUserId);
     }
 
+    public UUID getTaskIdForShoppingList(UUID shoppingListId) {
+        return shoppingListDAO.getTaskIdForShoppingList(shoppingListId);
+    }
+
     public String getShoppingListStatus(UUID shoppingListId) {
-        //TODO: сделать связь со статусом задачи
-        return "1";
+        //TODO: Подумать про cancelled
+        UUID taskId = getTaskIdForShoppingList(shoppingListId);
+        if (taskId == null) {
+            return env.getProperty("shopping_list_status.unassigned");
+        }
+        String taskStatus = taskService.getTaskStatus(taskId);
+        if (taskStatus.equals(env.getProperty("task_status.open"))) {
+            return env.getProperty("shopping_list_status.assigned");
+        }
+        if (taskStatus.equals(env.getProperty("task_status.in_progress"))
+                || taskStatus.equals(env.getProperty("task_status.under_review"))) {
+            return env.getProperty("shopping_list_status.in_progress");
+        }
+        if (taskStatus.equals(env.getProperty("task_status.in_progress"))) {
+            if (shoppingListDAO.isBought(shoppingListId)) {
+                return env.getProperty("shopping_list_status.bought");
+            } else {
+                return env.getProperty("shopping_list_status.partially_bought");
+            }
+        }
+        throw new IllegalArgumentException("Invalid shopping list status");
     }
 
     public boolean isExisted(UUID shoppingListId) {

@@ -59,9 +59,9 @@ public class TaskService {
                 user,
                 requestTaskInfo.executor_id() != null ?
                         userService.getById(UuidUtils.safeUUID(requestTaskInfo.executor_id())) : null,
-                shoppingListsService.getShoppingListsByIds(shoppingListsIds));
+                List.of());
 
-        taskDAO.createTask(eventId, DtoEntityMapper.toTaskWithShoppingListsDto(task));
+        taskDAO.createTask(eventId, DtoEntityMapper.toTaskDto(task), shoppingListsIds);
         return task.getTaskId().toString();
     }
 
@@ -91,9 +91,9 @@ public class TaskService {
                 null,
                 requestTaskInfo.executor_id() != null ?
                         userService.getById(UuidUtils.safeUUID(requestTaskInfo.executor_id())) : null,
-                shoppingListsIds != null ? shoppingListsService.getShoppingListsByIds(shoppingListsIds) : null);
+                List.of());
 
-        taskDAO.updateTask(taskId, DtoEntityMapper.toTaskWithShoppingListsDto(task));
+        taskDAO.updateTask(taskId, DtoEntityMapper.toTaskDto(task), shoppingListsIds);
     }
 
     public void startExecuting(UUID taskId, UUID userId){
