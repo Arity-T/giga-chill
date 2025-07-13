@@ -361,4 +361,42 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
     public boolean canBindShoppingListsToTask(List<UUID> shoppingListsIds) {
         return shoppingListRepository.allCanBeBound(shoppingListsIds);
     }
+
+    /**
+     * Retrieves the identifier of the task associated with the given shopping list.
+     *
+     * @param shoppingListId the unique identifier of the shopping list
+     * @return the {@link UUID} of the task linked to the specified shopping list.
+     * If the problem is not resolved, return null.
+     */
+    @Nullable
+    @Override
+    public UUID getTaskIdForShoppingList(UUID shoppingListId) {
+        ShoppingListsRecord record = shoppingListRepository.findById(shoppingListId).orElse(null);
+        if (record == null) {
+            return null;
+        }
+
+        return record.getTaskId();
+    }
+
+    /**
+     * Determines whether all products in this list are purchased (The is_purchased field of all products is true).
+     *
+     * @param shoppingListId the unique identifier of the task
+     * @return {@code true} if all is_purchased fields of the lists are true;
+     * {@code false} otherwise
+     */
+    @Override
+    public boolean isBought(UUID shoppingListId) {
+        List<ShoppingItemsRecord> shoppingItems = shoppingItemRepository.findByShoppingListId(shoppingListId);
+
+        for (ShoppingItemsRecord item : shoppingItems) {
+            if (!item.getIsPurchased()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
