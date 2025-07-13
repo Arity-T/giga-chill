@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.github.giga_chill.jooq.generated.enums.TaskStatus;
 import org.springframework.stereotype.Service;
 
 import com.github.giga_chill.gigachill.data.access.object.TaskDAO;
@@ -15,7 +16,6 @@ import com.github.giga_chill.gigachill.data.transfer.object.UserDTO;
 import com.github.giga_chill.gigachill.repository.ShoppingListRepository;
 import com.github.giga_chill.gigachill.repository.TaskRepository;
 import com.github.giga_chill.gigachill.repository.UserRepository;
-import com.github.giga_chill.jooq.generated.enums.TaskStatus;
 import com.github.giga_chill.jooq.generated.tables.records.TasksRecord;
 import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 
@@ -119,48 +119,52 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     /**
-     * Creates a new task under the given event, with optional associated shopping lists.
+     * Creates a new task for the specified event and associates it with the given shopping lists.
      *
-     * @param eventId                  the unique identifier of the event
-     * @param taskWithShoppingListsDTO the {@link TaskWithShoppingListsDTO} containing task data and shopping lists
+     * @param eventId          the unique identifier of the event in which to create the task
+     * @param taskDTO          the {@link TaskDTO} containing details of the task to create
+     * @param shoppingListsIds a {@link List} of {@link UUID} values representing shopping lists to attach to the task
      */
     @Override
-    public void createTask(UUID eventId, TaskWithShoppingListsDTO taskWithShoppingListsDTO) {
-        UUID taskId = taskWithShoppingListsDTO.taskId();
-
-        TasksRecord taskRecord = new TasksRecord(
-                taskId,
+    public void createTask(UUID eventId, TaskDTO taskDTO, List<UUID> shoppingListsIds) {
+        taskRepository.save(new TasksRecord(
+                taskDTO.taskId(),
                 eventId,
-                taskWithShoppingListsDTO.author().id(),
-                taskWithShoppingListsDTO.executor() != null ? taskWithShoppingListsDTO.executor().id() : null,
-                taskWithShoppingListsDTO.title(),
-                taskWithShoppingListsDTO.description(),
-                TaskStatus.valueOf(taskWithShoppingListsDTO.status()),
-                OffsetDateTime.parse(taskWithShoppingListsDTO.deadlineDatetime()),
-                taskWithShoppingListsDTO.actualApprovalId()
-        );
-
-        taskRepository.save(taskRecord);
+                taskDTO.author().id(),
+                taskDTO.executor() != null ? taskDTO.executor().id() : null,
+                taskDTO.title(),
+                taskDTO.description(),
+                taskDTO.status() != null ? TaskStatus.valueOf(taskDTO.status()) : null,
+                taskDTO.deadlineDatetime() != null ? OffsetDateTime.parse(taskDTO.deadlineDatetime()) : null,
+                taskDTO.actualApprovalId()
+        ));
 
         // Привязываем shopping lists к задаче
-        for (ShoppingListDTO shoppingList : taskWithShoppingListsDTO.shoppingLists()) {
-            shoppingListRepository.updateTaskId(shoppingList.shoppingListId(), shoppingList.taskId());
+        for (UUID shoppingListId : shoppingListsIds) {
+            shoppingListRepository.updateTaskId(shoppingListId, taskDTO.taskId());
         }
     }
 
     /**
-     * Updates an existing task's details and its associated shopping lists.
+     * Updates an existing task’s data and rebinds it to the specified shopping lists.
      *
-     * @param taskId                   the unique identifier of the task to update
-     * @param taskWithShoppingListsDTO the updated {@link TaskWithShoppingListsDTO} data
+     * @param taskId           the unique identifier of the task to update
+     * @param taskDTO          the {@link TaskDTO} containing the updated task information
+     * @param shoppingListsIds a {@link List} of {@link UUID} values representing the new set of shopping lists to attach
      */
     @Override
-    public void updateTask(UUID taskId, TaskWithShoppingListsDTO taskWithShoppingListsDTO) {
-        taskRepository.updateFromDTO(taskId, taskWithShoppingListsDTO);
+    public void updateTask(UUID taskId, TaskDTO taskDTO, List<UUID> shoppingListsIds) {
+        taskRepository.updateFromDTO(taskId, taskDTO);
 
-        // Обновим привязку списка покупок
-        for (ShoppingListDTO shoppingList : taskWithShoppingListsDTO.shoppingLists()) {
-            shoppingListRepository.updateTaskId(shoppingList.shoppingListId(), shoppingList.taskId());
+        // Обновляем связанные списки покупок, только если они явно переданы
+        if (shoppingListsIds != null) {
+            // Убираем старые связи
+            shoppingListRepository.detachFromTask(taskId);
+
+            // Привязываем переданные списки
+            for (UUID shoppingListId : shoppingListsIds) {
+                shoppingListRepository.updateTaskId(shoppingListId, taskId);
+            }
         }
     }
 
