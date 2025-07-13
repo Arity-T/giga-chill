@@ -29,7 +29,14 @@ public class TaskService {
     }
 
     public Task getTaskById(UUID taskId) {
-        return DtoEntityMapper.toTaskEntity(taskDAO.getTaskById(taskId));
+        Task task = DtoEntityMapper.toTaskEntity(taskDAO.getTaskById(taskId));
+        task.getShoppingLists()
+                .forEach(
+                        item ->
+                                item.setStatus(
+                                        shoppingListsService.getShoppingListStatus(
+                                                item.getShoppingListId())));
+        return task;
     }
 
     public String createTask(UUID eventId, User user, RequestTaskInfo requestTaskInfo) {
