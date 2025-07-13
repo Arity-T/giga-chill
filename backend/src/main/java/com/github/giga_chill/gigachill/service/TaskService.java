@@ -100,7 +100,6 @@ public class TaskService {
                                         UuidUtils.safeUUID(requestTaskInfo.executor_id()))
                                 : null,
                         List.of());
-
         taskDAO.updateTask(taskId, DtoEntityMapper.toTaskDto(task), shoppingListsIds);
     }
 

@@ -141,7 +141,7 @@ public final class DtoEntityMapper {
                 task.getStatus(),
                 task.getDeadlineDatetime(),
                 task.getActualApprovalId(),
-                DtoEntityMapper.toUserDto(task.getAuthor()),
+                task.getAuthor() != null ? DtoEntityMapper.toUserDto(task.getAuthor()) : null,
                 task.getExecutor() != null ? DtoEntityMapper.toUserDto(task.getExecutor()) : null);
     }
 
