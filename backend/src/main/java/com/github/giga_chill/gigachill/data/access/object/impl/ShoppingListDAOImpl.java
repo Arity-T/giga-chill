@@ -256,17 +256,6 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
     }
 
     /**
-     * Retrieves the current status of a shopping list (e.g., "open", "closed").
-     *
-     * @param shoppingListId the unique identifier of the shopping list
-     * @return the status string of the shopping list
-     */
-    @Override
-    public String getShoppingListStatus(UUID shoppingListId) {
-        return "unassigned";
-    }
-
-    /**
      * Checks whether a shopping list exists by its identifier.
      *
      * @param shoppingListId the unique identifier of the shopping list

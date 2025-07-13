@@ -9,7 +9,6 @@ public record ShoppingListDTO(UUID shoppingListId,
                               @Nullable UUID taskId,
                               String title,
                               @Nullable String description,
-                              String status,
                               List<ShoppingItemDTO> shoppingItems,
                               List<ParticipantDTO> consumers) {
 }

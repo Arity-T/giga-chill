@@ -17,15 +17,18 @@ public class ShoppingListsService {
     private final ShoppingListDAO shoppingListDAO;
 
     public List<ShoppingList> getAllShoppingListsFromEvent(UUID eventId) {
+        //TODO: сделать связь со статусом задачи
         return shoppingListDAO.getAllShoppingListsFromEvent(eventId).stream()
                 .map(DtoEntityMapper::toShoppingListEntity).toList();
     }
 
     public ShoppingList getShoppingListById(UUID shoppingListId) {
+        //TODO: сделать связь со статусом задачи
         return DtoEntityMapper.toShoppingListEntity(shoppingListDAO.getShoppingListById(shoppingListId));
     }
 
     public List<ShoppingList> getShoppingListsByIds(List<UUID> shoppingListsIds) {
+        //TODO: сделать связь со статусом задачи
         return shoppingListDAO.getShoppingListsByIds(shoppingListsIds).stream()
                 .map(DtoEntityMapper::toShoppingListEntity).toList();
     }
@@ -37,6 +40,7 @@ public class ShoppingListsService {
     }
 
     public void updateShoppingList(UUID shoppingListId, String title, String description) {
+        //TODO: сделать связь со статусом задачи
         shoppingListDAO.updateShoppingList(shoppingListId, title, description);
     }
 
@@ -77,7 +81,8 @@ public class ShoppingListsService {
     }
 
     public String getShoppingListStatus(UUID shoppingListId) {
-        return shoppingListDAO.getShoppingListStatus(shoppingListId);
+        //TODO: сделать связь со статусом задачи
+        return "1";
     }
 
     public boolean isExisted(UUID shoppingListId) {

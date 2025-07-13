@@ -62,7 +62,7 @@ public final class DtoEntityMapper {
                 shoppingListDTO.taskId(),
                 shoppingListDTO.title(),
                 shoppingListDTO.description(),
-                shoppingListDTO.status(),
+                null,
                 shoppingListDTO.shoppingItems().stream()
                         .map(DtoEntityMapper::toShoppingItemEntity)
                         .toList(),
@@ -78,7 +78,6 @@ public final class DtoEntityMapper {
                 shoppingList.getTaskId(),
                 shoppingList.getTitle(),
                 shoppingList.getDescription(),
-                shoppingList.getStatus(),
                 shoppingList.getShoppingItems().stream()
                         .map(DtoEntityMapper::toShoppingItemDto)
                         .toList(),

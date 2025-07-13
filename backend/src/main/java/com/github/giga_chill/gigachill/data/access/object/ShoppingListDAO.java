@@ -102,14 +102,6 @@ public interface ShoppingListDAO {
     void updateShoppingListConsumers(UUID shoppingListId, List<UUID> allUserIds);
 
     /**
-     * Retrieves the current status of a shopping list (e.g., "open", "closed").
-     *
-     * @param shoppingListId the unique identifier of the shopping list
-     * @return the status string of the shopping list
-     */
-    String getShoppingListStatus(UUID shoppingListId);
-
-    /**
      * Checks whether a shopping list exists by its identifier.
      *
      * @param shoppingListId the unique identifier of the shopping list
