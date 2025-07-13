@@ -98,7 +98,7 @@ public class TasksController {
         }
 
         return ResponseEntity.ok(toResponseTaskWithShoppingListsInfo(
-                eventId, user.getId(), taskService.getTaskById(eventId, taskId)));
+                eventId, user.getId(), taskService.getTaskById(taskId)));
     }
 
     @PatchMapping("/{taskId}")
@@ -166,7 +166,7 @@ public class TasksController {
                     "task with id: " + taskId);
         }
 
-        taskService.deleteTask(eventId, taskId);
+        taskService.deleteTask(taskId);
         return ResponseEntity.noContent().build();
     }
 

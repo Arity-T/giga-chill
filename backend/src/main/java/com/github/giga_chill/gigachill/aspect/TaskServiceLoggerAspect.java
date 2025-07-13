@@ -28,8 +28,8 @@ public class TaskServiceLoggerAspect {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.TaskService.getTaskById(..)) " +
-            "&& args(eventId, taskId)")
-    public void getTaskById(UUID eventId, UUID taskId) {
+            "&& args(taskId)")
+    public void getTaskById(UUID taskId) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.TaskService.createTask(..)) " +
@@ -48,8 +48,8 @@ public class TaskServiceLoggerAspect {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.TaskService.deleteTask(..)) " +
-            "&& args(eventId, taskId)")
-    public void deleteTask(UUID eventId, UUID taskId) {
+            "&& args( taskId)")
+    public void deleteTask(UUID taskId) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.TaskService.isAuthor(..)) " +
@@ -85,14 +85,13 @@ public class TaskServiceLoggerAspect {
         }
     }
 
-    @Around("logGetTaskById(eventId, taskId)")
+    @Around("logGetTaskById(taskId)")
     public Object logGetTaskById(ProceedingJoinPoint proceedingJoinPoint,
-                                 UUID eventId,
                                  UUID taskId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(loggerColorConfig.getGET_COLOR() + "Task with id: {} received from event with id: {}"
-                    + loggerColorConfig.getRESET_COLOR(), taskId, eventId);
+            LOGGER.info(loggerColorConfig.getGET_COLOR() + "Task with id: {} received"
+                    + loggerColorConfig.getRESET_COLOR(), taskId);
             return result;
         } catch (Throwable ex) {
             throw ex;
@@ -141,9 +140,8 @@ public class TaskServiceLoggerAspect {
         }
     }
 
-    @Around("deleteTask(eventId, taskId)")
+    @Around("deleteTask(taskId)")
     public Object logDeleteTask(ProceedingJoinPoint proceedingJoinPoint,
-                                UUID eventId,
                                 UUID taskId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -196,13 +194,13 @@ public class TaskServiceLoggerAspect {
         try {
             Object result = proceedingJoinPoint.proceed();
             if ((Boolean) result) {
-                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Task with id: {} is existed"
+                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Task with id: {} is existed in event with id: {}"
                                 + loggerColorConfig.getRESET_COLOR(),
-                        taskId);
+                        taskId, eventID);
             } else {
-                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Task with id: {} is not existed"
+                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Task with id: {} is not existed in event with id: {}"
                                 + loggerColorConfig.getRESET_COLOR(),
-                        taskId);
+                        taskId, eventID);
             }
             return result;
         } catch (Throwable ex) {
