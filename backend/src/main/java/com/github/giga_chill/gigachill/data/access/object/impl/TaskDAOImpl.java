@@ -242,10 +242,21 @@ public class TaskDAOImpl implements TaskDAO {
         return taskRepository.canExecute(taskId, userId);
     }
 
+    /**
+     * Retrieves the identifier of the user who is currently executing the specified task.
+     *
+     * @param taskId the unique identifier of the task
+     * @return the {@link UUID} of the executor user if one is assigned; {@code null} if the task
+     *     has not been started or no executor is set
+     */
     @Nullable
     @Override
-    // TODO реализовать метод
     public UUID getExecutorId(UUID taskId) {
-        return null;
+        TasksRecord task = taskRepository.findById(taskId).orElse(null);
+        if (task == null) {
+            return null;
+        }
+
+        return task.getExecutorId();
     }
 }
