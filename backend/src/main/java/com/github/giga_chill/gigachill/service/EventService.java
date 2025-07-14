@@ -65,6 +65,9 @@ public class EventService {
 
     public String getInviteLink(UUID eventId){
         var inviteLingUuid = eventDAO.getInviteLinkUuid(eventId);
+        if (inviteLingUuid == null){
+            return null;
+        }
         return env.getProperty("frontend.protocol") + "://" + env.getProperty("frontend.address")
                 + "/events/" + eventId.toString() + "/join-by-link/" + inviteLingUuid.toString();
     }
