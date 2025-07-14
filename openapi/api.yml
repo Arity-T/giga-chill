@@ -985,7 +985,6 @@ components:
           description: Описание задачи
           example: "Купить фрукты для вечеринки"
         status:
-          readOnly: true
           type: string
           enum: [open, in_progress, under_review, completed]
           description: Статус задачи
@@ -996,12 +995,21 @@ components:
           example: "2025-01-01T12:00:00Z"
         actual_approval_id:
           $ref: "#/components/schemas/ReadOnlyUUID"
+        permissions:
+          type: object
+          properties:
+            can_edit:
+              type: boolean
+              description: Может ли пользователь редактировать задачу
+              example: true
+            can_take_in_work:
+              type: boolean
+              description: Может ли пользователь взять задачу в работу
+              example: true
         author:
-          readOnly: true
           allOf:
             - $ref: "#/components/schemas/User"
         executor:
-          readOnly: true
           allOf:
             - $ref: "#/components/schemas/User"
 
