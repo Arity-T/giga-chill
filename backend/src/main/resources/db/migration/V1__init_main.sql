@@ -4,9 +4,19 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto; -- Для UUID
 
 -- Перечисления
 
-CREATE TYPE event_role AS ENUM ('participant', 'admin', 'owner');
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'event_role') THEN
+    CREATE TYPE event_role AS ENUM ('participant', 'admin', 'owner');
+  END IF;
+END$$;
 
-CREATE TYPE task_status AS ENUM ('open', 'in_progress', 'under_review', 'completed', 'canceled');
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'task_status') THEN
+    CREATE TYPE task_status AS ENUM ('open', 'in_progress', 'under_review', 'completed', 'canceled');
+  END IF;
+END$$;
 
 -- Таблицы
 
@@ -56,7 +66,7 @@ CREATE TABLE IF NOT EXISTS task_approvals (
 
 -- Отдельно добавляем цикличную связь 1-к-1
 ALTER TABLE tasks
-ADD COLUMN actual_approval_id UUID DEFAULT NULL REFERENCES task_approvals(task_approval_id);
+ADD COLUMN IF NOT EXISTS actual_approval_id UUID DEFAULT NULL REFERENCES task_approvals(task_approval_id);
 
 CREATE TABLE IF NOT EXISTS shopping_lists (
   shopping_list_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
