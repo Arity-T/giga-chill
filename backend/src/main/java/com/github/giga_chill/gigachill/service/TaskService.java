@@ -133,4 +133,8 @@ public class TaskService {
     public boolean canExecute(UUID taskId, UUID userId) {
         return taskDAO.canExecute(taskId, userId);
     }
+
+    public UUID getExecutorId(UUID taskId) {
+        return taskDAO.getExecutorId(taskId);
+    }
 }

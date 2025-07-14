@@ -4,10 +4,7 @@ import com.github.giga_chill.gigachill.exception.BadRequestException;
 import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.ForbiddenException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
-import com.github.giga_chill.gigachill.service.EventService;
-import com.github.giga_chill.gigachill.service.ParticipantsService;
-import com.github.giga_chill.gigachill.service.ShoppingListsService;
-import com.github.giga_chill.gigachill.service.UserService;
+import com.github.giga_chill.gigachill.service.*;
 import com.github.giga_chill.gigachill.util.InfoEntityMapper;
 import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.ShoppingListInfo;
@@ -31,6 +28,7 @@ public class ShoppingListsController {
     private final UserService userService;
     private final ParticipantsService participantsService;
     private final ShoppingListsService shoppingListsService;
+    private final TaskService taskService;
 
     @GetMapping
     // ACCESS: owner, admin, participant
@@ -363,14 +361,38 @@ public class ShoppingListsController {
                             + " is not a consumer of shopping list with id "
                             + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
-        if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned"))
-                && !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
+        var shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
+        if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.in_progress"))) {
             throw new ConflictException(
                     "Shopping list with id: "
                             + shoppingListId
                             + " does not"
-                            + " have unassigned or assigned status");
+                            + " have in progress status");
+        }
+        var taskId = shoppingListsService.getTaskIdForShoppingList(shoppingListId);
+        if (taskId == null) {
+            throw new ConflictException(
+                    "Shopping list with id: "
+                            + shoppingListId
+                            + " is not is not attached to the task");
+        }
+        var executorId = taskService.getExecutorId(taskId);
+        var taskStatus = taskService.getTaskStatus(taskId);
+        if (executorId != null && !executorId.equals(user.getId())
+                || !taskStatus.equals(env.getProperty("task_status.in_progress"))) {
+            throw new ForbiddenException(
+                    "User with id "
+                            + user.getId()
+                            + "can not change shopping item status in shopping list wih id "
+                            + shoppingListId);
+        }
+        if (participantsService.isParticipantRole(eventId, user.getId())
+                || !taskStatus.equals(env.getProperty("task_status.under_review"))) {
+            throw new ForbiddenException(
+                    "User with id "
+                            + user.getId()
+                            + "can not change shopping item status in shopping list wih id "
+                            + shoppingListId);
         }
         shoppingListsService.updateShoppingItemStatus(shoppingItemId, isPurchased);
         return ResponseEntity.noContent().build();

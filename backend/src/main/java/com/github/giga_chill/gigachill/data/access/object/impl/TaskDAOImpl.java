@@ -11,6 +11,7 @@ import com.github.giga_chill.gigachill.repository.UserRepository;
 import com.github.giga_chill.jooq.generated.enums.TaskStatus;
 import com.github.giga_chill.jooq.generated.tables.records.TasksRecord;
 import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
+import jakarta.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -239,5 +240,12 @@ public class TaskDAOImpl implements TaskDAO {
     @Override
     public boolean canExecute(UUID taskId, UUID userId) {
         return taskRepository.canExecute(taskId, userId);
+    }
+
+    @Nullable
+    @Override
+    // TODO реализовать метод
+    public UUID getExecutorId(UUID taskId) {
+        return null;
     }
 }

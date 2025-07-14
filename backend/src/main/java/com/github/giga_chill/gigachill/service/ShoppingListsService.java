@@ -105,7 +105,7 @@ public class ShoppingListsService {
                 || taskStatus.equals(env.getProperty("task_status.under_review"))) {
             return env.getProperty("shopping_list_status.in_progress");
         }
-        if (taskStatus.equals(env.getProperty("task_status.in_progress"))) {
+        if (taskStatus.equals(env.getProperty("task_status.completed"))) {
             if (shoppingListDAO.isBought(shoppingListId)) {
                 return env.getProperty("shopping_list_status.bought");
             } else {

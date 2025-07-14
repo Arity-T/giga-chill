@@ -3,7 +3,6 @@ package com.github.giga_chill.gigachill.data.access.object;
 import com.github.giga_chill.gigachill.data.transfer.object.TaskDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.TaskWithShoppingListsDTO;
 import jakarta.annotation.Nullable;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -108,7 +107,8 @@ public interface TaskDAO {
      * Retrieves the identifier of the user who is currently executing the specified task.
      *
      * @param taskId the unique identifier of the task
-     * @return the {@link UUID} of the executor user if one is assigned; {@code null} if the task has not been started or no executor is set
+     * @return the {@link UUID} of the executor user if one is assigned; {@code null} if the task
+     *     has not been started or no executor is set
      */
     @Nullable
     UUID getExecutorId(UUID taskId);
