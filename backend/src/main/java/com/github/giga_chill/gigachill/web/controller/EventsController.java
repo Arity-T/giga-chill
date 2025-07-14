@@ -109,6 +109,28 @@ public class EventsController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{eventId}/invite-link")
+    //ACCESS: owner
+    public ResponseEntity<Void> postEventLink(Authentication authentication, @PathVariable UUID eventId) {
+        User user = userService.userAuthentication(authentication);
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
+                    " is not a participant of event with id " + eventId);
+        }
+        if (!participantsService.isOwnerRole(eventId, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
+                    " does not have permission to delete event with id " + eventId);
+        }
+
+        eventService.createInviteLink(eventId);
+        return ResponseEntity.noContent().build();
+    }
+
+
+
     private ResponseEventInfo toResponseEventInfo(Event event, String userRole) {
         return new ResponseEventInfo(event.getEventId().toString(), userRole, event.getTitle(), event.getLocation(),
                 event.getStartDatetime(), event.getEndDatetime(), event.getDescription(), event.getBudget());

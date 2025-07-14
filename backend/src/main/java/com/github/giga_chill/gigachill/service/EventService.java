@@ -49,6 +49,13 @@ public class EventService {
         return event.getEventId().toString();
     }
 
+    public String createInviteLink(UUID eventId){
+        //TODO: Повесить логгер
+        var inviteLinkUuid = UUID.randomUUID();
+        eventDAO.createInviteLink(eventId, inviteLinkUuid);
+        return inviteLinkUuid.toString();
+    }
+
     public void deleteEvent(UUID eventId) {
         eventDAO.deleteEvent(eventId);
     }
