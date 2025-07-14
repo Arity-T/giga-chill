@@ -33,12 +33,12 @@ services:
     networks:
       - gigachill-network
     volumes:
-      - ./build:/app/build
+      - backend-build:/app/build
 
-  app:
+  backend:
     build:
       context: .
-      dockerfile: backend/Dockerfile.app
+      dockerfile: backend/Dockerfile.backend
     depends_on:
       builder:
         condition: service_completed_successfully
@@ -49,10 +49,11 @@ services:
     networks:
       - gigachill-network
     volumes:
-      - ./build:/app/build
+      - backend-build:/app/build
 
 volumes:
   postgres-data:
+  backend-build:
 
 networks:
   gigachill-network:
