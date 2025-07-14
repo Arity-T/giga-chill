@@ -53,32 +53,28 @@ public class EventService {
         return event.getEventId().toString();
     }
 
+    public void deleteEvent(UUID eventId) {
+        eventDAO.deleteEvent(eventId);
+    }
+
     public String createInviteLink(UUID eventId){
-        //TODO: Повесить логгер
         var inviteLinkUuid = UUID.randomUUID();
         eventDAO.createInviteLink(eventId, inviteLinkUuid);
         return inviteLinkUuid.toString();
     }
 
     public String getInviteLink(UUID eventId){
-        //TODO: Повесить логгер
         var inviteLingUuid = eventDAO.getInviteLinkUuid(eventId);
         return env.getProperty("frontend.protocol") + "://" + env.getProperty("frontend.address")
                 + "/events/" + eventId.toString() + "/join-by-link/" + inviteLingUuid.toString();
     }
 
     public boolean isCorrectLinkUuid(UUID eventId, UUID linkUuid){
-        //TODO: Повесить логгер
         return eventDAO.isCorrectLinkUuid(eventId, linkUuid);
     }
 
     public void joinByLink(UUID eventId, User user){
-        //TODO: Повесить логгер
         participantsService.addParticipantToEvent(eventId, user);
-    }
-
-    public void deleteEvent(UUID eventId) {
-        eventDAO.deleteEvent(eventId);
     }
 
     private Event toEntity(EventDTO eventDTO) {

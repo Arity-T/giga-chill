@@ -2,6 +2,7 @@ package com.github.giga_chill.gigachill.aspect;
 
 
 import com.github.giga_chill.gigachill.config.LoggerColorConfig;
+import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -50,6 +51,26 @@ public class EventServiceLoggerAspect {
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.EventService.isExisted(..)) " +
             "&& args(eventId)")
     public void isExisted(UUID eventId) {
+    }
+
+    @Pointcut("execution(public * com.github.giga_chill.gigachill.service.EventService.createInviteLink(..)) " +
+            "&& args(eventId)")
+    public void createInviteLink(UUID eventId) {
+    }
+
+    @Pointcut("execution(public * com.github.giga_chill.gigachill.service.EventService.getInviteLink(..)) " +
+            "&& args(eventId)")
+    public void getInviteLink(UUID eventId) {
+    }
+
+    @Pointcut("execution(public * com.github.giga_chill.gigachill.service.EventService.isCorrectLinkUuid(..)) " +
+            "&& args(eventId, linkUuid)")
+    public void isCorrectLinkUuid(UUID eventId, UUID linkUuid) {
+    }
+
+    @Pointcut("execution(public * com.github.giga_chill.gigachill.service.EventService.joinByLink(..)) " +
+            "&& args(eventId, user)")
+    public void joinByLink(UUID eventId, User user) {
     }
 
 
@@ -136,5 +157,63 @@ public class EventServiceLoggerAspect {
         }
     }
 
+    @Around("createInviteLink(eventId)")
+    public Object logCreateInviteLink(ProceedingJoinPoint proceedingJoinPoint,
+                                      UUID eventId) throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            LOGGER.info(loggerColorConfig.getPOST_COLOR() + "Event with id: {} has received a new invite link with hash: {}"
+                    + loggerColorConfig.getRESET_COLOR(), eventId, (String) result);
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("getInviteLink(eventId)")
+    public Object logGetInviteLink(ProceedingJoinPoint proceedingJoinPoint,
+                                   UUID eventId) throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            LOGGER.info(loggerColorConfig.getGET_COLOR() + "The invite link to the event with id: {} was received."
+                    + loggerColorConfig.getRESET_COLOR(), eventId);
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("isCorrectLinkUuid(eventId, linkUuid)")
+    public Object logIsCorrectLinkUuid(ProceedingJoinPoint proceedingJoinPoint,
+                                       UUID eventId,
+                                       UUID linkUuid) throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            if ((Boolean) result) {
+                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Event with id: {} contains invite link with hash: {}"
+                        + loggerColorConfig.getRESET_COLOR(), eventId, linkUuid);
+            } else {
+                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Event with id: {} does not contain invite link with hash: {}"
+                        + loggerColorConfig.getRESET_COLOR(), eventId, linkUuid);
+            }
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("joinByLink(eventId, user)")
+    public Object logJoinByLink(ProceedingJoinPoint proceedingJoinPoint,
+                                UUID eventId,
+                                User user) throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            LOGGER.info(loggerColorConfig.getPOST_COLOR() + "The user with id: {} joined event with id: {} via a link"
+                    + loggerColorConfig.getRESET_COLOR(), user.getId(), eventId);
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
 
 }
