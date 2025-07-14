@@ -125,7 +125,7 @@ export interface Task {
   deadline_datetime: string;
   actual_approval_id: string;
   author: User;
-  executor: User;
+  executor: User | null;
 }
 
 export interface TaskWithShoppingLists extends Task {
