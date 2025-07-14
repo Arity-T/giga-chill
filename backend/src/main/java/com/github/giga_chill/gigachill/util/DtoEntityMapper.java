@@ -16,11 +16,11 @@ public final class DtoEntityMapper {
 
     public static Event toEventEntity(EventDTO eventDTO) {
         return new Event(
-                eventDTO.event_id(),
+                eventDTO.eventId(),
                 eventDTO.title(),
                 eventDTO.location(),
-                eventDTO.start_datetime(),
-                eventDTO.end_datetime(),
+                eventDTO.startDatetime(),
+                eventDTO.endDatetime(),
                 eventDTO.description(),
                 eventDTO.budget());
     }

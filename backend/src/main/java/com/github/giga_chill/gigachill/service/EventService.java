@@ -36,8 +36,8 @@ public class EventService {
                         eventId,
                         requestEventInfo.title(),
                         requestEventInfo.location(),
-                        requestEventInfo.start_datetime(),
-                        requestEventInfo.end_datetime(),
+                        requestEventInfo.startDatetime(),
+                        requestEventInfo.endDatetime(),
                         requestEventInfo.description(),
                         BigDecimal.valueOf(0));
         eventDAO.updateEvent(eventId, event);
@@ -49,8 +49,8 @@ public class EventService {
                         UUID.randomUUID(),
                         requestEventInfo.title(),
                         requestEventInfo.location(),
-                        requestEventInfo.start_datetime(),
-                        requestEventInfo.end_datetime(),
+                        requestEventInfo.startDatetime(),
+                        requestEventInfo.endDatetime(),
                         requestEventInfo.description(),
                         BigDecimal.valueOf(0));
 

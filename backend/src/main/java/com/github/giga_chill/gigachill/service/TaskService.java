@@ -41,17 +41,17 @@ public class TaskService {
 
     public String createTask(UUID eventId, User user, RequestTaskInfo requestTaskInfo) {
         var shoppingListsIds =
-                requestTaskInfo.shopping_lists_ids().stream().map(UuidUtils::safeUUID).toList();
+                requestTaskInfo.shoppingListsIds().stream().map(UuidUtils::safeUUID).toList();
 
         if (!shoppingListsService.areExisted(shoppingListsIds)) {
             throw new NotFoundException(
                     "One or more of the resources involved were not found: "
-                            + requestTaskInfo.shopping_lists_ids());
+                            + requestTaskInfo.shoppingListsIds());
         }
         if (!shoppingListsService.canBindShoppingListsToTask(shoppingListsIds)) {
             throw new ConflictException(
                     "One or more lists are already linked to the task: "
-                            + requestTaskInfo.shopping_lists_ids());
+                            + requestTaskInfo.shoppingListsIds());
         }
 
         var task =
@@ -60,12 +60,12 @@ public class TaskService {
                         requestTaskInfo.title(),
                         requestTaskInfo.description(),
                         env.getProperty("task_status.open"),
-                        requestTaskInfo.deadline_datetime(),
+                        requestTaskInfo.deadlineDatetime(),
                         null,
                         user,
-                        requestTaskInfo.executor_id() != null
+                        requestTaskInfo.executorId() != null
                                 ? userService.getById(
-                                        UuidUtils.safeUUID(requestTaskInfo.executor_id()))
+                                        UuidUtils.safeUUID(requestTaskInfo.executorId()))
                                 : null,
                         List.of());
 
@@ -75,8 +75,8 @@ public class TaskService {
 
     public void updateTask(UUID taskId, RequestTaskInfo requestTaskInfo) {
         var shoppingListsIds =
-                requestTaskInfo.shopping_lists_ids() != null
-                        ? requestTaskInfo.shopping_lists_ids().stream()
+                requestTaskInfo.shoppingListsIds() != null
+                        ? requestTaskInfo.shoppingListsIds().stream()
                                 .map(UuidUtils::safeUUID)
                                 .toList()
                         : null;
@@ -84,13 +84,13 @@ public class TaskService {
         if (shoppingListsIds != null && !shoppingListsService.areExisted(shoppingListsIds)) {
             throw new NotFoundException(
                     "One or more of the resources involved were not found: "
-                            + requestTaskInfo.shopping_lists_ids());
+                            + requestTaskInfo.shoppingListsIds());
         }
         if (shoppingListsIds != null
                 && !shoppingListsService.canBindShoppingListsToTask(shoppingListsIds)) {
             throw new ConflictException(
                     "One or more lists are already linked to the task: "
-                            + requestTaskInfo.shopping_lists_ids());
+                            + requestTaskInfo.shoppingListsIds());
         }
 
         var task =
@@ -99,12 +99,12 @@ public class TaskService {
                         requestTaskInfo.title(),
                         requestTaskInfo.description(),
                         null,
-                        requestTaskInfo.deadline_datetime(),
+                        requestTaskInfo.deadlineDatetime(),
                         null,
                         null,
-                        requestTaskInfo.executor_id() != null
+                        requestTaskInfo.executorId() != null
                                 ? userService.getById(
-                                        UuidUtils.safeUUID(requestTaskInfo.executor_id()))
+                                        UuidUtils.safeUUID(requestTaskInfo.executorId()))
                                 : null,
                         List.of());
         taskDAO.updateTask(taskId, DtoEntityMapper.toTaskDto(task), shoppingListsIds);

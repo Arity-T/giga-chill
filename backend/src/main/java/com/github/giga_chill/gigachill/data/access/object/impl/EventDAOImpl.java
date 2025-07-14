@@ -76,12 +76,12 @@ public class EventDAOImpl implements EventDAO {
                         eventRecord -> {
                             if (event.title() != null) eventRecord.setTitle(event.title());
                             if (event.location() != null) eventRecord.setLocation(event.location());
-                            if (event.start_datetime() != null)
+                            if (event.startDatetime() != null)
                                 eventRecord.setStartDatetime(
-                                        OffsetDateTime.parse(event.start_datetime()));
-                            if (event.end_datetime() != null)
+                                        OffsetDateTime.parse(event.startDatetime()));
+                            if (event.endDatetime() != null)
                                 eventRecord.setEndDatetime(
-                                        OffsetDateTime.parse(event.end_datetime()));
+                                        OffsetDateTime.parse(event.endDatetime()));
                             if (event.description() != null)
                                 eventRecord.setDescription(event.description());
                             if (event.budget() != null) eventRecord.setBudget(event.budget());
@@ -93,15 +93,13 @@ public class EventDAOImpl implements EventDAO {
     @Override
     public void createEvent(UUID userId, EventDTO event) {
         EventsRecord eventRecord = new EventsRecord();
-        eventRecord.setEventId(event.event_id());
+        eventRecord.setEventId(event.eventId());
         eventRecord.setTitle(event.title());
         eventRecord.setLocation(event.location());
         eventRecord.setStartDatetime(
-                event.start_datetime() != null
-                        ? OffsetDateTime.parse(event.start_datetime())
-                        : null);
+                event.startDatetime() != null ? OffsetDateTime.parse(event.startDatetime()) : null);
         eventRecord.setEndDatetime(
-                event.end_datetime() != null ? OffsetDateTime.parse(event.end_datetime()) : null);
+                event.endDatetime() != null ? OffsetDateTime.parse(event.endDatetime()) : null);
         eventRecord.setDescription(event.description());
         eventRecord.setBudget(event.budget());
         eventRepository.save(eventRecord);
@@ -109,7 +107,7 @@ public class EventDAOImpl implements EventDAO {
         // Привязка пользователя к событию
         UserInEventRecord userInEventRecord = new UserInEventRecord();
         userInEventRecord.setUserId(userId);
-        userInEventRecord.setEventId(event.event_id());
+        userInEventRecord.setEventId(event.eventId());
         userInEventRecord.setRole(EventRole.owner);
         userInEventRepository.save(userInEventRecord);
     }

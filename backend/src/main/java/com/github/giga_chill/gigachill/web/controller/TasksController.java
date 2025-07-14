@@ -61,8 +61,8 @@ public class TasksController {
 
         var user = userService.userAuthentication(authentication);
         var executorId =
-                requestTaskInfo.executor_id() != null
-                        ? UuidUtils.safeUUID(requestTaskInfo.executor_id())
+                requestTaskInfo.executorId() != null
+                        ? UuidUtils.safeUUID(requestTaskInfo.executorId())
                         : null;
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
@@ -126,8 +126,8 @@ public class TasksController {
             @RequestBody RequestTaskInfo requestTaskInfo) {
         var user = userService.userAuthentication(authentication);
         var executorId =
-                requestTaskInfo.executor_id() != null
-                        ? UuidUtils.safeUUID(requestTaskInfo.executor_id())
+                requestTaskInfo.executorId() != null
+                        ? UuidUtils.safeUUID(requestTaskInfo.executorId())
                         : null;
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");

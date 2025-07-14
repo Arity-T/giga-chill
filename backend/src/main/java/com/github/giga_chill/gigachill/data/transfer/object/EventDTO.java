@@ -5,10 +5,10 @@ import java.util.UUID;
 import org.springframework.lang.Nullable;
 
 public record EventDTO(
-        UUID event_id,
+        UUID eventId,
         @Nullable String title,
         @Nullable String location,
-        @Nullable String start_datetime,
-        @Nullable String end_datetime,
+        @Nullable String startDatetime,
+        @Nullable String endDatetime,
         @Nullable String description,
         @Nullable BigDecimal budget) {}

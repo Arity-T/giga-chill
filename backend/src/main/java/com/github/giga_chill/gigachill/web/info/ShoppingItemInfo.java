@@ -1,10 +1,11 @@
 package com.github.giga_chill.gigachill.web.info;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 
 public record ShoppingItemInfo(
-        String shopping_item_id,
-        String title,
-        BigDecimal quantity,
-        String unit,
-        Boolean is_purchased) {}
+        @JsonProperty("shopping_item_id") String shoppingItemId,
+        @JsonProperty("title") String title,
+        @JsonProperty("quantity") BigDecimal quantity,
+        @JsonProperty("unit") String unit,
+        @JsonProperty("is_purchased") Boolean isPurchased) {}
