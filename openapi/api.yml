@@ -1035,7 +1035,7 @@ components:
         event_link:
           type: string
           description: Ссылка на мероприятие. Ссылка строиться из адреса сервера. Далее идет id мероприятие. После join-by-link идет случайный UUID. 
-          example: "http://localhost:3001/event/c014cfe2-7a69-4959-88f7-4a2b795c2a20/join-by-link/0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c"
+          example: "http://localhost:3001/events/c014cfe2-7a69-4959-88f7-4a2b795c2a20/join-by-link/0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c"
 
     Events:
       type: array
