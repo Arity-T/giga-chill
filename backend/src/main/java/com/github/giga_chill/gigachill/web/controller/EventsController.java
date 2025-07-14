@@ -1,6 +1,7 @@
 package com.github.giga_chill.gigachill.web.controller;
 
 
+import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.ForbiddenException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.model.Event;
@@ -163,6 +164,10 @@ public class EventsController {
         }
         if (!eventService.isCorrectLinkUuid(eventId, listHash)) {
             throw new NotFoundException("Link with hash " + listHash + " not found");
+        }
+        if (participantsService.isParticipant(eventId, user.getId())) {
+            throw new ConflictException("User with id " + user.getId() +
+                    " is already participant of event with id " + eventId);
         }
 
         eventService.joinByLink(eventId, user);
