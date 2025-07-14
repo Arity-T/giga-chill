@@ -14,6 +14,8 @@ jwt:
 
 frontend:
   origin: ${FRONTEND_ORIGIN}
+  protocol: ${PROTOCOL}
+  address: ${ADDRESS}
 
 roles:
   owner: owner

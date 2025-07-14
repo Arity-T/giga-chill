@@ -5,6 +5,7 @@ import com.github.giga_chill.gigachill.data.transfer.object.EventDTO;
 import com.github.giga_chill.gigachill.model.Event;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,7 +17,7 @@ import java.util.*;
 public class EventService {
 
     private final EventDAO eventDAO;
-
+    private final Environment env;
 
     public boolean isExisted(UUID eventId) {
         return eventDAO.isExisted(eventId);
@@ -54,6 +55,13 @@ public class EventService {
         var inviteLinkUuid = UUID.randomUUID();
         eventDAO.createInviteLink(eventId, inviteLinkUuid);
         return inviteLinkUuid.toString();
+    }
+
+    public String getInviteLink(UUID eventId){
+        //TODO: Повесить логгер
+        var inviteLingUuid = eventDAO.getInviteLinkUuid(eventId);
+        return env.getProperty("frontend.protocol") + "://" + env.getProperty("frontend.address")
+                + "/events/" + eventId.toString() + "/join-by-link/" + inviteLingUuid.toString();
     }
 
     public void deleteEvent(UUID eventId) {

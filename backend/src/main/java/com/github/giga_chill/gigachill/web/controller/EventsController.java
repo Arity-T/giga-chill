@@ -15,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -129,7 +131,26 @@ public class EventsController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{eventId}/invite-link")
+    //ACCESS: admin, owner
+    public ResponseEntity<Map<String, String>> getEventLink(Authentication authentication, @PathVariable UUID eventId) {
+        User user = userService.userAuthentication(authentication);
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
+                    " is not a participant of event with id " + eventId);
+        }
+        if (!participantsService.isOwnerRole(eventId, user.getId()) &&
+                !participantsService.isAdminRole(eventId, user.getId())) {
+            throw new ForbiddenException("User with id " + user.getId() +
+                    " does not have permission to delete event with id " + eventId);
+        }
 
+        var eventLink = eventService.getInviteLink(eventId);
+        return ResponseEntity.ok(Collections.singletonMap("event_link", eventLink));
+    }
 
     private ResponseEventInfo toResponseEventInfo(Event event, String userRole) {
         return new ResponseEventInfo(event.getEventId().toString(), userRole, event.getTitle(), event.getLocation(),
