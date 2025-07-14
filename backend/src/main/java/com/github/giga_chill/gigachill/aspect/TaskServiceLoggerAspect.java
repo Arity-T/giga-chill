@@ -69,6 +69,11 @@ public class TaskServiceLoggerAspect {
                     + "&& args(taskId, userId)")
     public void canExecute(UUID taskId, UUID userId) {}
 
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.TaskService.getExecutorId(..)) "
+                    + "&& args(taskId)")
+    public void getExecutorId(UUID taskId) {}
+
     @Around("getAllTasksFromEvent(eventId)")
     public Object logGetAllTasksFromEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
@@ -257,6 +262,31 @@ public class TaskServiceLoggerAspect {
                                 + loggerColorConfig.getRESET_COLOR(),
                         userId,
                         taskId);
+            }
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("getExecutorId(taskId)")
+    public Object logGetExecutorId(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
+            throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            if ((UUID) result == null) {
+                LOGGER.info(
+                        loggerColorConfig.getGET_COLOR()
+                                + "Task with id: {} does not have executor"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        taskId);
+            } else {
+                LOGGER.info(
+                        loggerColorConfig.getGET_COLOR()
+                                + "Task with id: {} has executor with id: {}"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        taskId,
+                        (UUID) result);
             }
             return result;
         } catch (Throwable ex) {

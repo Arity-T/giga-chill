@@ -4,7 +4,6 @@ import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.ForbiddenException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.model.Task;
-import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.*;
 import com.github.giga_chill.gigachill.util.InfoEntityMapper;
 import com.github.giga_chill.gigachill.util.UuidUtils;
@@ -32,9 +31,10 @@ public class TasksController {
     private final ShoppingListsController shoppingListsController;
 
     @GetMapping
+    // ACCESS: owner, admin, participant
     public ResponseEntity<List<ResponseTaskInfo>> getTasks(
             Authentication authentication, @PathVariable UUID eventId) {
-        User user = userService.userAuthentication(authentication);
+        var user = userService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
@@ -53,15 +53,16 @@ public class TasksController {
     }
 
     @PostMapping
+    // ACCESS: owner, admin, participant
     public ResponseEntity<Void> postTask(
             Authentication authentication,
             @PathVariable UUID eventId,
             @RequestBody RequestTaskInfo requestTaskInfo) {
 
-        User user = userService.userAuthentication(authentication);
-        UUID executorId =
-                requestTaskInfo.executor_id() != null
-                        ? UuidUtils.safeUUID(requestTaskInfo.executor_id())
+        var user = userService.userAuthentication(authentication);
+        var executorId =
+                requestTaskInfo.executorId() != null
+                        ? UuidUtils.safeUUID(requestTaskInfo.executorId())
                         : null;
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
@@ -93,9 +94,10 @@ public class TasksController {
     }
 
     @GetMapping("/{taskId}")
+    // ACCESS: owner, admin, participant
     public ResponseEntity<ResponseTaskWithShoppingListsInfo> getTask(
             Authentication authentication, @PathVariable UUID eventId, @PathVariable UUID taskId) {
-        User user = userService.userAuthentication(authentication);
+        var user = userService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
@@ -116,15 +118,16 @@ public class TasksController {
     }
 
     @PatchMapping("/{taskId}")
+    // ACCESS: owner, admin, participant(Если является автором)
     public ResponseEntity<Void> patchTask(
             Authentication authentication,
             @PathVariable UUID eventId,
             @PathVariable UUID taskId,
             @RequestBody RequestTaskInfo requestTaskInfo) {
-        User user = userService.userAuthentication(authentication);
-        UUID executorId =
-                requestTaskInfo.executor_id() != null
-                        ? UuidUtils.safeUUID(requestTaskInfo.executor_id())
+        var user = userService.userAuthentication(authentication);
+        var executorId =
+                requestTaskInfo.executorId() != null
+                        ? UuidUtils.safeUUID(requestTaskInfo.executorId())
                         : null;
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
@@ -170,9 +173,10 @@ public class TasksController {
     }
 
     @DeleteMapping("/{taskId}")
+    // ACCESS: owner, admin, participant(Если является автором)
     public ResponseEntity<Void> deleteTask(
             Authentication authentication, @PathVariable UUID eventId, @PathVariable UUID taskId) {
-        User user = userService.userAuthentication(authentication);
+        var user = userService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
@@ -200,9 +204,10 @@ public class TasksController {
     }
 
     @PostMapping("/{taskId}/take-in-work")
+    // ACCESS: owner, admin, participant
     public ResponseEntity<Void> postExecutorToTask(
             Authentication authentication, @PathVariable UUID eventId, @PathVariable UUID taskId) {
-        User user = userService.userAuthentication(authentication);
+        var user = userService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }

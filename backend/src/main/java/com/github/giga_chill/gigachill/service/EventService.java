@@ -31,26 +31,26 @@ public class EventService {
     }
 
     public void updateEvent(UUID eventId, RequestEventInfo requestEventInfo) {
-        EventDTO event =
+        var event =
                 new EventDTO(
                         eventId,
                         requestEventInfo.title(),
                         requestEventInfo.location(),
-                        requestEventInfo.start_datetime(),
-                        requestEventInfo.end_datetime(),
+                        requestEventInfo.startDatetime(),
+                        requestEventInfo.endDatetime(),
                         requestEventInfo.description(),
                         BigDecimal.valueOf(0));
         eventDAO.updateEvent(eventId, event);
     }
 
     public String createEvent(UUID userId, RequestEventInfo requestEventInfo) {
-        Event event =
+        var event =
                 new Event(
                         UUID.randomUUID(),
                         requestEventInfo.title(),
                         requestEventInfo.location(),
-                        requestEventInfo.start_datetime(),
-                        requestEventInfo.end_datetime(),
+                        requestEventInfo.startDatetime(),
+                        requestEventInfo.endDatetime(),
                         requestEventInfo.description(),
                         BigDecimal.valueOf(0));
 

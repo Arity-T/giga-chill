@@ -11,6 +11,7 @@ import com.github.giga_chill.gigachill.repository.UserRepository;
 import com.github.giga_chill.jooq.generated.enums.TaskStatus;
 import com.github.giga_chill.jooq.generated.tables.records.TasksRecord;
 import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
+import jakarta.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -239,5 +240,23 @@ public class TaskDAOImpl implements TaskDAO {
     @Override
     public boolean canExecute(UUID taskId, UUID userId) {
         return taskRepository.canExecute(taskId, userId);
+    }
+
+    /**
+     * Retrieves the identifier of the user who is currently executing the specified task.
+     *
+     * @param taskId the unique identifier of the task
+     * @return the {@link UUID} of the executor user if one is assigned; {@code null} if the task
+     *     has not been started or no executor is set
+     */
+    @Nullable
+    @Override
+    public UUID getExecutorId(UUID taskId) {
+        TasksRecord task = taskRepository.findById(taskId).orElse(null);
+        if (task == null) {
+            return null;
+        }
+
+        return task.getExecutorId();
     }
 }

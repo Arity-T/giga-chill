@@ -38,8 +38,9 @@ public class TaskRepository {
     public void updateFromDTO(UUID taskId, TaskDTO dto) {
         Map<Field<?>, Object> updates = new HashMap<>();
 
-        updates.put(Tasks.TASKS.AUTHOR_ID, dto.author().id());
-
+        if (dto.author() != null) {
+            updates.put(Tasks.TASKS.AUTHOR_ID, dto.author().id());
+        }
         if (dto.executor() != null) {
             updates.put(Tasks.TASKS.EXECUTOR_ID, dto.executor().id());
         }
