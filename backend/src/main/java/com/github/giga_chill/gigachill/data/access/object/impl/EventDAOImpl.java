@@ -98,10 +98,9 @@ public class EventDAOImpl implements EventDAO {
     eventRepository.deleteById(eventId);
   }
 
-  // todo: optimized method exists() in eventRepository
   @Override
   public boolean isExisted(UUID eventId) {
-    return eventRepository.findById(eventId).isPresent();
+    return eventRepository.exists(eventId);
   }
 
   /**

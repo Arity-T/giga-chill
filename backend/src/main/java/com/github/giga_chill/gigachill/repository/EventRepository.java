@@ -50,4 +50,11 @@ public class EventRepository {
             .and(Events.EVENTS.INVITE_LINK.eq(linkUuid))
     );
   }
+
+  public boolean exists(UUID eventId) {
+    return dsl.fetchExists(
+            dsl.selectFrom(Events.EVENTS)
+                    .where(Events.EVENTS.EVENT_ID.eq(eventId))
+    );
+  }
 }
