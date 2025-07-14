@@ -288,7 +288,7 @@ paths:
 
     get:
       summary: Получение ссылки на мероприятие 
-      description: Возвращает заранее сгенерированную ссылку на мероприятие.
+      description: Возвращает заранее сгенерированную ссылку на мероприятие. Доступно пользователям с ролью **admin** или **owner**
       tags: [Events]
       operationId: getEventLink
       responses:
@@ -300,6 +300,12 @@ paths:
                 $ref: "#/components/schemas/EventLink"
         "401":
           description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для просмотра ссылки на мероприятия (требуется роль admin или owner)
           content:
             application/json:
               schema:
