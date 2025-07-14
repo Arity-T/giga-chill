@@ -8,7 +8,6 @@ RUN microdnf update -y && \
 
 WORKDIR /app
 COPY backend/ .
-COPY .env .
 
 RUN chmod +x ./build.sh
 

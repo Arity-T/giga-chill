@@ -34,17 +34,6 @@ while getopts "mgbkh" opt; do
     esac
 done
 
-# === Загрузка переменных из .env ===
-if [ ! -f .env ]; then
-    echo "Ошибка: Файл .env не найден"
-    echo "Убедитесь, что вы запускаете скрипт из папки backend/"
-    exit 1
-fi
-
-set -o allexport
-source .env
-set +o allexport
-
 # === Выполнение миграций ===
 if [ "$run_migrations" = true ]; then
     echo "=== Выполнение миграций ==="
