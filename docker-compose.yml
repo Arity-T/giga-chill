@@ -3,8 +3,6 @@ services:
     image: postgres:17-alpine
     container_name: gigachill-db
     restart: always
-    env_file:
-      - ./backend/.env
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -30,8 +28,8 @@ services:
       postgres:
         condition: service_healthy
     env_file:
-      - ./backend/.env
-    command: ["./entrypoint.sh", "-mgbS"]
+      - .env
+    command: ["./build.sh", "-mgb"]
     networks:
       - gigachill-network
     volumes:
@@ -45,8 +43,7 @@ services:
       builder:
         condition: service_completed_successfully
     env_file:
-      - ./backend/.env
-    command: []
+      - .env
     ports:
       - "8081:8081"
     networks:
