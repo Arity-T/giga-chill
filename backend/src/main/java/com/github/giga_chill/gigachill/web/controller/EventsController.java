@@ -152,7 +152,7 @@ public class EventsController {
         return ResponseEntity.ok(Collections.singletonMap("event_link", eventLink));
     }
 
-    @PostMapping("/{eventId}/invite-link/join-by-link/{listHash}")
+    @PostMapping("/{eventId}/join-by-link/{listHash}")
     //ACCESS: ALL
     public ResponseEntity<Void> postJoinByLink(Authentication authentication,
                                               @PathVariable UUID eventId,
