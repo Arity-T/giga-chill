@@ -30,7 +30,7 @@ public class AuthController {
 
         String jwt = jwtService.generateToken(request.login);
 
-        ResponseCookie cookie =
+        var cookie =
                 ResponseCookie.from("token", jwt)
                         .httpOnly(true)
                         .secure(false) // TODO: false для localhost, true для прода
@@ -59,7 +59,7 @@ public class AuthController {
         userService.register(request.login, request.password, request.name);
         String jwt = jwtService.generateToken(request.login);
 
-        ResponseCookie cookie =
+        var cookie =
                 ResponseCookie.from("token", jwt)
                         .httpOnly(true)
                         .secure(false) // TODO: false для localhost, true для прода
@@ -74,7 +74,7 @@ public class AuthController {
     @PostMapping("/auth/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         // Создаём cookie с таким же именем, но с пустым значением и сроком жизни 0
-        ResponseCookie cookie =
+        var cookie =
                 ResponseCookie.from("token", "")
                         .httpOnly(true)
                         .secure(false) // TODO: true на проде

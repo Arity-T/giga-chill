@@ -1,7 +1,6 @@
 package com.github.giga_chill.gigachill.web.controller;
 
 import com.github.giga_chill.gigachill.exception.*;
-import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.ParticipantsService;
 import com.github.giga_chill.gigachill.service.UserService;
@@ -28,7 +27,7 @@ public class ParticipantsController {
     // ACCESS: owner, admin, participant
     public ResponseEntity<List<ParticipantInfo>> getParticipants(
             Authentication authentication, @PathVariable UUID eventId) {
-        User user = userService.userAuthentication(authentication);
+        var user = userService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
@@ -52,12 +51,12 @@ public class ParticipantsController {
             @PathVariable UUID eventId,
             @RequestBody Map<String, Object> body) {
 
-        User user = userService.userAuthentication(authentication);
-        String participantLogin = (String) body.get("login");
+        var user = userService.userAuthentication(authentication);
+        var participantLogin = (String) body.get("login");
         if (participantLogin == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
-        User userToAdd = userService.getByLogin(participantLogin);
+        var userToAdd = userService.getByLogin(participantLogin);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
@@ -97,7 +96,7 @@ public class ParticipantsController {
             Authentication authentication,
             @PathVariable UUID eventId,
             @PathVariable UUID participantId) {
-        User user = userService.userAuthentication(authentication);
+        var user = userService.userAuthentication(authentication);
         if (user.getId().equals(participantId)) {
             throw new BadRequestException(
                     "User with id " + participantId + " cannot delete themselves");
@@ -135,8 +134,8 @@ public class ParticipantsController {
             @PathVariable UUID eventId,
             @PathVariable UUID participantId,
             @RequestBody Map<String, Object> body) {
-        User user = userService.userAuthentication(authentication);
-        String newRole = (String) body.get("role");
+        var user = userService.userAuthentication(authentication);
+        var newRole = (String) body.get("role");
         if (newRole == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }

@@ -27,7 +27,7 @@ public class ShoppingListsService {
     }
 
     public ShoppingList getShoppingListById(UUID shoppingListId) {
-        ShoppingList shoppingList =
+        var shoppingList =
                 DtoEntityMapper.toShoppingListEntity(
                         shoppingListDAO.getShoppingListById(shoppingListId));
         shoppingList.setStatus(getShoppingListStatus(shoppingListId));
@@ -42,7 +42,7 @@ public class ShoppingListsService {
     }
 
     public String createShoppingList(UUID eventId, UUID userId, String title, String description) {
-        UUID shoppingListId = UUID.randomUUID();
+        var shoppingListId = UUID.randomUUID();
         shoppingListDAO.createShoppingList(eventId, shoppingListId, userId, title, description);
         return shoppingListId.toString();
     }
@@ -57,8 +57,7 @@ public class ShoppingListsService {
 
     public String addShoppingItem(
             UUID shoppingListId, String title, BigDecimal quantity, String unit) {
-        ShoppingItem shoppingItem =
-                new ShoppingItem(UUID.randomUUID(), title, quantity, unit, false);
+        var shoppingItem = new ShoppingItem(UUID.randomUUID(), title, quantity, unit, false);
         shoppingListDAO.addShoppingItem(
                 shoppingListId, DtoEntityMapper.toShoppingItemDto(shoppingItem));
         return shoppingItem.getShoppingItemId().toString();
@@ -67,7 +66,7 @@ public class ShoppingListsService {
     public void updateShoppingItem(
             UUID shoppingItemId, String title, BigDecimal quantity, String unit) {
 
-        ShoppingItem shoppingItem = new ShoppingItem(shoppingItemId, title, quantity, unit, null);
+        var shoppingItem = new ShoppingItem(shoppingItemId, title, quantity, unit, null);
         shoppingListDAO.updateShoppingItem(DtoEntityMapper.toShoppingItemDto(shoppingItem));
     }
 
@@ -94,11 +93,11 @@ public class ShoppingListsService {
 
     public String getShoppingListStatus(UUID shoppingListId) {
         // TODO: Подумать про cancelled
-        UUID taskId = getTaskIdForShoppingList(shoppingListId);
+        var taskId = getTaskIdForShoppingList(shoppingListId);
         if (taskId == null) {
             return env.getProperty("shopping_list_status.unassigned");
         }
-        String taskStatus = taskDAO.getTaskStatus(taskId);
+        var taskStatus = taskDAO.getTaskStatus(taskId);
         if (taskStatus.equals(env.getProperty("task_status.open"))) {
             return env.getProperty("shopping_list_status.assigned");
         }

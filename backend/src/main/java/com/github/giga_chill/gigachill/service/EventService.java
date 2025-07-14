@@ -31,7 +31,7 @@ public class EventService {
     }
 
     public void updateEvent(UUID eventId, RequestEventInfo requestEventInfo) {
-        EventDTO event =
+        var event =
                 new EventDTO(
                         eventId,
                         requestEventInfo.title(),
@@ -44,7 +44,7 @@ public class EventService {
     }
 
     public String createEvent(UUID userId, RequestEventInfo requestEventInfo) {
-        Event event =
+        var event =
                 new Event(
                         UUID.randomUUID(),
                         requestEventInfo.title(),

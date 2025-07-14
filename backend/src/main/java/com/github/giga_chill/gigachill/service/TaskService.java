@@ -29,7 +29,7 @@ public class TaskService {
     }
 
     public Task getTaskById(UUID taskId) {
-        Task task = DtoEntityMapper.toTaskEntity(taskDAO.getTaskById(taskId));
+        var task = DtoEntityMapper.toTaskEntity(taskDAO.getTaskById(taskId));
         task.getShoppingLists()
                 .forEach(
                         item ->
@@ -40,7 +40,7 @@ public class TaskService {
     }
 
     public String createTask(UUID eventId, User user, RequestTaskInfo requestTaskInfo) {
-        List<UUID> shoppingListsIds =
+        var shoppingListsIds =
                 requestTaskInfo.shopping_lists_ids().stream().map(UuidUtils::safeUUID).toList();
 
         if (!shoppingListsService.areExisted(shoppingListsIds)) {
@@ -54,7 +54,7 @@ public class TaskService {
                             + requestTaskInfo.shopping_lists_ids());
         }
 
-        Task task =
+        var task =
                 new Task(
                         UUID.randomUUID(),
                         requestTaskInfo.title(),
@@ -74,7 +74,7 @@ public class TaskService {
     }
 
     public void updateTask(UUID taskId, RequestTaskInfo requestTaskInfo) {
-        List<UUID> shoppingListsIds =
+        var shoppingListsIds =
                 requestTaskInfo.shopping_lists_ids() != null
                         ? requestTaskInfo.shopping_lists_ids().stream()
                                 .map(UuidUtils::safeUUID)
@@ -93,7 +93,7 @@ public class TaskService {
                             + requestTaskInfo.shopping_lists_ids());
         }
 
-        Task task =
+        var task =
                 new Task(
                         taskId,
                         requestTaskInfo.title(),

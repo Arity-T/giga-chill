@@ -29,7 +29,7 @@ public class ParticipantsService {
     }
 
     public void addParticipantToEvent(UUID eventId, User user) {
-        Participant participant =
+        var participant =
                 new Participant(
                         user.getId(),
                         user.getLogin(),

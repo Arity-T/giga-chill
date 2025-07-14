@@ -4,7 +4,6 @@ import com.github.giga_chill.gigachill.exception.BadRequestException;
 import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.ForbiddenException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
-import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.ParticipantsService;
 import com.github.giga_chill.gigachill.service.ShoppingListsService;
@@ -37,7 +36,7 @@ public class ShoppingListsController {
     // ACCESS: owner, admin, participant
     public ResponseEntity<List<ShoppingListInfo>> getShoppingList(
             Authentication authentication, @PathVariable UUID eventId) {
-        User user = userService.userAuthentication(authentication);
+        var user = userService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
@@ -70,9 +69,9 @@ public class ShoppingListsController {
             @PathVariable UUID eventId,
             @RequestBody Map<String, Object> body) {
         // TODO: привязка к task id
-        User user = userService.userAuthentication(authentication);
-        String title = (String) body.get("title");
-        String description = (String) body.get("description");
+        var user = userService.userAuthentication(authentication);
+        var title = (String) body.get("title");
+        var description = (String) body.get("description");
         if (title == null || description == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
@@ -98,9 +97,9 @@ public class ShoppingListsController {
             @PathVariable UUID shoppingListId,
             @RequestBody Map<String, Object> body) {
 
-        User user = userService.userAuthentication(authentication);
-        String title = (String) body.get("title");
-        String description = (String) body.get("description");
+        var user = userService.userAuthentication(authentication);
+        var title = (String) body.get("title");
+        var description = (String) body.get("description");
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
@@ -122,7 +121,7 @@ public class ShoppingListsController {
                             + " is not a consumer of shopping list with id "
                             + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
+        var shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned"))
                 && !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
             throw new ConflictException(
@@ -143,7 +142,7 @@ public class ShoppingListsController {
             @PathVariable UUID eventId,
             @PathVariable UUID shoppingListId) {
 
-        User user = userService.userAuthentication(authentication);
+        var user = userService.userAuthentication(authentication);
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
@@ -165,7 +164,7 @@ public class ShoppingListsController {
                             + " is not a consumer of shopping list with id "
                             + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
+        var shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned"))
                 && !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
             throw new ConflictException(
@@ -186,13 +185,13 @@ public class ShoppingListsController {
             @PathVariable UUID eventId,
             @PathVariable UUID shoppingListId,
             @RequestBody Map<String, Object> body) {
-        User user = userService.userAuthentication(authentication);
-        String title = (String) body.get("title");
-        BigDecimal quantity =
+        var user = userService.userAuthentication(authentication);
+        var title = (String) body.get("title");
+        var quantity =
                 body.get("quantity") != null
                         ? new BigDecimal(String.valueOf((Number) body.get("quantity")))
                         : null;
-        String unit = (String) body.get("unit");
+        var unit = (String) body.get("unit");
         if (title == null || quantity == null || unit == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
@@ -217,7 +216,7 @@ public class ShoppingListsController {
                             + " is not a consumer of shopping list with id "
                             + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
+        var shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned"))
                 && !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
             throw new ConflictException(
@@ -238,13 +237,13 @@ public class ShoppingListsController {
             @PathVariable UUID shoppingListId,
             @PathVariable UUID shoppingItemId,
             @RequestBody Map<String, Object> body) {
-        User user = userService.userAuthentication(authentication);
-        String title = (String) body.get("title");
-        BigDecimal quantity =
+        var user = userService.userAuthentication(authentication);
+        var title = (String) body.get("title");
+        var quantity =
                 body.get("quantity") != null
                         ? new BigDecimal(String.valueOf((Number) body.get("quantity")))
                         : null;
-        String unit = (String) body.get("unit");
+        var unit = (String) body.get("unit");
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
@@ -269,7 +268,7 @@ public class ShoppingListsController {
                             + " is not a consumer of shopping list with id "
                             + shoppingListId);
         }
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
+        var shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned"))
                 && !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
             throw new ConflictException(
@@ -289,7 +288,7 @@ public class ShoppingListsController {
             @PathVariable UUID eventId,
             @PathVariable UUID shoppingListId,
             @PathVariable UUID shoppingItemId) {
-        User user = userService.userAuthentication(authentication);
+        var user = userService.userAuthentication(authentication);
         if (!shoppingListsService.isShoppingItemExisted(shoppingItemId)) {
             throw new NotFoundException("Shopping item with id " + shoppingItemId + " not found");
         }
@@ -335,8 +334,8 @@ public class ShoppingListsController {
             @PathVariable UUID shoppingListId,
             @PathVariable UUID shoppingItemId,
             @RequestBody Map<String, Object> body) {
-        User user = userService.userAuthentication(authentication);
-        Boolean isPurchased = (Boolean) body.get("is_purchased");
+        var user = userService.userAuthentication(authentication);
+        var isPurchased = (Boolean) body.get("is_purchased");
         if (isPurchased == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
@@ -385,7 +384,7 @@ public class ShoppingListsController {
             @PathVariable UUID shoppingListId,
             @RequestBody List<String> body) {
 
-        User user = userService.userAuthentication(authentication);
+        var user = userService.userAuthentication(authentication);
         if (body == null || body.isEmpty()) {
             throw new BadRequestException("Invalid request body: " + body);
         }
@@ -430,16 +429,16 @@ public class ShoppingListsController {
     }
 
     public boolean canEdit(UUID eventId, UUID shoppingListId, UUID userId) {
-        boolean isParticipant = participantsService.isParticipantRole(eventId, userId);
-        boolean isConsumer = shoppingListsService.isConsumer(shoppingListId, userId);
+        var isParticipant = participantsService.isParticipantRole(eventId, userId);
+        var isConsumer = shoppingListsService.isConsumer(shoppingListId, userId);
         if (isParticipant && !isConsumer) {
             return false;
         }
 
-        String shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
-        boolean isUnassigned =
+        var shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
+        var isUnassigned =
                 shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned"));
-        boolean isAssigned =
+        var isAssigned =
                 shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"));
         return (isUnassigned || isAssigned);
     }
