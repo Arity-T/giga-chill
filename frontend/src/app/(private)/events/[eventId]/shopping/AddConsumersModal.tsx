@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Modal, Input, Checkbox, List, Typography, Space, App } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { useGetEventParticipantsQuery, useSetShoppingListConsumersMutation } from '@/store/api/api';
+import { useGetEventParticipantsQuery, useSetShoppingListConsumersMutation } from '@/store/api';
 import { UserInEvent } from '@/types/api';
 
 const { Text } = Typography;

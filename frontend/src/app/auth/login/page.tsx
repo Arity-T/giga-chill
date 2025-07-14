@@ -3,7 +3,7 @@
 import { Form, Input, Button, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import AuthWrapper from '@/components/auth-wrapper/AuthWrapper';
-import { useLoginMutation } from '@/store/api/api';
+import { useLoginMutation } from '@/store/api';
 import { PAGES } from '@/config/pages.config';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
