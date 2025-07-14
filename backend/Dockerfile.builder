@@ -10,6 +10,3 @@ WORKDIR /app
 COPY backend/ .
 
 RUN chmod +x ./build.sh
-
-# Сохраняем результаты сборки
-VOLUME /app/build
