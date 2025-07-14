@@ -3,7 +3,7 @@
 import React from 'react';
 import { Modal, Tabs, Form, Input, Button, Alert, Typography, Space, App } from 'antd';
 import { UserAddOutlined, LinkOutlined, UserOutlined } from '@ant-design/icons';
-import { useAddParticipantMutation } from '@/store/api/api';
+import { useAddParticipantMutation } from '@/store/api';
 
 export interface AddParticipantModalProps {
     visible: boolean;

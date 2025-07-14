@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, Button, App } from 'antd';
-import { useCreateShoppingListMutation, useUpdateShoppingListMutation } from '@/store/api/api';
+import { useCreateShoppingListMutation, useUpdateShoppingListMutation } from '@/store/api';
 import type { ShoppingListRequest, ShoppingListWithItems } from '@/types/api';
 
 const { TextArea } = Input;
