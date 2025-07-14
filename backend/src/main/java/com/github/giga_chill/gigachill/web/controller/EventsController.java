@@ -152,6 +152,24 @@ public class EventsController {
         return ResponseEntity.ok(Collections.singletonMap("event_link", eventLink));
     }
 
+    @PostMapping("/{eventId}/invite-link/join-by-link/{listHash}")
+    //ACCESS: ALL
+    public ResponseEntity<Void> postJoinByLink(Authentication authentication,
+                                              @PathVariable UUID eventId,
+                                               @PathVariable UUID listHash) {
+        User user = userService.userAuthentication(authentication);
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!eventService.isCorrectLinkUuid(eventId, listHash)) {
+            throw new NotFoundException("Link with hash " + listHash + " not found");
+        }
+
+        eventService.joinByLink(eventId, user);
+        return ResponseEntity.noContent().build();
+    }
+
+
     private ResponseEventInfo toResponseEventInfo(Event event, String userRole) {
         return new ResponseEventInfo(event.getEventId().toString(), userRole, event.getTitle(), event.getLocation(),
                 event.getStartDatetime(), event.getEndDatetime(), event.getDescription(), event.getBudget());

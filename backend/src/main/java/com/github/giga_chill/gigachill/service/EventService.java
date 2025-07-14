@@ -3,6 +3,7 @@ package com.github.giga_chill.gigachill.service;
 import com.github.giga_chill.gigachill.data.access.object.EventDAO;
 import com.github.giga_chill.gigachill.data.transfer.object.EventDTO;
 import com.github.giga_chill.gigachill.model.Event;
+import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -16,8 +17,10 @@ import java.util.*;
 @RequiredArgsConstructor
 public class EventService {
 
-    private final EventDAO eventDAO;
     private final Environment env;
+    private final EventDAO eventDAO;
+    private final ParticipantsService participantsService;
+
 
     public boolean isExisted(UUID eventId) {
         return eventDAO.isExisted(eventId);
@@ -62,6 +65,16 @@ public class EventService {
         var inviteLingUuid = eventDAO.getInviteLinkUuid(eventId);
         return env.getProperty("frontend.protocol") + "://" + env.getProperty("frontend.address")
                 + "/events/" + eventId.toString() + "/join-by-link/" + inviteLingUuid.toString();
+    }
+
+    public boolean isCorrectLinkUuid(UUID eventId, UUID linkUuid){
+        //TODO: Повесить логгер
+        return eventDAO.isCorrectLinkUuid(eventId, linkUuid);
+    }
+
+    public void joinByLink(UUID eventId, User user){
+        //TODO: Повесить логгер
+        participantsService.addParticipantToEvent(eventId, user);
     }
 
     public void deleteEvent(UUID eventId) {
