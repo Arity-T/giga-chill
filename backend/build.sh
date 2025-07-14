@@ -5,29 +5,16 @@ show_help() {
     echo "Использование: $0 [ОПЦИИ]"
     echo ""
     echo "Опции:"
-    echo "  -m    Выполнить миграции базы данных"
-    echo "  -g    Сгенерировать классы Jooq"
-    echo "  -b    Собрать приложение"
     echo "  -k    Не пересоздавать БД"
     echo "  -h    Показать эту справку"
-    echo ""
-    echo "Примеры:"
-    echo "  $0 -mgb     # Полный цикл: миграции, генерация, сборка с пересозданием БД"
-    echo "  $0 -mgbk     # Полный цикл: миграции, генерация, сборка без пересоздания БД"
 }
 
 # === Инициализация флагов ===
-run_migrations=false
-generate_jooq=false
-build_app=false
 keep_database=false
 
 # === Обработка параметров ===
-while getopts "mgbkh" opt; do
+while getopts "kh" opt; do
     case $opt in
-        m) run_migrations=true ;;
-        g) generate_jooq=true ;;
-        b) build_app=true ;;
         k) keep_database=true ;;
         h) show_help; exit 0 ;;
         *) echo "Неизвестная опция: -$OPTARG" >&2; show_help; exit 1 ;;
@@ -35,53 +22,49 @@ while getopts "mgbkh" opt; do
 done
 
 # === Выполнение миграций ===
-if [ "$run_migrations" = true ]; then
-    echo "=== Выполнение миграций ==="
-    
-    if [ "$keep_database" = false ]; then
-        echo "Пересоздание базы данных..."
-        PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -U "$DB_USER" -c "DROP DATABASE IF EXISTS $DB_NAME"
-        PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -U "$DB_USER" -c "CREATE DATABASE $DB_NAME"
-    else
-        echo "Сохраняем существующую базу данных (флаг -k)"
-    fi
-    
-    # Применим миграции
-    echo "Применение миграций..."
-    for file in $(find src/main/resources/db/migration -name "V*.sql" | sort); do
-        echo "Applying: $file"
-        PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -f "$file" -v ON_ERROR_STOP=1
-        if [ $? -ne 0 ]; then
-            echo "Migration failed: $file"
-            exit 1
-        fi
-    done
-    
-    echo "Все миграции применены успешно!"
+echo "=== Выполнение миграций ==="
+
+if [ "$keep_database" = false ]; then
+    echo "Пересоздание базы данных..."
+    PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -U "$DB_USER" -c "DROP DATABASE IF EXISTS $DB_NAME"
+    PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -U "$DB_USER" -c "CREATE DATABASE $DB_NAME"
+else
+    echo "Сохраняем существующую базу данных (флаг -k)"
 fi
+
+# Применим миграции
+echo "Применение миграций..."
+for file in $(find src/main/resources/db/migration -name "V*.sql" | sort); do
+    echo "Applying: $file"
+    PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -f "$file" -v ON_ERROR_STOP=1
+    if [ $? -ne 0 ]; then
+        echo "Migration failed: $file"
+        exit 1
+    fi
+done
+
+echo "Все миграции применены успешно!"
+
 
 # === Генерация Jooq ===
-if [ "$generate_jooq" = true ]; then
-    echo "=== Генерация классов Jooq ==="
-    ./gradlew generateJooq
-    if [ $? -ne 0 ]; then
-        echo "Ошибка при генерации Jooq"
-        exit 1
-    fi
-    echo "Классы Jooq сгенерированы успешно!"
+echo "=== Генерация классов Jooq ==="
+./gradlew generateJooq
+if [ $? -ne 0 ]; then
+    echo "Ошибка при генерации Jooq"
+    exit 1
 fi
+echo "Классы Jooq сгенерированы успешно!"
+
 
 # === Сборка приложения ===
-if [ "$build_app" = true ]; then
-    echo "=== Сборка приложения ==="
-    ./gradlew bootJar
-    if [ $? -ne 0 ]; then
-        echo "Ошибка при сборке приложения"
-        exit 1
-    fi
-    echo "Приложение собрано успешно!"
-
-    # Сохраняем JAR для последующего копирования
-    mkdir -p /app/build/libs
-    mv build/libs/gigachill-*.jar /app/build/libs/app.jar
+echo "=== Сборка приложения ==="
+./gradlew bootJar
+if [ $? -ne 0 ]; then
+    echo "Ошибка при сборке приложения"
+    exit 1
 fi
+echo "Приложение собрано успешно!"
+
+# Сохраняем JAR для последующего копирования
+mkdir -p /app/build/libs
+mv build/libs/gigachill-*.jar /app/build/libs/app.jar

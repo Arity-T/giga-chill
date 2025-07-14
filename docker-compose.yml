@@ -29,7 +29,7 @@ services:
         condition: service_healthy
     env_file:
       - .env
-    command: ["./build.sh", "-mgb"]
+    command: ["./build.sh", ""]
     networks:
       - gigachill-network
     volumes:
