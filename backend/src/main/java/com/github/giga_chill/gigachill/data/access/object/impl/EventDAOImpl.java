@@ -104,4 +104,41 @@ public class EventDAOImpl implements EventDAO {
     return eventRepository.findById(eventId).isPresent();
   }
 
+  /**
+   * Creates a new invite link record for the specified event.
+   *
+   * @param eventId        the unique identifier of the event
+   * @param inviteLinkUuid the UUID to assign as the invite link token
+   */
+  @Override
+  public void createInviteLink(UUID eventId, UUID inviteLinkUuid) {
+      eventRepository.updateInviteLink(eventId, inviteLinkUuid);
+  }
+
+  /**
+   * Retrieves the UUID of the current invite link for the given event.
+   *
+   * @param eventId the unique identifier of the event
+   * @return the {@link UUID} representing the invite link token
+   */
+  @Override
+  public UUID getInviteLinkUuid(UUID eventId) {
+    EventsRecord event = eventRepository.findById(eventId).orElse(null);
+    if (event == null) return null;
+
+    return event.getInviteLink();
+  }
+
+  /**
+   * Verifies whether the provided link UUID matches the stored invite link for the event.
+   *
+   * @param eventId  the unique identifier of the event
+   * @param linkUuid the UUID presented by the user to join
+   * @return {@code true} if the linkUuid is valid for the event; {@code false} otherwise
+   */
+  @Override
+  public boolean isCorrectLinkUuid(UUID eventId, UUID linkUuid) {
+    return eventRepository.isCorrectLink(eventId, linkUuid);
+  }
+
 }
