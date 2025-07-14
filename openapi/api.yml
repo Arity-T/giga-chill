@@ -258,6 +258,79 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /events/{eventId}/invite-link:
+    post:
+      summary: Создать ссылки на мероприятие 
+      description: Ссылку генерирует пользователь со статусом **owner**.
+      tags: [Events]
+      operationId: createEventLink
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав для создание ссылки на мероприятия (требуется роль owner)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие не найдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    get:
+      summary: Получение ссылки на мероприятие 
+      description: Возвращает заранее сгенерированную ссылку на мероприятие.
+      tags: [Events]
+      operationId: getEventLink
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventLink"
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие не найдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /events/{eventId}/join-by-link/{linkHash}:
+    post:
+      summary: Присоединиться к мероприятию по ссылке.
+      description: Пользователь становится участником мероприятия.
+      tags: [Events]
+      operationId: joinByLink
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Токен отсутствует, истёк или некорректен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Мероприятие не найдено или ссылка не существует
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /events/{eventId}/participants:
     get:
@@ -949,6 +1022,14 @@ components:
           type: number
           description: Бюджет мероприятия
           example: 10000
+
+    EventLink:
+      type: object
+      properties:
+        event_link:
+          type: string
+          description: Ссылка на мероприятие. Ссылка строиться из адреса сервера. Далее идет id мероприятие. После join-by-link идет случайный UUID. 
+          example: "http://localhost:3001/event/c014cfe2-7a69-4959-88f7-4a2b795c2a20/join-by-link/0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c"
 
     Events:
       type: array
