@@ -8,8 +8,9 @@ RUN microdnf update -y && \
 
 WORKDIR /app
 COPY backend/ .
+COPY .env .
 
-RUN chmod +x ./entrypoint.sh
+RUN chmod +x ./build.sh
 
 # Сохраняем результаты сборки
 VOLUME /app/build
