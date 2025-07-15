@@ -152,7 +152,7 @@ public class EventsController {
         }
 
         var eventLink = eventService.getInviteLink(eventId);
-        return ResponseEntity.ok(Collections.singletonMap("invitation-token", eventLink));
+        return ResponseEntity.ok(Collections.singletonMap("invitation_token", eventLink));
     }
 
     @PostMapping("/join-by-link")
