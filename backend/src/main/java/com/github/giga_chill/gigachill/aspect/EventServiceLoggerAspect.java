@@ -63,9 +63,9 @@ public class EventServiceLoggerAspect {
     public void getInviteLink(UUID eventId) {
     }
 
-    @Pointcut("execution(public * com.github.giga_chill.gigachill.service.EventService.isCorrectLinkUuid(..)) " +
-            "&& args(eventId, linkUuid)")
-    public void isCorrectLinkUuid(UUID eventId, UUID linkUuid) {
+    @Pointcut("execution(public * com.github.giga_chill.gigachill.service.EventService.getEventByLinkUuid(..)) " +
+            "&& args(linkUuid)")
+    public void getEventByLinkUuid(UUID linkUuid) {
     }
 
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.EventService.joinByLink(..)) " +
@@ -183,18 +183,17 @@ public class EventServiceLoggerAspect {
         }
     }
 
-    @Around("isCorrectLinkUuid(eventId, linkUuid)")
-    public Object logIsCorrectLinkUuid(ProceedingJoinPoint proceedingJoinPoint,
-                                       UUID eventId,
+    @Around("getEventByLinkUuid(linkUuid)")
+    public Object logGetEventByLinkUuid(ProceedingJoinPoint proceedingJoinPoint,
                                        UUID linkUuid) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
-            if ((Boolean) result) {
-                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Event with id: {} contains invite link with hash: {}"
-                        + loggerColorConfig.getRESET_COLOR(), eventId, linkUuid);
+            if ((UUID) result == null) {
+                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Invite link with hash: {} did not attach to event"
+                        + loggerColorConfig.getRESET_COLOR(), linkUuid);
             } else {
-                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Event with id: {} does not contain invite link with hash: {}"
-                        + loggerColorConfig.getRESET_COLOR(), eventId, linkUuid);
+                LOGGER.info(loggerColorConfig.getGET_COLOR() + "Invite link with hash: {} attached to event with id: {}"
+                        + loggerColorConfig.getRESET_COLOR(), linkUuid, (UUID) result);
             }
             return result;
         } catch (Throwable ex) {

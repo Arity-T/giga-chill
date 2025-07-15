@@ -1,6 +1,8 @@
 package com.github.giga_chill.gigachill.data.access.object;
 
 import com.github.giga_chill.gigachill.data.transfer.object.EventDTO;
+import jakarta.annotation.Nullable;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -77,13 +79,16 @@ public interface EventDAO {
       */
      UUID getInviteLinkUuid(UUID eventId);
 
+
      /**
-      * Verifies whether the provided link UUID matches the stored invite link for the event.
+      * Retrieves the unique Event ID associated with the given invite link UUID.
       *
-      * @param eventId  the unique identifier of the event
-      * @param linkUuid the UUID presented by the user to join
-      * @return {@code true} if the linkUuid is valid for the event; {@code false} otherwise
+      * @param linkUuid the UUID token used for event invitation links
+      * @return the {@link UUID} of the event linked to the provided invitation token,
+      *         or {@code null} if no matching event is found
       */
-     boolean isCorrectLinkUuid(UUID eventId, UUID linkUuid);
+     @Nullable
+     UUID getEventByLinkUuid(UUID linkUuid);
+
 
 }
