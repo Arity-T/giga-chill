@@ -131,3 +131,7 @@ export interface Task {
 export interface TaskWithShoppingLists extends Task {
   shopping_lists: ShoppingListWithItems[];
 }
+
+export interface InvitationToken {
+  invitation_token: string;
+}
