@@ -134,4 +134,8 @@ public class ShoppingListsService {
     public boolean canBindShoppingListsToTask(List<UUID> shoppingListsIds) {
         return shoppingListDAO.canBindShoppingListsToTask(shoppingListsIds);
     }
+
+    public boolean canBindShoppingListsToTask(List<UUID> shoppingListsIds, UUID taskId) {
+        return shoppingListDAO.canBindShoppingListsToTaskById(shoppingListsIds, taskId);
+    }
 }

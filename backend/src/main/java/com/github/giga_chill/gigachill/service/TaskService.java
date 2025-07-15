@@ -88,7 +88,7 @@ public class TaskService {
                             + requestTaskInfo.shoppingListsIds());
         }
         if (shoppingListsIds != null
-                && !shoppingListsService.canBindShoppingListsToTask(shoppingListsIds)) {
+                && !shoppingListsService.canBindShoppingListsToTask(shoppingListsIds, taskId)) {
             throw new ConflictException(
                     "One or more lists are already linked to the task: "
                             + requestTaskInfo.shoppingListsIds());
