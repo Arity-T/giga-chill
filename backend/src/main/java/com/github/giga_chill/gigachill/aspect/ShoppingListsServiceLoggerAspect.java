@@ -106,7 +106,7 @@ public class ShoppingListsServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.canBindShoppingListsToTask(..)) "
-                    + "&& args(shoppingListsIds)")
+                    + "&& args(shoppingListsIds, ..)")
     public void canBindShoppingListsToTask(List<UUID> shoppingListsIds) {}
 
     @Around("getAllShoppingListsFromEvent(eventId)")
@@ -423,7 +423,7 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("areExisted(shoppingListsIds)")
+    @Around("areExisted(shoppingListsIds, ..)")
     public Object logCanBindShoppingListsToTask(
             ProceedingJoinPoint proceedingJoinPoint, List<UUID> shoppingListsIds) throws Throwable {
         try {
