@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Input, DatePicker, App } from 'antd';
-import { useUpdateEventMutation } from '@/store/api/api';
+import { useUpdateEventMutation } from '@/store/api';
 import { Event, UpdateEventRequest } from '@/types/api';
 import dayjs, { Dayjs } from 'dayjs';
 import EditableField from './editable-field/EditableField';

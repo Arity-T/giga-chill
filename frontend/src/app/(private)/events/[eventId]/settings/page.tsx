@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Typography, Space, Alert } from 'antd';
-import { useGetEventQuery } from '@/store/api/api';
+import { useGetEventQuery } from '@/store/api';
 import { EventIdPathParam } from '@/types/path-params';
 import { UserRole } from '@/types/api';
 import DeleteEventButton from './DeleteEventButton';

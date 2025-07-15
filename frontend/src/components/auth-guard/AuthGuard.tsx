@@ -3,7 +3,7 @@
 import { useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { PAGES } from '@/config/pages.config';
-import { useGetMeQuery } from '@/store/api/api';
+import { useGetMeQuery } from '@/store/api';
 
 type Props = {
   children: ReactNode;

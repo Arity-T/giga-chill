@@ -1,6 +1,7 @@
 package com.github.giga_chill.gigachill.web.controller;
 
 
+import com.github.giga_chill.gigachill.exception.BadRequestException;
 import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.ForbiddenException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
@@ -9,6 +10,7 @@ import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.UserService;
 import com.github.giga_chill.gigachill.service.ParticipantsService;
+import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
 import com.github.giga_chill.gigachill.web.info.ResponseEventInfo;
 import lombok.RequiredArgsConstructor;
@@ -112,7 +114,7 @@ public class EventsController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{eventId}/invite-link")
+    @PostMapping("/{eventId}/invitation-token")
     //ACCESS: owner
     public ResponseEntity<Void> postEventLink(Authentication authentication, @PathVariable UUID eventId) {
         User user = userService.userAuthentication(authentication);
@@ -132,7 +134,7 @@ public class EventsController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{eventId}/invite-link")
+    @GetMapping("/{eventId}/invitation-token")
     //ACCESS: admin, owner
     public ResponseEntity<Map<String, String>> getEventLink(Authentication authentication, @PathVariable UUID eventId) {
         User user = userService.userAuthentication(authentication);
@@ -150,20 +152,24 @@ public class EventsController {
         }
 
         var eventLink = eventService.getInviteLink(eventId);
-        return ResponseEntity.ok(Collections.singletonMap("event_link", eventLink));
+        return ResponseEntity.ok(Collections.singletonMap("invitation-token", eventLink));
     }
 
-    @PostMapping("/{eventId}/join-by-link/{listHash}")
+    @PostMapping("/join-by-link")
     //ACCESS: ALL
     public ResponseEntity<Void> postJoinByLink(Authentication authentication,
-                                              @PathVariable UUID eventId,
-                                               @PathVariable UUID listHash) {
+                                               @RequestBody Map<String, Object> body) {
         User user = userService.userAuthentication(authentication);
+        var rawToken = (String) body.get("invitation_token");
+        if (rawToken == null){
+            throw new BadRequestException("Invalid request body: " + body);
+        }
+        var eventId = eventService.getEventByLinkUuid(UuidUtils.safeUUID(rawToken));
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (!eventService.isCorrectLinkUuid(eventId, listHash)) {
-            throw new NotFoundException("Link with hash " + listHash + " not found");
+        if (eventId == null) {
+            throw new NotFoundException("Link with hash " + rawToken + " not found");
         }
         if (participantsService.isParticipant(eventId, user.getId())) {
             throw new ConflictException("User with id " + user.getId() +

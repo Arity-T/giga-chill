@@ -101,3 +101,37 @@ export interface ShoppingItemRequest {
 export interface ShoppingItemPurchasedStateRequest {
   is_purchased: boolean;
 }
+
+export interface TaskRequest {
+  title: string;
+  description: string;
+  deadline_datetime: string;
+  executor_id: string;
+  shopping_lists_ids: string[];
+}
+
+export enum TaskStatus {
+  OPEN = 'open',
+  IN_PROGRESS = 'in_progress',
+  UNDER_REVIEW = 'under_review',
+  COMPLETED = 'completed',
+}
+
+export interface Task {
+  task_id: string;
+  title: string;
+  description: string;
+  status: TaskStatus;
+  deadline_datetime: string;
+  actual_approval_id: string;
+  author: User;
+  executor: User;
+}
+
+export interface TaskWithShoppingLists extends Task {
+  shopping_lists: ShoppingListWithItems[];
+}
+
+export interface InvitationToken {
+  invitation_token: string;
+}

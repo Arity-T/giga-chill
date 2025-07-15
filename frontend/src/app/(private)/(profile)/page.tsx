@@ -2,7 +2,7 @@
 
 import { Button } from "antd";
 import styles from "./page.module.css";
-import { useGetMeQuery, useLogoutMutation } from '@/store/api/api';
+import { useGetMeQuery, useLogoutMutation } from '@/store/api';
 
 export default function ProfileContent() {
   const { data: user } = useGetMeQuery();
