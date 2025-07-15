@@ -11,6 +11,7 @@ import com.github.giga_chill.gigachill.web.info.RequestTaskInfo;
 import com.github.giga_chill.gigachill.web.info.ResponseTaskInfo;
 import com.github.giga_chill.gigachill.web.info.ResponseTaskWithShoppingListsInfo;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -48,7 +49,12 @@ public class TasksController {
 
         return ResponseEntity.ok(
                 taskService.getAllTasksFromEvent(eventId).stream()
-                        .map(InfoEntityMapper::toResponseTaskInfo)
+                        .map(
+                                item ->
+                                        InfoEntityMapper.toResponseTaskInfo(
+                                                item,
+                                                taskService.taskPermissions(
+                                                        eventId, item.getTaskId(), user.getId())))
                         .toList());
     }
 
@@ -114,7 +120,10 @@ public class TasksController {
 
         return ResponseEntity.ok(
                 toResponseTaskWithShoppingListsInfo(
-                        eventId, user.getId(), taskService.getTaskById(taskId)));
+                        eventId,
+                        user.getId(),
+                        taskService.getTaskById(taskId),
+                        taskService.taskPermissions(eventId, taskId, user.getId())));
     }
 
     @PatchMapping("/{taskId}")
@@ -238,7 +247,7 @@ public class TasksController {
     }
 
     private ResponseTaskWithShoppingListsInfo toResponseTaskWithShoppingListsInfo(
-            UUID eventId, UUID userI, Task task) {
+            UUID eventId, UUID userI, Task task, Map<String, Boolean> permissions) {
         return new ResponseTaskWithShoppingListsInfo(
                 task.getTaskId().toString(),
                 task.getTitle(),
@@ -246,6 +255,7 @@ public class TasksController {
                 task.getStatus(),
                 task.getDeadlineDatetime(),
                 task.getActualApprovalId() != null ? task.getTaskId().toString() : null,
+                permissions,
                 InfoEntityMapper.toUserInfo(task.getAuthor()),
                 task.getExecutor() != null ? InfoEntityMapper.toUserInfo(task.getExecutor()) : null,
                 task.getShoppingLists().stream()
