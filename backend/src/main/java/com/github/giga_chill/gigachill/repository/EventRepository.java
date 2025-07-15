@@ -43,12 +43,10 @@ public class EventRepository {
             .execute();
   }
 
-  public boolean isCorrectLink(UUID eventId, UUID linkUuid) {
-    return dsl.fetchExists(
-            dsl.selectFrom(Events.EVENTS)
-            .where(Events.EVENTS.EVENT_ID.eq(eventId))
-            .and(Events.EVENTS.INVITE_LINK.eq(linkUuid))
-    );
+  public Optional<EventsRecord> findByLinkId(UUID linkId) {
+    return dsl.selectFrom(Events.EVENTS)
+            .where(Events.EVENTS.INVITE_LINK.eq(linkId))
+            .fetchOptional();
   }
 
   public boolean exists(UUID eventId) {

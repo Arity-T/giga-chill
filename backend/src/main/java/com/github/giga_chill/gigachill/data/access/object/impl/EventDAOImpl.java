@@ -12,6 +12,7 @@ import com.github.giga_chill.jooq.generated.tables.records.EventsRecord;
 import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
 import com.github.giga_chill.jooq.generated.enums.EventRole;
 
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -129,15 +130,22 @@ public class EventDAOImpl implements EventDAO {
   }
 
   /**
-   * Verifies whether the provided link UUID matches the stored invite link for the event.
+   * Retrieves the unique Event ID associated with the given invite link UUID.
    *
-   * @param eventId  the unique identifier of the event
-   * @param linkUuid the UUID presented by the user to join
-   * @return {@code true} if the linkUuid is valid for the event; {@code false} otherwise
+   * @param linkUuid the UUID token used for event invitation links
+   * @return the {@link UUID} of the event linked to the provided invitation token,
+   *         or {@code null} if no matching event is found
    */
+
+  @Nullable
   @Override
-  public boolean isCorrectLinkUuid(UUID eventId, UUID linkUuid) {
-    return eventRepository.isCorrectLink(eventId, linkUuid);
+  public UUID getEventByLinkUuid(UUID linkUuid) {
+    EventsRecord event = eventRepository.findByLinkId(linkUuid).orElse(null);
+    if (event == null) {
+      return null;
+    }
+
+    return event.getEventId();
   }
 
 }
