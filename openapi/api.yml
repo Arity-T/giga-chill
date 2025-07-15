@@ -14,6 +14,7 @@ tags:
   - name: Auth
   - name: Me
   - name: Events
+  - name: Invite Links
   - name: Participants
   - name: Shopping Lists
   - name: Shopping List Items
@@ -258,12 +259,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-  /events/{eventId}/invite-link:
+
+  /events/{eventId}/invitation-token:
     post:
-      summary: Создать ссылки на мероприятие 
-      description: Ссылку генерирует пользователь со статусом **owner**.
-      tags: [Events]
-      operationId: createEventLink
+      summary: Создать новый токен
+      description: Токен генерирует пользователь со статусом **owner**.
+      tags: [Invite Links]
+      operationId: createEventInvitationToken
       responses:
         "204":
           description: No Content
@@ -287,17 +289,19 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
 
     get:
-      summary: Получение ссылки на мероприятие 
-      description: Возвращает заранее сгенерированную ссылку на мероприятие. Доступно пользователям с ролью **admin** или **owner**
-      tags: [Events]
-      operationId: getEventLink
+      summary: Получение токена
+      description: Возвращает заранее сгенерированный токен-приглашение.
+        Доступно пользователям с ролью **admin** или **owner**.
+        Если токен ещё не был сгенерирован, то в поле token возвращается null.
+      tags: [Invite Links]
+      operationId: getEventInvitationToken
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EventLink"
+                $ref: "#/components/schemas/InvitationToken"
         "401":
           description: Токен отсутствует, истёк или некорректен
           content:
@@ -316,12 +320,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-  /events/{eventId}/join-by-link/{linkHash}:
+
+  /events/join-by-link:
     post:
-      summary: Присоединиться к мероприятию по ссылке.
+      summary: Присоединиться к мероприятию по токену
       description: Пользователь становится участником мероприятия.
-      tags: [Events]
-      operationId: joinByLink
+      tags: [Invite Links]
+      operationId: joinByInvitationToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvitationToken"
       responses:
         "204":
           description: No Content
@@ -1029,13 +1040,13 @@ components:
           description: Бюджет мероприятия
           example: 10000
 
-    EventLink:
+    InvitationToken:
       type: object
       properties:
-        event_link:
+        invitation_token:
           type: string
-          description: Ссылка на мероприятие. Ссылка строиться из адреса сервера. Далее идет id мероприятие. После join-by-link идет случайный UUID. 
-          example: "http://localhost:3001/events/c014cfe2-7a69-4959-88f7-4a2b795c2a20/join-by-link/0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c"
+          description: Токен-приглашение
+          example: "0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c"
 
     Events:
       type: array
