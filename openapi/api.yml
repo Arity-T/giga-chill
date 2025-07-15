@@ -206,23 +206,11 @@ paths:
         "204":
           description: No Content
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Недостаточно прав для создание ссылки на мероприятия (требуется роль owner)
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие не найдено
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
 
     get:
       summary: Получение токена
@@ -239,23 +227,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/InvitationToken"
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Недостаточно прав для просмотра ссылки на мероприятия (требуется роль admin или owner)
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие не найдено
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
 
   /events/join-by-link:
     post:
@@ -273,17 +249,9 @@ paths:
         "204":
           description: No Content
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "404":
-          description: Мероприятие не найдено или ссылка не существует
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
 
   /events/{eventId}/participants:
     get:
