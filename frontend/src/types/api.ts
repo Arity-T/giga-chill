@@ -126,6 +126,7 @@ export interface Task {
   actual_approval_id: string;
   author: User;
   executor: User | null;
+  can_edit: boolean;
 }
 
 export interface TaskWithShoppingLists extends Task {

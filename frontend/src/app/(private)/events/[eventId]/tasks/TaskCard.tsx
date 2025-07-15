@@ -10,9 +10,10 @@ const { Title, Text } = Typography;
 
 interface TaskCardProps {
     task: Task;
+    onClick?: () => void;
 }
 
-export default function TaskCard({ task }: TaskCardProps) {
+export default function TaskCard({ task, onClick }: TaskCardProps) {
     // const isOverdue = new Date(task.deadline_datetime) < new Date() && task.status !== 'completed';
     const isOverdue = false;
 
@@ -21,6 +22,8 @@ export default function TaskCard({ task }: TaskCardProps) {
             hoverable
             className={styles.taskCard}
             styles={{ body: { padding: '16px' } }}
+            onClick={onClick}
+            style={{ cursor: onClick ? 'pointer' : 'default' }}
         >
             <div className={styles.cardContent}>
                 <div className={styles.header}>

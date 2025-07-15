@@ -10,6 +10,7 @@ import { mockTasks, mockCurrentUser } from '@/data/tasks.data';
 import { getTaskStatusText, getAllTaskStatuses } from '@/utils/task-status-utils';
 import TaskCard from './TaskCard';
 import CreateTaskModal from './CreateTaskModal';
+import TaskModal from './task-modal/TaskModal';
 
 const { Title } = Typography;
 
@@ -28,6 +29,10 @@ export default function TasksPage({ params }: EventIdPathParam) {
     const [activeStatusFilter, setActiveStatusFilter] = useState<TaskStatus | 'all'>('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
+
+    // Состояние для модального окна просмотра задачи
+    const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
     // Фильтрация задач по статусу
     const filteredTasks = useMemo(() => {
@@ -109,6 +114,7 @@ export default function TasksPage({ params }: EventIdPathParam) {
                 actual_approval_id: '',
                 author: mockCurrentUser,
                 executor: participants.find(p => p.id === taskData.executor_id) || mockCurrentUser,
+                can_edit: true,
             };
             setTasks(prev => [newTask, ...prev]);
             message.success('Задача создана');
@@ -120,6 +126,29 @@ export default function TasksPage({ params }: EventIdPathParam) {
     const handleModalCancel = () => {
         setIsModalOpen(false);
         setEditingTask(null);
+    };
+
+    const handleTaskClick = (task: Task) => {
+        setSelectedTask(task);
+        setIsTaskModalOpen(true);
+    };
+
+    const handleTaskModalClose = () => {
+        setIsTaskModalOpen(false);
+        setSelectedTask(null);
+    };
+
+    const handleUpdateTask = (taskId: string, updates: Partial<Task>) => {
+        setTasks(prev => prev.map(task =>
+            task.task_id === taskId
+                ? { ...task, ...updates }
+                : task
+        ));
+
+        // Обновляем selectedTask если она открыта
+        if (selectedTask && selectedTask.task_id === taskId) {
+            setSelectedTask(prev => prev ? { ...prev, ...updates } : null);
+        }
     };
 
     return (
@@ -157,7 +186,10 @@ export default function TasksPage({ params }: EventIdPathParam) {
                 <Row gutter={[16, 16]}>
                     {filteredTasks.map(task => (
                         <Col xs={24} sm={12} lg={8} xl={6} key={task.task_id}>
-                            <TaskCard task={task} />
+                            <TaskCard
+                                task={task}
+                                onClick={() => handleTaskClick(task)}
+                            />
                         </Col>
                     ))}
                 </Row>
@@ -169,6 +201,14 @@ export default function TasksPage({ params }: EventIdPathParam) {
                 onSubmit={handleModalSubmit}
                 participants={participants}
                 shoppingLists={shoppingLists}
+            />
+
+            <TaskModal
+                task={selectedTask}
+                open={isTaskModalOpen}
+                onClose={handleTaskModalClose}
+                participants={participants}
+                onUpdateTask={handleUpdateTask}
             />
         </div>
     );

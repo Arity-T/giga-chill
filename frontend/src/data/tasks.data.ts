@@ -19,6 +19,7 @@ export const mockTasks: Task[] = [
         actual_approval_id: '',
         author: mockUsers[2],
         executor: mockUsers[0],
+        can_edit: true,
     },
     {
         task_id: '2',
@@ -29,6 +30,7 @@ export const mockTasks: Task[] = [
         actual_approval_id: '',
         author: mockUsers[2],
         executor: mockUsers[3],
+        can_edit: false,
     },
     {
         task_id: '3',
@@ -39,6 +41,7 @@ export const mockTasks: Task[] = [
         actual_approval_id: '',
         author: mockUsers[2],
         executor: mockUsers[1],
+        can_edit: true,
     },
     {
         task_id: '4',
@@ -49,6 +52,7 @@ export const mockTasks: Task[] = [
         actual_approval_id: '',
         author: mockUsers[2],
         executor: mockUsers[0],
+        can_edit: false,
     },
     {
         task_id: '5',
@@ -59,6 +63,7 @@ export const mockTasks: Task[] = [
         actual_approval_id: '',
         author: mockUsers[2],
         executor: mockUsers[0],
+        can_edit: true,
     },
     {
         task_id: '6',
@@ -69,6 +74,7 @@ export const mockTasks: Task[] = [
         actual_approval_id: '',
         author: mockUsers[2],
         executor: mockUsers[0],
+        can_edit: true,
     },
     {
         task_id: '7',
@@ -79,6 +85,7 @@ export const mockTasks: Task[] = [
         actual_approval_id: '',
         author: mockUsers[2],
         executor: null,
+        can_edit: false,
     },
 ];
 
