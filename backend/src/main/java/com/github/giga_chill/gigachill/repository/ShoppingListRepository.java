@@ -104,6 +104,16 @@ public class ShoppingListRepository {
                         .and(ShoppingLists.SHOPPING_LISTS.TASK_ID.isNull()));
     }
 
+    public boolean isBindedToTaskOrNull(UUID shoppingListId, UUID taskId) {
+        return dsl.fetchExists(
+                dsl.selectFrom(ShoppingLists.SHOPPING_LISTS)
+                        .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(shoppingListId))
+                        .and(ShoppingLists.SHOPPING_LISTS.TASK_ID.eq(taskId)
+                                .or(ShoppingLists.SHOPPING_LISTS.TASK_ID.isNull())
+                        )
+        );
+    }
+
     public boolean allCanBeBound(List<UUID> shoppingListIds) {
         int count =
                 dsl.fetchCount(
@@ -121,4 +131,16 @@ public class ShoppingListRepository {
                 .where(ShoppingLists.SHOPPING_LISTS.TASK_ID.eq(taskId))
                 .execute();
     }
+
+    public int countAllBindedToThisTaskOrNull(List<UUID> shoppingListIds, UUID taskId) {
+        return dsl.fetchCount(
+                dsl.selectFrom(ShoppingLists.SHOPPING_LISTS)
+                        .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.in(shoppingListIds))
+                        .and(
+                                ShoppingLists.SHOPPING_LISTS.TASK_ID.eq(taskId)
+                                        .or(ShoppingLists.SHOPPING_LISTS.TASK_ID.isNull())
+                        )
+        );
+    }
+
 }
