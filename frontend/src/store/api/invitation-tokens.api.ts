@@ -26,6 +26,7 @@ export const invitationTokensApi = api.injectEndpoints({
                 method: 'POST',
                 body: { invitation_token: invitationToken },
             }),
+            invalidatesTags: ['Events'],
         }),
     }),
 })

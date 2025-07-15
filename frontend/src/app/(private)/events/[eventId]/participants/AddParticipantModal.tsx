@@ -5,6 +5,7 @@ import { Modal, Tabs, Form, Input, Button, Alert, Typography, Space, App, Spin }
 import { UserAddOutlined, LinkOutlined, UserOutlined, CopyOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useAddParticipantMutation, useGetEventInvitationTokenQuery, useCreateEventInvitationTokenMutation } from '@/store/api';
 import { APP_CONFIG } from '@/config/app.config';
+import { PAGES } from '@/config/pages.config';
 import { UserRole } from '@/types/api';
 
 export interface AddParticipantModalProps {
@@ -65,7 +66,7 @@ export default function AddParticipantModal({ visible, onCancel, eventId, onSucc
 
     const handleCopyLink = () => {
         if (tokenData?.invitation_token) {
-            const inviteLink = `${APP_CONFIG.BASE_URL}/invite/${tokenData.invitation_token}`;
+            const inviteLink = `${APP_CONFIG.BASE_URL}${PAGES.JOIN_BY_INVITATION(tokenData.invitation_token)}`;
             navigator.clipboard.writeText(inviteLink);
             message.success('Ссылка скопирована в буфер обмена');
         }
@@ -170,7 +171,7 @@ export default function AddParticipantModal({ visible, onCancel, eventId, onSucc
                                 border: '1px solid #d9d9d9'
                             }}>
                                 <Typography.Text code copyable={false} style={{ fontSize: '14px' }}>
-                                    {`${APP_CONFIG.BASE_URL}/invite/${tokenData.invitation_token}`}
+                                    {`${APP_CONFIG.BASE_URL}${PAGES.JOIN_BY_INVITATION(tokenData.invitation_token)}`}
                                 </Typography.Text>
                             </div>
                             <Space>
