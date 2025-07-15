@@ -34,7 +34,7 @@ export default function CreateTaskModal({ open, onCancel, participants, shopping
                 title: values.title,
                 description: values.description || '',
                 deadline_datetime: values.deadline_datetime.toISOString(),
-                executor_id: values.executor_id || '',
+                executor_id: values.executor_id || null,
                 shopping_lists_ids: values.shopping_lists_ids || [],
             };
 
