@@ -191,4 +191,25 @@ public interface ShoppingListDAO {
      *     otherwise
      */
     boolean isBought(UUID shoppingListId);
+
+
+    /**
+     * Determines whether a single shopping list can be bound to the given task.
+     *
+     * @param shoppingListId the unique identifier of the shopping list to check
+     * @param taskId         the unique identifier of the task
+     * @return {@code true} if the shopping list is eligible to be associated with the task(
+     * If the shopping list is already linked to this task or is not linked to any task); {@code false} otherwise
+     */
+    boolean canBindShoppingListToTaskById(UUID shoppingListId, UUID taskId);
+
+    /**
+     * Determines whether all specified shopping lists can be bound to the given task.
+     *
+     * @param shoppingListsIds a {@link List} of {@link UUID} values representing shopping list IDs to check
+     * @param taskId           the unique identifier of the task
+     * @return {@code true} if every shopping list in the list is eligible for association with the task(
+     * If the shopping list is already linked to this task or is not linked to any task); {@code false} otherwise
+     */
+    boolean canBindShoppingListsToTaskById(List<UUID> shoppingListsIds, UUID taskId);
 }
