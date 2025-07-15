@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Typography, DatePicker, App, Space, Button } from 'antd';
 import { CalendarOutlined, EditOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
@@ -19,25 +19,32 @@ export default function TaskDeadline({ deadlineDateTime, canEdit, onUpdate }: Ta
     const [isEditing, setIsEditing] = useState(false);
     const [value, setValue] = useState<dayjs.Dayjs | null>(null);
     const [isUpdating, setIsUpdating] = useState(false);
-    const [shouldCancel, setShouldCancel] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    // Используем ref для хранения актуального значения
+    const currentValueRef = useRef<dayjs.Dayjs | null>(null);
 
     const handleEdit = () => {
         if (!canEdit) {
             message.warning('У вас нет прав для редактирования этой задачи');
             return;
         }
-        setValue(dayjs(deadlineDateTime));
+        const initialValue = dayjs(deadlineDateTime);
+        setValue(initialValue);
+        currentValueRef.current = initialValue;
         setIsEditing(true);
-        setShouldCancel(false);
+        setIsOpen(true);
     };
 
     const handleSave = async () => {
-        if (!value || shouldCancel) return;
+        if (!value) return;
 
         // Проверяем, изменились ли данные
         const currentDeadline = dayjs(deadlineDateTime);
-        if (value.isSame(currentDeadline)) {
+        if (value.isSame(currentDeadline, 'minute')) {
             setIsEditing(false);
+            setIsOpen(false);
             return;
         }
 
@@ -45,6 +52,7 @@ export default function TaskDeadline({ deadlineDateTime, canEdit, onUpdate }: Ta
         try {
             await onUpdate(value.toISOString());
             setIsEditing(false);
+            setIsOpen(false);
         } catch (error) {
             // Ошибка уже обработана в родительском компоненте
         } finally {
@@ -53,19 +61,91 @@ export default function TaskDeadline({ deadlineDateTime, canEdit, onUpdate }: Ta
     };
 
     const handleCancel = () => {
-        setShouldCancel(true);
         setValue(null);
+        currentValueRef.current = null;
         setIsEditing(false);
+        setIsOpen(false);
     };
 
-    const handleBlur = async () => {
-        if (!shouldCancel && !isUpdating && value) {
-            await handleSave();
+    const handleDateChange = (newValue: dayjs.Dayjs | null) => {
+        setValue(newValue);
+        currentValueRef.current = newValue;
+    };
+
+    const handleOpenChange = (open: boolean) => {
+        setIsOpen(open);
+
+        // Если календарь закрылся после выбора даты, сохраняем
+        if (!open && currentValueRef.current) {
+            const valueToSave = currentValueRef.current;
+
+            // Проверяем, изменились ли данные
+            const currentDeadline = dayjs(deadlineDateTime);
+            if (!valueToSave.isSame(currentDeadline, 'minute')) {
+                setIsUpdating(true);
+                onUpdate(valueToSave.toISOString()).then(() => {
+                    setIsEditing(false);
+                    setIsOpen(false);
+                }).catch((error) => {
+                    // Ошибка уже обработана в родительском компоненте
+                }).finally(() => {
+                    setIsUpdating(false);
+                });
+            } else {
+                setIsEditing(false);
+                setIsOpen(false);
+            }
         }
     };
 
+    // Обработчик клика вне компонента
+    useEffect(() => {
+        const handleClickOutside = async (event: MouseEvent) => {
+            if (!isEditing) return;
+
+            const target = event.target as HTMLElement;
+
+            // Проверяем, что клик не по нашему контейнеру
+            if (containerRef.current && containerRef.current.contains(target)) {
+                return;
+            }
+
+            // Проверяем, что клик не по элементам календаря Antd
+            const isDatePickerElement = target.closest('.ant-picker-dropdown') ||
+                target.closest('.ant-picker') ||
+                target.closest('.ant-picker-panel') ||
+                target.closest('.ant-picker-time-panel');
+
+            if (isDatePickerElement) {
+                return;
+            }
+
+            // Клик вне компонента - сохраняем и закрываем
+            if (currentValueRef.current) {
+                const currentDeadline = dayjs(deadlineDateTime);
+                if (!currentValueRef.current.isSame(currentDeadline, 'minute')) {
+                    setIsUpdating(true);
+                    try {
+                        await onUpdate(currentValueRef.current.toISOString());
+                    } catch (error) {
+                        // Ошибка уже обработана в родительском компоненте
+                    } finally {
+                        setIsUpdating(false);
+                    }
+                }
+            }
+            setIsEditing(false);
+            setIsOpen(false);
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isEditing, deadlineDateTime, onUpdate]);
+
     return (
-        <div>
+        <div ref={containerRef}>
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
                 <Title level={5} style={{ margin: 0, marginRight: '8px', marginTop: '0px' }}>
                     <CalendarOutlined style={{ marginRight: '8px', color: '#8c8c8c' }} />
@@ -107,13 +187,14 @@ export default function TaskDeadline({ deadlineDateTime, canEdit, onUpdate }: Ta
             {isEditing ? (
                 <DatePicker
                     value={value}
+                    open={isOpen}
                     showTime
                     format="DD.MM.YYYY HH:mm"
                     style={{ width: '100%' }}
-                    onChange={setValue}
-                    onBlur={handleBlur}
+                    onChange={handleDateChange}
+                    onOpenChange={handleOpenChange}
                     placeholder="Выберите дедлайн"
-                    autoFocus
+                    disabledDate={(current) => current && current < dayjs().startOf('day')}
                 />
             ) : (
                 <div style={{

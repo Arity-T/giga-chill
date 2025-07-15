@@ -4,9 +4,8 @@ import React, { useState, useMemo } from 'react';
 import { Typography, Tabs, Button, Row, Col, Empty, Modal, App } from 'antd';
 import { CheckSquareOutlined, PlusOutlined } from '@ant-design/icons';
 import { EventIdPathParam } from '@/types/path-params';
-import { useGetEventParticipantsQuery, useGetShoppingListsQuery } from '@/store/api';
-import { Task, TaskRequest, TaskStatus, User } from '@/types/api';
-import { mockTasks, mockCurrentUser } from '@/data/tasks.data';
+import { useGetEventParticipantsQuery, useGetShoppingListsQuery, useGetTasksQuery, useDeleteTaskMutation } from '@/store/api';
+import { Task, TaskRequest, TaskStatus } from '@/types/api';
 import { getTaskStatusText, getAllTaskStatuses } from '@/utils/task-status-utils';
 import TaskCard from './TaskCard';
 import CreateTaskModal from './CreateTaskModal';
@@ -18,21 +17,24 @@ export default function TasksPage({ params }: EventIdPathParam) {
     const { eventId } = React.use(params);
     const { message } = App.useApp();
 
+    // Получаем задачи из API
+    const { data: tasks = [], isLoading: isTasksLoading } = useGetTasksQuery(eventId);
+
     // Получаем участников мероприятия для выбора исполнителя
     const { data: participants = [] } = useGetEventParticipantsQuery(eventId);
 
     // Получаем списки покупок для выбора в задаче
     const { data: shoppingLists = [] } = useGetShoppingListsQuery(eventId);
 
-    // Локальное состояние для моковых данных
-    const [tasks, setTasks] = useState<Task[]>(mockTasks);
+    // Мутация для удаления задачи
+    const [deleteTask] = useDeleteTaskMutation();
+
     const [activeStatusFilter, setActiveStatusFilter] = useState<TaskStatus | 'all'>('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingTask, setEditingTask] = useState<Task | null>(null);
 
     // Состояние для модального окна просмотра задачи
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+    const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
     // Фильтрация задач по статусу
     const filteredTasks = useMemo(() => {
@@ -65,90 +67,39 @@ export default function TasksPage({ params }: EventIdPathParam) {
     }, [tasks]);
 
     const handleCreateTask = () => {
-        setEditingTask(null);
         setIsModalOpen(true);
     };
 
-    const handleEditTask = (task: Task) => {
-        setEditingTask(task);
-        setIsModalOpen(true);
-    };
-
-    const handleDeleteTask = (taskId: string) => {
+    const handleDeleteTask = async (taskId: string) => {
         Modal.confirm({
             title: 'Удалить задачу?',
             content: 'Это действие нельзя отменить.',
             okText: 'Удалить',
             cancelText: 'Отмена',
             okType: 'danger',
-            onOk: () => {
-                setTasks(prev => prev.filter(task => task.task_id !== taskId));
-                message.success('Задача удалена');
+            onOk: async () => {
+                try {
+                    await deleteTask({ eventId, taskId }).unwrap();
+                    message.success('Задача удалена');
+                } catch (error) {
+                    message.error('Ошибка при удалении задачи');
+                }
             },
         });
     };
 
-    const handleModalSubmit = (taskData: TaskRequest) => {
-        if (editingTask) {
-            // Редактирование существующей задачи
-            setTasks(prev => prev.map(task =>
-                task.task_id === editingTask.task_id
-                    ? {
-                        ...task,
-                        title: taskData.title,
-                        description: taskData.description,
-                        deadline_datetime: taskData.deadline_datetime,
-                        executor: participants.find(p => p.id === taskData.executor_id) || task.executor,
-                    }
-                    : task
-            ));
-            message.success('Задача обновлена');
-        } else {
-            // Создание новой задачи
-            const newTask: Task = {
-                task_id: Date.now().toString(),
-                title: taskData.title,
-                description: taskData.description,
-                status: TaskStatus.OPEN,
-                deadline_datetime: taskData.deadline_datetime,
-                actual_approval_id: '',
-                author: mockCurrentUser,
-                executor: participants.find(p => p.id === taskData.executor_id) || mockCurrentUser,
-                can_edit: true,
-            };
-            setTasks(prev => [newTask, ...prev]);
-            message.success('Задача создана');
-        }
-        setIsModalOpen(false);
-        setEditingTask(null);
-    };
-
     const handleModalCancel = () => {
         setIsModalOpen(false);
-        setEditingTask(null);
     };
 
     const handleTaskClick = (task: Task) => {
-        setSelectedTask(task);
+        setSelectedTaskId(task.task_id);
         setIsTaskModalOpen(true);
     };
 
     const handleTaskModalClose = () => {
         setIsTaskModalOpen(false);
-        setSelectedTask(null);
-    };
-
-    const handleUpdateTask = (taskId: string, updates: Partial<Task>) => {
-        setTasks(prev => prev.map(task =>
-            task.task_id === taskId
-                ? { ...task, ...updates }
-                : task
-        ));
-
-        // Обновляем selectedTask если она открыта
-        if (selectedTask && selectedTask.task_id === taskId) {
-            setSelectedTask(prev => prev ? { ...prev, ...updates } : null);
-        }
+        setSelectedTaskId(null);
     };
 
     return (
@@ -198,17 +149,17 @@ export default function TasksPage({ params }: EventIdPathParam) {
             <CreateTaskModal
                 open={isModalOpen}
                 onCancel={handleModalCancel}
-                onSubmit={handleModalSubmit}
                 participants={participants}
                 shoppingLists={shoppingLists}
+                eventId={eventId}
             />
 
             <TaskModal
-                task={selectedTask}
+                taskId={selectedTaskId}
                 open={isTaskModalOpen}
                 onClose={handleTaskModalClose}
                 participants={participants}
-                onUpdateTask={handleUpdateTask}
+                eventId={eventId}
             />
         </div>
     );

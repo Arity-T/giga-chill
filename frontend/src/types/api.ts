@@ -117,6 +117,11 @@ export enum TaskStatus {
   COMPLETED = 'completed',
 }
 
+export interface TaskPermissions {
+  can_edit: boolean;
+  can_take_in_work: boolean;
+}
+
 export interface Task {
   task_id: string;
   title: string;
@@ -124,9 +129,9 @@ export interface Task {
   status: TaskStatus;
   deadline_datetime: string;
   actual_approval_id: string;
+  permissions: TaskPermissions;
   author: User;
   executor: User | null;
-  can_edit: boolean;
 }
 
 export interface TaskWithShoppingLists extends Task {

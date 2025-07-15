@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, DatePicker, Select, App } from 'antd';
 import { TaskRequest, User, ShoppingListWithItems } from '@/types/api';
+import { useCreateTaskMutation } from '@/store/api';
 import dayjs from 'dayjs';
 
 const { TextArea } = Input;
@@ -9,15 +10,15 @@ const { Option } = Select;
 interface CreateTaskModalProps {
     open: boolean;
     onCancel: () => void;
-    onSubmit: (taskData: TaskRequest) => void;
     participants: User[];
     shoppingLists: ShoppingListWithItems[];
-    loading?: boolean;
+    eventId: string;
 }
 
-export default function CreateTaskModal({ open, onCancel, onSubmit, participants, shoppingLists, loading }: CreateTaskModalProps) {
+export default function CreateTaskModal({ open, onCancel, participants, shoppingLists, eventId }: CreateTaskModalProps) {
     const [form] = Form.useForm();
     const { message } = App.useApp();
+    const [createTask, { isLoading }] = useCreateTaskMutation();
 
     useEffect(() => {
         if (open) {
@@ -37,10 +38,12 @@ export default function CreateTaskModal({ open, onCancel, onSubmit, participants
                 shopping_lists_ids: values.shopping_lists_ids || [],
             };
 
-            onSubmit(taskData);
+            await createTask({ eventId, task: taskData }).unwrap();
+            message.success('Задача создана');
             form.resetFields();
+            onCancel();
         } catch (error) {
-            message.error('Пожалуйста, заполните все обязательные поля');
+            message.error('Ошибка при создании задачи');
         }
     };
 
@@ -50,7 +53,7 @@ export default function CreateTaskModal({ open, onCancel, onSubmit, participants
             open={open}
             onCancel={onCancel}
             onOk={handleSubmit}
-            confirmLoading={loading}
+            confirmLoading={isLoading}
             okText="Создать"
             cancelText="Отмена"
             destroyOnHidden
