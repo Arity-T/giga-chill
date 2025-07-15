@@ -80,10 +80,9 @@ public interface EventDAO {
      /**
       * Verifies whether the provided link UUID matches the stored invite link for the event.
       *
-      * @param eventId  the unique identifier of the event
       * @param linkUuid the UUID presented by the user to join
       * @return {@code true} if the linkUuid is valid for the event; {@code false} otherwise
       */
-     boolean isCorrectLinkUuid(UUID eventId, UUID linkUuid);
+     boolean isCorrectLinkUuid(UUID linkUuid);
 
 }
