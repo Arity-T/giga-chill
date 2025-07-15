@@ -165,9 +165,6 @@ public class EventsController {
             throw new BadRequestException("Invalid request body: " + body);
         }
         var eventId = eventService.getEventByLinkUuid(UuidUtils.safeUUID(rawToken));
-        if (!eventService.isExisted(eventId)) {
-            throw new NotFoundException("Event with id " + eventId + " not found");
-        }
         if (eventId == null) {
             throw new NotFoundException("Link with hash " + rawToken + " not found");
         }
