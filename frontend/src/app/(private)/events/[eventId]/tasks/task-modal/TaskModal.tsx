@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Modal, Typography, Tag, Tooltip, Row, Col, App, Space, Spin } from 'antd';
-import { EditOutlined } from '@ant-design/icons';
+import { Modal, Typography, Tag, Tooltip, Row, Col, App, Space, Spin, Button, Popconfirm } from 'antd';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { User, TaskRequest } from '@/types/api';
-import { useGetTaskQuery, useUpdateTaskMutation } from '@/store/api';
+import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation } from '@/store/api';
 import { getTaskStatusText, getTaskStatusColor, getTaskStatusTooltip } from '@/utils/task-status-utils';
 import TaskDescription from './TaskDescription';
 import TaskExecutor from './TaskExecutor';
@@ -36,6 +36,7 @@ export default function TaskModal({
     );
 
     const [updateTask, { isLoading: isUpdating }] = useUpdateTaskMutation();
+    const [deleteTask, { isLoading: isDeleting }] = useDeleteTaskMutation();
 
     const handleUpdate = async (field: string, value: any) => {
         if (!task?.permissions.can_edit) {
@@ -80,6 +81,25 @@ export default function TaskModal({
         }
     };
 
+    const handleDelete = async () => {
+        if (!task?.permissions.can_edit) {
+            message.warning('У вас нет прав для удаления этой задачи');
+            return;
+        }
+
+        try {
+            await deleteTask({
+                eventId,
+                taskId: task.task_id
+            }).unwrap();
+
+            message.success('Задача удалена');
+            onClose();
+        } catch (error) {
+            message.error('Ошибка при удалении задачи');
+        }
+    };
+
     const handleUpdateDescription = async (description: string) => {
         await handleUpdate('description', description);
     };
@@ -114,6 +134,27 @@ export default function TaskModal({
                                 {getTaskStatusText(task.status)}
                             </Tag>
                         </Tooltip>
+
+                        {/* Кнопка удаления */}
+                        {task.permissions.can_edit && (
+                            <div style={{ position: 'absolute', top: -24, right: 0 }}>
+                                <Popconfirm
+                                    title="Удалить задачу"
+                                    description="Вы уверены, что хотите удалить эту задачу?"
+                                    onConfirm={handleDelete}
+                                    okText="Да"
+                                    cancelText="Отмена"
+                                    placement="bottomRight"
+                                >
+                                    <Button
+                                        type="text"
+                                        icon={<DeleteOutlined style={{ color: '#8c8c8c' }} />}
+                                        loading={isDeleting}
+                                        size="small"
+                                    />
+                                </Popconfirm>
+                            </div>
+                        )}
                     </div>
 
                     <Title
