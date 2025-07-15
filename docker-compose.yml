@@ -51,6 +51,18 @@ services:
     volumes:
       - backend-build:/app/build
 
+  frontend:
+    build:
+      context: ./frontend
+    env_file:
+      - frontend/.env
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - backend
+
 volumes:
   postgres-data:
   backend-build:
