@@ -2,6 +2,7 @@ package com.github.giga_chill.gigachill.util;
 
 import com.github.giga_chill.gigachill.model.*;
 import com.github.giga_chill.gigachill.web.info.*;
+import java.util.Map;
 
 public final class InfoEntityMapper {
     public static ResponseEventInfo toResponseEventInfo(Event event, String userRole) {
@@ -62,7 +63,7 @@ public final class InfoEntityMapper {
         return new UserInfo(user.getLogin(), user.getName(), user.getId().toString());
     }
 
-    public static ResponseTaskInfo toResponseTaskInfo(Task task) {
+    public static ResponseTaskInfo toResponseTaskInfo(Task task, Map<String, Boolean> permissions) {
         return new ResponseTaskInfo(
                 task.getTaskId().toString(),
                 task.getTitle(),
@@ -70,6 +71,7 @@ public final class InfoEntityMapper {
                 task.getStatus(),
                 task.getDeadlineDatetime(),
                 task.getActualApprovalId() != null ? task.getTaskId().toString() : null,
+                permissions,
                 InfoEntityMapper.toUserInfo(task.getAuthor()),
                 task.getExecutor() != null
                         ? InfoEntityMapper.toUserInfo(task.getExecutor())
