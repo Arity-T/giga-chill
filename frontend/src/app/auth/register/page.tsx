@@ -7,7 +7,7 @@ import { useRegisterMutation } from '@/store/api';
 import { PAGES } from '@/config/pages.config';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { validateReturnUrl } from '@/utils/redirect-utils';
+import { handleSuccessfulAuth, createAuthLinkWithReturnUrl } from '@/utils/redirect-utils';
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -24,19 +24,12 @@ export default function RegisterForm() {
         password: values.password
       }).unwrap();
 
-      // Получаем и валидируем URL для перенаправления из параметров запроса
-      const returnUrl = searchParams.get('returnUrl');
-      const validatedReturnUrl = validateReturnUrl(returnUrl);
-      const redirectTo = validatedReturnUrl || PAGES.HOME;
-
-      router.replace(redirectTo);
+      handleSuccessfulAuth(searchParams, router);
     } catch (err) {
       console.log('Ошибка регистрации:');
       console.log(err);
     }
   };
-
-  const returnUrl = searchParams.get('returnUrl');
 
   return (
     <AuthWrapper title="Регистрация">
@@ -87,7 +80,7 @@ export default function RegisterForm() {
           <Button block type="primary" htmlType="submit" loading={registerLoading}>
             Зарегистрироваться
           </Button>
-          или <Link href={`${PAGES.LOGIN}${returnUrl ? `?returnUrl=${encodeURIComponent(returnUrl)}` : ''}`}>Войти!</Link>
+          или <Link href={createAuthLinkWithReturnUrl(PAGES.LOGIN, searchParams)}>Войти!</Link>
         </Form.Item>
       </Form>
     </AuthWrapper>
