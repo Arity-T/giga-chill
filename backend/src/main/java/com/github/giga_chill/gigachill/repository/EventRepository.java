@@ -2,6 +2,8 @@ package com.github.giga_chill.gigachill.repository;
 
 import com.github.giga_chill.jooq.generated.tables.Events;
 import com.github.giga_chill.jooq.generated.tables.records.EventsRecord;
+
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -46,5 +48,10 @@ public class EventRepository {
     public boolean exists(UUID eventId) {
         return dsl.fetchExists(
                 dsl.selectFrom(Events.EVENTS).where(Events.EVENTS.EVENT_ID.eq(eventId)));
+    public OffsetDateTime getEndDatetimeById(UUID eventId) {
+        return dsl.select(Events.EVENTS.END_DATETIME)
+                .from(Events.EVENTS)
+                .where(Events.EVENTS.EVENT_ID.eq(eventId))
+                .fetchOne(Events.EVENTS.END_DATETIME);
     }
 }
