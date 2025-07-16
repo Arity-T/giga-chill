@@ -98,6 +98,10 @@ public class ShoppingListsController {
         var user = userService.userAuthentication(authentication);
         var title = (String) body.get("title");
         var description = (String) body.get("description");
+        var budget =
+                body.get("quantity") != null
+                        ? new BigDecimal(String.valueOf((Number) body.get("budget")))
+                        : null;
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
@@ -128,7 +132,7 @@ public class ShoppingListsController {
                             + " does not"
                             + " have unassigned or assigned status");
         }
-        shoppingListsService.updateShoppingList(shoppingListId, title, description);
+        shoppingListsService.updateShoppingList(shoppingListId, title, description, budget);
 
         return ResponseEntity.noContent().build();
     }
