@@ -167,8 +167,9 @@ public class TaskService {
                 && (getExecutorId(taskId) == null || executorId.equals(userId))) {
             canTakeItToWork = true;
         }
-        if (getTaskStatus(taskId).equals(env.getProperty("task_status.under_review")) && !participantsService.isParticipantRole(eventId, userId) &&
-                !getExecutorId(taskId).equals(userId)){
+        if (getTaskStatus(taskId).equals(env.getProperty("task_status.under_review"))
+                && !participantsService.isParticipantRole(eventId, userId)
+                && !getExecutorId(taskId).equals(userId)) {
             canReview = true;
         }
         permissions.put("can_edit", canEdit);

@@ -47,7 +47,8 @@ public class ShoppingListsService {
         return shoppingListId.toString();
     }
 
-    public void updateShoppingList(UUID shoppingListId, String title, String description, BigDecimal budget) {
+    public void updateShoppingList(
+            UUID shoppingListId, String title, String description, BigDecimal budget) {
         shoppingListDAO.updateShoppingList(shoppingListId, title, description, budget);
     }
 
