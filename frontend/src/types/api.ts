@@ -106,7 +106,7 @@ export interface TaskRequest {
   title: string;
   description: string;
   deadline_datetime: string;
-  executor_id: string;
+  executor_id: string | null;
   shopping_lists_ids: string[];
 }
 

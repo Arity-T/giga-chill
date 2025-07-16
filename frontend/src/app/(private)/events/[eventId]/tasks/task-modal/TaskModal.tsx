@@ -56,13 +56,13 @@ export default function TaskModal({
                 title: task.title,
                 description: task.description,
                 deadline_datetime: task.deadline_datetime,
-                executor_id: task.executor?.id || '',
+                executor_id: task.executor?.id || null,
                 shopping_lists_ids: task.shopping_lists?.map(list => list.shopping_list_id) || []
             };
 
             // Обновляем конкретное поле
             if (field === 'executor') {
-                updates.executor_id = value?.id || '';
+                updates.executor_id = value?.id || null;
             } else if (field === 'deadline_datetime') {
                 updates.deadline_datetime = value;
             } else {
