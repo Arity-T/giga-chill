@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Modal, Form, Input, DatePicker, Select, App } from 'antd';
 import { TaskRequest, User, ShoppingListWithItems } from '@/types/api';
 import { useCreateTaskMutation } from '@/store/api';
+import { getAvailableShoppingLists } from '@/utils/shopping-list-utils';
 import dayjs from 'dayjs';
 
 const { TextArea } = Input;
@@ -19,6 +20,11 @@ export default function CreateTaskModal({ open, onCancel, participants, shopping
     const [form] = Form.useForm();
     const { message } = App.useApp();
     const [createTask, { isLoading }] = useCreateTaskMutation();
+
+    // Фильтруем только доступные для выбора списки покупок
+    const availableShoppingLists = useMemo(() => {
+        return getAvailableShoppingLists(shoppingLists);
+    }, [shoppingLists]);
 
     useEffect(() => {
         if (open) {
@@ -138,15 +144,16 @@ export default function CreateTaskModal({ open, onCancel, participants, shopping
                         placeholder="Выберите списки покупок (необязательно)"
                         allowClear
                         showSearch
+                        notFoundContent="Нет доступных списков покупок"
                         filterOption={(input, option) => {
-                            const shoppingList = shoppingLists.find(list => list.shopping_list_id === option?.value);
+                            const shoppingList = availableShoppingLists.find(list => list.shopping_list_id === option?.value);
                             if (shoppingList) {
                                 return shoppingList.title.toLowerCase().includes(input.toLowerCase());
                             }
                             return false;
                         }}
                     >
-                        {shoppingLists.map((shoppingList) => (
+                        {availableShoppingLists.map((shoppingList) => (
                             <Option key={shoppingList.shopping_list_id} value={shoppingList.shopping_list_id}>
                                 {shoppingList.title}
                             </Option>

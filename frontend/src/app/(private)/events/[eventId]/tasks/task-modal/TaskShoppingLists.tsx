@@ -3,7 +3,8 @@
 import React, { useState, useMemo } from 'react';
 import { Typography, Space, Button, App, Select, Tag } from 'antd';
 import { EditOutlined, CheckOutlined, CloseOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { ShoppingListWithItems, ShoppingListStatus } from '@/types/api';
+import { ShoppingListWithItems } from '@/types/api';
+import { getTaskShoppingListsOptions, shoppingListsToSelectOptions } from '@/utils/shopping-list-utils';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -30,27 +31,8 @@ export default function TaskShoppingLists({
 
     // Создаем список для селекта: объединяем уже прикрепленные и доступные списки
     const selectOptions = useMemo(() => {
-        const unassignedLists = allShoppingLists.filter(
-            list => list.status === ShoppingListStatus.UNASSIGNED
-        );
-
-        // Создаем Map для избежания дублирования
-        const optionsMap = new Map<string, ShoppingListWithItems>();
-
-        // Сначала добавляем уже прикрепленные к задаче списки
-        shoppingLists.forEach(list => {
-            optionsMap.set(list.shopping_list_id, list);
-        });
-
-        // Затем добавляем доступные для выбора списки
-        unassignedLists.forEach(list => {
-            optionsMap.set(list.shopping_list_id, list);
-        });
-
-        return Array.from(optionsMap.values()).map(list => ({
-            label: list.title,
-            value: list.shopping_list_id
-        }));
+        const availableLists = getTaskShoppingListsOptions(shoppingLists, allShoppingLists);
+        return shoppingListsToSelectOptions(availableLists);
     }, [shoppingLists, allShoppingLists]);
 
     const handleEdit = () => {
