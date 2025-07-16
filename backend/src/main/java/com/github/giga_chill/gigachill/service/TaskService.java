@@ -151,6 +151,10 @@ public class TaskService {
         taskDAO.updateShoppingLists(taskId, shoppingLists);
     }
 
+    public void setExecutorComment(UUID taskId, String executorComment){
+        taskDAO.setExecutorComment(taskId, executorComment);
+    }
+
     public Map<String, Boolean> taskPermissions(UUID eventId, UUID taskId, UUID userId) {
         Map<String, Boolean> permissions = new HashMap<>();
         var canEdit = true;

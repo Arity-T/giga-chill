@@ -326,6 +326,44 @@ public class TasksController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{taskId}/send-for-review")
+    // ACCESS: Только исполнитель
+    public ResponseEntity<Void> postTaskReview(
+            Authentication authentication, @PathVariable UUID eventId, @PathVariable UUID taskId, @RequestBody Map<String, String> body) {
+        var user = userService.userAuthentication(authentication);
+        var executorComment = body.get("executor_comment");
+        if (executorComment == null) {
+            throw new BadRequestException("Invalid request body: " + body);
+        }
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!taskService.isExisted(eventId, taskId)) {
+            throw new NotFoundException("Task with id " + taskId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.getId())) {
+            throw new ForbiddenException(
+                    "User with id "
+                            + user.getId()
+                            + " is not a participant of event with id "
+                            + eventId);
+        }
+        if (!taskService.getTaskStatus(taskId).equals(env.getProperty("task_status.in_progress"))) {
+            throw new ConflictException("Task with id " + taskId + " is not \"in progress\"");
+        }
+        if (!taskService.getExecutorId(taskId).equals(user.getId())) {
+            throw new ConflictException(
+                    "User with id "
+                            + user.getId()
+                            + " cannot send "
+                            + "task with id: "
+                            + taskId + " for review");
+        }
+
+        taskService.setExecutorComment(taskId, executorComment);
+        return ResponseEntity.noContent().build();
+    }
+
     private ResponseTaskWithShoppingListsInfo toResponseTaskWithShoppingListsInfo(
             UUID eventId, UUID userI, Task task, Map<String, Boolean> permissions) {
         return new ResponseTaskWithShoppingListsInfo(
