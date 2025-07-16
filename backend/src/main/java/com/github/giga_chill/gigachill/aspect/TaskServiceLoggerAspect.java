@@ -305,7 +305,8 @@ public class TaskServiceLoggerAspect {
     }
 
     @Around("updateExecutor(taskId, executorId)")
-    public Object logUpdateExecutor(ProceedingJoinPoint proceedingJoinPoint, UUID taskId, UUID executorId)
+    public Object logUpdateExecutor(
+            ProceedingJoinPoint proceedingJoinPoint, UUID taskId, UUID executorId)
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -344,5 +345,4 @@ public class TaskServiceLoggerAspect {
             throw ex;
         }
     }
-
 }

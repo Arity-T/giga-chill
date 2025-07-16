@@ -169,7 +169,7 @@ public class TasksController {
             @PathVariable UUID taskId,
             @RequestBody Map<String, Object> body) {
         var user = userService.userAuthentication(authentication);
-        if (!body.containsKey("executor_id")){
+        if (!body.containsKey("executor_id")) {
             throw new BadRequestException("Invalid request body: " + body);
         }
         UUID executorId =
@@ -225,11 +225,7 @@ public class TasksController {
             @RequestBody List<String> body) {
         var user = userService.userAuthentication(authentication);
         var shoppingListsIds =
-                body != null
-                ? body.stream()
-                        .map(UuidUtils::safeUUID)
-                        .toList()
-                : null;
+                body != null ? body.stream().map(UuidUtils::safeUUID).toList() : null;
 
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
@@ -254,20 +250,16 @@ public class TasksController {
         }
         if (shoppingListsIds != null && !shoppingListsService.areExisted(shoppingListsIds)) {
             throw new NotFoundException(
-                    "One or more of the resources involved were not found: "
-                            + body);
+                    "One or more of the resources involved were not found: " + body);
         }
         if (shoppingListsIds != null
                 && !shoppingListsService.canBindShoppingListsToTask(shoppingListsIds, taskId)) {
             throw new ConflictException(
-                    "One or more lists are already linked to the task: "
-                            + body);
+                    "One or more lists are already linked to the task: " + body);
         }
         taskService.updateShoppingLists(taskId, shoppingListsIds);
         return ResponseEntity.noContent().build();
     }
-
-
 
     @DeleteMapping("/{taskId}")
     // ACCESS: owner, admin, participant(Если является автором)
@@ -299,7 +291,6 @@ public class TasksController {
         taskService.deleteTask(taskId);
         return ResponseEntity.noContent().build();
     }
-
 
     @PostMapping("/{taskId}/take-in-work")
     // ACCESS: owner, admin, participant

@@ -8,9 +8,8 @@ import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.util.DtoEntityMapper;
 import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.RequestTaskInfo;
-import java.util.*;
-
 import jakarta.annotation.Nullable;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -119,11 +118,11 @@ public class TaskService {
         return taskDAO.getExecutorId(taskId);
     }
 
-    public void updateExecutor(UUID taskId, @Nullable UUID executorId){
+    public void updateExecutor(UUID taskId, @Nullable UUID executorId) {
         taskDAO.updateExecutor(taskId, executorId);
     }
 
-    public void updateShoppingLists(UUID taskId, List<UUID> shoppingLists){
+    public void updateShoppingLists(UUID taskId, List<UUID> shoppingLists) {
         taskDAO.updateShoppingLists(taskId, shoppingLists);
     }
 
