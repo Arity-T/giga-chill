@@ -82,6 +82,7 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
                                         list.getTaskId(),
                                         list.getTitle(),
                                         list.getDescription(),
+                                        list.getBudget(),
                                         toShoppingItemDTO(list.getShoppingListId()),
                                         toConsumerDTO(list.getShoppingListId())))
                 .toList();
@@ -111,6 +112,7 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
                 record.getTaskId(),
                 record.getTitle(),
                 record.getDescription(),
+                record.getBudget(),
                 shoppingItems,
                 consumers);
     }
@@ -128,7 +130,8 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
     public void createShoppingList(
             UUID eventId, UUID shoppingListId, UUID userId, String title, String description) {
         shoppingListRepository.save(
-                new ShoppingListsRecord(shoppingListId, null, eventId, title, description));
+                new ShoppingListsRecord(
+                        shoppingListId, null, eventId, title, description, null, null));
 
         consumerInListRepository.addConsumer(shoppingListId, userId);
     }
@@ -310,6 +313,7 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
                                         list.getTaskId(),
                                         list.getTitle(),
                                         list.getDescription(),
+                                        list.getBudget(),
                                         toShoppingItemDTO(list.getShoppingListId()),
                                         toConsumerDTO(list.getShoppingListId())))
                 .toList();
