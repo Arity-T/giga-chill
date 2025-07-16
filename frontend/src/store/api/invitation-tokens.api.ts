@@ -20,9 +20,9 @@ export const invitationTokensApi = api.injectEndpoints({
             ],
         }),
 
-        joinByInvitationToken: builder.mutation<void, string>({
+        joinByInvitationToken: builder.mutation<{ event_id: string }, string>({
             query: (invitationToken) => ({
-                url: `/events/join-by-link`,
+                url: `/events/join-by-invitation-token`,
                 method: 'POST',
                 body: { invitation_token: invitationToken },
             }),
