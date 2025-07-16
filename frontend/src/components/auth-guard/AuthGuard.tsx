@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { PAGES } from '@/config/pages.config';
 import { useGetMeQuery } from '@/store/api';
 
@@ -11,13 +11,16 @@ type Props = {
 
 export function AuthGuard({ children }: Props) {
   const router = useRouter();
+  const pathname = usePathname();
   const { data, error, isLoading } = useGetMeQuery();
 
   useEffect(() => {
     if (!isLoading && error) {
-      router.replace(PAGES.LOGIN);
+      // Сохраняем текущий путь как returnUrl для перенаправления после логина
+      const returnUrl = encodeURIComponent(pathname);
+      router.replace(`${PAGES.LOGIN}?returnUrl=${returnUrl}`);
     }
-  }, [error, isLoading, router]);
+  }, [error, isLoading, router, pathname]);
 
   // Пока грузим /me — не отображаем контент (можно вставить спиннер)
   if (isLoading) return null;

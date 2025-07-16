@@ -5,17 +5,23 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import AuthWrapper from '@/components/auth-wrapper/AuthWrapper';
 import { useLoginMutation } from '@/store/api';
 import { PAGES } from '@/config/pages.config';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [login, { isLoading: loginLoading }] = useLoginMutation();
 
   const onFinish = async (values: any) => {
     try {
       await login(values).unwrap();
-      router.replace(PAGES.HOME);
+
+      // Получаем URL для перенаправления из параметров запроса
+      const returnUrl = searchParams.get('returnUrl');
+      const redirectTo = returnUrl ? decodeURIComponent(returnUrl) : PAGES.HOME;
+
+      router.replace(redirectTo);
     } catch (err) {
       console.log('error');
       console.log(err);
@@ -45,7 +51,7 @@ export default function LoginForm() {
           <Button block type="primary" htmlType="submit" loading={loginLoading}>
             Войти
           </Button>
-          или <Link href={PAGES.REGISTER}>Зарегистрироваться!</Link>
+          или <Link href={`${PAGES.REGISTER}${searchParams.get('returnUrl') ? `?returnUrl=${searchParams.get('returnUrl')}` : ''}`}>Зарегистрироваться!</Link>
         </Form.Item>
       </Form>
     </AuthWrapper>
