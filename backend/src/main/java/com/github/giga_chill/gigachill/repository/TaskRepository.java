@@ -57,10 +57,7 @@ public class TaskRepository {
         if (dto.deadlineDatetime() != null) {
             updates.put(
                     Tasks.TASKS.DEADLINE_DATETIME, OffsetDateTime.parse(dto.deadlineDatetime()));
-        }
-        if (dto.actualApprovalId() != null) {
-            updates.put(Tasks.TASKS.ACTUAL_APPROVAL_ID, dto.actualApprovalId());
-        }
+        }   
 
         dsl.update(Tasks.TASKS).set(updates).where(Tasks.TASKS.TASK_ID.eq(taskId)).execute();
     }

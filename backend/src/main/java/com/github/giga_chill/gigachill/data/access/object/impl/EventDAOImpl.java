@@ -140,7 +140,7 @@ public class EventDAOImpl implements EventDAO {
         EventsRecord event = eventRepository.findById(eventId).orElse(null);
         if (event == null) return null;
 
-        return event.getInviteLink();
+        return event.getInviteToken();
     }
 
     /**
