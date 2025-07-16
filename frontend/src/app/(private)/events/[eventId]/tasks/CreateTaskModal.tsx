@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { Modal, Form, Input, DatePicker, Select, App } from 'antd';
 import { TaskRequest, User, ShoppingListWithItems } from '@/types/api';
-import { useCreateTaskMutation } from '@/store/api';
+import { useCreateTaskMutation, useGetEventQuery } from '@/store/api';
 import { getAvailableShoppingLists } from '@/utils/shopping-list-utils';
 import dayjs from 'dayjs';
 
@@ -20,6 +20,9 @@ export default function CreateTaskModal({ open, onCancel, participants, shopping
     const [form] = Form.useForm();
     const { message } = App.useApp();
     const [createTask, { isLoading }] = useCreateTaskMutation();
+
+    // Получаем информацию о событии
+    const { data: event } = useGetEventQuery(eventId);
 
     // Фильтруем только доступные для выбора списки покупок
     const availableShoppingLists = useMemo(() => {
@@ -106,7 +109,55 @@ export default function CreateTaskModal({ open, onCancel, participants, shopping
                         format="DD.MM.YYYY HH:mm"
                         placeholder="Выберите дату и время"
                         style={{ width: '100%' }}
-                        disabledDate={(current) => current && current < dayjs().startOf('day')}
+                        disabledDate={(current) => {
+                            if (!current) return false;
+
+                            // Нельзя выбрать дату раньше сегодня
+                            if (current < dayjs().startOf('day')) {
+                                return true;
+                            }
+
+                            // Нельзя выбрать дату позже окончания события
+                            if (event?.end_datetime && current > dayjs(event.end_datetime).endOf('day')) {
+                                return true;
+                            }
+
+                            return false;
+                        }}
+                        disabledTime={(current) => {
+                            if (!current || !event?.end_datetime) return {};
+
+                            const eventEnd = dayjs(event.end_datetime);
+
+                            // Если выбранная дата не равна дате окончания события, то все времена доступны
+                            if (!current.isSame(eventEnd, 'day')) {
+                                return {};
+                            }
+
+                            // Если выбранная дата равна дате окончания события
+                            const endHour = eventEnd.hour();
+                            const endMinute = eventEnd.minute();
+
+                            return {
+                                disabledHours: () => {
+                                    const hours = [];
+                                    for (let i = endHour + 1; i < 24; i++) {
+                                        hours.push(i);
+                                    }
+                                    return hours;
+                                },
+                                disabledMinutes: (selectedHour) => {
+                                    if (selectedHour === endHour) {
+                                        const minutes = [];
+                                        for (let i = endMinute + 1; i < 60; i++) {
+                                            minutes.push(i);
+                                        }
+                                        return minutes;
+                                    }
+                                    return [];
+                                }
+                            };
+                        }}
                     />
                 </Form.Item>
 

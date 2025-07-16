@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Modal, Typography, Tag, Tooltip, Row, Col, App, Space, Spin, Button, Popconfirm } from 'antd';
 import { EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { User, TaskRequest, TaskStatus } from '@/types/api';
-import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useAssignTaskMutation, useAssignShoppingListsMutation, useGetShoppingListsQuery, useTakeTaskInWorkMutation, useGetMeQuery } from '@/store/api';
+import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useAssignTaskMutation, useAssignShoppingListsMutation, useGetShoppingListsQuery, useTakeTaskInWorkMutation, useGetMeQuery, useGetEventQuery } from '@/store/api';
 import { getTaskStatusText, getTaskStatusColor, getTaskStatusTooltip } from '@/utils/task-status-utils';
 import TaskDescription from './TaskDescription';
 import TaskExecutor from './TaskExecutor';
@@ -32,6 +32,9 @@ export default function TaskModal({
 
     // Получаем информацию о текущем пользователе
     const { data: currentUser } = useGetMeQuery();
+
+    // Получаем информацию о событии
+    const { data: event } = useGetEventQuery(eventId);
 
     // Получаем полную информацию о задаче
     const { data: task, isLoading } = useGetTaskQuery(
@@ -257,6 +260,7 @@ export default function TaskModal({
                                 deadlineDateTime={task.deadline_datetime}
                                 canEdit={task.permissions.can_edit}
                                 onUpdate={handleUpdateDeadline}
+                                eventEndDateTime={event?.end_datetime}
                             />
                         </Col>
                     </Row>
