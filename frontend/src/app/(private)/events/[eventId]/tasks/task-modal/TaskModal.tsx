@@ -4,11 +4,12 @@ import React, { useState } from 'react';
 import { Modal, Typography, Tag, Tooltip, Row, Col, App, Space, Spin, Button, Popconfirm } from 'antd';
 import { EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { User, TaskRequest } from '@/types/api';
-import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useAssignTaskMutation } from '@/store/api';
+import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useAssignTaskMutation, useAssignShoppingListsMutation, useGetShoppingListsQuery } from '@/store/api';
 import { getTaskStatusText, getTaskStatusColor, getTaskStatusTooltip } from '@/utils/task-status-utils';
 import TaskDescription from './TaskDescription';
 import TaskExecutor from './TaskExecutor';
 import TaskDeadline from './TaskDeadline';
+import TaskShoppingLists from './TaskShoppingLists';
 
 const { Title } = Typography;
 
@@ -38,6 +39,10 @@ export default function TaskModal({
     const [updateTask, { isLoading: isUpdating }] = useUpdateTaskMutation();
     const [deleteTask, { isLoading: isDeleting }] = useDeleteTaskMutation();
     const [assignTask, { isLoading: isAssigning }] = useAssignTaskMutation();
+    const [assignShoppingLists, { isLoading: isAssigningLists }] = useAssignShoppingListsMutation();
+
+    // Получаем все списки покупок для события
+    const { data: allShoppingLists = [] } = useGetShoppingListsQuery(eventId);
 
     const handleUpdate = async (field: string, value: any) => {
         if (!task?.permissions.can_edit) {
@@ -150,6 +155,25 @@ export default function TaskModal({
         await handleUpdate('deadline_datetime', deadline);
     };
 
+    const handleUpdateShoppingLists = async (shoppingListIds: string[]) => {
+        if (!task?.permissions.can_edit) {
+            message.warning('У вас нет прав для редактирования этой задачи');
+            return;
+        }
+
+        try {
+            await assignShoppingLists({
+                eventId,
+                taskId: task.task_id,
+                shoppingListIds
+            }).unwrap();
+
+            message.success('Списки покупок обновлены');
+        } catch (error) {
+            message.error('Ошибка при обновлении списков покупок');
+        }
+    };
+
     return (
         <Modal
             title={null}
@@ -215,20 +239,12 @@ export default function TaskModal({
                     />
 
                     {/* Списки покупок */}
-                    {task.shopping_lists && task.shopping_lists.length > 0 && (
-                        <div style={{ marginTop: '24px' }}>
-                            <Typography.Text strong style={{ color: '#8c8c8c' }}>
-                                Связанные списки покупок:
-                            </Typography.Text>
-                            <div style={{ marginTop: '8px' }}>
-                                {task.shopping_lists.map(list => (
-                                    <Tag key={list.shopping_list_id} style={{ marginBottom: '4px' }}>
-                                        {list.title}
-                                    </Tag>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                    <TaskShoppingLists
+                        shoppingLists={task.shopping_lists || []}
+                        allShoppingLists={allShoppingLists}
+                        canEdit={task.permissions.can_edit}
+                        onUpdate={handleUpdateShoppingLists}
+                    />
 
                     {/* Автор */}
                     <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #f0f0f0' }}>
