@@ -7,6 +7,7 @@ import { useLoginMutation } from '@/store/api';
 import { PAGES } from '@/config/pages.config';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { validateReturnUrl } from '@/utils/redirect-utils';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -17,9 +18,10 @@ export default function LoginForm() {
     try {
       await login(values).unwrap();
 
-      // Получаем URL для перенаправления из параметров запроса
+      // Получаем и валидируем URL для перенаправления из параметров запроса
       const returnUrl = searchParams.get('returnUrl');
-      const redirectTo = returnUrl ? decodeURIComponent(returnUrl) : PAGES.HOME;
+      const validatedReturnUrl = validateReturnUrl(returnUrl);
+      const redirectTo = validatedReturnUrl || PAGES.HOME;
 
       router.replace(redirectTo);
     } catch (err) {
