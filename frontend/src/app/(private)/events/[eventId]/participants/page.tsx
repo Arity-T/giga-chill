@@ -135,6 +135,7 @@ export default function ParticipantsPage({ params }: EventIdPathParam) {
                 onCancel={() => setIsAddModalVisible(false)}
                 eventId={eventId}
                 onSuccess={handleAddParticipantSuccess}
+                userRole={event?.user_role}
             />
         </div>
     );
