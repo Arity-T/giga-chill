@@ -5,6 +5,7 @@ import com.github.giga_chill.gigachill.data.transfer.object.ShoppingListDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.TaskDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.TaskWithShoppingListsDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.UserDTO;
+import com.github.giga_chill.gigachill.repository.ShoppingItemRepository;
 import com.github.giga_chill.gigachill.repository.ShoppingListRepository;
 import com.github.giga_chill.gigachill.repository.TaskRepository;
 import com.github.giga_chill.gigachill.repository.UserRepository;
@@ -13,9 +14,7 @@ import com.github.giga_chill.jooq.generated.tables.records.TasksRecord;
 import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 import jakarta.annotation.Nullable;
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +25,7 @@ public class TaskDAOImpl implements TaskDAO {
     private final UserRepository userRepository;
     private final ShoppingListRepository shoppingListRepository;
     private final ShoppingListDAOImpl shoppingListDAOImpl;
+    private final ShoppingItemRepository shoppingItemRepository;
 
     private UserDTO getAuthorDTO(UUID authorId) {
         // Автор - обязательное поле
@@ -142,27 +142,14 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     /**
-     * Updates an existing task’s data and rebinds it to the specified shopping lists.
+     * Updates an existing task’s data.
      *
      * @param taskId the unique identifier of the task to update
      * @param taskDTO the {@link TaskDTO} containing the updated task information
-     * @param shoppingListsIds a {@link List} of {@link UUID} values representing the new set of
-     *     shopping lists to attach
      */
     @Override
-    public void updateTask(UUID taskId, TaskDTO taskDTO, List<UUID> shoppingListsIds) {
+    public void updateTask(UUID taskId, TaskDTO taskDTO) {
         taskRepository.updateFromDTO(taskId, taskDTO);
-
-        // Обновляем связанные списки покупок, только если они явно переданы
-        if (shoppingListsIds != null) {
-            // Убираем старые связи
-            shoppingListRepository.detachFromTask(taskId);
-
-            // Привязываем переданные списки
-            for (UUID shoppingListId : shoppingListsIds) {
-                shoppingListRepository.updateTaskId(shoppingListId, taskId);
-            }
-        }
     }
 
     /**
@@ -258,5 +245,60 @@ public class TaskDAOImpl implements TaskDAO {
         }
 
         return task.getExecutorId();
+    }
+
+    /**
+     * Assigns or unassigns the executor for the specified task.
+     *
+     * @param taskId the unique identifier of the task to update
+     * @param executorId the {@link UUID} of the user who will execute the task; may be {@code null}
+     *     to clear any existing executor
+     */
+    @Override
+    public void updateExecutor(UUID taskId, @Nullable UUID executorId) {
+        taskRepository.updateExecutor(taskId, executorId);
+    }
+
+    /**
+     * Updates the set of shopping lists associated with the specified task.
+     *
+     * @param taskId the unique identifier of the task to update
+     * @param shoppingLists a {@link List} of {@link UUID} values representing new shopping list IDs
+     *     to bind; may be {@code null} to clear all associations If the list is unlinked, its
+     *     status becomes "Unassigned". And all the purchases become not purchased.
+     */
+    @Override
+    public void updateShoppingLists(UUID taskId, @Nullable List<UUID> shoppingLists) {
+        // Текущие списки, привязанные к задаче
+        List<UUID> currentIds = shoppingListRepository.findIdsByTaskId(taskId);
+
+        if (shoppingLists == null) {
+            // 1) Убираем все связи
+            shoppingListRepository.detachAllFromTask(taskId);
+            // 2) Сбрасываем статус у всех товаров в этих списках
+            for (UUID listId : currentIds) {
+                shoppingItemRepository.resetAllStatusByListId(listId);
+            }
+            return;
+        }
+
+        // Кого надо отвязать: есть в current, но нет в new
+        Set<UUID> toRemove = new HashSet<>(currentIds);
+        shoppingLists.forEach(toRemove::remove);
+
+        // Кого надо привязать: есть в new, но нет в current
+        Set<UUID> toAdd = new HashSet<>(shoppingLists);
+        currentIds.forEach(toAdd::remove);
+
+        // Отвязываем и сбрасываем статус товаров
+        for (UUID listId : toRemove) {
+            shoppingListRepository.updateTaskId(listId, null);
+            shoppingItemRepository.resetAllStatusByListId(listId);
+        }
+
+        // Привязываем новые
+        for (UUID listId : toAdd) {
+            shoppingListRepository.updateTaskId(listId, taskId);
+        }
     }
 }
