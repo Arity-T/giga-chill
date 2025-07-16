@@ -9,6 +9,7 @@ import com.github.giga_chill.gigachill.util.DtoEntityMapper;
 import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.RequestTaskInfo;
 import jakarta.annotation.Nullable;
+import java.time.OffsetDateTime;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -23,6 +24,7 @@ public class TaskService {
     private final ShoppingListsService shoppingListsService;
     private final UserService userService;
     private final ParticipantsService participantsService;
+    private final EventService eventService;
 
     public List<Task> getAllTasksFromEvent(UUID eventId) {
         return taskDAO.getAllTasksFromEvent(eventId).stream()
@@ -56,6 +58,17 @@ public class TaskService {
                             + requestTaskInfo.shoppingListsIds());
         }
 
+        var eventEndDatetime = OffsetDateTime.parse(eventService.getEndDatetime(eventId));
+        var taskDeadline = OffsetDateTime.parse(requestTaskInfo.deadlineDatetime());
+
+        if (eventEndDatetime.isBefore(taskDeadline)) {
+            throw new ConflictException(
+                    "You cannot specify task due date: "
+                            + taskDeadline
+                            + " that is later than the end of the event: "
+                            + eventEndDatetime);
+        }
+
         var task =
                 new Task(
                         UUID.randomUUID(),
@@ -75,7 +88,17 @@ public class TaskService {
         return task.getTaskId().toString();
     }
 
-    public void updateTask(UUID taskId, RequestTaskInfo requestTaskInfo) {
+    public void updateTask(UUID eventId, UUID taskId, RequestTaskInfo requestTaskInfo) {
+        var eventEndDatetime = OffsetDateTime.parse(eventService.getEndDatetime(eventId));
+        var taskDeadline = OffsetDateTime.parse(requestTaskInfo.deadlineDatetime());
+
+        if (eventEndDatetime.isBefore(taskDeadline)) {
+            throw new ConflictException(
+                    "You cannot specify task due date: "
+                            + taskDeadline
+                            + " that is later than the end of the event: "
+                            + eventEndDatetime);
+        }
         var task =
                 new Task(
                         taskId,

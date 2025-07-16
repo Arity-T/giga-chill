@@ -157,7 +157,7 @@ public class TasksController {
             throw new ForbiddenException(
                     "User with id " + user.getId() + " cannot change " + "task with id: " + taskId);
         }
-        taskService.updateTask(taskId, requestTaskInfo);
+        taskService.updateTask(eventId, taskId, requestTaskInfo);
         return ResponseEntity.noContent().build();
     }
 

@@ -61,4 +61,8 @@ public class EventService {
     public void deleteEvent(UUID eventId) {
         eventDAO.deleteEvent(eventId);
     }
+
+    public String getEndDatetime(UUID eventId) {
+        return eventDAO.getEndDatetime(eventId);
+    }
 }

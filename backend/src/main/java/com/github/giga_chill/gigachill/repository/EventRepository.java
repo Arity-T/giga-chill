@@ -2,7 +2,6 @@ package com.github.giga_chill.gigachill.repository;
 
 import com.github.giga_chill.jooq.generated.tables.Events;
 import com.github.giga_chill.jooq.generated.tables.records.EventsRecord;
-
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;

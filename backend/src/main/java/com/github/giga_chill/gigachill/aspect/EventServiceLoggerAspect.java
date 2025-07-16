@@ -49,6 +49,11 @@ public class EventServiceLoggerAspect {
                     + "&& args(eventId)")
     public void isExisted(UUID eventId) {}
 
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.EventService.getEndDatetime(..)) "
+                    + "&& args(eventId)")
+    public void getEndDatetime(UUID eventId) {}
+
     @Around("createEvent(userId, requestEventInfo)")
     public Object logCreateEvent(
             ProceedingJoinPoint proceedingJoinPoint, UUID userId, RequestEventInfo requestEventInfo)
@@ -153,6 +158,23 @@ public class EventServiceLoggerAspect {
                                 + loggerColorConfig.getRESET_COLOR(),
                         eventId);
             }
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("getEndDatetime(eventId)")
+    public Object logGetEndDatetime(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
+            throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            LOGGER.info(
+                    loggerColorConfig.getGET_COLOR()
+                            + "Event with id: {} has an end time: {}"
+                            + loggerColorConfig.getRESET_COLOR(),
+                    eventId,
+                    (String) result);
             return result;
         } catch (Throwable ex) {
             throw ex;

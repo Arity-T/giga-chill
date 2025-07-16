@@ -36,8 +36,8 @@ public class TaskServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.updateTask(..)) "
-                    + "&& args(taskId, ..)")
-    public void updateTask(UUID taskId) {}
+                    + "&& args(eventId, taskId, ..)")
+    public void updateTask(UUID eventId, UUID taskId) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.startExecuting(..)) "
@@ -135,8 +135,8 @@ public class TaskServiceLoggerAspect {
         }
     }
 
-    @Around("updateTask(taskId)")
-    public Object logUpdateTask(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
+    @Around("updateTask(eventId, taskId)")
+    public Object logUpdateTask(ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UUID taskId)
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();

@@ -60,7 +60,6 @@ public interface EventDAO {
      */
     boolean isExisted(UUID eventId);
 
-
     /**
      * Retrieves the end date and time of the specified event.
      *
