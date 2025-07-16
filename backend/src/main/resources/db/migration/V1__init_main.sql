@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS events (
   start_datetime TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   end_datetime TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   budget NUMERIC(12, 2) DEFAULT NULL,
-  invite_link UUID DEFAULT gen_random_uuid(),
+  invite_token UUID DEFAULT gen_random_uuid(),
   is_deleted BOOLEAN DEFAULT FALSE
 );
 
