@@ -12,6 +12,7 @@ import com.github.giga_chill.jooq.generated.tables.records.EventsRecord;
 import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
 import com.github.giga_chill.jooq.generated.enums.EventRole;
 
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -98,10 +99,53 @@ public class EventDAOImpl implements EventDAO {
     eventRepository.deleteById(eventId);
   }
 
-  // todo: optimized method exists() in eventRepository
   @Override
   public boolean isExisted(UUID eventId) {
-    return eventRepository.findById(eventId).isPresent();
+    return eventRepository.exists(eventId);
+  }
+
+  /**
+   * Creates a new invite link record for the specified event.
+   *
+   * @param eventId        the unique identifier of the event
+   * @param inviteLinkUuid the UUID to assign as the invite link token
+   */
+  @Override
+  public void createInviteLink(UUID eventId, UUID inviteLinkUuid) {
+      eventRepository.updateInviteLink(eventId, inviteLinkUuid);
+  }
+
+  /**
+   * Retrieves the UUID of the current invite link for the given event.
+   *
+   * @param eventId the unique identifier of the event
+   * @return the {@link UUID} representing the invite link token
+   */
+  @Override
+  public UUID getInviteLinkUuid(UUID eventId) {
+    EventsRecord event = eventRepository.findById(eventId).orElse(null);
+    if (event == null) return null;
+
+    return event.getInviteLink();
+  }
+
+  /**
+   * Retrieves the unique Event ID associated with the given invite link UUID.
+   *
+   * @param linkUuid the UUID token used for event invitation links
+   * @return the {@link UUID} of the event linked to the provided invitation token,
+   *         or {@code null} if no matching event is found
+   */
+
+  @Nullable
+  @Override
+  public UUID getEventByLinkUuid(UUID linkUuid) {
+    EventsRecord event = eventRepository.findByLinkId(linkUuid).orElse(null);
+    if (event == null) {
+      return null;
+    }
+
+    return event.getEventId();
   }
 
 }

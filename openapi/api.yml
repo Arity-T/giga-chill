@@ -14,6 +14,7 @@ tags:
   - name: Auth
   - name: Me
   - name: Events
+  - name: Invite Links
   - name: Participants
   - name: Shopping Lists
   - name: Shopping List Items
@@ -59,11 +60,7 @@ paths:
         "204":
           description: Пользователь создан. JWT-токен отправлен в Set-Cookie (HttpOnly). Тело пустое.
         "400":
-          description: Невалидные данные (например, короткий пароль)
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/InvalidDataError"
         "409":
           description: Пользователь с таким логином уже существует
           content:
@@ -81,11 +78,7 @@ paths:
         "204":
           description: Пользователь успешно вышел из системы. JWT токен удалён из cookie.
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
   /me:
     get:
       summary: Текущий пользователь
@@ -100,11 +93,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
 
   /events:
     get:
@@ -122,11 +111,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Events"
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
 
     post:
       summary: Создать мероприятие
@@ -143,17 +128,9 @@ paths:
         "204":
           description: No Content
         "400":
-          description: Невалидные данные мероприятия
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/InvalidDataError"
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
 
   /events/{eventId}:
     get:
@@ -173,23 +150,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/Event"
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Пользователь не является участником данного мероприятия
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие не найдено
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
 
     patch:
       summary: Обновить мероприятие
@@ -207,29 +172,13 @@ paths:
         "204":
           description: No Content
         "400":
-          description: Невалидные данные мероприятия
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/InvalidDataError"
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Недостаточно прав для изменения мероприятия (требуется роль owner или admin)
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие не найдено
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
 
     delete:
       summary: Удалить мероприятие
@@ -241,19 +190,77 @@ paths:
         "204":
           description: No Content
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Недостаточно прав для удаления мероприятия (требуется роль owner)
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /events/{eventId}/invitation-token:
+    post:
+      summary: Создать новый токен
+      description: Токен генерирует пользователь со статусом **owner**.
+      tags: [Invite Links]
+      operationId: createEventInvitationToken
+      responses:
+        "204":
+          description: No Content
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    get:
+      summary: Получение токена
+      description: Возвращает заранее сгенерированный токен-приглашение.
+        Доступно пользователям с ролью **admin** или **owner**.
+        Если токен ещё не был сгенерирован, то в поле token возвращается null.
+      tags: [Invite Links]
+      operationId: getEventInvitationToken
+      responses:
+        "200":
+          description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InvitationToken"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие не найдено
+          $ref: "#/components/responses/NotFoundError"
+
+  /events/join-by-invitation-token:
+    post:
+      summary: Присоединиться к мероприятию по токену
+      description: Пользователь становится участником мероприятия.
+      tags: [Invite Links]
+      operationId: joinByInvitationToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvitationToken"
+      responses:
+        "200":
+          description: Идентификатор мероприятия, к которому присоединился пользователь
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  event_id:
+                    $ref: "#/components/schemas/ReadOnlyUUID"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          description: Пользователь уже является участником мероприятия
           content:
             application/json:
               schema:
@@ -274,23 +281,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/UsersInEvent"
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Пользователь не является участником данного мероприятия
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие не найдено
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
 
     post:
       summary: Добавить участника
@@ -309,29 +304,13 @@ paths:
         "204":
           description: No Content
         "400":
-          description: Невалидные данные (например, недопустимые символы в логине)
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/InvalidDataError"
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Недостаточно прав для добавления участников (требуется роль owner или admin)
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие или участник с таким логином не найден
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
         "409":
           description: Пользователь уже является участником мероприятия
           content:
@@ -351,23 +330,11 @@ paths:
         "204":
           description: No Content
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Недостаточно прав для удаления участников (требуется роль owner или admin)
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие или участник не найден
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
 
   /events/{eventId}/participants/{participantId}/role:
     patch:
@@ -387,29 +354,13 @@ paths:
         "204":
           description: No Content
         "400":
-          description: Невалидная роль или попытка изменить роль owner
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/InvalidDataError"
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Недостаточно прав для изменения ролей (требуется роль owner или admin)
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие или участник не найден
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
 
   /events/{eventId}/shopping-lists:
     get:
@@ -429,23 +380,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/ShoppingListsWithItems"
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Пользователь не является участником данного мероприятия
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие не найдено
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
 
     post:
       summary: Добавить список покупок
@@ -463,29 +402,13 @@ paths:
         "204":
           description: No Content
         "400":
-          description: Невалидные данные
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/InvalidDataError"
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Недостаточно прав для добавления списка покупок
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие не найдено
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
 
   /events/{eventId}/shopping-lists/{shoppingListId}:
     patch:
@@ -505,29 +428,13 @@ paths:
         "204":
           description: No Content
         "400":
-          description: Невалидные данные
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/InvalidDataError"
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Недостаточно прав для изменения списка покупок
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие или список покупок не найден
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
 
     delete:
       summary: Удалить список покупок
@@ -540,23 +447,11 @@ paths:
         "204":
           description: No Content
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Недостаточно прав для удаления списка покупок
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие или список покупок не найден
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
 
   /events/{eventId}/shopping-lists/{shoppingListId}/shopping-items:
     post:
@@ -576,29 +471,13 @@ paths:
         "204":
           description: No Content
         "400":
-          description: Невалидные данные
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/InvalidDataError"
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Недостаточно прав для добавления элемента в список покупок
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие или список покупок не найден
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
 
   /events/{eventId}/shopping-lists/{shoppingListId}/shopping-items/{shoppingItemId}:
     patch:
@@ -619,29 +498,13 @@ paths:
         "204":
           description: No Content
         "400":
-          description: Невалидные данные
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/InvalidDataError"
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Недостаточно прав для изменения элемента списка покупок
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие, список покупок или элемент списка покупок не найден
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
 
     delete:
       summary: Удалить элемент из списка покупок
@@ -655,23 +518,11 @@ paths:
         "204":
           description: No Content
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Недостаточно прав для удаления элемента из списка покупок
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие, список покупок или элемент списка покупок не найден
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
 
   /events/{eventId}/shopping-lists/{shoppingListId}/shopping-items/{shoppingItemId}/purchased-state:
     patch:
@@ -692,29 +543,13 @@ paths:
         "204":
           description: No Content
         "400":
-          description: Невалидные данные
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/InvalidDataError"
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Недостаточно прав для изменения статуса элемента списка покупок
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие, список покупок или элемент списка покупок не найден
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
 
   /events/{eventId}/shopping-lists/{shoppingListId}/consumers:
     put:
@@ -734,77 +569,84 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserIdList"
+              $ref: "#/components/schemas/UUIDList"
       responses:
         "204":
           description: No Content
         "400":
-          description: Невалидные данные
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/InvalidDataError"
         "401":
-          description: Токен отсутствует, истёк или некорректен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          description: Недостаточно прав для добавления потребителя в список покупок
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          description: Мероприятие, список покупок или пользователь не найден
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
         "409":
           description: Статус списка покупок не позволяет изменять потребителей
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+
 components:
+  responses:
+    InvalidDataError:
+      description: Невалидные данные в теле запроса
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    UnauthorizedError:
+      description: Токен отсутствует, истёк или некорректен
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ForbiddenError:
+      description: У пользователя недостаточно прав для выполнения операции
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFoundError:
+      description: Один или несколько задействованных ресурсов не найдены
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
   parameters:
     eventId:
       name: eventId
       in: path
       required: true
+      description: Идентификатор мероприятия
       schema:
-        type: string
-        format: uuid
-      example: c014cfe2-7a69-4959-88f7-4a2b795c2a20
+        $ref: "#/components/schemas/UUID"
 
     participantId:
       name: participantId
       in: path
       required: true
+      description: Идентификатор участника
       schema:
-        type: string
-        format: uuid
-      example: 0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c
+        $ref: "#/components/schemas/UUID"
 
     shoppingListId:
       name: shoppingListId
       in: path
       required: true
+      description: Идентификатор списка покупок
       schema:
-        type: string
-        format: uuid
-      example: 0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c
+        $ref: "#/components/schemas/UUID"
 
     shoppingItemId:
       name: shoppingItemId
       in: path
       required: true
+      description: Идентификатор элемента списка покупок
       schema:
-        type: string
-        format: uuid
-      example: 0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c
+        $ref: "#/components/schemas/UUID"
 
   securitySchemes:
     CookieAuth:
@@ -813,6 +655,20 @@ components:
       name: token
 
   schemas:
+    UUID:
+      type: string
+      format: uuid
+
+    ReadOnlyUUID:
+      allOf:
+        - $ref: "#/components/schemas/UUID"
+        - readOnly: true
+
+    UUIDList:
+      type: array
+      items:
+        $ref: "#/components/schemas/UUID"
+
     ErrorResponse:
       type: object
       properties:
@@ -861,16 +717,7 @@ components:
       type: object
       properties:
         id:
-          type: string
-          description: Идентификатор пользователя
-          example: c014cfe2-7a69-4959-88f7-4a2b795c2a20
-
-    UserIdList:
-      type: array
-      items:
-        type: string
-        format: uuid
-        description: Идентификатор пользователя
+          $ref: "#/components/schemas/UUID"
 
     User:
       allOf:
@@ -878,14 +725,17 @@ components:
         - $ref: "#/components/schemas/UserName"
         - $ref: "#/components/schemas/UserId"
 
+    RoleEnum:
+      type: string
+      enum: [owner, admin, participant]
+      description: Роль пользователя в мероприятии
+      example: owner
+
     UserRole:
       type: object
       properties:
         role:
-          type: string
-          enum: [owner, admin, participant]
-          description: Роль пользователя в мероприятии
-          example: owner
+          $ref: "#/components/schemas/RoleEnum"
 
     UserInEvent:
       allOf:
@@ -893,11 +743,7 @@ components:
         - type: object
           properties:
             user_role:
-              readOnly: true
-              type: string
-              enum: [owner, admin, participant]
-              description: Роль пользователя в мероприятии
-              example: owner
+              $ref: "#/components/schemas/RoleEnum"
             balance:
               type: number
               description: Баланс пользователя в мероприятии (сумма долгов)
@@ -912,16 +758,11 @@ components:
       type: object
       properties:
         event_id:
-          readOnly: true
-          type: string
-          description: Идентификатор мероприятия
-          example: 123e4567-e89b-12d3-a456-426614174000
+          $ref: "#/components/schemas/ReadOnlyUUID"
         user_role:
           readOnly: true
-          type: string
-          enum: [owner, admin, participant]
-          description: Роль пользователя в мероприятии
-          example: owner
+          allOf:
+            - $ref: "#/components/schemas/RoleEnum"
         title:
           type: string
           description: Название мероприятия
@@ -950,6 +791,14 @@ components:
           description: Бюджет мероприятия
           example: 10000
 
+    InvitationToken:
+      type: object
+      properties:
+        invitation_token:
+          type: string
+          description: Токен-приглашение
+          example: "0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c"
+
     Events:
       type: array
       items:
@@ -959,10 +808,7 @@ components:
       type: object
       properties:
         shopping_item_id:
-          readOnly: true
-          type: string
-          description: Идентификатор элемента списка покупок
-          example: 123e4567-e89b-12d3-a456-426614174000
+          $ref: "#/components/schemas/ReadOnlyUUID"
         title:
           type: string
           description: Название элемента списка покупок
@@ -998,15 +844,9 @@ components:
       type: object
       properties:
         shopping_list_id:
-          readOnly: true
-          type: string
-          description: Идентификатор списка покупок
-          example: 123e4567-e89b-12d3-a456-426614174000
+          $ref: "#/components/schemas/ReadOnlyUUID"
         task_id:
-          readOnly: true
-          type: string
-          description: Идентификатор связанной задачи
-          example: 123e4567-e89b-12d3-a456-426614174000
+          $ref: "#/components/schemas/ReadOnlyUUID"
         title:
           type: string
           description: Название задачи

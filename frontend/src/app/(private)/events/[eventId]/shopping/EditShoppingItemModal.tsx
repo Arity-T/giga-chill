@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, InputNumber, Button, App, Select } from 'antd';
-import { useUpdateShoppingItemMutation } from '@/store/api/api';
+import { useUpdateShoppingItemMutation } from '@/store/api';
 import type { ShoppingItemRequest, ShoppingItem } from '@/types/api';
 
 interface EditShoppingItemModalProps {

@@ -3,3 +3,9 @@ export interface EventIdPathParam {
         eventId: string;
     }>;
 }
+
+export interface InvitationTokenPathParam {
+    params: Promise<{
+        invitationToken: string;
+    }>;
+}

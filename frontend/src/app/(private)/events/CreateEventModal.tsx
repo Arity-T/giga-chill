@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Modal, Form, Input, DatePicker, Button, App } from 'antd';
-import { useCreateEventMutation } from '@/store/api/api';
+import { useCreateEventMutation } from '@/store/api';
 import type { CreateEventRequest } from '@/types/api';
 import dayjs from 'dayjs';
 

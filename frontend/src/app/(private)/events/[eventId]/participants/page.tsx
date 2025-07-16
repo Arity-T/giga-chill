@@ -10,7 +10,7 @@ import {
     useGetEventParticipantsQuery,
     useDeleteParticipantMutation,
     useUpdateParticipantRoleMutation
-} from '@/store/api/api';
+} from '@/store/api';
 import { UserRole, UserInEvent } from '@/types/api';
 import ParticipantTable from './ParticipantTable';
 import AddParticipantModal from './AddParticipantModal';
@@ -135,6 +135,7 @@ export default function ParticipantsPage({ params }: EventIdPathParam) {
                 onCancel={() => setIsAddModalVisible(false)}
                 eventId={eventId}
                 onSuccess={handleAddParticipantSuccess}
+                userRole={event?.user_role}
             />
         </div>
     );

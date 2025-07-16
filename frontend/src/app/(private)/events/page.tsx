@@ -4,7 +4,7 @@ import { Row, Col, Typography, Button, Flex, Empty } from "antd";
 import { PlusOutlined } from '@ant-design/icons';
 import { useState } from "react";
 import styles from "./page.module.css";
-import { useGetEventsQuery } from "@/store/api/api";
+import { useGetEventsQuery } from "@/store/api";
 import CreateEventModal from "./CreateEventModal";
 import EventCard from "./EventCard";
 

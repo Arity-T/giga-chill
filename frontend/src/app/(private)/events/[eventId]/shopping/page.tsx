@@ -5,7 +5,7 @@ import { Typography, Button, Empty, App } from 'antd';
 import { ShoppingCartOutlined, PlusOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { EventIdPathParam } from '@/types/path-params';
 import ShoppingListCard from './ShoppingListCard';
-import { useGetShoppingListsQuery, useDeleteShoppingListMutation, useDeleteShoppingItemMutation, useUpdateShoppingItemPurchasedStateMutation } from '@/store/api/api';
+import { useGetShoppingListsQuery, useDeleteShoppingListMutation, useDeleteShoppingItemMutation, useUpdateShoppingItemPurchasedStateMutation } from '@/store/api';
 import ShoppingListModal from './ShoppingListModal';
 import AddShoppingItemModal from './AddShoppingItemModal';
 import EditShoppingItemModal from './EditShoppingItemModal';

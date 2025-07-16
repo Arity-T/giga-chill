@@ -13,7 +13,7 @@ import {
     SettingOutlined
 } from '@ant-design/icons';
 import { useRouter, usePathname } from 'next/navigation';
-import { useGetEventQuery } from '@/store/api/api';
+import { useGetEventQuery } from '@/store/api';
 import { Button, Typography } from 'antd';
 import UserRoleTag from '@/components/UserRoleTag';
 import { PAGES } from '@/config/pages.config';

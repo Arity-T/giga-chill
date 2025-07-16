@@ -3,7 +3,7 @@
 import { Button, App } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
-import { useDeleteEventMutation } from '@/store/api/api';
+import { useDeleteEventMutation } from '@/store/api';
 import { Event } from '@/types/api';
 import { PAGES } from '@/config/pages.config';
 
