@@ -1,6 +1,5 @@
 package com.github.giga_chill.gigachill.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;

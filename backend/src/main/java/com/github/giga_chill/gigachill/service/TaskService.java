@@ -77,6 +77,7 @@ public class TaskService {
                         env.getProperty("task_status.open"),
                         requestTaskInfo.deadlineDatetime(),
                         null,
+                        null,
                         user,
                         requestTaskInfo.executorId() != null
                                 ? userService.getById(
@@ -106,6 +107,7 @@ public class TaskService {
                         requestTaskInfo.description(),
                         null,
                         requestTaskInfo.deadlineDatetime(),
+                        null,
                         null,
                         null,
                         null,
