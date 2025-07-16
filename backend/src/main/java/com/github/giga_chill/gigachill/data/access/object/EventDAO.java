@@ -59,4 +59,13 @@ public interface EventDAO {
      * @return {@code true} if the event exists, {@code false} otherwise
      */
     boolean isExisted(UUID eventId);
+
+
+    /**
+     * Retrieves the end date and time of the specified event.
+     *
+     * @param eventId the unique identifier of the event
+     * @return a {@link String} representation of the event’s end date‑time,
+     */
+    String getEndDatetime(UUID eventId);
 }
