@@ -33,6 +33,13 @@ public class ShoppingListRepository {
                 .fetch();
     }
 
+    public List<UUID> findIdsByTaskId(UUID taskId) {
+        return dsl.select(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID)
+                .from(ShoppingLists.SHOPPING_LISTS)
+                .where(ShoppingLists.SHOPPING_LISTS.TASK_ID.eq(taskId))
+                .fetchInto(UUID.class);
+    }
+
     public void save(ShoppingListsRecord record) {
         dsl.insertInto(ShoppingLists.SHOPPING_LISTS).set(record).execute();
     }
@@ -126,7 +133,7 @@ public class ShoppingListRepository {
         return count == shoppingListIds.size(); // true, если все свободны
     }
 
-    public void detachFromTask(UUID taskId) {
+    public void detachAllFromTask(UUID taskId) {
         dsl.update(ShoppingLists.SHOPPING_LISTS)
                 .set(ShoppingLists.SHOPPING_LISTS.TASK_ID, (UUID) null)
                 .where(ShoppingLists.SHOPPING_LISTS.TASK_ID.eq(taskId))
