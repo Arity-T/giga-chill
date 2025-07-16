@@ -327,7 +327,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ShoppingListWithItems"
+              $ref: "#/components/schemas/CreateShoppingListRequest"
       responses:
         "204":
           description: No Content
@@ -700,6 +700,50 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundError"
 
+  /events/{eventId}/tasks/{taskId}/send-for-review:
+    post:
+      summary: Отправить задачу на проверку
+      tags: [Tasks]
+      operationId: sendTaskForReview
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/taskId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskSendForReviewRequest"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+  /events/{eventId}/tasks/{taskId}/review:
+    post:
+      summary: Подтвердить или отклонить задачу
+      tags: [Tasks]
+      operationId: reviewTask
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/taskId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskReviewRequest"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
 components:
   responses:
     InvalidDataError:
@@ -953,6 +997,18 @@ components:
           description: Признак того, что элемент списка покупок куплен
           example: false
 
+    CreateShoppingListRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Название списка покупок
+          example: "Купить фрукты"
+        description:
+          type: string
+          description: Описание списка покупок
+          example: "Купить фрукты для вечеринки"
+
     ShoppingListWithItems:
       type: object
       properties:
@@ -987,6 +1043,10 @@ components:
           type: boolean
           description: Может ли пользователь редактировать список покупок
           example: true
+        budget:
+          type: number
+          description: Реальная стоимость списка покупок
+          example: 499.99
         shopping_items:
           readOnly: true
           type: array
@@ -1085,6 +1145,10 @@ components:
               type: boolean
               description: Может ли пользователь взять задачу в работу
               example: true
+            can_review:
+              type: boolean
+              description: Может ли пользователь подтвердить или отклонить задачу
+              example: true
         author:
           allOf:
             - $ref: "#/components/schemas/User"
@@ -1106,3 +1170,22 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Task"
+
+    TaskSendForReviewRequest:
+      type: object
+      properties:
+        executor_comment:
+          type: string
+          description: Комментарий исполнителя
+          example: "Задача выполнена"
+
+    TaskReviewRequest:
+      type: object
+      properties:
+        reviewer_comment:
+          type: string
+          description: Комментарий проверяющего
+          example: "Подтверждаю выполнение задачи"
+        is_approved:
+          type: boolean
+          description: Признак того, что задача одобрена
