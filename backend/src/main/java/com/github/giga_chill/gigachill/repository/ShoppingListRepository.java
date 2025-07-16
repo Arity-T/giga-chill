@@ -108,10 +108,11 @@ public class ShoppingListRepository {
         return dsl.fetchExists(
                 dsl.selectFrom(ShoppingLists.SHOPPING_LISTS)
                         .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(shoppingListId))
-                        .and(ShoppingLists.SHOPPING_LISTS.TASK_ID.eq(taskId)
-                                .or(ShoppingLists.SHOPPING_LISTS.TASK_ID.isNull())
-                        )
-        );
+                        .and(
+                                ShoppingLists.SHOPPING_LISTS
+                                        .TASK_ID
+                                        .eq(taskId)
+                                        .or(ShoppingLists.SHOPPING_LISTS.TASK_ID.isNull())));
     }
 
     public boolean allCanBeBound(List<UUID> shoppingListIds) {
@@ -137,10 +138,9 @@ public class ShoppingListRepository {
                 dsl.selectFrom(ShoppingLists.SHOPPING_LISTS)
                         .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.in(shoppingListIds))
                         .and(
-                                ShoppingLists.SHOPPING_LISTS.TASK_ID.eq(taskId)
-                                        .or(ShoppingLists.SHOPPING_LISTS.TASK_ID.isNull())
-                        )
-        );
+                                ShoppingLists.SHOPPING_LISTS
+                                        .TASK_ID
+                                        .eq(taskId)
+                                        .or(ShoppingLists.SHOPPING_LISTS.TASK_ID.isNull())));
     }
-
 }
