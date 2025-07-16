@@ -100,7 +100,7 @@ public class TaskServiceLoggerAspect {
         }
     }
 
-    @Around("logGetTaskById(taskId)")
+    @Around("GetTaskById(taskId)")
     public Object logGetTaskById(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
             throws Throwable {
         try {
