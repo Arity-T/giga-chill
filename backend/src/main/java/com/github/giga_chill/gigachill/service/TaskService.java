@@ -151,7 +151,7 @@ public class TaskService {
         taskDAO.updateShoppingLists(taskId, shoppingLists);
     }
 
-    public void setExecutorComment(UUID taskId, String executorComment){
+    public void setExecutorComment(UUID taskId, String executorComment) {
         taskDAO.setExecutorComment(taskId, executorComment);
     }
 

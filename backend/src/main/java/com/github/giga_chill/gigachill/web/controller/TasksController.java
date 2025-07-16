@@ -329,7 +329,10 @@ public class TasksController {
     @PostMapping("/{taskId}/send-for-review")
     // ACCESS: Только исполнитель
     public ResponseEntity<Void> postTaskReview(
-            Authentication authentication, @PathVariable UUID eventId, @PathVariable UUID taskId, @RequestBody Map<String, String> body) {
+            Authentication authentication,
+            @PathVariable UUID eventId,
+            @PathVariable UUID taskId,
+            @RequestBody Map<String, String> body) {
         var user = userService.userAuthentication(authentication);
         var executorComment = body.get("executor_comment");
         if (executorComment == null) {
@@ -357,7 +360,8 @@ public class TasksController {
                             + user.getId()
                             + " cannot send "
                             + "task with id: "
-                            + taskId + " for review");
+                            + taskId
+                            + " for review");
         }
 
         taskService.setExecutorComment(taskId, executorComment);
