@@ -216,7 +216,7 @@ public class TaskServiceLoggerAspect {
         try {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(
-                    loggerColorConfig.getDELETE_COLOR()
+                    loggerColorConfig.getGET_COLOR()
                             + "Task with id: {} has status {}"
                             + loggerColorConfig.getRESET_COLOR(),
                     taskId,
