@@ -28,6 +28,8 @@ export default function LoginForm() {
     }
   };
 
+  const returnUrl = searchParams.get('returnUrl');
+
   return (
     <AuthWrapper title="Вход в систему">
       <Form
@@ -51,7 +53,7 @@ export default function LoginForm() {
           <Button block type="primary" htmlType="submit" loading={loginLoading}>
             Войти
           </Button>
-          или <Link href={`${PAGES.REGISTER}${searchParams.get('returnUrl') ? `?returnUrl=${searchParams.get('returnUrl')}` : ''}`}>Зарегистрироваться!</Link>
+          или <Link href={`${PAGES.REGISTER}${returnUrl ? `?returnUrl=${encodeURIComponent(returnUrl)}` : ''}`}>Зарегистрироваться!</Link>
         </Form.Item>
       </Form>
     </AuthWrapper>
