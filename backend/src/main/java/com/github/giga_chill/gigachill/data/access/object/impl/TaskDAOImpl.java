@@ -257,6 +257,14 @@ public class TaskDAOImpl implements TaskDAO {
     @Override
     public void updateExecutor(UUID taskId, @Nullable UUID executorId) {
         taskRepository.updateExecutor(taskId, executorId);
+        if (executorId ==  null) {
+            List<UUID> listIds = shoppingListRepository.findIdsByTaskId(taskId);
+
+            // Отвязываем и сбрасываем статус товаров
+            for (UUID listId : listIds) {
+                shoppingItemRepository.resetAllStatusByListId(listId);
+            }
+        }
     }
 
     /**
