@@ -65,7 +65,9 @@ public class TaskRepository {
             updates.put(Tasks.TASKS.REVIEWER_COMMENT, OffsetDateTime.parse(dto.reviewerComment()));
         }
 
-        dsl.update(Tasks.TASKS).set(updates).where(Tasks.TASKS.TASK_ID.eq(taskId)).execute();
+        if (!updates.isEmpty()) {
+            dsl.update(Tasks.TASKS).set(updates).where(Tasks.TASKS.TASK_ID.eq(taskId)).execute();
+        }
     }
 
     public boolean isAuthor(UUID taskId, UUID authorId) {
