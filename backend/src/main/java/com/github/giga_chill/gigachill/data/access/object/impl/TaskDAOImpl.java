@@ -311,4 +311,15 @@ public class TaskDAOImpl implements TaskDAO {
             shoppingListRepository.updateTaskId(listId, taskId);
         }
     }
+
+    /**
+     * Updates the comment provided by the executor for the specified task.
+     *
+     * @param taskId the unique identifier of the task to update
+     * @param executorComment the comment text from the executor
+     */
+    @Override
+    public void setExecutorComment(UUID taskId, String executorComment) {
+        taskRepository.setExecutorCommentAndMarkUnderReview(taskId, executorComment);
+    }
 }

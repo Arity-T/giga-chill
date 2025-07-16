@@ -128,4 +128,12 @@ public class TaskRepository {
                 .where(Tasks.TASKS.TASK_ID.eq(taskId))
                 .execute();
     }
+
+    public void setExecutorCommentAndMarkUnderReview(UUID taskId, String executorComment) {
+        dsl.update(Tasks.TASKS)
+                .set(Tasks.TASKS.EXECUTOR_COMMENT, executorComment)
+                .set(Tasks.TASKS.STATUS, TaskStatus.under_review)
+                .where(Tasks.TASKS.TASK_ID.eq(taskId))
+                .execute();
+    }
 }
