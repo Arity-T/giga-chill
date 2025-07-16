@@ -233,7 +233,7 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundError"
 
-  /events/join-by-link:
+  /events/join-by-invitation-token:
     post:
       summary: Присоединиться к мероприятию по токену
       description: Пользователь становится участником мероприятия.
@@ -246,12 +246,25 @@ paths:
             schema:
               $ref: "#/components/schemas/InvitationToken"
       responses:
-        "204":
-          description: No Content
+        "200":
+          description: Идентификатор мероприятия, к которому присоединился пользователь
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  event_id:
+                    $ref: "#/components/schemas/ReadOnlyUUID"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+        "409":
+          description: Пользователь уже является участником мероприятия
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /events/{eventId}/participants:
     get:
