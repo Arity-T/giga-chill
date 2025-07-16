@@ -370,11 +370,12 @@ public class ShoppingListsController {
         }
         var executorId = taskService.getExecutorId(taskId);
         var taskStatus = taskService.getTaskStatus(taskId);
-        if (executorId == null || !(executorId.equals(user.getId())
-                        && taskStatus.equals(env.getProperty("task_status.in_progress"))
-                || !(participantsService.isParticipantRole(eventId, user.getId())
-                        && taskStatus.equals(env.getProperty("task_status.under_review")) &&
-                executorId.equals(user.getId())))) {
+        if (executorId == null
+                || !(executorId.equals(user.getId())
+                                && taskStatus.equals(env.getProperty("task_status.in_progress"))
+                        || !(participantsService.isParticipantRole(eventId, user.getId())
+                                && taskStatus.equals(env.getProperty("task_status.under_review"))
+                                && executorId.equals(user.getId())))) {
             throw new ForbiddenException(
                     "User with id "
                             + user.getId()
