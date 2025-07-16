@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Typography, Space, Button, App, Select, Tag } from 'antd';
 import { EditOutlined, CheckOutlined, CloseOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { ShoppingListWithItems } from '@/types/api';
+import { ShoppingListWithItems, ShoppingListStatus } from '@/types/api';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -27,6 +27,31 @@ export default function TaskShoppingLists({
     const [value, setValue] = useState<string[]>([]);
     const [isUpdating, setIsUpdating] = useState(false);
     const [shouldCancel, setShouldCancel] = useState(false);
+
+    // Создаем список для селекта: объединяем уже прикрепленные и доступные списки
+    const selectOptions = useMemo(() => {
+        const unassignedLists = allShoppingLists.filter(
+            list => list.status === ShoppingListStatus.UNASSIGNED
+        );
+
+        // Создаем Map для избежания дублирования
+        const optionsMap = new Map<string, ShoppingListWithItems>();
+
+        // Сначала добавляем уже прикрепленные к задаче списки
+        shoppingLists.forEach(list => {
+            optionsMap.set(list.shopping_list_id, list);
+        });
+
+        // Затем добавляем доступные для выбора списки
+        unassignedLists.forEach(list => {
+            optionsMap.set(list.shopping_list_id, list);
+        });
+
+        return Array.from(optionsMap.values()).map(list => ({
+            label: list.title,
+            value: list.shopping_list_id
+        }));
+    }, [shoppingLists, allShoppingLists]);
 
     const handleEdit = () => {
         if (!canEdit) {
@@ -147,17 +172,14 @@ export default function TaskShoppingLists({
                         showSearch
                         style={{ width: '100%' }}
                         autoFocus
-                        filterOption={(input, option) => {
-                            const shoppingList = allShoppingLists.find(list => list.shopping_list_id === option?.value);
-                            if (shoppingList) {
-                                return shoppingList.title.toLowerCase().includes(input.toLowerCase());
-                            }
-                            return false;
-                        }}
+                        notFoundContent="Нет доступных списков покупок"
                     >
-                        {allShoppingLists.map((shoppingList) => (
-                            <Option key={shoppingList.shopping_list_id} value={shoppingList.shopping_list_id}>
-                                {shoppingList.title}
+                        {selectOptions.map((option) => (
+                            <Option
+                                key={option.value}
+                                value={option.value}
+                            >
+                                {option.label}
                             </Option>
                         ))}
                     </Select>
