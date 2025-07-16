@@ -155,6 +155,7 @@ public class TaskService {
         Map<String, Boolean> permissions = new HashMap<>();
         var canEdit = true;
         var canTakeItToWork = false;
+        var canReview = false;
         var executorId = getExecutorId(taskId);
         if (getTaskStatus(taskId).equals(env.getProperty("task_status.completed"))) {
             canEdit = false;
@@ -166,8 +167,13 @@ public class TaskService {
                 && (getExecutorId(taskId) == null || executorId.equals(userId))) {
             canTakeItToWork = true;
         }
+        if (getTaskStatus(taskId).equals(env.getProperty("task_status.under_review")) && !participantsService.isParticipantRole(eventId, userId) &&
+                !getExecutorId(taskId).equals(userId)){
+            canReview = true;
+        }
         permissions.put("can_edit", canEdit);
         permissions.put("can_take_in_work", canTakeItToWork);
+        permissions.put("can_review", canReview);
         return permissions;
     }
 }
