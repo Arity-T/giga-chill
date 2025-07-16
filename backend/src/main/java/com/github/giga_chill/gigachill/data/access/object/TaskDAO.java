@@ -43,7 +43,7 @@ public interface TaskDAO {
     void createTask(UUID eventId, TaskDTO taskDTO, List<UUID> shoppingListsIds);
 
     /**
-     * Updates an existing task’s data and rebinds it to the specified shopping lists.
+     * Updates an existing task’s data.
      *
      * @param taskId the unique identifier of the task to update
      * @param taskDTO the {@link TaskDTO} containing the updated task information
@@ -111,24 +111,22 @@ public interface TaskDAO {
     @Nullable
     UUID getExecutorId(UUID taskId);
 
-
     /**
      * Assigns or unassigns the executor for the specified task.
      *
-     * @param taskId     the unique identifier of the task to update
-     * @param executorId the {@link UUID} of the user who will execute the task;
-     *                   may be {@code null} to clear any existing executor
+     * @param taskId the unique identifier of the task to update
+     * @param executorId the {@link UUID} of the user who will execute the task; may be {@code null}
+     *     to clear any existing executor
      */
     void updateExecutor(UUID taskId, @Nullable UUID executorId);
-
 
     /**
      * Updates the set of shopping lists associated with the specified task.
      *
-     * @param taskId        the unique identifier of the task to update
-     * @param shoppingLists a {@link List} of {@link UUID} values representing new shopping list IDs to bind;
-     *                      may be {@code null} to clear all associations
-     *     If the list is unlinked, its status becomes "Unassigned". And all the purchases become not purchased.
+     * @param taskId the unique identifier of the task to update
+     * @param shoppingLists a {@link List} of {@link UUID} values representing new shopping list IDs
+     *     to bind; may be {@code null} to clear all associations If the list is unlinked, its
+     *     status becomes "Unassigned". And all the purchases become not purchased.
      */
     void updateShoppingLists(UUID taskId, @Nullable List<UUID> shoppingLists);
 }
