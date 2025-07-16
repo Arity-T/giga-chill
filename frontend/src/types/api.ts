@@ -106,8 +106,18 @@ export interface TaskRequest {
   title: string;
   description: string;
   deadline_datetime: string;
-  executor_id: string;
+  executor_id: string | null;
   shopping_lists_ids: string[];
+}
+
+export interface TaskPatchRequest {
+  title?: string;
+  description?: string;
+  deadline_datetime?: string;
+}
+
+export interface TaskExecutorId {
+  executor_id: string | null;
 }
 
 export enum TaskStatus {
@@ -117,6 +127,11 @@ export enum TaskStatus {
   COMPLETED = 'completed',
 }
 
+export interface TaskPermissions {
+  can_edit: boolean;
+  can_take_in_work: boolean;
+}
+
 export interface Task {
   task_id: string;
   title: string;
@@ -124,8 +139,9 @@ export interface Task {
   status: TaskStatus;
   deadline_datetime: string;
   actual_approval_id: string;
+  permissions: TaskPermissions;
   author: User;
-  executor: User;
+  executor: User | null;
 }
 
 export interface TaskWithShoppingLists extends Task {

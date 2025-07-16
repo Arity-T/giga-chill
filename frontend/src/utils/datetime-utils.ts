@@ -8,3 +8,12 @@ export const formatDateTime = (dateTimeStr: string) => {
         minute: '2-digit'
     });
 };
+
+export const formatDate = (dateTimeStr: string) => {
+    const date = new Date(dateTimeStr);
+    return date.toLocaleDateString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+};

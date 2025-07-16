@@ -1,7 +1,6 @@
 package com.github.giga_chill.gigachill.util;
 
 import com.github.giga_chill.gigachill.exception.BadRequestException;
-
 import java.util.UUID;
 
 public final class UuidUtils {

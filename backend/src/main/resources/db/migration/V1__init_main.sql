@@ -57,11 +57,11 @@ CREATE TABLE IF NOT EXISTS task_approvals (
 
 -- Отдельно добавляем цикличную связь 1-к-1
 ALTER TABLE tasks
-ADD COLUMN actual_approval_id UUID DEFAULT NULL REFERENCES task_approvals(task_approval_id);
+ADD COLUMN actual_approval_id UUID DEFAULT NULL REFERENCES task_approvals(task_approval_id) ON DELETE SET NULL;
 
 CREATE TABLE IF NOT EXISTS shopping_lists (
   shopping_list_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  task_id UUID DEFAULT NULL REFERENCES tasks(task_id),
+  task_id UUID DEFAULT NULL REFERENCES tasks(task_id) ON DELETE SET NULL,
   event_id UUID NOT NULL REFERENCES events(event_id),
   title VARCHAR(50) NOT NULL,
   description VARCHAR(500) DEFAULT NULL

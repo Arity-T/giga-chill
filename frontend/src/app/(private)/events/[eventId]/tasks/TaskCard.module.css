@@ -1,0 +1,46 @@
+.taskCard {
+    width: 100%;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.cardContent {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+    min-height: 74px;
+}
+
+.statusTag {
+    align-self: flex-start;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.executor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.deadline {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+} 

@@ -14,29 +14,63 @@ import org.springframework.stereotype.Component;
 @Aspect
 @RequiredArgsConstructor
 public class GlobalExceptionHandlerLoggerAspect {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandlerLoggerAspect.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(GlobalExceptionHandlerLoggerAspect.class);
     private final LoggerColorConfig loggerColorConfig;
 
     @Pointcut("within(com.github.giga_chill.gigachill.web.controller..*)")
-    public void exceptionController() {
-    }
+    public void exceptionController() {}
 
     @Pointcut("within(com.github.giga_chill.gigachill.service..*)")
-    public void exceptionService() {
-    }
+    public void exceptionService() {}
+
+    @Pointcut("within(com.github.giga_chill.gigachill.data..*)")
+    public void exceptionData() {}
+
+    @Pointcut("within(com.github.giga_chill.gigachill.repository..*)")
+    public void exceptionRepository() {}
 
     @AfterThrowing(pointcut = "exceptionController()", throwing = "ex")
     public void logExceptionController(JoinPoint joinPoint, Throwable ex) {
         String method = joinPoint.getSignature().toShortString();
-        LOGGER.error(loggerColorConfig.getEXCEPTION_COLOR() + "Method {} threw exception: {}"
-                + loggerColorConfig.getRESET_COLOR(), method, ex.toString());
+        LOGGER.error(
+                loggerColorConfig.getEXCEPTION_COLOR()
+                        + "Method {} threw exception: {}"
+                        + loggerColorConfig.getRESET_COLOR(),
+                method,
+                ex.toString());
     }
 
     @AfterThrowing(pointcut = "exceptionService()", throwing = "ex")
     public void logExceptionService(JoinPoint joinPoint, Throwable ex) {
         String method = joinPoint.getSignature().toShortString();
-        LOGGER.error(loggerColorConfig.getEXCEPTION_COLOR() + "Method {} threw exception: {}"
-                + loggerColorConfig.getRESET_COLOR(), method, ex.toString());
+        LOGGER.error(
+                loggerColorConfig.getEXCEPTION_COLOR()
+                        + "Method {} threw exception: {}"
+                        + loggerColorConfig.getRESET_COLOR(),
+                method,
+                ex.toString());
     }
 
+    @AfterThrowing(pointcut = "exceptionData()", throwing = "ex")
+    public void logExceptionData(JoinPoint joinPoint, Throwable ex) {
+        String method = joinPoint.getSignature().toShortString();
+        LOGGER.error(
+                loggerColorConfig.getEXCEPTION_COLOR()
+                        + "Method {} threw exception: {}"
+                        + loggerColorConfig.getRESET_COLOR(),
+                method,
+                ex.toString());
+    }
+
+    @AfterThrowing(pointcut = "exceptionRepository()", throwing = "ex")
+    public void logExceptionRepository(JoinPoint joinPoint, Throwable ex) {
+        String method = joinPoint.getSignature().toShortString();
+        LOGGER.error(
+                loggerColorConfig.getEXCEPTION_COLOR()
+                        + "Method {} threw exception: {}"
+                        + loggerColorConfig.getRESET_COLOR(),
+                method,
+                ex.toString());
+    }
 }
