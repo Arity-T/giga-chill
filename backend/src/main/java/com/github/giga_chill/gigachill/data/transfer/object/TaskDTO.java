@@ -9,5 +9,7 @@ public record TaskDTO(
         @Nullable String description,
         @Nullable String status,
         @Nullable String deadlineDatetime,
+        @Nullable String executorComment,
+        @Nullable String reviewerComment,
         @Nullable UserDTO author,
         @Nullable UserDTO executor) {}

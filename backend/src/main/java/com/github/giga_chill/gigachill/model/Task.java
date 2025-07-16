@@ -1,5 +1,6 @@
 package com.github.giga_chill.gigachill.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
@@ -16,6 +17,8 @@ public class Task {
     @Nullable private String description;
     private String status;
     private String deadlineDatetime;
+    @Nullable private String executorComment;
+    @Nullable private String reviewerComment;
     private User author;
     @Nullable private User executor;
     private List<ShoppingList> shoppingLists;

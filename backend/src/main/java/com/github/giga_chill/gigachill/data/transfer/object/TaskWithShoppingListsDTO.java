@@ -10,6 +10,8 @@ public record TaskWithShoppingListsDTO(
         @Nullable String description,
         String status,
         String deadlineDatetime,
+        @Nullable String executorComment,
+        @Nullable String reviewerComment,
         UserDTO author,
         @Nullable UserDTO executor,
         List<ShoppingListDTO> shoppingLists) {}

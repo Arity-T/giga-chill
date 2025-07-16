@@ -61,6 +61,7 @@ public final class DtoEntityMapper {
                 shoppingListDTO.title(),
                 shoppingListDTO.description(),
                 null,
+                shoppingListDTO.budget(),
                 shoppingListDTO.shoppingItems().stream()
                         .map(DtoEntityMapper::toShoppingItemEntity)
                         .toList(),
@@ -75,6 +76,7 @@ public final class DtoEntityMapper {
                 shoppingList.getTaskId(),
                 shoppingList.getTitle(),
                 shoppingList.getDescription(),
+                shoppingList.getBudget(),
                 shoppingList.getShoppingItems().stream()
                         .map(DtoEntityMapper::toShoppingItemDto)
                         .toList(),
@@ -108,6 +110,8 @@ public final class DtoEntityMapper {
                 TaskDTO.description(),
                 TaskDTO.status(),
                 TaskDTO.deadlineDatetime(),
+                TaskDTO.executorComment(),
+                TaskDTO.reviewerComment(),
                 DtoEntityMapper.toUserEntity(TaskDTO.author()),
                 TaskDTO.executor() != null
                         ? DtoEntityMapper.toUserEntity(TaskDTO.executor())
@@ -122,6 +126,8 @@ public final class DtoEntityMapper {
                 taskWithShoppingListsDTO.description(),
                 taskWithShoppingListsDTO.status(),
                 taskWithShoppingListsDTO.deadlineDatetime(),
+                taskWithShoppingListsDTO.executorComment(),
+                taskWithShoppingListsDTO.reviewerComment(),
                 DtoEntityMapper.toUserEntity(taskWithShoppingListsDTO.author()),
                 taskWithShoppingListsDTO.executor() != null
                         ? DtoEntityMapper.toUserEntity(taskWithShoppingListsDTO.executor())
@@ -138,6 +144,8 @@ public final class DtoEntityMapper {
                 task.getDescription(),
                 task.getStatus(),
                 task.getDeadlineDatetime(),
+                task.getExecutorComment(),
+                task.getReviewerComment(),
                 task.getAuthor() != null ? DtoEntityMapper.toUserDto(task.getAuthor()) : null,
                 task.getExecutor() != null ? DtoEntityMapper.toUserDto(task.getExecutor()) : null);
     }
@@ -149,6 +157,8 @@ public final class DtoEntityMapper {
                 task.getDescription(),
                 task.getStatus(),
                 task.getDeadlineDatetime(),
+                task.getExecutorComment(),
+                task.getReviewerComment(),
                 DtoEntityMapper.toUserDto(task.getAuthor()),
                 task.getExecutor() != null ? DtoEntityMapper.toUserDto(task.getExecutor()) : null,
                 task.getShoppingLists().stream().map(DtoEntityMapper::toShoppingListDto).toList());

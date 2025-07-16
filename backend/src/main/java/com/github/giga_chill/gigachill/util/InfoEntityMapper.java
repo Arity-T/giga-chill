@@ -33,6 +33,7 @@ public final class InfoEntityMapper {
                 shoppingList.getDescription(),
                 shoppingList.getStatus(),
                 canEdit,
+                shoppingList.getBudget(),
                 shoppingList.getShoppingItems().stream()
                         .map(InfoEntityMapper::toShoppingItemInfo)
                         .toList(),
@@ -70,6 +71,8 @@ public final class InfoEntityMapper {
                 task.getDescription(),
                 task.getStatus(),
                 task.getDeadlineDatetime(),
+                task.getExecutorComment(),
+                task.getReviewerComment(),
                 permissions,
                 InfoEntityMapper.toUserInfo(task.getAuthor()),
                 task.getExecutor() != null

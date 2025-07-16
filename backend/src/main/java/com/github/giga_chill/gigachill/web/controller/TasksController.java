@@ -334,6 +334,8 @@ public class TasksController {
                 task.getDescription(),
                 task.getStatus(),
                 task.getDeadlineDatetime(),
+                task.getExecutorComment(),
+                task.getReviewerComment(),
                 permissions,
                 InfoEntityMapper.toUserInfo(task.getAuthor()),
                 task.getExecutor() != null ? InfoEntityMapper.toUserInfo(task.getExecutor()) : null,
