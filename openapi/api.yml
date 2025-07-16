@@ -1211,8 +1211,14 @@ components:
           format: date-time
           description: Дедлайн задачи
           example: "2025-01-01T12:00:00Z"
-        actual_approval_id:
-          $ref: "#/components/schemas/ReadOnlyUUID"
+        executor_comment:
+          type: string
+          description: Комментарий исполнителя
+          example: "Задача выполнена"
+        reviewer_comment:
+          type: string
+          description: Комментарий проверяющего
+          example: "Подтверждаю выполнение задачи"
         permissions:
           type: object
           properties:
