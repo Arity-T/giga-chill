@@ -4,6 +4,7 @@ import com.github.giga_chill.gigachill.data.transfer.object.TaskDTO;
 import com.github.giga_chill.jooq.generated.enums.TaskStatus;
 import com.github.giga_chill.jooq.generated.tables.Tasks;
 import com.github.giga_chill.jooq.generated.tables.records.TasksRecord;
+import jakarta.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
@@ -112,6 +113,14 @@ public class TaskRepository {
                                                 .EXECUTOR_ID
                                                 .isNull()
                                                 .or(Tasks.TASKS.EXECUTOR_ID.ne(executorId))))
+                .execute();
+    }
+
+    public void updateExecutor(UUID taskId, @Nullable UUID executorId) {
+        dsl.update(Tasks.TASKS)
+                .set(Tasks.TASKS.STATUS, TaskStatus.open)
+                .set(Tasks.TASKS.EXECUTOR_ID, executorId)
+                .where(Tasks.TASKS.TASK_ID.eq(taskId))
                 .execute();
     }
 }

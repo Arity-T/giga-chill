@@ -36,8 +36,8 @@ public class TaskServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.updateTask(..)) "
-                    + "&& args(taskId, ..)")
-    public void updateTask(UUID taskId) {}
+                    + "&& args(eventId, taskId, ..)")
+    public void updateTask(UUID eventId, UUID taskId) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.startExecuting(..)) "
@@ -73,6 +73,16 @@ public class TaskServiceLoggerAspect {
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.getExecutorId(..)) "
                     + "&& args(taskId)")
     public void getExecutorId(UUID taskId) {}
+
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.TaskService.updateExecutor(..)) "
+                    + "&& args(taskId, executorId)")
+    public void updateExecutor(UUID taskId, UUID executorId) {}
+
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.TaskService.updateShoppingLists(..)) "
+                    + "&& args(taskId,..)")
+    public void updateShoppingLists(UUID taskId) {}
 
     @Around("getAllTasksFromEvent(eventId)")
     public Object logGetAllTasksFromEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
@@ -125,8 +135,8 @@ public class TaskServiceLoggerAspect {
         }
     }
 
-    @Around("updateTask(taskId)")
-    public Object logUpdateTask(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
+    @Around("updateTask(eventId, taskId)")
+    public Object logUpdateTask(ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UUID taskId)
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -206,7 +216,7 @@ public class TaskServiceLoggerAspect {
         try {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(
-                    loggerColorConfig.getDELETE_COLOR()
+                    loggerColorConfig.getGET_COLOR()
                             + "Task with id: {} has status {}"
                             + loggerColorConfig.getRESET_COLOR(),
                     taskId,
@@ -288,6 +298,48 @@ public class TaskServiceLoggerAspect {
                         taskId,
                         (UUID) result);
             }
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("updateExecutor(taskId, executorId)")
+    public Object logUpdateExecutor(
+            ProceedingJoinPoint proceedingJoinPoint, UUID taskId, UUID executorId)
+            throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            if (executorId == null) {
+                LOGGER.info(
+                        loggerColorConfig.getPUT_COLOR()
+                                + "Task with id: {} no longer has an executor"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        taskId);
+            } else {
+                LOGGER.info(
+                        loggerColorConfig.getPUT_COLOR()
+                                + "Task with id: {} now has an executor with id: {}"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        taskId,
+                        executorId);
+            }
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("updateShoppingLists(taskId)")
+    public Object logUpdateShoppingLists(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
+            throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            LOGGER.info(
+                    loggerColorConfig.getPUT_COLOR()
+                            + "Shopping lists in task with id: {} was updated"
+                            + loggerColorConfig.getRESET_COLOR(),
+                    taskId);
             return result;
         } catch (Throwable ex) {
             throw ex;

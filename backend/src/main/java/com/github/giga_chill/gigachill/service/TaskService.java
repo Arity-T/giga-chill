@@ -8,6 +8,8 @@ import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.util.DtoEntityMapper;
 import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.RequestTaskInfo;
+import jakarta.annotation.Nullable;
+import java.time.OffsetDateTime;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -22,6 +24,7 @@ public class TaskService {
     private final ShoppingListsService shoppingListsService;
     private final UserService userService;
     private final ParticipantsService participantsService;
+    private final EventService eventService;
 
     public List<Task> getAllTasksFromEvent(UUID eventId) {
         return taskDAO.getAllTasksFromEvent(eventId).stream()
@@ -55,6 +58,17 @@ public class TaskService {
                             + requestTaskInfo.shoppingListsIds());
         }
 
+        var eventEndDatetime = OffsetDateTime.parse(eventService.getEndDatetime(eventId));
+        var taskDeadline = OffsetDateTime.parse(requestTaskInfo.deadlineDatetime());
+
+        if (eventEndDatetime.isBefore(taskDeadline)) {
+            throw new ConflictException(
+                    "You cannot specify task due date: "
+                            + taskDeadline
+                            + " that is later than the end of the event: "
+                            + eventEndDatetime);
+        }
+
         var task =
                 new Task(
                         UUID.randomUUID(),
@@ -74,26 +88,17 @@ public class TaskService {
         return task.getTaskId().toString();
     }
 
-    public void updateTask(UUID taskId, RequestTaskInfo requestTaskInfo) {
-        var shoppingListsIds =
-                requestTaskInfo.shoppingListsIds() != null
-                        ? requestTaskInfo.shoppingListsIds().stream()
-                                .map(UuidUtils::safeUUID)
-                                .toList()
-                        : null;
+    public void updateTask(UUID eventId, UUID taskId, RequestTaskInfo requestTaskInfo) {
+        var eventEndDatetime = OffsetDateTime.parse(eventService.getEndDatetime(eventId));
+        var taskDeadline = OffsetDateTime.parse(requestTaskInfo.deadlineDatetime());
 
-        if (shoppingListsIds != null && !shoppingListsService.areExisted(shoppingListsIds)) {
-            throw new NotFoundException(
-                    "One or more of the resources involved were not found: "
-                            + requestTaskInfo.shoppingListsIds());
-        }
-        if (shoppingListsIds != null
-                && !shoppingListsService.canBindShoppingListsToTask(shoppingListsIds, taskId)) {
+        if (eventEndDatetime.isBefore(taskDeadline)) {
             throw new ConflictException(
-                    "One or more lists are already linked to the task: "
-                            + requestTaskInfo.shoppingListsIds());
+                    "You cannot specify task due date: "
+                            + taskDeadline
+                            + " that is later than the end of the event: "
+                            + eventEndDatetime);
         }
-
         var task =
                 new Task(
                         taskId,
@@ -103,12 +108,9 @@ public class TaskService {
                         requestTaskInfo.deadlineDatetime(),
                         null,
                         null,
-                        requestTaskInfo.executorId() != null
-                                ? userService.getById(
-                                        UuidUtils.safeUUID(requestTaskInfo.executorId()))
-                                : null,
+                        null,
                         List.of());
-        taskDAO.updateTask(taskId, DtoEntityMapper.toTaskDto(task), shoppingListsIds);
+        taskDAO.updateTask(taskId, DtoEntityMapper.toTaskDto(task));
     }
 
     public void startExecuting(UUID taskId, UUID userId) {
@@ -137,6 +139,14 @@ public class TaskService {
 
     public UUID getExecutorId(UUID taskId) {
         return taskDAO.getExecutorId(taskId);
+    }
+
+    public void updateExecutor(UUID taskId, @Nullable UUID executorId) {
+        taskDAO.updateExecutor(taskId, executorId);
+    }
+
+    public void updateShoppingLists(UUID taskId, List<UUID> shoppingLists) {
+        taskDAO.updateShoppingLists(taskId, shoppingLists);
     }
 
     public Map<String, Boolean> taskPermissions(UUID eventId, UUID taskId, UUID userId) {

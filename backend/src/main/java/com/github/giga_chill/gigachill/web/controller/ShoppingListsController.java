@@ -378,20 +378,15 @@ public class ShoppingListsController {
         }
         var executorId = taskService.getExecutorId(taskId);
         var taskStatus = taskService.getTaskStatus(taskId);
-        if (executorId != null && !executorId.equals(user.getId())
-                || !taskStatus.equals(env.getProperty("task_status.in_progress"))) {
+        if (!(executorId != null
+                        && executorId.equals(user.getId())
+                        && taskStatus.equals(env.getProperty("task_status.in_progress")))
+                && !(participantsService.isParticipantRole(eventId, user.getId())
+                        && taskStatus.equals(env.getProperty("task_status.under_review")))) {
             throw new ForbiddenException(
                     "User with id "
                             + user.getId()
-                            + "can not change shopping item status in shopping list wih id "
-                            + shoppingListId);
-        }
-        if (participantsService.isParticipantRole(eventId, user.getId())
-                || !taskStatus.equals(env.getProperty("task_status.under_review"))) {
-            throw new ForbiddenException(
-                    "User with id "
-                            + user.getId()
-                            + "can not change shopping item status in shopping list wih id "
+                            + " can not change shopping item status in shopping list wih id "
                             + shoppingListId);
         }
         shoppingListsService.updateShoppingItemStatus(shoppingItemId, isPurchased);

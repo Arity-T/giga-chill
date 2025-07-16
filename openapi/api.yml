@@ -14,6 +14,7 @@ tags:
   - name: Auth
   - name: Me
   - name: Events
+  - name: Invite Links
   - name: Participants
   - name: Shopping Lists
   - name: Shopping List Items
@@ -195,6 +196,76 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+
+  /events/{eventId}/invitation-token:
+    post:
+      summary: Создать новый токен
+      description: Токен генерирует пользователь со статусом **owner**.
+      tags: [Invite Links]
+      operationId: createEventInvitationToken
+      responses:
+        "204":
+          description: No Content
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    get:
+      summary: Получение токена
+      description: Возвращает заранее сгенерированный токен-приглашение.
+        Доступно пользователям с ролью **admin** или **owner**.
+        Если токен ещё не был сгенерирован, то в поле token возвращается null.
+      tags: [Invite Links]
+      operationId: getEventInvitationToken
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvitationToken"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /events/join-by-invitation-token:
+    post:
+      summary: Присоединиться к мероприятию по токену
+      description: Пользователь становится участником мероприятия.
+      tags: [Invite Links]
+      operationId: joinByInvitationToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvitationToken"
+      responses:
+        "200":
+          description: Идентификатор мероприятия, к которому присоединился пользователь
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  event_id:
+                    $ref: "#/components/schemas/ReadOnlyUUID"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          description: Пользователь уже является участником мероприятия
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /events/{eventId}/participants:
     get:
@@ -955,6 +1026,14 @@ components:
           type: number
           description: Бюджет мероприятия
           example: 10000
+
+    InvitationToken:
+      type: object
+      properties:
+        invitation_token:
+          type: string
+          description: Токен-приглашение
+          example: "0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c"
 
     Events:
       type: array
