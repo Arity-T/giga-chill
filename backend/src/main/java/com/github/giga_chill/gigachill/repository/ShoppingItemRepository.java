@@ -75,4 +75,11 @@ public class ShoppingItemRepository {
                                                 shoppingItemId)))
                 > 0;
     }
+
+    public void resetAllStatusByListId(UUID shoppingListId) {
+        dsl.update(ShoppingItems.SHOPPING_ITEMS)
+                .set(ShoppingItems.SHOPPING_ITEMS.IS_PURCHASED, false)
+                .where(ShoppingItems.SHOPPING_ITEMS.SHOPPING_LIST_ID.eq(shoppingListId))
+                .execute();
+    }
 }
