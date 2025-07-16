@@ -155,6 +155,10 @@ public class TaskService {
         taskDAO.setExecutorComment(taskId, executorComment);
     }
 
+    public void setReviewerComment(UUID taskId, String reviewerComment, boolean isApproved) {
+        taskDAO.setReviewerComment(taskId, reviewerComment, isApproved);
+    }
+
     public Map<String, Boolean> taskPermissions(UUID eventId, UUID taskId, UUID userId) {
         Map<String, Boolean> permissions = new HashMap<>();
         var canEdit = true;
