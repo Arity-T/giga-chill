@@ -550,7 +550,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TaskRequest"
+              $ref: "#/components/schemas/TaskCreateRequest"
       responses:
         "204":
           description: No Content
@@ -597,7 +597,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TaskRequest"
+              $ref: "#/components/schemas/TaskPatchRequest"
       responses:
         "204":
           description: No Content
@@ -620,6 +620,60 @@ paths:
       responses:
         "204":
           description: No Content
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /events/{eventId}/tasks/{taskId}/executor:
+    put:
+      summary: Указать исполнителя
+      description: Поле executor_id может быть null - это означает,
+        что у задачи нет исполнителя. В этом случае задача переходит в статус "открыта".
+      tags: [Tasks]
+      operationId: assignTask
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/taskId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskExecutorId"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/InvalidDataError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /events/{eventId}/tasks/{taskId}/shopping-lists:
+    put:
+      summary: Указать списки покупок для задачи
+      tags: [Tasks]
+      operationId: assignShoppingLists
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/taskId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UUIDList"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/InvalidDataError"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
@@ -948,7 +1002,14 @@ components:
       items:
         $ref: "#/components/schemas/ShoppingListWithItems"
 
-    TaskRequest:
+    TaskExecutorId:
+      type: object
+      properties:
+        executor_id:
+          description: Идентификатор исполнителя задачи
+          $ref: "#/components/schemas/UUID"
+
+    TaskCreateRequest:
       type: object
       properties:
         title:
@@ -970,6 +1031,23 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/UUID"
+
+    TaskPatchRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Название задачи
+          example: "Купить фрукты"
+        description:
+          type: string
+          description: Описание задачи
+          example: "Купить фрукты для вечеринки"
+        deadline_datetime:
+          type: string
+          format: date-time
+          description: Дедлайн задачи
+          example: "2025-01-01T12:00:00Z"
 
     Task:
       type: object
