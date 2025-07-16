@@ -122,4 +122,15 @@ public class EventDAOImpl implements EventDAO {
     public boolean isExisted(UUID eventId) {
         return eventRepository.findById(eventId).isPresent();
     }
+
+    /**
+     * Retrieves the end date and time of the specified event.
+     *
+     * @param eventId the unique identifier of the event
+     * @return a {@link String} representation of the event’s end date‑time,
+     */
+    @Override
+    public String getEndDatetime(UUID eventId) {
+        return eventRepository.getEndDatetimeById(eventId).toString();
+    }
 }
