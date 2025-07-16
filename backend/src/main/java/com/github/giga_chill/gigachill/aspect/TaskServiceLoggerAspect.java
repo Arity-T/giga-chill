@@ -84,6 +84,18 @@ public class TaskServiceLoggerAspect {
                     + "&& args(taskId,..)")
     public void updateShoppingLists(UUID taskId) {}
 
+
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.TaskService.setExecutorComment(..)) "
+                    + "&& args(taskId, executorComment)")
+    public void setExecutorComment(UUID taskId, String executorComment) {}
+
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.TaskService.setReviewerComment(..)) "
+                    + "&& args(taskId, reviewerComment, isApproved)")
+    public void setReviewerComment(UUID taskId, String reviewerComment, boolean isApproved) {}
+
+
     @Around("getAllTasksFromEvent(eventId)")
     public Object logGetAllTasksFromEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
@@ -340,6 +352,48 @@ public class TaskServiceLoggerAspect {
                             + "Shopping lists in task with id: {} was updated"
                             + loggerColorConfig.getRESET_COLOR(),
                     taskId);
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("setExecutorComment(taskId)")
+    public Object logSetExecutorComment(ProceedingJoinPoint proceedingJoinPoint, UUID taskId, String executorComment)
+            throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            LOGGER.info(
+                    loggerColorConfig.getPOST_COLOR()
+                            + "Task with id: {} received a comment from the executor: {}"
+                            + loggerColorConfig.getRESET_COLOR(),
+                    taskId, executorComment);
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("setReviewerComment(taskId, reviewerComment, isApproved)")
+    public Object logSetReviewerComment(
+            ProceedingJoinPoint proceedingJoinPoint, UUID taskId,  String reviewerComment, boolean isApproved)
+            throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            if (isApproved) {
+                LOGGER.info(
+                        loggerColorConfig.getPOST_COLOR() +
+                                "Task with id: {} was confirmed with a reviewer comment: {}"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        taskId, reviewerComment);
+            } else {
+                LOGGER.info(
+                        loggerColorConfig.getPOST_COLOR()
+                                + "Task with id: {} was rejected with a reviewer comment: {}"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        taskId,
+                        taskId, reviewerComment);
+            }
             return result;
         } catch (Throwable ex) {
             throw ex;
