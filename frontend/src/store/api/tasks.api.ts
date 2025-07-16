@@ -17,7 +17,8 @@ export const tasksApi = api.injectEndpoints({
                 body: task,
             }),
             invalidatesTags: (_result, _error, { eventId }) => [
-                { type: 'Tasks', id: eventId }
+                { type: 'Tasks', id: eventId },
+                { type: 'ShoppingLists', id: eventId }
             ],
         }),
 
@@ -71,7 +72,8 @@ export const tasksApi = api.injectEndpoints({
                 method: 'DELETE',
             }),
             invalidatesTags: (_result, _error, { eventId }) => [
-                { type: 'Tasks', id: eventId }
+                { type: 'Tasks', id: eventId },
+                { type: 'ShoppingLists', id: eventId }
             ],
         }),
 
