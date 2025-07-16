@@ -84,7 +84,8 @@ export const tasksApi = api.injectEndpoints({
             }),
             invalidatesTags: (_result, _error, { eventId, taskId }) => [
                 { type: 'Tasks', id: eventId },
-                { type: 'Tasks', id: `${eventId}-${taskId}` }
+                { type: 'Tasks', id: `${eventId}-${taskId}` },
+                { type: 'ShoppingLists', id: eventId }
             ],
         }),
     }),
