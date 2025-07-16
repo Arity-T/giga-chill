@@ -47,10 +47,8 @@ public interface TaskDAO {
      *
      * @param taskId the unique identifier of the task to update
      * @param taskDTO the {@link TaskDTO} containing the updated task information
-     * @param shoppingListsIds a {@link List} of {@link UUID} values representing the new set of
-     *     shopping lists to attach
      */
-    void updateTask(UUID taskId, TaskDTO taskDTO, List<UUID> shoppingListsIds);
+    void updateTask(UUID taskId, TaskDTO taskDTO);
 
     /**
      * Marks a task as started by a specific user, indicating execution has begun.
@@ -112,4 +110,25 @@ public interface TaskDAO {
      */
     @Nullable
     UUID getExecutorId(UUID taskId);
+
+
+    /**
+     * Assigns or unassigns the executor for the specified task.
+     *
+     * @param taskId     the unique identifier of the task to update
+     * @param executorId the {@link UUID} of the user who will execute the task;
+     *                   may be {@code null} to clear any existing executor
+     */
+    void updateExecutor(UUID taskId, @Nullable UUID executorId);
+
+
+    /**
+     * Updates the set of shopping lists associated with the specified task.
+     *
+     * @param taskId        the unique identifier of the task to update
+     * @param shoppingLists a {@link List} of {@link UUID} values representing new shopping list IDs to bind;
+     *                      may be {@code null} to clear all associations
+     *     If the list is unlinked, its status becomes "Unassigned". And all the purchases become not purchased.
+     */
+    void updateShoppingLists(UUID taskId, @Nullable List<UUID> shoppingLists);
 }
