@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { Modal, Typography, Tag, Tooltip, Row, Col, App, Space, Spin, Button, Popconfirm } from 'antd';
 import { EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { User, TaskRequest } from '@/types/api';
-import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useAssignTaskMutation, useAssignShoppingListsMutation, useGetShoppingListsQuery } from '@/store/api';
+import { User, TaskRequest, TaskStatus } from '@/types/api';
+import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useAssignTaskMutation, useAssignShoppingListsMutation, useGetShoppingListsQuery, useTakeTaskInWorkMutation, useGetMeQuery } from '@/store/api';
 import { getTaskStatusText, getTaskStatusColor, getTaskStatusTooltip } from '@/utils/task-status-utils';
 import TaskDescription from './TaskDescription';
 import TaskExecutor from './TaskExecutor';
@@ -30,6 +30,9 @@ export default function TaskModal({
 }: TaskModalProps) {
     const { message, modal } = App.useApp();
 
+    // Получаем информацию о текущем пользователе
+    const { data: currentUser } = useGetMeQuery();
+
     // Получаем полную информацию о задаче
     const { data: task, isLoading } = useGetTaskQuery(
         { eventId, taskId: taskId! },
@@ -40,6 +43,7 @@ export default function TaskModal({
     const [deleteTask, { isLoading: isDeleting }] = useDeleteTaskMutation();
     const [assignTask, { isLoading: isAssigning }] = useAssignTaskMutation();
     const [assignShoppingLists, { isLoading: isAssigningLists }] = useAssignShoppingListsMutation();
+    const [takeTaskInWork, { isLoading: isTakingInWork }] = useTakeTaskInWorkMutation();
 
     // Получаем все списки покупок для события
     const { data: allShoppingLists = [] } = useGetShoppingListsQuery(eventId);
@@ -174,6 +178,32 @@ export default function TaskModal({
         }
     };
 
+    const handleTakeInWork = async () => {
+        if (!task) return;
+
+        try {
+            await takeTaskInWork({
+                eventId,
+                taskId: task.task_id
+            }).unwrap();
+
+            message.success('Задача взята в работу');
+        } catch (error) {
+            message.error('Ошибка при взятии задачи в работу');
+        }
+    };
+
+    // Проверяем, нужно ли показывать кнопку "Взять в работу"
+    const shouldShowTakeInWorkButton = () => {
+        if (!task || !currentUser) return false;
+
+        // Кнопка показывается только если:
+        // 1. Задача в статусе OPEN
+        // 2. Текущий пользователь является исполнителем задачи
+        return task.status === TaskStatus.OPEN &&
+            task.executor?.id === currentUser.id;
+    };
+
     return (
         <Modal
             title={null}
@@ -245,6 +275,20 @@ export default function TaskModal({
                         canEdit={task.permissions.can_edit}
                         onUpdate={handleUpdateShoppingLists}
                     />
+
+                    {/* Кнопка "Взять в работу" */}
+                    {shouldShowTakeInWorkButton() && (
+                        <div style={{ marginTop: '24px', marginBottom: '16px' }}>
+                            <Button
+                                type="primary"
+                                loading={isTakingInWork}
+                                onClick={handleTakeInWork}
+                                style={{ width: '100%' }}
+                            >
+                                Взять в работу
+                            </Button>
+                        </div>
+                    )}
 
                     {/* Автор */}
                     <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #f0f0f0' }}>
