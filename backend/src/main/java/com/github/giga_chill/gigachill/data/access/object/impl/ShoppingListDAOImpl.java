@@ -9,6 +9,7 @@ import com.github.giga_chill.gigachill.repository.*;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingItemsRecord;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingListsRecord;
 import jakarta.annotation.Nullable;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -143,11 +144,15 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
      * @param shoppingListId the unique identifier of the shopping list to update
      * @param title the new title, or {@code null} to leave unchanged
      * @param description the new description, or {@code null} to leave unchanged
+     * @param budget the new list budget, or {@code null} to leave unchanged
      */
     @Override
     public void updateShoppingList(
-            UUID shoppingListId, @Nullable String title, @Nullable String description) {
-        shoppingListRepository.updateTitleAndDescription(shoppingListId, title, description);
+            UUID shoppingListId,
+            @Nullable String title,
+            @Nullable String description,
+            @Nullable BigDecimal budget) {
+        shoppingListRepository.updateShoppingList(shoppingListId, title, description, budget);
     }
 
     /**
