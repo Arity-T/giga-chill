@@ -74,6 +74,16 @@ public class TaskServiceLoggerAspect {
                     + "&& args(taskId)")
     public void getExecutorId(UUID taskId) {}
 
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.TaskService.updateExecutor(..)) "
+                    + "&& args(taskId, executorId)")
+    public void updateExecutor(UUID taskId, UUID executorId) {}
+
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.TaskService.updateShoppingLists(..)) "
+                    + "&& args(taskId,..)")
+    public void updateShoppingLists(UUID taskId) {}
+
     @Around("getAllTasksFromEvent(eventId)")
     public Object logGetAllTasksFromEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
@@ -293,4 +303,46 @@ public class TaskServiceLoggerAspect {
             throw ex;
         }
     }
+
+    @Around("updateExecutor(taskId, executorId)")
+    public Object logUpdateExecutor(ProceedingJoinPoint proceedingJoinPoint, UUID taskId, UUID executorId)
+            throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            if (executorId == null) {
+                LOGGER.info(
+                        loggerColorConfig.getPUT_COLOR()
+                                + "Task with id: {} no longer has an executor"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        taskId);
+            } else {
+                LOGGER.info(
+                        loggerColorConfig.getPUT_COLOR()
+                                + "Task with id: {} now has an executor with id: {}"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        taskId,
+                        executorId);
+            }
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("updateShoppingLists(taskId)")
+    public Object logUpdateShoppingLists(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
+            throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            LOGGER.info(
+                    loggerColorConfig.getPUT_COLOR()
+                            + "Shopping lists in task with id: {} was updated"
+                            + loggerColorConfig.getRESET_COLOR(),
+                    taskId);
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.github.giga_chill.gigachill.web.controller;
 
+import com.github.giga_chill.gigachill.exception.BadRequestException;
 import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.ForbiddenException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
@@ -29,6 +30,7 @@ public class TasksController {
     private final UserService userService;
     private final ParticipantsService participantsService;
     private final TaskService taskService;
+    private final ShoppingListsService shoppingListsService;
     private final ShoppingListsController shoppingListsController;
 
     @GetMapping
@@ -134,9 +136,45 @@ public class TasksController {
             @PathVariable UUID taskId,
             @RequestBody RequestTaskInfo requestTaskInfo) {
         var user = userService.userAuthentication(authentication);
-        var executorId =
-                requestTaskInfo.executorId() != null
-                        ? UuidUtils.safeUUID(requestTaskInfo.executorId())
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!taskService.isExisted(eventId, taskId)) {
+            throw new NotFoundException("Task with id " + taskId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.getId())) {
+            throw new ForbiddenException(
+                    "User with id "
+                            + user.getId()
+                            + " is not a participant of event with id "
+                            + eventId);
+        }
+        if (taskService.getTaskStatus(taskId).equals(env.getProperty("task_status.completed"))) {
+            throw new ConflictException("Task with id " + taskId + " is completed");
+        }
+        if (participantsService.isParticipantRole(eventId, user.getId())
+                && !taskService.isAuthor(taskId, user.getId())) {
+            throw new ForbiddenException(
+                    "User with id " + user.getId() + " cannot change " + "task with id: " + taskId);
+        }
+        taskService.updateTask(taskId, requestTaskInfo);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{taskId}/executor")
+    // ACCESS: owner, admin, participant(Если является автором)
+    public ResponseEntity<Void> putTaskExecutor(
+            Authentication authentication,
+            @PathVariable UUID eventId,
+            @PathVariable UUID taskId,
+            @RequestBody Map<String, Object> body) {
+        var user = userService.userAuthentication(authentication);
+        if (!body.containsKey("executor_id")){
+            throw new BadRequestException("Invalid request body: " + body);
+        }
+        UUID executorId =
+                body.get("executor_id") != null
+                        ? UuidUtils.safeUUID((String) body.get("executor_id"))
                         : null;
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
@@ -169,6 +207,43 @@ public class TasksController {
                             + "to task with id: "
                             + taskId);
         }
+        if (participantsService.isParticipantRole(eventId, user.getId())
+                && !taskService.isAuthor(taskId, user.getId())) {
+            throw new ForbiddenException(
+                    "User with id " + user.getId() + " cannot change " + "task with id: " + taskId);
+        }
+        taskService.updateExecutor(taskId, executorId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{taskId}/shopping-lists")
+    // ACCESS: owner, admin, participant(Если является автором)
+    public ResponseEntity<Void> putTaskShoppingLists(
+            Authentication authentication,
+            @PathVariable UUID eventId,
+            @PathVariable UUID taskId,
+            @RequestBody List<String> body) {
+        var user = userService.userAuthentication(authentication);
+        var shoppingListsIds =
+                body != null
+                ? body.stream()
+                        .map(UuidUtils::safeUUID)
+                        .toList()
+                : null;
+
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!taskService.isExisted(eventId, taskId)) {
+            throw new NotFoundException("Task with id " + taskId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.getId())) {
+            throw new ForbiddenException(
+                    "User with id "
+                            + user.getId()
+                            + " is not a participant of event with id "
+                            + eventId);
+        }
         if (taskService.getTaskStatus(taskId).equals(env.getProperty("task_status.completed"))) {
             throw new ConflictException("Task with id " + taskId + " is completed");
         }
@@ -177,9 +252,22 @@ public class TasksController {
             throw new ForbiddenException(
                     "User with id " + user.getId() + " cannot change " + "task with id: " + taskId);
         }
-        taskService.updateTask(taskId, requestTaskInfo);
+        if (shoppingListsIds != null && !shoppingListsService.areExisted(shoppingListsIds)) {
+            throw new NotFoundException(
+                    "One or more of the resources involved were not found: "
+                            + body);
+        }
+        if (shoppingListsIds != null
+                && !shoppingListsService.canBindShoppingListsToTask(shoppingListsIds, taskId)) {
+            throw new ConflictException(
+                    "One or more lists are already linked to the task: "
+                            + body);
+        }
+        taskService.updateShoppingLists(taskId, shoppingListsIds);
         return ResponseEntity.noContent().build();
     }
+
+
 
     @DeleteMapping("/{taskId}")
     // ACCESS: owner, admin, participant(Если является автором)
@@ -211,6 +299,7 @@ public class TasksController {
         taskService.deleteTask(taskId);
         return ResponseEntity.noContent().build();
     }
+
 
     @PostMapping("/{taskId}/take-in-work")
     // ACCESS: owner, admin, participant
