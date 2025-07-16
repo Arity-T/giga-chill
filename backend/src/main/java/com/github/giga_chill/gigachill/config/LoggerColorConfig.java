@@ -25,4 +25,8 @@ public class LoggerColorConfig {
     private final String DELETE_LABEL = "[DELETE]: ";
     private final String REPO_LABEL = "[REPO]: ";
     private final String EXCEPTION_LABEL = "[EXCEPTION]: ";
+
+    private final String DB_COLOR = "\u001b[38;5;208m"; // Оранжевый
+    private final String DB_LABEL = "[DB]: ";
+    private final String DB_ERROR_COLOR = "\u001b[91m"; // Ярко-красный для ошибок БД
 }
