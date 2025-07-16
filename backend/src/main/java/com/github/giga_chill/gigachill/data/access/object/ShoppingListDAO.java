@@ -4,6 +4,8 @@ import com.github.giga_chill.gigachill.data.transfer.object.ShoppingItemDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingListDTO;
 import com.github.giga_chill.gigachill.model.ShoppingList;
 import jakarta.annotation.Nullable;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,9 +51,10 @@ public interface ShoppingListDAO {
      * @param shoppingListId the unique identifier of the shopping list to update
      * @param title the new title, or {@code null} to leave unchanged
      * @param description the new description, or {@code null} to leave unchanged
+     * @param budget the new list budget, or {@code null} to leave unchanged
      */
     void updateShoppingList(
-            UUID shoppingListId, @Nullable String title, @Nullable String description);
+            UUID shoppingListId, @Nullable String title, @Nullable String description, @Nullable BigDecimal budget);
 
     /**
      * Deletes the specified shopping list.
