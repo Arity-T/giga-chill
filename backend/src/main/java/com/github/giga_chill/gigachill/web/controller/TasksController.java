@@ -394,10 +394,13 @@ public class TasksController {
                             + " is not a participant of event with id "
                             + eventId);
         }
-        if (!taskService.getTaskStatus(taskId).equals(env.getProperty("task_status.under_review"))) {
+        if (!taskService
+                .getTaskStatus(taskId)
+                .equals(env.getProperty("task_status.under_review"))) {
             throw new ConflictException("Task with id " + taskId + " is not \"under review\"");
         }
-        if (taskService.getExecutorId(taskId).equals(user.getId()) || participantsService.isParticipantRole(eventId, user.getId())) {
+        if (taskService.getExecutorId(taskId).equals(user.getId())
+                || participantsService.isParticipantRole(eventId, user.getId())) {
             throw new ConflictException(
                     "User with id "
                             + user.getId()
