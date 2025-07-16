@@ -17,6 +17,7 @@ interface TaskDeadlineProps {
 export default function TaskDeadline({ deadlineDateTime, canEdit, onUpdate }: TaskDeadlineProps) {
     const { message } = App.useApp();
     const [isEditing, setIsEditing] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
     const [value, setValue] = useState<dayjs.Dayjs | null>(null);
     const [isUpdating, setIsUpdating] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -35,6 +36,12 @@ export default function TaskDeadline({ deadlineDateTime, canEdit, onUpdate }: Ta
         currentValueRef.current = initialValue;
         setIsEditing(true);
         setIsOpen(true);
+    };
+
+    const handleContainerClick = () => {
+        if (!isEditing && canEdit) {
+            handleEdit();
+        }
     };
 
     const handleSave = async () => {
@@ -145,7 +152,15 @@ export default function TaskDeadline({ deadlineDateTime, canEdit, onUpdate }: Ta
     }, [isEditing, deadlineDateTime, onUpdate]);
 
     return (
-        <div ref={containerRef}>
+        <div
+            ref={containerRef}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onClick={handleContainerClick}
+            style={{
+                cursor: canEdit && !isEditing ? 'pointer' : 'default'
+            }}
+        >
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
                 <Title level={5} style={{ margin: 0, marginRight: '8px', marginTop: '0px' }}>
                     <CalendarOutlined style={{ marginRight: '8px', color: '#8c8c8c' }} />
@@ -157,9 +172,14 @@ export default function TaskDeadline({ deadlineDateTime, canEdit, onUpdate }: Ta
                         icon={<EditOutlined style={{ color: '#8c8c8c' }} />}
                         onClick={handleEdit}
                         size="small"
-                        style={{ opacity: 0.6, padding: '2px 4px', height: 'auto' }}
+                        style={{
+                            opacity: isHovered ? 0.6 : 0,
+                            padding: '2px 4px',
+                            height: 'auto',
+                            transition: 'opacity 0.2s ease-in-out',
+                        }}
                         onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-                        onMouseLeave={(e) => e.currentTarget.style.opacity = '0.6'}
+                        onMouseLeave={(e) => e.currentTarget.style.opacity = isHovered ? '0.6' : '0'}
                     />
                 )}
                 {isEditing && (

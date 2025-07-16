@@ -16,6 +16,7 @@ interface TaskDescriptionProps {
 export default function TaskDescription({ description, canEdit, onUpdate }: TaskDescriptionProps) {
     const { message } = App.useApp();
     const [isEditing, setIsEditing] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
     const [value, setValue] = useState('');
     const [isUpdating, setIsUpdating] = useState(false);
     const [shouldCancel, setShouldCancel] = useState(false);
@@ -28,6 +29,12 @@ export default function TaskDescription({ description, canEdit, onUpdate }: Task
         setValue(description || '');
         setIsEditing(true);
         setShouldCancel(false);
+    };
+
+    const handleContainerClick = () => {
+        if (!isEditing && canEdit) {
+            handleEdit();
+        }
     };
 
     const handleSave = async () => {
@@ -63,7 +70,15 @@ export default function TaskDescription({ description, canEdit, onUpdate }: Task
     };
 
     return (
-        <div style={{ marginBottom: '24px' }}>
+        <div
+            style={{
+                marginBottom: '24px',
+                cursor: canEdit && !isEditing ? 'pointer' : 'default'
+            }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onClick={handleContainerClick}
+        >
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
                 <FileTextOutlined style={{ color: '#8c8c8c', marginRight: '8px' }} />
                 <Title level={5} style={{ margin: 0, marginRight: '8px' }}>
@@ -75,9 +90,14 @@ export default function TaskDescription({ description, canEdit, onUpdate }: Task
                         icon={<EditOutlined style={{ color: '#8c8c8c' }} />}
                         onClick={handleEdit}
                         size="small"
-                        style={{ opacity: 0.6, padding: '2px 4px', height: 'auto' }}
+                        style={{
+                            opacity: isHovered ? 0.6 : 0,
+                            padding: '2px 4px',
+                            height: 'auto',
+                            transition: 'opacity 0.2s ease-in-out',
+                        }}
                         onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-                        onMouseLeave={(e) => e.currentTarget.style.opacity = '0.6'}
+                        onMouseLeave={(e) => e.currentTarget.style.opacity = isHovered ? '0.6' : '0'}
                     />
                 )}
                 {isEditing && (

@@ -160,10 +160,10 @@ export default function TaskModal({
                     <Title
                         level={2}
                         editable={task.permissions.can_edit ? {
-                            icon: <EditOutlined style={{ color: '#8c8c8c' }} />,
+                            icon: null,
                             onChange: (value) => handleUpdate('title', value),
                             tooltip: 'Нажмите для редактирования',
-                            triggerType: ['icon', 'text']
+                            triggerType: ['text']
                         } : false}
                         style={{ margin: 0, flex: 1, marginBottom: '24px' }}
                     >
@@ -172,7 +172,7 @@ export default function TaskModal({
 
                     {/* Основная информация */}
                     <Row gutter={[24, 16]} style={{ marginBottom: '24px' }}>
-                        <Col span={12}>
+                        <Col span={8}>
                             <TaskExecutor
                                 executor={task.executor}
                                 canEdit={task.permissions.can_edit}
@@ -181,7 +181,7 @@ export default function TaskModal({
                             />
                         </Col>
 
-                        <Col span={12}>
+                        <Col span={8} offset={4}>
                             <TaskDeadline
                                 deadlineDateTime={task.deadline_datetime}
                                 canEdit={task.permissions.can_edit}
