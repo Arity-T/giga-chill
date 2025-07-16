@@ -17,4 +17,12 @@ public class LoggerColorConfig {
     private final String RESET_COLOR = "\u001B[0m";
     private final String EXCEPTION_COLOR = "\u001b[93m";
     private final String REPO_COLOR = "\u001b[94m"; // Светло-синий
+
+    private final String GET_LABEL = "[GET]: ";
+    private final String POST_LABEL = "[POST]: ";
+    private final String PATCH_LABEL = "[PATCH]: ";
+    private final String PUT_LABEL = "[PUT]: ";
+    private final String DELETE_LABEL = "[DELETE]: ";
+    private final String REPO_LABEL = "[REPO]: ";
+    private final String EXCEPTION_LABEL = "[EXCEPTION]: ";
 }

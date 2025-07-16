@@ -101,6 +101,7 @@ public class TaskServiceLoggerAspect {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(
                     loggerColorConfig.getGET_COLOR()
+                            + loggerColorConfig.getGET_LABEL()
                             + "Event tasks with id: {} received"
                             + loggerColorConfig.getRESET_COLOR(),
                     eventId);
@@ -117,6 +118,7 @@ public class TaskServiceLoggerAspect {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(
                     loggerColorConfig.getGET_COLOR()
+                            + loggerColorConfig.getGET_LABEL()
                             + "Task with id: {} received"
                             + loggerColorConfig.getRESET_COLOR(),
                     taskId);
@@ -133,6 +135,7 @@ public class TaskServiceLoggerAspect {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(
                     loggerColorConfig.getPOST_COLOR()
+                            + loggerColorConfig.getPOST_LABEL()
                             + "User with id: {} created task with id: "
                             + "{} in event with id: {}"
                             + loggerColorConfig.getRESET_COLOR(),
@@ -152,6 +155,7 @@ public class TaskServiceLoggerAspect {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(
                     loggerColorConfig.getPATCH_COLOR()
+                            + loggerColorConfig.getPATCH_LABEL()
                             + "Task with id: {} was updated"
                             + loggerColorConfig.getRESET_COLOR(),
                     taskId);
@@ -168,6 +172,7 @@ public class TaskServiceLoggerAspect {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(
                     loggerColorConfig.getPOST_COLOR()
+                            + loggerColorConfig.getPOST_LABEL()
                             + "User with id: {} started execution task with id: {}"
                             + loggerColorConfig.getRESET_COLOR(),
                     userId,
@@ -185,6 +190,7 @@ public class TaskServiceLoggerAspect {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(
                     loggerColorConfig.getDELETE_COLOR()
+                            + loggerColorConfig.getDELETE_LABEL()
                             + "Task with id: {} was deleted"
                             + loggerColorConfig.getRESET_COLOR(),
                     taskId);
@@ -202,6 +208,7 @@ public class TaskServiceLoggerAspect {
             if ((Boolean) result) {
                 LOGGER.info(
                         loggerColorConfig.getGET_COLOR()
+                                + loggerColorConfig.getGET_LABEL()
                                 + "User with id: {} is author of task with id: {}"
                                 + loggerColorConfig.getRESET_COLOR(),
                         userId,
@@ -209,6 +216,7 @@ public class TaskServiceLoggerAspect {
             } else {
                 LOGGER.info(
                         loggerColorConfig.getGET_COLOR()
+                                + loggerColorConfig.getGET_LABEL()
                                 + "User with id: {} is not author of task with id: {}"
                                 + loggerColorConfig.getRESET_COLOR(),
                         userId,
@@ -227,6 +235,7 @@ public class TaskServiceLoggerAspect {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(
                     loggerColorConfig.getGET_COLOR()
+                            + loggerColorConfig.getGET_LABEL()
                             + "Task with id: {} has status {}"
                             + loggerColorConfig.getRESET_COLOR(),
                     taskId,
@@ -245,6 +254,7 @@ public class TaskServiceLoggerAspect {
             if ((Boolean) result) {
                 LOGGER.info(
                         loggerColorConfig.getGET_COLOR()
+                                + loggerColorConfig.getGET_LABEL()
                                 + "Task with id: {} is existed in event with id: {}"
                                 + loggerColorConfig.getRESET_COLOR(),
                         taskId,
@@ -252,6 +262,7 @@ public class TaskServiceLoggerAspect {
             } else {
                 LOGGER.info(
                         loggerColorConfig.getGET_COLOR()
+                                + loggerColorConfig.getGET_LABEL()
                                 + "Task with id: {} is not existed in event with id: {}"
                                 + loggerColorConfig.getRESET_COLOR(),
                         taskId,
@@ -271,6 +282,7 @@ public class TaskServiceLoggerAspect {
             if ((Boolean) result) {
                 LOGGER.info(
                         loggerColorConfig.getGET_COLOR()
+                                + loggerColorConfig.getGET_LABEL()
                                 + "User with id: {} can execute task with id: {}"
                                 + loggerColorConfig.getRESET_COLOR(),
                         userId,
@@ -278,6 +290,7 @@ public class TaskServiceLoggerAspect {
             } else {
                 LOGGER.info(
                         loggerColorConfig.getGET_COLOR()
+                                + loggerColorConfig.getGET_LABEL()
                                 + "User with id: {} can not execute task with id: {}"
                                 + loggerColorConfig.getRESET_COLOR(),
                         userId,
@@ -297,12 +310,14 @@ public class TaskServiceLoggerAspect {
             if ((UUID) result == null) {
                 LOGGER.info(
                         loggerColorConfig.getGET_COLOR()
+                                + loggerColorConfig.getGET_LABEL()
                                 + "Task with id: {} does not have executor"
                                 + loggerColorConfig.getRESET_COLOR(),
                         taskId);
             } else {
                 LOGGER.info(
                         loggerColorConfig.getGET_COLOR()
+                                + loggerColorConfig.getGET_LABEL()
                                 + "Task with id: {} has executor with id: {}"
                                 + loggerColorConfig.getRESET_COLOR(),
                         taskId,
@@ -323,12 +338,14 @@ public class TaskServiceLoggerAspect {
             if (executorId == null) {
                 LOGGER.info(
                         loggerColorConfig.getPUT_COLOR()
+                                + loggerColorConfig.getPUT_LABEL()
                                 + "Task with id: {} no longer has an executor"
                                 + loggerColorConfig.getRESET_COLOR(),
                         taskId);
             } else {
                 LOGGER.info(
                         loggerColorConfig.getPUT_COLOR()
+                                + loggerColorConfig.getPUT_LABEL()
                                 + "Task with id: {} now has an executor with id: {}"
                                 + loggerColorConfig.getRESET_COLOR(),
                         taskId,
@@ -347,6 +364,7 @@ public class TaskServiceLoggerAspect {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(
                     loggerColorConfig.getPUT_COLOR()
+                            + loggerColorConfig.getPUT_LABEL()
                             + "Shopping lists in task with id: {} was updated"
                             + loggerColorConfig.getRESET_COLOR(),
                     taskId);
@@ -364,6 +382,7 @@ public class TaskServiceLoggerAspect {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(
                     loggerColorConfig.getPOST_COLOR()
+                            + loggerColorConfig.getPOST_LABEL()
                             + "Task with id: {} received a comment from the executor: {}"
                             + loggerColorConfig.getRESET_COLOR(),
                     taskId,
@@ -386,6 +405,7 @@ public class TaskServiceLoggerAspect {
             if (isApproved) {
                 LOGGER.info(
                         loggerColorConfig.getPOST_COLOR()
+                                + loggerColorConfig.getPOST_LABEL()
                                 + "Task with id: {} was confirmed with a reviewer comment: {}"
                                 + loggerColorConfig.getRESET_COLOR(),
                         taskId,
@@ -393,6 +413,7 @@ public class TaskServiceLoggerAspect {
             } else {
                 LOGGER.info(
                         loggerColorConfig.getPOST_COLOR()
+                                + loggerColorConfig.getPOST_LABEL()
                                 + "Task with id: {} was rejected with a reviewer comment: {}"
                                 + loggerColorConfig.getRESET_COLOR(),
                         taskId,

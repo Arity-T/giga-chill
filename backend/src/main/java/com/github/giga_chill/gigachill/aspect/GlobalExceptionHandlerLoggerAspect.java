@@ -35,6 +35,7 @@ public class GlobalExceptionHandlerLoggerAspect {
         String method = joinPoint.getSignature().toShortString();
         LOGGER.error(
                 loggerColorConfig.getEXCEPTION_COLOR()
+                        + loggerColorConfig.getEXCEPTION_LABEL()
                         + "Method {} threw exception: {}"
                         + loggerColorConfig.getRESET_COLOR(),
                 method,
@@ -46,6 +47,7 @@ public class GlobalExceptionHandlerLoggerAspect {
         String method = joinPoint.getSignature().toShortString();
         LOGGER.error(
                 loggerColorConfig.getEXCEPTION_COLOR()
+                        + loggerColorConfig.getEXCEPTION_LABEL()
                         + "Method {} threw exception: {}"
                         + loggerColorConfig.getRESET_COLOR(),
                 method,
@@ -57,6 +59,7 @@ public class GlobalExceptionHandlerLoggerAspect {
         String method = joinPoint.getSignature().toShortString();
         LOGGER.error(
                 loggerColorConfig.getEXCEPTION_COLOR()
+                        + loggerColorConfig.getEXCEPTION_LABEL()
                         + "Method {} threw exception: {}"
                         + loggerColorConfig.getRESET_COLOR(),
                 method,
@@ -68,6 +71,7 @@ public class GlobalExceptionHandlerLoggerAspect {
         String method = joinPoint.getSignature().toShortString();
         LOGGER.error(
                 loggerColorConfig.getEXCEPTION_COLOR()
+                        + loggerColorConfig.getEXCEPTION_LABEL()
                         + "Method {} threw exception: {}"
                         + loggerColorConfig.getRESET_COLOR(),
                 method,

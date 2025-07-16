@@ -32,7 +32,8 @@ public class RepositoryLoggerAspect {
             long duration = System.currentTimeMillis() - start;
             LOGGER.info(
                     loggerColorConfig.getREPO_COLOR()
-                            + "[REPO] {}({}) -> {} ({} ms)"
+                            + loggerColorConfig.getREPO_LABEL()
+                            + "{}({}) -> {} ({} ms)"
                             + loggerColorConfig.getRESET_COLOR(),
                     methodName,
                     argsToString(args),
@@ -43,7 +44,8 @@ public class RepositoryLoggerAspect {
             long duration = System.currentTimeMillis() - start;
             LOGGER.error(
                     loggerColorConfig.getREPO_COLOR()
-                            + "[REPO] {}({}) threw {} ({} ms)"
+                            + loggerColorConfig.getREPO_LABEL()
+                            + "{}({}) threw {} ({} ms)"
                             + loggerColorConfig.getRESET_COLOR(),
                     methodName,
                     argsToString(args),
