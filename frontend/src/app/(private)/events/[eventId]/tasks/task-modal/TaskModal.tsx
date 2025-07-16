@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Modal, Typography, Tag, Tooltip, Row, Col, App, Space, Spin, Button, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { User, TaskRequest } from '@/types/api';
-import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation } from '@/store/api';
+import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useAssignTaskMutation } from '@/store/api';
 import { getTaskStatusText, getTaskStatusColor, getTaskStatusTooltip } from '@/utils/task-status-utils';
 import TaskDescription from './TaskDescription';
 import TaskExecutor from './TaskExecutor';
@@ -37,6 +37,7 @@ export default function TaskModal({
 
     const [updateTask, { isLoading: isUpdating }] = useUpdateTaskMutation();
     const [deleteTask, { isLoading: isDeleting }] = useDeleteTaskMutation();
+    const [assignTask, { isLoading: isAssigning }] = useAssignTaskMutation();
 
     const handleUpdate = async (field: string, value: any) => {
         if (!task?.permissions.can_edit) {
@@ -61,9 +62,7 @@ export default function TaskModal({
             };
 
             // Обновляем конкретное поле
-            if (field === 'executor') {
-                updates.executor_id = value?.id || null;
-            } else if (field === 'deadline_datetime') {
+            if (field === 'deadline_datetime') {
                 updates.deadline_datetime = value;
             } else {
                 updates[field as keyof TaskRequest] = value;
@@ -105,7 +104,29 @@ export default function TaskModal({
     };
 
     const handleUpdateExecutor = async (executor: User | null) => {
-        await handleUpdate('executor', executor);
+        if (!task?.permissions.can_edit) {
+            message.warning('У вас нет прав для редактирования этой задачи');
+            return;
+        }
+
+        // Проверяем, изменился ли исполнитель
+        const currentExecutorId = task.executor?.id || null;
+        const newExecutorId = executor?.id || null;
+        if (newExecutorId === currentExecutorId) {
+            return; // Исполнитель не изменился, ничего не делаем
+        }
+
+        try {
+            await assignTask({
+                eventId,
+                taskId: task.task_id,
+                executorData: { executor_id: newExecutorId }
+            }).unwrap();
+
+            message.success('Исполнитель обновлен');
+        } catch (error) {
+            message.error('Ошибка при обновлении исполнителя');
+        }
     };
 
     const handleUpdateDeadline = async (deadline: string) => {
