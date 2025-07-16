@@ -1,5 +1,5 @@
 import { api } from './api'
-import type { Task, TaskRequest, TaskWithShoppingLists } from '@/types/api'
+import type { Task, TaskRequest, TaskPatchRequest, TaskExecutorId, TaskWithShoppingLists } from '@/types/api'
 
 export const tasksApi = api.injectEndpoints({
     endpoints: (builder) => ({
@@ -28,11 +28,35 @@ export const tasksApi = api.injectEndpoints({
             ],
         }),
 
-        updateTask: builder.mutation<void, { eventId: string; taskId: string; task: TaskRequest }>({
+        updateTask: builder.mutation<void, { eventId: string; taskId: string; task: TaskPatchRequest }>({
             query: ({ eventId, taskId, task }) => ({
                 url: `/events/${eventId}/tasks/${taskId}`,
                 method: 'PATCH',
                 body: task,
+            }),
+            invalidatesTags: (_result, _error, { eventId, taskId }) => [
+                { type: 'Tasks', id: eventId },
+                { type: 'Tasks', id: `${eventId}-${taskId}` }
+            ],
+        }),
+
+        assignTask: builder.mutation<void, { eventId: string; taskId: string; executorData: TaskExecutorId }>({
+            query: ({ eventId, taskId, executorData }) => ({
+                url: `/events/${eventId}/tasks/${taskId}/executor`,
+                method: 'PUT',
+                body: executorData,
+            }),
+            invalidatesTags: (_result, _error, { eventId, taskId }) => [
+                { type: 'Tasks', id: eventId },
+                { type: 'Tasks', id: `${eventId}-${taskId}` }
+            ],
+        }),
+
+        assignShoppingLists: builder.mutation<void, { eventId: string; taskId: string; shoppingListIds: string[] }>({
+            query: ({ eventId, taskId, shoppingListIds }) => ({
+                url: `/events/${eventId}/tasks/${taskId}/shopping-lists`,
+                method: 'PUT',
+                body: shoppingListIds,
             }),
             invalidatesTags: (_result, _error, { eventId, taskId }) => [
                 { type: 'Tasks', id: eventId },
@@ -68,6 +92,8 @@ export const {
     useCreateTaskMutation,
     useGetTaskQuery,
     useUpdateTaskMutation,
+    useAssignTaskMutation,
+    useAssignShoppingListsMutation,
     useDeleteTaskMutation,
     useTakeTaskInWorkMutation,
 } = tasksApi 

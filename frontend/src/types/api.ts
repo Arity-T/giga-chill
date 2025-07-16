@@ -110,6 +110,16 @@ export interface TaskRequest {
   shopping_lists_ids: string[];
 }
 
+export interface TaskPatchRequest {
+  title?: string;
+  description?: string;
+  deadline_datetime?: string;
+}
+
+export interface TaskExecutorId {
+  executor_id: string | null;
+}
+
 export enum TaskStatus {
   OPEN = 'open',
   IN_PROGRESS = 'in_progress',
