@@ -322,4 +322,23 @@ public class TaskDAOImpl implements TaskDAO {
     public void setExecutorComment(UUID taskId, String executorComment) {
         taskRepository.setExecutorCommentAndMarkUnderReview(taskId, executorComment);
     }
+
+    /**
+     * Updates the reviewer's comment and approval status for the specified task.
+     *
+     * @param taskId the unique identifier of the task to update
+     * @param reviewerComment the comment text from the reviewer; may be empty or null to clear
+     *     existing comment
+     * @param isApproved {@code true} if the reviewer approves the task - The task status becomes
+     *     "completed"; {@code false} otherwise - The task status becomes "in_progress"
+     */
+    @Override
+    public void setReviewerComment(UUID taskId, String reviewerComment, boolean isApproved) {
+        taskRepository.setReviewerComment(taskId, reviewerComment);
+        if (isApproved) {
+            taskRepository.setStatus(taskId, TaskStatus.completed);
+        } else {
+            taskRepository.setStatus(taskId, TaskStatus.in_progress);
+        }
+    }
 }

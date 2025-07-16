@@ -136,4 +136,18 @@ public class TaskRepository {
                 .where(Tasks.TASKS.TASK_ID.eq(taskId))
                 .execute();
     }
+
+    public void setReviewerComment(UUID taskId, String reviewerComment) {
+        dsl.update(Tasks.TASKS)
+                .set(Tasks.TASKS.REVIEWER_COMMENT, reviewerComment)
+                .where(Tasks.TASKS.TASK_ID.eq(taskId))
+                .execute();
+    }
+
+    public void setStatus(UUID taskId, TaskStatus status) {
+        dsl.update(Tasks.TASKS)
+                .set(Tasks.TASKS.STATUS, status)
+                .where(Tasks.TASKS.TASK_ID.eq(taskId))
+                .execute();
+    }
 }
