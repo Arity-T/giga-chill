@@ -58,6 +58,8 @@ public class TaskDAOImpl implements TaskDAO {
                 record.getDescription(),
                 record.getStatus().getLiteral(),
                 record.getDeadlineDatetime().toString(),
+                record.getExecutorComment(),
+                record.getReviewerComment(),
                 getAuthorDTO(record.getAuthorId()),
                 getExecutorDTO(record.getExecutorId()));
     }
@@ -70,6 +72,8 @@ public class TaskDAOImpl implements TaskDAO {
                 record.getDescription(),
                 record.getStatus().getLiteral(),
                 record.getDeadlineDatetime().toString(),
+                record.getExecutorComment(),
+                record.getReviewerComment(),
                 getAuthorDTO(record.getAuthorId()),
                 getExecutorDTO(record.getExecutorId()),
                 shoppingLists);
@@ -130,7 +134,9 @@ public class TaskDAOImpl implements TaskDAO {
                         taskDTO.status() != null ? TaskStatus.valueOf(taskDTO.status()) : null,
                         taskDTO.deadlineDatetime() != null
                                 ? OffsetDateTime.parse(taskDTO.deadlineDatetime())
-                                : null));
+                                : null,
+                        taskDTO.executorComment(),
+                        taskDTO.reviewerComment()));
 
         // Привязываем shopping lists к задаче
         for (UUID shoppingListId : shoppingListsIds) {
