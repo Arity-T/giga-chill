@@ -117,7 +117,7 @@ public class TaskRepository {
                                         Tasks.TASKS
                                                 .EXECUTOR_ID
                                                 .isNull()
-                                                .or(Tasks.TASKS.EXECUTOR_ID.ne(executorId))))
+                                                .or(Tasks.TASKS.EXECUTOR_ID.eq(executorId))))
                 .execute();
     }
 

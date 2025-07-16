@@ -357,14 +357,6 @@ public class ShoppingListsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
-        if (participantsService.isParticipantRole(eventId, user.getId())
-                && !shoppingListsService.isConsumer(shoppingListId, user.getId())) {
-            throw new ForbiddenException(
-                    "User with id "
-                            + user.getId()
-                            + " is not a consumer of shopping list with id "
-                            + shoppingListId);
-        }
         var shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.in_progress"))) {
             throw new ConflictException(
@@ -382,11 +374,12 @@ public class ShoppingListsController {
         }
         var executorId = taskService.getExecutorId(taskId);
         var taskStatus = taskService.getTaskStatus(taskId);
-        if (!(executorId != null
-                        && executorId.equals(user.getId())
-                        && taskStatus.equals(env.getProperty("task_status.in_progress")))
-                && !(participantsService.isParticipantRole(eventId, user.getId())
-                        && taskStatus.equals(env.getProperty("task_status.under_review")))) {
+        if (executorId == null
+                || !(executorId.equals(user.getId())
+                                && taskStatus.equals(env.getProperty("task_status.in_progress"))
+                        || !(participantsService.isParticipantRole(eventId, user.getId())
+                                && taskStatus.equals(env.getProperty("task_status.under_review"))
+                                && executorId.equals(user.getId())))) {
             throw new ForbiddenException(
                     "User with id "
                             + user.getId()

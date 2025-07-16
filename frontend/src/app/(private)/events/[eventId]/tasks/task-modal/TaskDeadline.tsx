@@ -12,9 +12,10 @@ interface TaskDeadlineProps {
     deadlineDateTime: string;
     canEdit: boolean;
     onUpdate: (deadline: string) => Promise<void>;
+    eventEndDateTime?: string;
 }
 
-export default function TaskDeadline({ deadlineDateTime, canEdit, onUpdate }: TaskDeadlineProps) {
+export default function TaskDeadline({ deadlineDateTime, canEdit, onUpdate, eventEndDateTime }: TaskDeadlineProps) {
     const { message } = App.useApp();
     const [isEditing, setIsEditing] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
@@ -214,7 +215,55 @@ export default function TaskDeadline({ deadlineDateTime, canEdit, onUpdate }: Ta
                     onChange={handleDateChange}
                     onOpenChange={handleOpenChange}
                     placeholder="Выберите дедлайн"
-                    disabledDate={(current) => current && current < dayjs().startOf('day')}
+                    disabledDate={(current) => {
+                        if (!current) return false;
+
+                        // Нельзя выбрать дату раньше сегодня
+                        if (current < dayjs().startOf('day')) {
+                            return true;
+                        }
+
+                        // Нельзя выбрать дату позже окончания события
+                        if (eventEndDateTime && current > dayjs(eventEndDateTime).endOf('day')) {
+                            return true;
+                        }
+
+                        return false;
+                    }}
+                    disabledTime={(current) => {
+                        if (!current || !eventEndDateTime) return {};
+
+                        const eventEnd = dayjs(eventEndDateTime);
+
+                        // Если выбранная дата не равна дате окончания события, то все времена доступны
+                        if (!current.isSame(eventEnd, 'day')) {
+                            return {};
+                        }
+
+                        // Если выбранная дата равна дате окончания события
+                        const endHour = eventEnd.hour();
+                        const endMinute = eventEnd.minute();
+
+                        return {
+                            disabledHours: () => {
+                                const hours = [];
+                                for (let i = endHour + 1; i < 24; i++) {
+                                    hours.push(i);
+                                }
+                                return hours;
+                            },
+                            disabledMinutes: (selectedHour) => {
+                                if (selectedHour === endHour) {
+                                    const minutes = [];
+                                    for (let i = endMinute + 1; i < 60; i++) {
+                                        minutes.push(i);
+                                    }
+                                    return minutes;
+                                }
+                                return [];
+                            }
+                        };
+                    }}
                 />
             ) : (
                 <div style={{

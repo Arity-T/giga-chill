@@ -172,7 +172,7 @@ public class TaskService {
             canEdit = false;
         }
         if (getTaskStatus(taskId).equals(env.getProperty("task_status.open"))
-                && (getExecutorId(taskId) == null || executorId.equals(userId))) {
+                && (executorId == null || executorId.equals(userId))) {
             canTakeItToWork = true;
         }
         if (getTaskStatus(taskId).equals(env.getProperty("task_status.under_review"))

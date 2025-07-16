@@ -444,7 +444,7 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("areExisted(shoppingListsIds, ..)")
+    @Around("canBindShoppingListsToTask(shoppingListsIds, ..)")
     public Object logCanBindShoppingListsToTask(
             ProceedingJoinPoint proceedingJoinPoint, List<UUID> shoppingListsIds) throws Throwable {
         try {

@@ -92,11 +92,6 @@ public class TasksController {
                             + " is not a participant of event with id "
                             + eventId);
         }
-        if (executorId != null && participantsService.isParticipantRole(eventId, user.getId())) {
-            throw new ForbiddenException(
-                    "User with id " + user.getId() + " cannot assign executors");
-        }
-
         taskService.createTask(eventId, user, requestTaskInfo);
         return ResponseEntity.noContent().build();
     }

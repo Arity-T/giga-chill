@@ -2,13 +2,14 @@
 
 import React, { useState } from 'react';
 import { Modal, Typography, Tag, Tooltip, Row, Col, App, Space, Spin, Button, Popconfirm } from 'antd';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { User, TaskRequest } from '@/types/api';
-import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation } from '@/store/api';
+import { EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { User, TaskRequest, TaskStatus } from '@/types/api';
+import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useAssignTaskMutation, useAssignShoppingListsMutation, useGetShoppingListsQuery, useTakeTaskInWorkMutation, useGetMeQuery, useGetEventQuery } from '@/store/api';
 import { getTaskStatusText, getTaskStatusColor, getTaskStatusTooltip } from '@/utils/task-status-utils';
 import TaskDescription from './TaskDescription';
 import TaskExecutor from './TaskExecutor';
 import TaskDeadline from './TaskDeadline';
+import TaskShoppingLists from './TaskShoppingLists';
 
 const { Title } = Typography;
 
@@ -27,7 +28,13 @@ export default function TaskModal({
     participants,
     eventId
 }: TaskModalProps) {
-    const { message } = App.useApp();
+    const { message, modal } = App.useApp();
+
+    // Получаем информацию о текущем пользователе
+    const { data: currentUser } = useGetMeQuery();
+
+    // Получаем информацию о событии
+    const { data: event } = useGetEventQuery(eventId);
 
     // Получаем полную информацию о задаче
     const { data: task, isLoading } = useGetTaskQuery(
@@ -37,6 +44,12 @@ export default function TaskModal({
 
     const [updateTask, { isLoading: isUpdating }] = useUpdateTaskMutation();
     const [deleteTask, { isLoading: isDeleting }] = useDeleteTaskMutation();
+    const [assignTask, { isLoading: isAssigning }] = useAssignTaskMutation();
+    const [assignShoppingLists, { isLoading: isAssigningLists }] = useAssignShoppingListsMutation();
+    const [takeTaskInWork, { isLoading: isTakingInWork }] = useTakeTaskInWorkMutation();
+
+    // Получаем все списки покупок для события
+    const { data: allShoppingLists = [] } = useGetShoppingListsQuery(eventId);
 
     const handleUpdate = async (field: string, value: any) => {
         if (!task?.permissions.can_edit) {
@@ -61,9 +74,7 @@ export default function TaskModal({
             };
 
             // Обновляем конкретное поле
-            if (field === 'executor') {
-                updates.executor_id = value?.id || null;
-            } else if (field === 'deadline_datetime') {
+            if (field === 'deadline_datetime') {
                 updates.deadline_datetime = value;
             } else {
                 updates[field as keyof TaskRequest] = value;
@@ -87,17 +98,34 @@ export default function TaskModal({
             return;
         }
 
-        try {
-            await deleteTask({
-                eventId,
-                taskId: task.task_id
-            }).unwrap();
+        modal.confirm({
+            title: 'Удалить задачу?',
+            content: (
+                <div>
+                    <p>
+                        Вы уверены, что хотите удалить задачу <strong>{task.title}</strong>?
+                    </p>
+                    <p>Это действие нельзя отменить.</p>
+                </div>
+            ),
+            icon: <ExclamationCircleOutlined />,
+            okText: 'Удалить',
+            okType: 'danger',
+            cancelText: 'Отмена',
+            onOk: async () => {
+                try {
+                    await deleteTask({
+                        eventId,
+                        taskId: task.task_id
+                    }).unwrap();
 
-            message.success('Задача удалена');
-            onClose();
-        } catch (error) {
-            message.error('Ошибка при удалении задачи');
-        }
+                    message.success('Задача удалена');
+                    onClose();
+                } catch (error) {
+                    message.error('Ошибка при удалении задачи');
+                }
+            },
+        });
     };
 
     const handleUpdateDescription = async (description: string) => {
@@ -105,11 +133,78 @@ export default function TaskModal({
     };
 
     const handleUpdateExecutor = async (executor: User | null) => {
-        await handleUpdate('executor', executor);
+        if (!task?.permissions.can_edit) {
+            message.warning('У вас нет прав для редактирования этой задачи');
+            return;
+        }
+
+        // Проверяем, изменился ли исполнитель
+        const currentExecutorId = task.executor?.id || null;
+        const newExecutorId = executor?.id || null;
+        if (newExecutorId === currentExecutorId) {
+            return; // Исполнитель не изменился, ничего не делаем
+        }
+
+        try {
+            await assignTask({
+                eventId,
+                taskId: task.task_id,
+                executorData: { executor_id: newExecutorId }
+            }).unwrap();
+
+            message.success('Исполнитель обновлен');
+        } catch (error) {
+            message.error('Ошибка при обновлении исполнителя');
+        }
     };
 
     const handleUpdateDeadline = async (deadline: string) => {
         await handleUpdate('deadline_datetime', deadline);
+    };
+
+    const handleUpdateShoppingLists = async (shoppingListIds: string[]) => {
+        if (!task?.permissions.can_edit) {
+            message.warning('У вас нет прав для редактирования этой задачи');
+            return;
+        }
+
+        try {
+            await assignShoppingLists({
+                eventId,
+                taskId: task.task_id,
+                shoppingListIds
+            }).unwrap();
+
+            message.success('Списки покупок обновлены');
+        } catch (error) {
+            message.error('Ошибка при обновлении списков покупок');
+        }
+    };
+
+    const handleTakeInWork = async () => {
+        if (!task) return;
+
+        try {
+            await takeTaskInWork({
+                eventId,
+                taskId: task.task_id
+            }).unwrap();
+
+            message.success('Задача взята в работу');
+        } catch (error) {
+            message.error('Ошибка при взятии задачи в работу');
+        }
+    };
+
+    // Проверяем, нужно ли показывать кнопку "Взять в работу"
+    const shouldShowTakeInWorkButton = () => {
+        if (!task || !currentUser) return false;
+
+        // Кнопка показывается только если:
+        // 1. Задача в статусе OPEN
+        // 2. Текущий пользователь является исполнителем задачи
+        return task.status === TaskStatus.OPEN &&
+            task.executor?.id === currentUser.id;
     };
 
     return (
@@ -134,27 +229,6 @@ export default function TaskModal({
                                 {getTaskStatusText(task.status)}
                             </Tag>
                         </Tooltip>
-
-                        {/* Кнопка удаления */}
-                        {task.permissions.can_edit && (
-                            <div style={{ position: 'absolute', top: -24, right: 0 }}>
-                                <Popconfirm
-                                    title="Удалить задачу"
-                                    description="Вы уверены, что хотите удалить эту задачу?"
-                                    onConfirm={handleDelete}
-                                    okText="Да"
-                                    cancelText="Отмена"
-                                    placement="bottomRight"
-                                >
-                                    <Button
-                                        type="text"
-                                        icon={<DeleteOutlined style={{ color: '#8c8c8c' }} />}
-                                        loading={isDeleting}
-                                        size="small"
-                                    />
-                                </Popconfirm>
-                            </div>
-                        )}
                     </div>
 
                     <Title
@@ -186,6 +260,7 @@ export default function TaskModal({
                                 deadlineDateTime={task.deadline_datetime}
                                 canEdit={task.permissions.can_edit}
                                 onUpdate={handleUpdateDeadline}
+                                eventEndDateTime={event?.end_datetime}
                             />
                         </Col>
                     </Row>
@@ -198,27 +273,49 @@ export default function TaskModal({
                     />
 
                     {/* Списки покупок */}
-                    {task.shopping_lists && task.shopping_lists.length > 0 && (
-                        <div style={{ marginTop: '24px' }}>
-                            <Typography.Text strong style={{ color: '#8c8c8c' }}>
-                                Связанные списки покупок:
-                            </Typography.Text>
-                            <div style={{ marginTop: '8px' }}>
-                                {task.shopping_lists.map(list => (
-                                    <Tag key={list.shopping_list_id} style={{ marginBottom: '4px' }}>
-                                        {list.title}
-                                    </Tag>
-                                ))}
-                            </div>
+                    <TaskShoppingLists
+                        shoppingLists={task.shopping_lists || []}
+                        allShoppingLists={allShoppingLists}
+                        canEdit={task.permissions.can_edit}
+                        onUpdate={handleUpdateShoppingLists}
+                    />
+
+                    {/* Кнопка "Взять в работу" */}
+                    {shouldShowTakeInWorkButton() && (
+                        <div style={{ marginTop: '24px', marginBottom: '16px' }}>
+                            <Button
+                                type="primary"
+                                loading={isTakingInWork}
+                                onClick={handleTakeInWork}
+                                style={{ width: '100%' }}
+                            >
+                                Взять в работу
+                            </Button>
                         </div>
                     )}
 
                     {/* Автор */}
                     <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #f0f0f0' }}>
-                        <Space>
-                            <span style={{ color: '#8c8c8c' }}>Автор:</span>
-                            <span>{task.author.name} (@{task.author.login})</span>
-                        </Space>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Space>
+                                <span style={{ color: '#8c8c8c' }}>Автор:</span>
+                                <span>{task.author.name} (@{task.author.login})</span>
+                            </Space>
+
+                            {task.permissions.can_edit && (
+                                <span
+                                    onClick={handleDelete}
+                                    style={{
+                                        color: '#8c8c8c',
+                                        cursor: 'pointer',
+                                        fontSize: '14px',
+                                        userSelect: 'none'
+                                    }}
+                                >
+                                    Удалить задачу
+                                </span>
+                            )}
+                        </div>
                     </div>
 
                     {!task.permissions.can_edit && (
