@@ -155,9 +155,9 @@ public class EventsController {
         return ResponseEntity.ok(Collections.singletonMap("invitation_token", eventLink));
     }
 
-    @PostMapping("/join-by-link")
+    @PostMapping("/join-by-invitation-token")
     //ACCESS: ALL
-    public ResponseEntity<Void> postJoinByLink(Authentication authentication,
+    public ResponseEntity<Map<String, String>> postJoinByLink(Authentication authentication,
                                                @RequestBody Map<String, Object> body) {
         User user = userService.userAuthentication(authentication);
         var rawToken = (String) body.get("invitation_token");
@@ -174,7 +174,7 @@ public class EventsController {
         }
 
         eventService.joinByLink(eventId, user);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(Collections.singletonMap("event_id", eventId.toString()));
     }
 
 
