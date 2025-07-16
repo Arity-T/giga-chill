@@ -10,7 +10,6 @@ public record ResponseTaskInfo(
         @JsonProperty("description") String description,
         @JsonProperty("status") String status,
         @JsonProperty("deadline_datetime") String deadlineDatetime,
-        @JsonProperty("actual_approval_id") String actualApprovalId,
         @JsonProperty("permissions") Map<String, Boolean> permissions,
         @JsonProperty("author") UserInfo author,
         @Nullable @JsonProperty("executor") UserInfo executor) {}

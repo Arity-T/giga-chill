@@ -70,7 +70,6 @@ public final class InfoEntityMapper {
                 task.getDescription(),
                 task.getStatus(),
                 task.getDeadlineDatetime(),
-                task.getActualApprovalId() != null ? task.getTaskId().toString() : null,
                 permissions,
                 InfoEntityMapper.toUserInfo(task.getAuthor()),
                 task.getExecutor() != null

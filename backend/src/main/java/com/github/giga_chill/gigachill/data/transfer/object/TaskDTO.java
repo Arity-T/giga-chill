@@ -9,6 +9,5 @@ public record TaskDTO(
         @Nullable String description,
         @Nullable String status,
         @Nullable String deadlineDatetime,
-        @Nullable UUID actualApprovalId,
         @Nullable UserDTO author,
         @Nullable UserDTO executor) {}

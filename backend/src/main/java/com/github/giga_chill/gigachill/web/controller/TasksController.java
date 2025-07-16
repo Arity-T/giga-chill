@@ -334,7 +334,6 @@ public class TasksController {
                 task.getDescription(),
                 task.getStatus(),
                 task.getDeadlineDatetime(),
-                task.getActualApprovalId() != null ? task.getTaskId().toString() : null,
                 permissions,
                 InfoEntityMapper.toUserInfo(task.getAuthor()),
                 task.getExecutor() != null ? InfoEntityMapper.toUserInfo(task.getExecutor()) : null,

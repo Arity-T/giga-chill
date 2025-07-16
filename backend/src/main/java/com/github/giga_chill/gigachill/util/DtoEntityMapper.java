@@ -108,7 +108,6 @@ public final class DtoEntityMapper {
                 TaskDTO.description(),
                 TaskDTO.status(),
                 TaskDTO.deadlineDatetime(),
-                TaskDTO.actualApprovalId(),
                 DtoEntityMapper.toUserEntity(TaskDTO.author()),
                 TaskDTO.executor() != null
                         ? DtoEntityMapper.toUserEntity(TaskDTO.executor())
@@ -123,7 +122,6 @@ public final class DtoEntityMapper {
                 taskWithShoppingListsDTO.description(),
                 taskWithShoppingListsDTO.status(),
                 taskWithShoppingListsDTO.deadlineDatetime(),
-                taskWithShoppingListsDTO.actualApprovalId(),
                 DtoEntityMapper.toUserEntity(taskWithShoppingListsDTO.author()),
                 taskWithShoppingListsDTO.executor() != null
                         ? DtoEntityMapper.toUserEntity(taskWithShoppingListsDTO.executor())
@@ -140,7 +138,6 @@ public final class DtoEntityMapper {
                 task.getDescription(),
                 task.getStatus(),
                 task.getDeadlineDatetime(),
-                task.getActualApprovalId(),
                 task.getAuthor() != null ? DtoEntityMapper.toUserDto(task.getAuthor()) : null,
                 task.getExecutor() != null ? DtoEntityMapper.toUserDto(task.getExecutor()) : null);
     }
@@ -152,7 +149,6 @@ public final class DtoEntityMapper {
                 task.getDescription(),
                 task.getStatus(),
                 task.getDeadlineDatetime(),
-                task.getActualApprovalId(),
                 DtoEntityMapper.toUserDto(task.getAuthor()),
                 task.getExecutor() != null ? DtoEntityMapper.toUserDto(task.getExecutor()) : null,
                 task.getShoppingLists().stream().map(DtoEntityMapper::toShoppingListDto).toList());
