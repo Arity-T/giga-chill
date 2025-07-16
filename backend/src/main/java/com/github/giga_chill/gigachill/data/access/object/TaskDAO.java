@@ -129,4 +129,13 @@ public interface TaskDAO {
      *     status becomes "Unassigned". And all the purchases become not purchased.
      */
     void updateShoppingLists(UUID taskId, @Nullable List<UUID> shoppingLists);
+
+
+    /**
+     * Updates the comment provided by the executor for the specified task.
+     *
+     * @param taskId          the unique identifier of the task to update
+     * @param executorComment the comment text from the executor
+     */
+    void setExecutorComment(UUID taskId, String executorComment);
 }
