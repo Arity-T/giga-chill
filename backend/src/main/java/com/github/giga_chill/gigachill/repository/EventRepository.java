@@ -47,6 +47,8 @@ public class EventRepository {
     public boolean exists(UUID eventId) {
         return dsl.fetchExists(
                 dsl.selectFrom(Events.EVENTS).where(Events.EVENTS.EVENT_ID.eq(eventId)));
+    }
+
     public OffsetDateTime getEndDatetimeById(UUID eventId) {
         return dsl.select(Events.EVENTS.END_DATETIME)
                 .from(Events.EVENTS)

@@ -4,6 +4,7 @@ import com.github.giga_chill.gigachill.exception.BadRequestException;
 import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.ForbiddenException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
+import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.ParticipantsService;
 import com.github.giga_chill.gigachill.service.UserService;
@@ -217,17 +218,5 @@ public class EventsController {
 
         eventService.joinByLink(eventId, user);
         return ResponseEntity.ok(Collections.singletonMap("event_id", eventId.toString()));
-    }
-
-    private ResponseEventInfo toResponseEventInfo(Event event, String userRole) {
-        return new ResponseEventInfo(
-                event.getEventId().toString(),
-                userRole,
-                event.getTitle(),
-                event.getLocation(),
-                event.getStartDatetime(),
-                event.getEndDatetime(),
-                event.getDescription(),
-                event.getBudget());
     }
 }

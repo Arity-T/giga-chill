@@ -87,26 +87,4 @@ public class EventService {
     public void joinByLink(UUID eventId, User user) {
         participantsService.addParticipantToEvent(eventId, user);
     }
-
-    private Event toEntity(EventDTO eventDTO) {
-        return new Event(
-                eventDTO.event_id(),
-                eventDTO.title(),
-                eventDTO.location(),
-                eventDTO.start_datetime(),
-                eventDTO.end_datetime(),
-                eventDTO.description(),
-                eventDTO.budget());
-    }
-
-    private EventDTO toDto(Event event) {
-        return new EventDTO(
-                event.getEventId(),
-                event.getTitle(),
-                event.getLocation(),
-                event.getStartDatetime(),
-                event.getEndDatetime(),
-                event.getDescription(),
-                event.getBudget());
-    }
 }
