@@ -1,6 +1,7 @@
 package com.github.giga_chill.gigachill.aspect;
 
 import com.github.giga_chill.gigachill.config.LoggerColorConfig;
+import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,26 @@ public class EventServiceLoggerAspect {
             "execution(public * com.github.giga_chill.gigachill.service.EventService.isExisted(..)) "
                     + "&& args(eventId)")
     public void isExisted(UUID eventId) {}
+
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.EventService.createInviteLink(..)) "
+                    + "&& args(eventId)")
+    public void createInviteLink(UUID eventId) {}
+
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.EventService.getInviteLink(..)) "
+                    + "&& args(eventId)")
+    public void getInviteLink(UUID eventId) {}
+
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.EventService.getEventByLinkUuid(..)) "
+                    + "&& args(linkUuid)")
+    public void getEventByLinkUuid(UUID linkUuid) {}
+
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.EventService.joinByLink(..)) "
+                    + "&& args(eventId, user)")
+    public void joinByLink(UUID eventId, User user) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.getEndDatetime(..)) "
@@ -158,6 +179,81 @@ public class EventServiceLoggerAspect {
                                 + loggerColorConfig.getRESET_COLOR(),
                         eventId);
             }
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("createInviteLink(eventId)")
+    public Object logCreateInviteLink(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
+            throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            LOGGER.info(
+                    loggerColorConfig.getPOST_COLOR()
+                            + "Event with id: {} has received a new invite link with hash: {}"
+                            + loggerColorConfig.getRESET_COLOR(),
+                    eventId,
+                    (String) result);
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("getInviteLink(eventId)")
+    public Object logGetInviteLink(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
+            throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            LOGGER.info(
+                    loggerColorConfig.getGET_COLOR()
+                            + "The invite link to the event with id: {} was received."
+                            + loggerColorConfig.getRESET_COLOR(),
+                    eventId);
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("getEventByLinkUuid(linkUuid)")
+    public Object logGetEventByLinkUuid(ProceedingJoinPoint proceedingJoinPoint, UUID linkUuid)
+            throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            if ((UUID) result == null) {
+                LOGGER.info(
+                        loggerColorConfig.getGET_COLOR()
+                                + "Invite link with hash: {} did not attach to event"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        linkUuid);
+            } else {
+                LOGGER.info(
+                        loggerColorConfig.getGET_COLOR()
+                                + "Invite link with hash: {} attached to event with id: {}"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        linkUuid,
+                        (UUID) result);
+            }
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("joinByLink(eventId, user)")
+    public Object logJoinByLink(ProceedingJoinPoint proceedingJoinPoint, UUID eventId, User user)
+            throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            LOGGER.info(
+                    loggerColorConfig.getPOST_COLOR()
+                            + "The user with id: {} joined event with id: {} via a link"
+                            + loggerColorConfig.getRESET_COLOR(),
+                    user.getId(),
+                    eventId);
             return result;
         } catch (Throwable ex) {
             throw ex;

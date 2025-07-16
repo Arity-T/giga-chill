@@ -1,6 +1,7 @@
 package com.github.giga_chill.gigachill.data.access.object;
 
 import com.github.giga_chill.gigachill.data.transfer.object.EventDTO;
+import jakarta.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
@@ -67,4 +68,30 @@ public interface EventDAO {
      * @return a {@link String} representation of the event’s end date‑time,
      */
     String getEndDatetime(UUID eventId);
+
+    /**
+     * Creates a new invite link record for the specified event.
+     *
+     * @param eventId the unique identifier of the event
+     * @param inviteLinkUuid the UUID to assign as the invite link token
+     */
+    void createInviteLink(UUID eventId, UUID inviteLinkUuid);
+
+    /**
+     * Retrieves the UUID of the current invite link for the given event.
+     *
+     * @param eventId the unique identifier of the event
+     * @return the {@link UUID} representing the invite link token
+     */
+    UUID getInviteLinkUuid(UUID eventId);
+
+    /**
+     * Retrieves the unique Event ID associated with the given invite link UUID.
+     *
+     * @param linkUuid the UUID token used for event invitation links
+     * @return the {@link UUID} of the event linked to the provided invitation token, or {@code
+     *     null} if no matching event is found
+     */
+    @Nullable
+    UUID getEventByLinkUuid(UUID linkUuid);
 }
