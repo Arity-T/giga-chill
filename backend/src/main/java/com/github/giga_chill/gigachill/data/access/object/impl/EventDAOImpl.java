@@ -113,9 +113,15 @@ public class EventDAOImpl implements EventDAO {
         userInEventRepository.save(userInEventRecord);
     }
 
+    /**
+     * Checks whether an event with the given identifier exists.
+     *
+     * @param eventId the unique identifier of the event
+     * @return {@code true} if the event exists and delete status false, {@code false} otherwise
+     */
     @Override
-    public boolean isExisted(UUID eventId) {
-        return eventRepository.exists(eventId);
+    public boolean isExistedAndNotDeleted(UUID eventId) {
+        return eventRepository.existsAndNotDeleted(eventId);
     }
 
     /**
@@ -140,7 +146,7 @@ public class EventDAOImpl implements EventDAO {
         EventsRecord event = eventRepository.findById(eventId).orElse(null);
         if (event == null) return null;
 
-        return event.getInviteLink();
+        return event.getInviteToken();
     }
 
     /**

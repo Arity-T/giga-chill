@@ -73,6 +73,7 @@ export interface ShoppingListWithItems {
   title: string;
   description: string;
   status: ShoppingListStatus;
+  budget: number;
   can_edit: boolean;
   shopping_items: ShoppingItem[];
   consumers: UserInEvent[];
@@ -130,6 +131,7 @@ export enum TaskStatus {
 export interface TaskPermissions {
   can_edit: boolean;
   can_take_in_work: boolean;
+  can_review: boolean;
 }
 
 export interface Task {
@@ -138,7 +140,8 @@ export interface Task {
   description: string;
   status: TaskStatus;
   deadline_datetime: string;
-  actual_approval_id: string;
+  executor_comment: string;
+  reviewer_comment: string;
   permissions: TaskPermissions;
   author: User;
   executor: User | null;
@@ -150,4 +153,13 @@ export interface TaskWithShoppingLists extends Task {
 
 export interface InvitationToken {
   invitation_token: string;
+}
+
+export interface TaskSendForReviewRequest {
+  executor_comment: string;
+}
+
+export interface TaskReviewRequest {
+  reviewer_comment: string;
+  is_approved: boolean;
 }

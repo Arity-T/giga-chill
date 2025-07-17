@@ -3,11 +3,11 @@ package com.github.giga_chill.gigachill.repository;
 import com.github.giga_chill.jooq.generated.tables.ShoppingLists;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingListsRecord;
 import io.micrometer.common.lang.Nullable;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.math.BigDecimal;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -44,30 +44,20 @@ public class ShoppingListRepository {
         dsl.insertInto(ShoppingLists.SHOPPING_LISTS).set(record).execute();
     }
 
-    public void updateTitleAndDescription(
+    public void updateShoppingList(
             UUID shoppingListId, @Nullable String title, @Nullable String description) {
-        var updateStep = dsl.update(ShoppingLists.SHOPPING_LISTS);
-
-        // Дубликат для эффективности - можем установить поля за один запрос
-        if (title != null && description != null) {
-            updateStep
-                    .set(ShoppingLists.SHOPPING_LISTS.TITLE, title)
-                    .set(ShoppingLists.SHOPPING_LISTS.DESCRIPTION, description)
-                    .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(shoppingListId))
-                    .execute();
-            return;
-        }
+        Map<Field<?>, Object> updates = new HashMap<>();
 
         if (title != null) {
-            updateStep
-                    .set(ShoppingLists.SHOPPING_LISTS.TITLE, title)
-                    .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(shoppingListId))
-                    .execute();
+            updates.put(ShoppingLists.SHOPPING_LISTS.TITLE, title);
+        }
+        if (description != null) {
+            updates.put(ShoppingLists.SHOPPING_LISTS.DESCRIPTION, description);
         }
 
-        if (description != null) {
-            updateStep
-                    .set(ShoppingLists.SHOPPING_LISTS.DESCRIPTION, description)
+        if (!updates.isEmpty()) {
+            dsl.update(ShoppingLists.SHOPPING_LISTS)
+                    .set(updates)
                     .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(shoppingListId))
                     .execute();
         }
@@ -149,5 +139,12 @@ public class ShoppingListRepository {
                                         .TASK_ID
                                         .eq(taskId)
                                         .or(ShoppingLists.SHOPPING_LISTS.TASK_ID.isNull())));
+    }
+
+    public void setBudget(UUID shoppingListId, BigDecimal budget) {
+        dsl.update(ShoppingLists.SHOPPING_LISTS)
+                .set(ShoppingLists.SHOPPING_LISTS.BUDGET, budget)
+                .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(shoppingListId))
+                .execute();
     }
 }

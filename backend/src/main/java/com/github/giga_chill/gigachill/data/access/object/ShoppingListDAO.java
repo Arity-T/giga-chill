@@ -4,6 +4,7 @@ import com.github.giga_chill.gigachill.data.transfer.object.ShoppingItemDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingListDTO;
 import com.github.giga_chill.gigachill.model.ShoppingList;
 import jakarta.annotation.Nullable;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -214,4 +215,12 @@ public interface ShoppingListDAO {
      *     {@code false} otherwise
      */
     boolean canBindShoppingListsToTaskById(List<UUID> shoppingListsIds, UUID taskId);
+
+    /**
+     * Sets or updates the budget for the specified shopping list.
+     *
+     * @param shoppingListId the unique identifier of the shopping list
+     * @param budget the {@link BigDecimal} amount representing the new budget
+     */
+    void setBudget(UUID shoppingListId, BigDecimal budget);
 }

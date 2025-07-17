@@ -24,6 +24,13 @@ public class EventRepository {
                 .fetchOptional();
     }
 
+    public boolean existsAndNotDeleted(UUID eventId) {
+        return dsl.fetchExists(
+                dsl.selectFrom(Events.EVENTS)
+                        .where(Events.EVENTS.EVENT_ID.eq(eventId))
+                        .andNot(Events.EVENTS.IS_DELETED));
+    }
+
     public void deleteById(UUID eventId) {
         dsl.update(Events.EVENTS)
                 .set(Events.EVENTS.IS_DELETED, true)
@@ -33,14 +40,14 @@ public class EventRepository {
 
     public void updateInviteLink(UUID eventId, UUID inviteLinkUuid) {
         dsl.update(Events.EVENTS)
-                .set(Events.EVENTS.INVITE_LINK, inviteLinkUuid)
+                .set(Events.EVENTS.INVITE_TOKEN, inviteLinkUuid)
                 .where(Events.EVENTS.EVENT_ID.eq(eventId))
                 .execute();
     }
 
     public Optional<EventsRecord> findByLinkId(UUID linkId) {
         return dsl.selectFrom(Events.EVENTS)
-                .where(Events.EVENTS.INVITE_LINK.eq(linkId))
+                .where(Events.EVENTS.INVITE_TOKEN.eq(linkId))
                 .fetchOptional();
     }
 

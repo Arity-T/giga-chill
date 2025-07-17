@@ -77,6 +77,7 @@ public class TaskService {
                         env.getProperty("task_status.open"),
                         requestTaskInfo.deadlineDatetime(),
                         null,
+                        null,
                         user,
                         requestTaskInfo.executorId() != null
                                 ? userService.getById(
@@ -106,6 +107,7 @@ public class TaskService {
                         requestTaskInfo.description(),
                         null,
                         requestTaskInfo.deadlineDatetime(),
+                        null,
                         null,
                         null,
                         null,
@@ -149,10 +151,19 @@ public class TaskService {
         taskDAO.updateShoppingLists(taskId, shoppingLists);
     }
 
+    public void setExecutorComment(UUID taskId, String executorComment) {
+        taskDAO.setExecutorComment(taskId, executorComment);
+    }
+
+    public void setReviewerComment(UUID taskId, String reviewerComment, boolean isApproved) {
+        taskDAO.setReviewerComment(taskId, reviewerComment, isApproved);
+    }
+
     public Map<String, Boolean> taskPermissions(UUID eventId, UUID taskId, UUID userId) {
         Map<String, Boolean> permissions = new HashMap<>();
         var canEdit = true;
         var canTakeItToWork = false;
+        var canReview = false;
         var executorId = getExecutorId(taskId);
         if (getTaskStatus(taskId).equals(env.getProperty("task_status.completed"))) {
             canEdit = false;
@@ -164,8 +175,14 @@ public class TaskService {
                 && (executorId == null || executorId.equals(userId))) {
             canTakeItToWork = true;
         }
+        if (getTaskStatus(taskId).equals(env.getProperty("task_status.under_review"))
+                && !participantsService.isParticipantRole(eventId, userId)
+                && !getExecutorId(taskId).equals(userId)) {
+            canReview = true;
+        }
         permissions.put("can_edit", canEdit);
         permissions.put("can_take_in_work", canTakeItToWork);
+        permissions.put("can_review", canReview);
         return permissions;
     }
 }

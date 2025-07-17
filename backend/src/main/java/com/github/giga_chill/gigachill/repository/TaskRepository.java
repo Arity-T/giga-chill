@@ -58,11 +58,16 @@ public class TaskRepository {
             updates.put(
                     Tasks.TASKS.DEADLINE_DATETIME, OffsetDateTime.parse(dto.deadlineDatetime()));
         }
-        if (dto.actualApprovalId() != null) {
-            updates.put(Tasks.TASKS.ACTUAL_APPROVAL_ID, dto.actualApprovalId());
+        if (dto.executorComment() != null) {
+            updates.put(Tasks.TASKS.EXECUTOR_COMMENT, OffsetDateTime.parse(dto.executorComment()));
+        }
+        if (dto.reviewerComment() != null) {
+            updates.put(Tasks.TASKS.REVIEWER_COMMENT, OffsetDateTime.parse(dto.reviewerComment()));
         }
 
-        dsl.update(Tasks.TASKS).set(updates).where(Tasks.TASKS.TASK_ID.eq(taskId)).execute();
+        if (!updates.isEmpty()) {
+            dsl.update(Tasks.TASKS).set(updates).where(Tasks.TASKS.TASK_ID.eq(taskId)).execute();
+        }
     }
 
     public boolean isAuthor(UUID taskId, UUID authorId) {
@@ -120,6 +125,30 @@ public class TaskRepository {
         dsl.update(Tasks.TASKS)
                 .set(Tasks.TASKS.STATUS, TaskStatus.open)
                 .set(Tasks.TASKS.EXECUTOR_ID, executorId)
+                .set(Tasks.TASKS.EXECUTOR_COMMENT, (String) null)
+                .set(Tasks.TASKS.REVIEWER_COMMENT, (String) null)
+                .where(Tasks.TASKS.TASK_ID.eq(taskId))
+                .execute();
+    }
+
+    public void setExecutorCommentAndMarkUnderReview(UUID taskId, String executorComment) {
+        dsl.update(Tasks.TASKS)
+                .set(Tasks.TASKS.EXECUTOR_COMMENT, executorComment)
+                .set(Tasks.TASKS.STATUS, TaskStatus.under_review)
+                .where(Tasks.TASKS.TASK_ID.eq(taskId))
+                .execute();
+    }
+
+    public void setReviewerComment(UUID taskId, String reviewerComment) {
+        dsl.update(Tasks.TASKS)
+                .set(Tasks.TASKS.REVIEWER_COMMENT, reviewerComment)
+                .where(Tasks.TASKS.TASK_ID.eq(taskId))
+                .execute();
+    }
+
+    public void setStatus(UUID taskId, TaskStatus status) {
+        dsl.update(Tasks.TASKS)
+                .set(Tasks.TASKS.STATUS, status)
                 .where(Tasks.TASKS.TASK_ID.eq(taskId))
                 .execute();
     }

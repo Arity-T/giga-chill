@@ -1,16 +1,17 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Modal, Form, Input, Button, App } from 'antd';
-import { useCreateShoppingListMutation } from '@/store/api';
-import type { ShoppingListRequest } from '@/types/api';
+import { useUpdateShoppingListMutation } from '@/store/api';
+import type { ShoppingListRequest, ShoppingListWithItems } from '@/types/api';
 
 const { TextArea } = Input;
 
-interface ShoppingListModalProps {
+interface ShoppingListEditModalProps {
     open: boolean;
     onCancel: () => void;
     eventId: string;
+    shoppingList: ShoppingListWithItems;
 }
 
 interface ShoppingListFormData {
@@ -18,10 +19,25 @@ interface ShoppingListFormData {
     description: string;
 }
 
-export default function ShoppingListModal({ open, onCancel, eventId }: ShoppingListModalProps) {
+export default function ShoppingListEditModal({
+    open,
+    onCancel,
+    eventId,
+    shoppingList
+}: ShoppingListEditModalProps) {
     const [form] = Form.useForm<ShoppingListFormData>();
-    const [createShoppingList, { isLoading }] = useCreateShoppingListMutation();
+    const [updateShoppingList, { isLoading }] = useUpdateShoppingListMutation();
     const { message } = App.useApp();
+
+    // Управление состоянием формы
+    useEffect(() => {
+        if (open && shoppingList) {
+            form.setFieldsValue({
+                title: shoppingList.title,
+                description: shoppingList.description,
+            });
+        }
+    }, [open, shoppingList, form]);
 
     const handleSubmit = async (values: ShoppingListFormData) => {
         try {
@@ -30,13 +46,16 @@ export default function ShoppingListModal({ open, onCancel, eventId }: ShoppingL
                 description: values.description || '',
             };
 
-            await createShoppingList({ eventId, shoppingList: shoppingListData }).unwrap();
-            message.success('Список покупок успешно создан!');
+            await updateShoppingList({
+                eventId,
+                shoppingListId: shoppingList.shopping_list_id,
+                shoppingList: shoppingListData
+            }).unwrap();
 
-            form.resetFields();
+            message.success('Список покупок успешно обновлен!');
             onCancel();
         } catch (error) {
-            message.error('Ошибка при создании списка покупок');
+            message.error('Ошибка при обновлении списка покупок');
         }
     };
 
@@ -47,7 +66,7 @@ export default function ShoppingListModal({ open, onCancel, eventId }: ShoppingL
 
     return (
         <Modal
-            title="Создать список покупок"
+            title="Редактировать список покупок"
             open={open}
             onCancel={handleCancel}
             footer={null}
@@ -90,7 +109,7 @@ export default function ShoppingListModal({ open, onCancel, eventId }: ShoppingL
                         Отмена
                     </Button>
                     <Button type="primary" htmlType="submit" loading={isLoading}>
-                        Создать
+                        Сохранить
                     </Button>
                 </Form.Item>
             </Form>

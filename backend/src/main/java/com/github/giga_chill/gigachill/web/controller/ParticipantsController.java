@@ -28,7 +28,7 @@ public class ParticipantsController {
     public ResponseEntity<List<ParticipantInfo>> getParticipants(
             Authentication authentication, @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -57,7 +57,7 @@ public class ParticipantsController {
             throw new BadRequestException("Invalid request body: " + body);
         }
         var userToAdd = userService.getByLogin(participantLogin);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -101,7 +101,7 @@ public class ParticipantsController {
             throw new BadRequestException(
                     "User with id " + participantId + " cannot delete themselves");
         }
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -139,7 +139,7 @@ public class ParticipantsController {
         if (newRole == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
