@@ -24,13 +24,11 @@ public class EventRepository {
                 .fetchOptional();
     }
 
-    // TODO Посмотреть Владу
-    public boolean getDeleteStatus(UUID eventId) {
-        return Boolean.TRUE.equals(
-                dsl.select(Events.EVENTS.IS_DELETED)
-                        .from(Events.EVENTS)
+    public boolean existsAndNotDeleted(UUID eventId) {
+        return dsl.fetchExists(
+                dsl.selectFrom(Events.EVENTS)
                         .where(Events.EVENTS.EVENT_ID.eq(eventId))
-                        .fetchOne(Events.EVENTS.IS_DELETED));
+                        .andNot(Events.EVENTS.IS_DELETED));
     }
 
     public void deleteById(UUID eventId) {
