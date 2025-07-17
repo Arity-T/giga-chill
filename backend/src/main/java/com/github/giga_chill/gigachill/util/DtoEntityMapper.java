@@ -198,4 +198,13 @@ public final class DtoEntityMapper {
                                                                 Map.Entry::getValue)))
                         .collect(Collectors.toList()));
     }
+
+    public static ParticipantSummaryBalance toParticipantSummaryBalance(
+            ParticipantSummaryBalanceDTO participantSummaryBalanceDTO) {
+        return new ParticipantSummaryBalance(
+                DtoEntityMapper.toUserEntity(participantSummaryBalanceDTO.user()),
+                participantSummaryBalanceDTO.totalBalance(),
+                DtoEntityMapper.toParticipantBalanceEntity(
+                        participantSummaryBalanceDTO.userBalance()));
+    }
 }

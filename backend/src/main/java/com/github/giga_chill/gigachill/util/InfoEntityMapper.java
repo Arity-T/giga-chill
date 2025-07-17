@@ -108,4 +108,13 @@ public final class InfoEntityMapper {
                                                                 Map.Entry::getValue)))
                         .collect(Collectors.toList()));
     }
+
+    public static ParticipantSummaryBalanceInfo toParticipantSummaryBalanceInfo(
+            ParticipantSummaryBalance participantSummaryBalance) {
+        return new ParticipantSummaryBalanceInfo(
+                InfoEntityMapper.toUserInfo(participantSummaryBalance.getUser()),
+                participantSummaryBalance.getTotalBalance(),
+                InfoEntityMapper.toParticipantBalanceInfo(
+                        participantSummaryBalance.getUserBalance()));
+    }
 }
