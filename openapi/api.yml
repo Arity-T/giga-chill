@@ -454,6 +454,32 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundError"
 
+  /events/{eventId}/shopping-lists/{shoppingListId}/budget:
+    put:
+      summary: Изменить бюджет списка покупок
+      tags: [Shopping Lists]
+      operationId: updateShoppingListBudget
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/shoppingListId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShoppingListBudget"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/InvalidDataError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
   /events/{eventId}/shopping-lists/{shoppingListId}/shopping-items:
     post:
       summary: Добавить элемент в список покупок
@@ -1088,6 +1114,14 @@ components:
           description: Описание списка покупок
           example: "Купить фрукты для вечеринки"
 
+    ShoppingListBudget:
+      type: object
+      properties:
+        budget:
+          type: number
+          description: Бюджет списка покупок
+          example: 1000
+
     ShoppingListWithItems:
       type: object
       properties:
@@ -1123,6 +1157,7 @@ components:
           description: Может ли пользователь редактировать список покупок
           example: true
         budget:
+          readOnly: true
           type: number
           description: Реальная стоимость списка покупок
           example: 499.99
