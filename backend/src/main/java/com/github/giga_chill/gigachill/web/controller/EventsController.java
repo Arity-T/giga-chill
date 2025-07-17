@@ -94,7 +94,7 @@ public class EventsController {
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (eventService.isFinalized(eventId)){
+        if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -124,7 +124,7 @@ public class EventsController {
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (eventService.isFinalized(eventId)){
+        if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -154,7 +154,7 @@ public class EventsController {
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (eventService.isFinalized(eventId)){
+        if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -217,7 +217,7 @@ public class EventsController {
         if (eventId == null) {
             throw new NotFoundException("Link with hash " + rawToken + " not found");
         }
-        if (eventService.isFinalized(eventId)){
+        if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (participantsService.isParticipant(eventId, user.getId())) {

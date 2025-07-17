@@ -93,8 +93,7 @@ public class EventService {
         eventDAO.finalizeEvent(eventId);
     }
 
-    public boolean isFinalized(UUID eventId){
+    public boolean isFinalized(UUID eventId) {
         return eventDAO.isFinalized(eventId);
     }
-
 }

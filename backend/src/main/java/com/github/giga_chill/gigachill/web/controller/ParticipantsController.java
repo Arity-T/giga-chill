@@ -60,7 +60,7 @@ public class ParticipantsController {
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (eventService.isFinalized(eventId)){
+        if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -107,7 +107,7 @@ public class ParticipantsController {
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (eventService.isFinalized(eventId)){
+        if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -148,7 +148,7 @@ public class ParticipantsController {
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
-        if (eventService.isFinalized(eventId)){
+        if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
