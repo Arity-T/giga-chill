@@ -57,9 +57,9 @@ public interface EventDAO {
      * Checks whether an event with the given identifier exists.
      *
      * @param eventId the unique identifier of the event
-     * @return {@code true} if the event exists, {@code false} otherwise
+     * @return {@code true} if the event exists and delete status false, {@code false} otherwise
      */
-    boolean isExisted(UUID eventId);
+    boolean isExistedAndNotDeleted(UUID eventId);
 
     /**
      * Retrieves the end date and time of the specified event.
