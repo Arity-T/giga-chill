@@ -20,3 +20,6 @@ CREATE INDEX IF NOT EXISTS idx_shopping_item_shopping_list_id ON shopping_items(
 -- consumer_in_list
 CREATE INDEX IF NOT EXISTS idx_consumer_user_id ON consumer_in_list(user_id);
 CREATE INDEX IF NOT EXISTS idx_consumer_shopping_list_id ON consumer_in_list(shopping_list_id);
+
+-- debts
+CREATE INDEX idx_debts_event_id ON debts_per_event(event_id);

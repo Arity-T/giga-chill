@@ -74,3 +74,16 @@ CREATE TABLE IF NOT EXISTS consumer_in_list (
   shopping_list_id UUID NOT NULL REFERENCES shopping_lists(shopping_list_id) ON DELETE CASCADE,
   PRIMARY KEY (user_id, shopping_list_id)
 );
+
+CREATE MATERIALIZED VIEW debts_per_event AS
+SELECT
+  sl.event_id,
+  c.user_id AS debtor_id,
+  t.executor_id AS creditor_id,
+  ROUND(sl.budget / COUNT(*) OVER (PARTITION BY sl.shopping_list_id), 2) AS amount
+FROM shopping_lists sl
+JOIN tasks t ON sl.task_id = t.task_id
+JOIN consumer_in_list c ON c.shopping_list_id = sl.shopping_list_id
+WHERE sl.budget IS NOT NULL
+  AND t.executor_id IS NOT NULL
+  AND c.user_id != t.executor_id;
