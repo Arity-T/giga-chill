@@ -168,6 +168,8 @@ export default function TaskShoppingLists({
                                     expandedListId={expandedListId}
                                     onToggleExpand={onToggleExpand}
                                     taskId={task.task_id}
+                                    showStatus={false}
+                                    showBudgetInput={true}
                                 />
                             </div>
                         ))

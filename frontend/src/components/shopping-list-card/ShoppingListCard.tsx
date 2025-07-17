@@ -25,6 +25,8 @@ interface ShoppingListCardProps {
     expandedListId?: string;
     onToggleExpand?: (listId: string) => void;
     taskId?: string;
+    showStatus?: boolean;
+    showBudgetInput?: boolean;
 }
 
 export default function ShoppingListCard({
@@ -34,7 +36,9 @@ export default function ShoppingListCard({
     canMarkAsPurchased,
     expandedListId,
     onToggleExpand,
-    taskId = ''
+    taskId = '',
+    showStatus = true,
+    showBudgetInput = false
 }: ShoppingListCardProps) {
     const [activeKey, setActiveKey] = useState<string | string[]>([]);
     const [isHovered, setIsHovered] = useState(false);
@@ -227,6 +231,10 @@ export default function ShoppingListCard({
                                 onDelete={handleDeleteList}
                                 onAddConsumers={handleAddConsumers}
                                 canEdit={canEdit}
+                                showStatus={showStatus}
+                                showBudgetInput={showBudgetInput}
+                                eventId={eventId}
+                                taskId={taskId}
                             />
                         </div>
                     </div>

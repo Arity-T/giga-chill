@@ -103,12 +103,16 @@ export const shoppingApi = api.injectEndpoints({
             ],
         }),
 
-        setShoppingListBudget: builder.mutation<void, { eventId: string; shoppingListId: string; budget: number }>({
+        setShoppingListBudget: builder.mutation<void, { taskId: string; eventId: string; shoppingListId: string; budget: number }>({
             query: ({ eventId, shoppingListId, budget }) => ({
                 url: `/events/${eventId}/shopping-lists/${shoppingListId}/budget`,
                 method: 'PUT',
                 body: { budget },
             }),
+            invalidatesTags: (_result, _error, { eventId, taskId }) => [
+                { type: 'ShoppingLists', id: eventId },
+                { type: 'Tasks', id: `${eventId}-${taskId}` }
+            ],
         }),
     }),
 })
