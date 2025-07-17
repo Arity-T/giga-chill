@@ -321,7 +321,7 @@ public class EventServiceLoggerAspect {
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
-            if ((UUID) result == null) {
+            if ((Boolean) result == null) {
                 LOGGER.info(
                         loggerColorConfig.getGET_COLOR()
                                 + loggerColorConfig.getGET_LABEL()
