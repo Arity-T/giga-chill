@@ -85,7 +85,7 @@ public final class InfoEntityMapper {
     public static ParticipantBalanceInfo toParticipantBalanceInfo(
             ParticipantBalance participantBalance) {
         return new ParticipantBalanceInfo(
-                participantBalance.getDebtsToMe().stream()
+                participantBalance.getMyDebts().stream()
                         .flatMap(map -> map.entrySet().stream())
                         .map(
                                 e ->
@@ -93,7 +93,7 @@ public final class InfoEntityMapper {
                                                 InfoEntityMapper.toUserInfo(e.getKey()),
                                                 e.getValue()))
                         .collect(Collectors.toList()),
-                participantBalance.getMyDebts().stream()
+                participantBalance.getDebtsToMe().stream()
                         .flatMap(map -> map.entrySet().stream())
                         .map(
                                 e ->
