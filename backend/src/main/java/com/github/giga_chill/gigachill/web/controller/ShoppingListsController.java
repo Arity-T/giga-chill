@@ -98,10 +98,6 @@ public class ShoppingListsController {
         var user = userService.userAuthentication(authentication);
         var title = (String) body.get("title");
         var description = (String) body.get("description");
-        var budget =
-                body.get("quantity") != null
-                        ? new BigDecimal(String.valueOf((Number) body.get("budget")))
-                        : null;
         if (!eventService.isExisted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
@@ -132,7 +128,7 @@ public class ShoppingListsController {
                             + " does not"
                             + " have unassigned or assigned status");
         }
-        shoppingListsService.updateShoppingList(shoppingListId, title, description, budget);
+        shoppingListsService.updateShoppingList(shoppingListId, title, description);
 
         return ResponseEntity.noContent().build();
     }
@@ -280,6 +276,64 @@ public class ShoppingListsController {
                             + " have unassigned or assigned status");
         }
         shoppingListsService.updateShoppingItem(shoppingItemId, title, quantity, unit);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{shoppingListId}/budget")
+    // ACCESS: owner, admin, participant(если исполнитель)
+    public ResponseEntity<Void> putBudget(
+            Authentication authentication,
+            @PathVariable UUID eventId,
+            @PathVariable UUID shoppingListId,
+            @RequestBody Map<String, Object> body) {
+
+        var user = userService.userAuthentication(authentication);
+        var budget =
+                body.get("budget") != null
+                        ? new BigDecimal(String.valueOf((Number) body.get("budget")))
+                        : null;
+        if (budget == null) {
+            throw new BadRequestException("Invalid request body: " + body);
+        }
+        if (!eventService.isExisted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!shoppingListsService.isExisted(shoppingListId)) {
+            throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.getId())) {
+            throw new ForbiddenException(
+                    "User with id "
+                            + user.getId()
+                            + " is not a participant of event with id "
+                            + eventId);
+        }
+        var executorId = taskService.getExecutorId(taskService.getExecutorId(user.getId()));
+        if (executorId == null) {
+            throw new ConflictException(
+                    "Shopping list with id: "
+                            + shoppingListId
+                            + " does not"
+                            + " have \"in progress\", \"bought\" or \"partially_bought\" status");
+        }
+        var shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
+        if (!(shoppingListStatus.equals(env.getProperty("shopping_list_status.in_progress"))
+                        && executorId.equals(user.getId()))
+                || !((shoppingListStatus.equals(env.getProperty("shopping_list_status.bought"))
+                                        || shoppingListStatus.equals(
+                                                env.getProperty(
+                                                        "shopping_list_status.partially_bought")))
+                                && !participantsService.isParticipantRole(eventId, user.getId()))
+                        && !executorId.equals(user.getId())) {
+            throw new ConflictException(
+                    "User with id: "
+                            + user.getId()
+                            + " cannot change budget of shopping list with id: "
+                            + shoppingListId);
+        }
+
+        shoppingListsService.setBudget(shoppingListId, budget);
+
         return ResponseEntity.noContent().build();
     }
 

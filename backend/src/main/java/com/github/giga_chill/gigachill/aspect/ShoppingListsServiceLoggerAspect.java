@@ -1,6 +1,7 @@
 package com.github.giga_chill.gigachill.aspect;
 
 import com.github.giga_chill.gigachill.config.LoggerColorConfig;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -108,6 +109,11 @@ public class ShoppingListsServiceLoggerAspect {
             "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.canBindShoppingListsToTask(..)) "
                     + "&& args(shoppingListsIds, ..)")
     public void canBindShoppingListsToTask(List<UUID> shoppingListsIds) {}
+
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.setBudget(..)) "
+                    + "&& args(shoppingItemId, budget)")
+    public void setBudget(UUID shoppingItemId, BigDecimal budget) {}
 
     @Around("getAllShoppingListsFromEvent(eventId)")
     public Object logGetAllShoppingListsFromEvent(
@@ -464,6 +470,25 @@ public class ShoppingListsServiceLoggerAspect {
                                 + loggerColorConfig.getRESET_COLOR(),
                         shoppingListsIds.toString());
             }
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("setBudget(shoppingItemId, budget)")
+    public Object logSetBudget(
+            ProceedingJoinPoint proceedingJoinPoint, UUID shoppingItemId, BigDecimal budget)
+            throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            LOGGER.info(
+                    loggerColorConfig.getPUT_COLOR()
+                            + loggerColorConfig.getPUT_LABEL()
+                            + "Shopping list with id: {} received a new budget {}"
+                            + loggerColorConfig.getRESET_COLOR(),
+                    shoppingItemId,
+                    budget);
             return result;
         } catch (Throwable ex) {
             throw ex;
