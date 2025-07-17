@@ -82,4 +82,11 @@ public class ShoppingItemRepository {
                 .where(ShoppingItems.SHOPPING_ITEMS.SHOPPING_LIST_ID.eq(shoppingListId))
                 .execute();
     }
+
+    public void resetAllStatusByListIds(List<UUID> shoppingListIds) {
+        dsl.update(ShoppingItems.SHOPPING_ITEMS)
+                .set(ShoppingItems.SHOPPING_ITEMS.IS_PURCHASED, false)
+                .where(ShoppingItems.SHOPPING_ITEMS.SHOPPING_LIST_ID.in(shoppingListIds))
+                .execute();
+    }
 }
