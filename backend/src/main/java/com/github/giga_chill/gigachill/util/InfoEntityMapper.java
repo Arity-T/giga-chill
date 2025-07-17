@@ -3,6 +3,7 @@ package com.github.giga_chill.gigachill.util;
 import com.github.giga_chill.gigachill.model.*;
 import com.github.giga_chill.gigachill.web.info.*;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class InfoEntityMapper {
     public static ResponseEventInfo toResponseEventInfo(Event event, String userRole) {
@@ -79,5 +80,32 @@ public final class InfoEntityMapper {
                 task.getExecutor() != null
                         ? InfoEntityMapper.toUserInfo(task.getExecutor())
                         : null);
+    }
+
+    public static ParticipantBalanceInfo toParticipantBalanceInfo(
+            ParticipantBalance participantBalance) {
+        return new ParticipantBalanceInfo(
+                participantBalance.getMyDebts().stream()
+                        .map(
+                                item ->
+                                        item.entrySet().stream()
+                                                .collect(
+                                                        Collectors.toMap(
+                                                                key ->
+                                                                        InfoEntityMapper.toUserInfo(
+                                                                                key.getKey()),
+                                                                Map.Entry::getValue)))
+                        .collect(Collectors.toList()),
+                participantBalance.getDebtsToMe().stream()
+                        .map(
+                                item ->
+                                        item.entrySet().stream()
+                                                .collect(
+                                                        Collectors.toMap(
+                                                                key ->
+                                                                        InfoEntityMapper.toUserInfo(
+                                                                                key.getKey()),
+                                                                Map.Entry::getValue)))
+                        .collect(Collectors.toList()));
     }
 }

@@ -2,6 +2,7 @@ package com.github.giga_chill.gigachill.service;
 
 import com.github.giga_chill.gigachill.data.access.object.ParticipantDAO;
 import com.github.giga_chill.gigachill.model.Participant;
+import com.github.giga_chill.gigachill.model.ParticipantBalance;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.util.DtoEntityMapper;
 import java.math.BigDecimal;
@@ -70,5 +71,11 @@ public class ParticipantsService {
     public boolean isParticipantRole(UUID eventId, UUID participantId) {
         return getParticipantRoleInEvent(eventId, participantId)
                 .equals(env.getProperty("roles.participant").toString());
+    }
+
+    // TODO повесить логгер
+    public ParticipantBalance getParticipantBalance(UUID eventId, UUID participantId) {
+        return DtoEntityMapper.toParticipantBalanceEntity(
+                participantDAO.getParticipantBalance(eventId, participantId));
     }
 }

@@ -10,6 +10,7 @@ import com.github.giga_chill.gigachill.service.ParticipantsService;
 import com.github.giga_chill.gigachill.service.UserService;
 import com.github.giga_chill.gigachill.util.InfoEntityMapper;
 import com.github.giga_chill.gigachill.util.UuidUtils;
+import com.github.giga_chill.gigachill.web.info.ParticipantBalanceInfo;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
 import com.github.giga_chill.gigachill.web.info.ResponseEventInfo;
 import java.util.Collections;
@@ -260,5 +261,26 @@ public class EventsController {
 
         eventService.finalizeEvent(eventId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{eventId}/my-balance")
+    // ACCESS: owner, admin, participant
+    public ResponseEntity<ParticipantBalanceInfo> getParticipantBalance(
+            Authentication authentication, @PathVariable UUID eventId) {
+        var user = userService.userAuthentication(authentication);
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.getId())) {
+            throw new ForbiddenException(
+                    "User with id "
+                            + user.getId()
+                            + " is not a participant of event with id "
+                            + eventId);
+        }
+
+        return ResponseEntity.ok(
+                InfoEntityMapper.toParticipantBalanceInfo(
+                        participantsService.getParticipantBalance(eventId, user.getId())));
     }
 }
