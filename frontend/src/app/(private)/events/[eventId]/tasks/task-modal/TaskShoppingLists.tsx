@@ -3,8 +3,9 @@
 import React, { useState, useMemo } from 'react';
 import { Typography, Space, Button, App, Select, Tag } from 'antd';
 import { EditOutlined, CheckOutlined, CloseOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { ShoppingListWithItems } from '@/types/api';
+import { ShoppingListWithItems, Task } from '@/types/api';
 import { getTaskShoppingListsOptions, shoppingListsToSelectOptions } from '@/utils/shopping-list-utils';
+import ShoppingListCard from '@/components/shopping-list-card/ShoppingListCard';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -14,13 +15,24 @@ interface TaskShoppingListsProps {
     allShoppingLists: ShoppingListWithItems[];
     canEdit: boolean;
     onUpdate: (shoppingListIds: string[]) => Promise<void>;
+    // Для режима исполнителя
+    isExecutorInProgress?: boolean;
+    eventId?: string;
+    expandedListId?: string;
+    onToggleExpand?: (listId: string) => void;
+    task: Task;
 }
 
 export default function TaskShoppingLists({
     shoppingLists,
     allShoppingLists,
     canEdit,
-    onUpdate
+    onUpdate,
+    isExecutorInProgress = false,
+    eventId,
+    expandedListId,
+    onToggleExpand,
+    task
 }: TaskShoppingListsProps) {
     const { message } = App.useApp();
     const [isEditing, setIsEditing] = useState(false);
@@ -142,7 +154,30 @@ export default function TaskShoppingLists({
                 )}
             </div>
 
-            {isEditing ? (
+            {isExecutorInProgress ? (
+                // Режим для исполнителя в процессе выполнения
+                <div style={{ minHeight: '24px' }}>
+                    {shoppingLists && shoppingLists.length > 0 ? (
+                        shoppingLists.map(list => (
+                            <div key={list.shopping_list_id} style={{ marginBottom: '16px' }}>
+                                <ShoppingListCard
+                                    shoppingList={list}
+                                    eventId={eventId!}
+                                    canEdit={false}
+                                    canMarkAsPurchased={true}
+                                    expandedListId={expandedListId}
+                                    onToggleExpand={onToggleExpand}
+                                    taskId={task.task_id}
+                                />
+                            </div>
+                        ))
+                    ) : (
+                        <span style={{ color: '#8c8c8c', fontStyle: 'italic' }}>
+                            Списки покупок не прикреплены к задаче
+                        </span>
+                    )}
+                </div>
+            ) : isEditing ? (
                 <div onClick={(e) => e.stopPropagation()}>
                     <Select
                         mode="multiple"

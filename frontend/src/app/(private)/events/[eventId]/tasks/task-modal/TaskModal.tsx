@@ -36,6 +36,9 @@ export default function TaskModal({
     // Получаем информацию о событии
     const { data: event } = useGetEventQuery(eventId);
 
+    // Состояние для раскрытых списков покупок (для исполнителя)
+    const [expandedListId, setExpandedListId] = useState<string>('');
+
     // Получаем полную информацию о задаче
     const { data: task, isLoading } = useGetTaskQuery(
         { eventId, taskId: taskId! },
@@ -50,6 +53,14 @@ export default function TaskModal({
 
     // Получаем все списки покупок для события
     const { data: allShoppingLists = [] } = useGetShoppingListsQuery(eventId);
+
+    // Проверяем, является ли текущий пользователь исполнителем задачи в статусе in_progress
+    const isExecutorInProgress = task?.status === TaskStatus.IN_PROGRESS &&
+        currentUser?.id === task?.executor?.id;
+
+    const handleToggleExpand = (listId: string) => {
+        setExpandedListId(listId);
+    };
 
     const handleUpdate = async (field: string, value: any) => {
         if (!task?.permissions.can_edit) {
@@ -265,8 +276,13 @@ export default function TaskModal({
                     <TaskShoppingLists
                         shoppingLists={task.shopping_lists || []}
                         allShoppingLists={allShoppingLists}
-                        canEdit={task.permissions.can_edit}
+                        canEdit={task.permissions.can_edit && task.status === TaskStatus.OPEN}
                         onUpdate={handleUpdateShoppingLists}
+                        isExecutorInProgress={isExecutorInProgress}
+                        eventId={eventId}
+                        expandedListId={expandedListId}
+                        onToggleExpand={handleToggleExpand}
+                        task={task}
                     />
 
                     {/* Кнопка "Взять в работу" */}

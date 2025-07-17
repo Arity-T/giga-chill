@@ -24,6 +24,7 @@ interface ShoppingListCardProps {
     canMarkAsPurchased: boolean;
     expandedListId?: string;
     onToggleExpand?: (listId: string) => void;
+    taskId?: string;
 }
 
 export default function ShoppingListCard({
@@ -32,7 +33,8 @@ export default function ShoppingListCard({
     canEdit,
     canMarkAsPurchased,
     expandedListId,
-    onToggleExpand
+    onToggleExpand,
+    taskId = ''
 }: ShoppingListCardProps) {
     const [activeKey, setActiveKey] = useState<string | string[]>([]);
     const [isHovered, setIsHovered] = useState(false);
@@ -76,6 +78,7 @@ export default function ShoppingListCard({
     const handleToggleItemPurchased = async (itemId: string, isPurchased: boolean) => {
         try {
             await updateShoppingItemPurchasedState({
+                taskId: taskId,
                 eventId,
                 shoppingListId: shoppingList.shopping_list_id,
                 shoppingItemId: itemId,
