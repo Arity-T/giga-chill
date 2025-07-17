@@ -1,12 +1,13 @@
 'use client';
 
-import { Row, Col, Typography, Button, Flex, Empty } from "antd";
+import { Row, Col, Typography, Button, Flex, Empty, Space } from "antd";
 import { PlusOutlined } from '@ant-design/icons';
 import { useState } from "react";
 import styles from "./page.module.css";
 import { useGetEventsQuery } from "@/store/api";
 import CreateEventModal from "./CreateEventModal";
 import EventCard from "./EventCard";
+import UserDropdown from "@/components/user-dropdown";
 
 const { Title } = Typography;
 
@@ -17,14 +18,17 @@ export default function EventsPage() {
     return (
         <div className={styles.page}>
             <Flex justify="space-between" align="center" style={{ marginBottom: 24 }}>
-                <Title level={2} style={{ margin: 0 }}>Мероприятия</Title>
-                <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    onClick={() => setCreateModalOpen(true)}
-                >
-                    Создать
-                </Button>
+                <Space size="middle">
+                    <Title level={2} style={{ margin: 0 }}>Мероприятия</Title>
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => setCreateModalOpen(true)}
+                    >
+                        Создать
+                    </Button>
+                </Space>
+                <UserDropdown />
             </Flex>
 
             <Row gutter={[16, 16]}>
