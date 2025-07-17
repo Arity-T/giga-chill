@@ -84,7 +84,7 @@ public class EventRepository {
                         .fetchOne(Events.EVENTS.IS_FINALIZED));
     }
 
-    public void refreshDebtsView(UUID eventId) {
+    public void refreshDebtsView() {
         dsl.execute("REFRESH MATERIALIZED VIEW debts_per_event");
     }
 

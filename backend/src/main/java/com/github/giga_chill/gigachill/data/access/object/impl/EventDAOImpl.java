@@ -173,7 +173,7 @@ public class EventDAOImpl implements EventDAO {
      */
     @Override
     public void calculationEventBudget(UUID eventId) {
-        eventRepository.refreshDebtsView(eventId);
+        eventRepository.refreshDebtsView();
 
         eventRepository.setEventBudget(eventId, eventRepository.calculateEventBudget(eventId));
     }
