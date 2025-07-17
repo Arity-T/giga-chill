@@ -156,7 +156,7 @@ public class EventServiceLoggerAspect {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(
                     loggerColorConfig.getPATCH_COLOR()
-                            + loggerColorConfig.getPATCH_COLOR()
+                            + loggerColorConfig.getPATCH_LABEL()
                             + "Event with id: {} has been changed"
                             + loggerColorConfig.getRESET_COLOR(),
                     eventId);

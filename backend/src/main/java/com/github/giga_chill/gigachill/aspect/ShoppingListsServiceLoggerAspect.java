@@ -112,8 +112,8 @@ public class ShoppingListsServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.setBudget(..)) "
-                    + "&& args(shoppingItemId, budget)")
-    public void setBudget(UUID shoppingItemId, BigDecimal budget) {}
+                    + "&& args(shoppingListId, budget)")
+    public void setBudget(UUID shoppingListId, BigDecimal budget) {}
 
     @Around("getAllShoppingListsFromEvent(eventId)")
     public Object logGetAllShoppingListsFromEvent(
@@ -476,9 +476,9 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("setBudget(shoppingItemId, budget)")
+    @Around("setBudget(shoppingListId, budget)")
     public Object logSetBudget(
-            ProceedingJoinPoint proceedingJoinPoint, UUID shoppingItemId, BigDecimal budget)
+            ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId, BigDecimal budget)
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -487,7 +487,7 @@ public class ShoppingListsServiceLoggerAspect {
                             + loggerColorConfig.getPUT_LABEL()
                             + "Shopping list with id: {} received a new budget {}"
                             + loggerColorConfig.getRESET_COLOR(),
-                    shoppingItemId,
+                    shoppingListId,
                     budget);
             return result;
         } catch (Throwable ex) {

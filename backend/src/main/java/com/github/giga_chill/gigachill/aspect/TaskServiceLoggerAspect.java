@@ -417,7 +417,6 @@ public class TaskServiceLoggerAspect {
                                 + "Task with id: {} was rejected with a reviewer comment: {}"
                                 + loggerColorConfig.getRESET_COLOR(),
                         taskId,
-                        taskId,
                         reviewerComment);
             }
             return result;
