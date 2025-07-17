@@ -1,35 +1,20 @@
 #!/bin/bash
 
-# === Функция для показа справки ===
-show_help() {
-    echo "Использование: $0 [ОПЦИИ]"
-    echo ""
-    echo "Опции:"
-    echo "  -k    Не пересоздавать БД"
-    echo "  -h    Показать эту справку"
-}
-
-# === Инициализация флагов ===
-keep_database=false
-
-# === Обработка параметров ===
-while getopts "kh" opt; do
-    case $opt in
-        k) keep_database=true ;;
-        h) show_help; exit 0 ;;
-        *) echo "Неизвестная опция: -$OPTARG" >&2; show_help; exit 1 ;;
-    esac
-done
+# === Проверка переменной окружения KEEP_DATABASE ===
+if [ -z "$KEEP_DATABASE" ]; then
+    echo "Переменная окружения KEEP_DATABASE не установлена. Используйте KEEP_DATABASE=true или KEEP_DATABASE=false в .env файле."
+    exit 1
+fi
 
 # === Выполнение миграций ===
 echo "=== Выполнение миграций ==="
 
-if [ "$keep_database" = false ]; then
+if [ "$KEEP_DATABASE" = "false" ]; then
     echo "Пересоздание базы данных..."
     PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -U "$DB_USER" -c "DROP DATABASE IF EXISTS $DB_NAME"
     PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -U "$DB_USER" -c "CREATE DATABASE $DB_NAME"
 else
-    echo "Сохраняем существующую базу данных (флаг -k)"
+    echo "Сохраняем существующую базу данных (KEEP_DATABASE=$KEEP_DATABASE)"
 fi
 
 # Применим миграции
@@ -45,7 +30,6 @@ done
 
 echo "Все миграции применены успешно!"
 
-
 # === Генерация Jooq ===
 echo "=== Генерация классов Jooq ==="
 ./gradlew generateJooq
@@ -54,7 +38,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 echo "Классы Jooq сгенерированы успешно!"
-
 
 # === Сборка приложения ===
 echo "=== Сборка приложения ==="
