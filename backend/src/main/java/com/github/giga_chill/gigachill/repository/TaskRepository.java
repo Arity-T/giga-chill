@@ -125,6 +125,8 @@ public class TaskRepository {
         dsl.update(Tasks.TASKS)
                 .set(Tasks.TASKS.STATUS, TaskStatus.open)
                 .set(Tasks.TASKS.EXECUTOR_ID, executorId)
+                .set(Tasks.TASKS.EXECUTOR_COMMENT, (String) null)
+                .set(Tasks.TASKS.REVIEWER_COMMENT, (String) null)
                 .where(Tasks.TASKS.TASK_ID.eq(taskId))
                 .execute();
     }
