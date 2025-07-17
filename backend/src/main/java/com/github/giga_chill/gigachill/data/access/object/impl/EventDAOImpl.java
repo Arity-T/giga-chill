@@ -167,14 +167,16 @@ public class EventDAOImpl implements EventDAO {
     }
 
     /**
-     * Calculates and updates the overall budget for the specified event. This may involve
-     * aggregating individual shopping list budgets and other cost components, then persisting the
-     * updated total.
+     * Calculates and updates the overall budget for the specified event.
      *
      * @param eventId the unique identifier of the event to recalculate the budget for
      */
     @Override
-    public void calculationEventBudget(UUID eventId) {}
+    public void calculationEventBudget(UUID eventId) {
+        eventRepository.refreshDebtsView(eventId);
+
+        eventRepository.setEventBudget(eventId, eventRepository.calculateEventBudget(eventId));
+    }
 
     /**
      * Marks the specified event as finalized, preventing further modifications. Executes any

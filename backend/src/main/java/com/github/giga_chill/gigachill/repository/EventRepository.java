@@ -1,7 +1,13 @@
 package com.github.giga_chill.gigachill.repository;
 
+import static org.jooq.impl.DSL.sum;
+
+import com.github.giga_chill.jooq.generated.enums.TaskStatus;
 import com.github.giga_chill.jooq.generated.tables.Events;
+import com.github.giga_chill.jooq.generated.tables.ShoppingLists;
+import com.github.giga_chill.jooq.generated.tables.Tasks;
 import com.github.giga_chill.jooq.generated.tables.records.EventsRecord;
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -76,5 +82,29 @@ public class EventRepository {
                         .from(Events.EVENTS)
                         .where(Events.EVENTS.EVENT_ID.eq(eventId))
                         .fetchOne(Events.EVENTS.IS_FINALIZED));
+    }
+
+    public void refreshDebtsView(UUID eventId) {
+        dsl.execute("REFRESH MATERIALIZED VIEW debts_per_event");
+    }
+
+    public BigDecimal calculateEventBudget(UUID eventId) {
+        return dsl.select(sum(ShoppingLists.SHOPPING_LISTS.BUDGET))
+                .from(ShoppingLists.SHOPPING_LISTS)
+                .join(Tasks.TASKS)
+                .on(ShoppingLists.SHOPPING_LISTS.TASK_ID.eq(Tasks.TASKS.TASK_ID))
+                .where(
+                        ShoppingLists.SHOPPING_LISTS
+                                .EVENT_ID
+                                .eq(eventId)
+                                .and(Tasks.TASKS.STATUS.eq(TaskStatus.completed)))
+                .fetchOne(0, BigDecimal.class);
+    }
+
+    public void setEventBudget(UUID eventId, BigDecimal budget) {
+        dsl.update(Events.EVENTS)
+                .set(Events.EVENTS.BUDGET, budget)
+                .where(Events.EVENTS.EVENT_ID.eq(eventId))
+                .execute();
     }
 }

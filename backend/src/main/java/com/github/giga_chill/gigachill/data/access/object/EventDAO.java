@@ -96,9 +96,7 @@ public interface EventDAO {
     UUID getEventByLinkUuid(UUID linkUuid);
 
     /**
-     * Calculates and updates the overall budget for the specified event. This may involve
-     * aggregating individual shopping list budgets and other cost components, then persisting the
-     * updated total.
+     * Calculates and updates the overall budget for the specified event.
      *
      * @param eventId the unique identifier of the event to recalculate the budget for
      */
