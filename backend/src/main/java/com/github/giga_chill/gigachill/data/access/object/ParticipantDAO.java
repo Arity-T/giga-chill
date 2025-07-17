@@ -76,10 +76,11 @@ public interface ParticipantDAO {
     /**
      * Retrieves the current balance summary for the specified participant.
      *
+     * @param eventId the unique identifier of the event
      * @param participantId the unique identifier of the participant
      * @return a {@link ParticipantBalanceDTO} containing the participant’s total debits,
      *         credits, and net balance; never {@code null}
      */
-    ParticipantBalanceDTO getParticipantBalance(UUID participantId);
+    ParticipantBalanceDTO getParticipantBalance(UUID eventId, UUID participantId);
 
 }
