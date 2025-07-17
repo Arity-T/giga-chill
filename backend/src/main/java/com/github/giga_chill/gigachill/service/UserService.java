@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,10 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+
+    private static final Pattern LOGIN_PATTERN = Pattern.compile("^[a-zA-Z0-9]{4,}$");
+    private static final Pattern PASSWORD_PATTERN =
+            Pattern.compile("^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]{8,}$");
 
     public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository) {
         this.passwordEncoder = passwordEncoder;
@@ -89,10 +94,29 @@ public class UserService {
             try {
                 uuids.add(id);
             } catch (IllegalArgumentException e) {
-                throw new BadRequestException("Некорректный формат id пользователя: " + id);
+                throw new BadRequestException("Invalid user id format: " + id);
             }
         }
         int count = userRepository.countByIds(uuids);
         return count == userIds.size();
+    }
+
+    public void validateLogin(String login) {
+        if (login == null || !LOGIN_PATTERN.matcher(login).matches()) {
+            if (login == null || login.length() < 4) {
+                throw new BadRequestException("Login must be at least 4 characters long");
+            }
+            throw new BadRequestException("Login can only contain Latin letters and digits");
+        }
+    }
+
+    public void validatePassword(String password) {
+        if (password == null || !PASSWORD_PATTERN.matcher(password).matches()) {
+            if (password == null || password.length() < 8) {
+                throw new BadRequestException("Password must be at least 8 characters long");
+            }
+            throw new BadRequestException(
+                    "Password can only contain Latin letters, digits, and some special characters");
+        }
     }
 }
