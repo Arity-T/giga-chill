@@ -173,6 +173,11 @@ public class TaskDAOImpl implements TaskDAO {
      */
     @Override
     public void deleteTask(UUID taskId) {
+        List<UUID> shoppingListIds = shoppingListRepository.findIdsByTaskId(taskId);
+
+        shoppingItemRepository.resetAllStatusByListIds(shoppingListIds);
+
+        // Связи у ShoppingLists автоматически выставляются в null на уровне СУБД
         taskRepository.deleteById(taskId);
     }
 
