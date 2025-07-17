@@ -2,6 +2,8 @@ package com.github.giga_chill.gigachill.util;
 
 import com.github.giga_chill.gigachill.data.transfer.object.*;
 import com.github.giga_chill.gigachill.model.*;
+
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,7 +26,7 @@ public final class DtoEntityMapper {
                 eventDTO.startDatetime(),
                 eventDTO.endDatetime(),
                 eventDTO.description(),
-                eventDTO.budget(),
+                eventDTO.budget() != null ? eventDTO.budget().setScale(2, RoundingMode.UP) : null,
                 eventDTO.isFinalized());
     }
 
