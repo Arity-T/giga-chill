@@ -38,7 +38,7 @@ public class TasksController {
     public ResponseEntity<List<ResponseTaskInfo>> getTasks(
             Authentication authentication, @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -72,7 +72,7 @@ public class TasksController {
                 requestTaskInfo.executorId() != null
                         ? UuidUtils.safeUUID(requestTaskInfo.executorId())
                         : null;
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -101,7 +101,7 @@ public class TasksController {
     public ResponseEntity<ResponseTaskWithShoppingListsInfo> getTask(
             Authentication authentication, @PathVariable UUID eventId, @PathVariable UUID taskId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!taskService.isExisted(eventId, taskId)) {
@@ -131,7 +131,7 @@ public class TasksController {
             @PathVariable UUID taskId,
             @RequestBody RequestTaskInfo requestTaskInfo) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!taskService.isExisted(eventId, taskId)) {
@@ -171,7 +171,7 @@ public class TasksController {
                 body.get("executor_id") != null
                         ? UuidUtils.safeUUID((String) body.get("executor_id"))
                         : null;
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!taskService.isExisted(eventId, taskId)) {
@@ -222,7 +222,7 @@ public class TasksController {
         var shoppingListsIds =
                 body != null ? body.stream().map(UuidUtils::safeUUID).toList() : null;
 
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!taskService.isExisted(eventId, taskId)) {
@@ -261,7 +261,7 @@ public class TasksController {
     public ResponseEntity<Void> deleteTask(
             Authentication authentication, @PathVariable UUID eventId, @PathVariable UUID taskId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!taskService.isExisted(eventId, taskId)) {
@@ -292,7 +292,7 @@ public class TasksController {
     public ResponseEntity<Void> postExecutorToTask(
             Authentication authentication, @PathVariable UUID eventId, @PathVariable UUID taskId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!taskService.isExisted(eventId, taskId)) {
@@ -333,7 +333,7 @@ public class TasksController {
         if (executorComment == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!taskService.isExisted(eventId, taskId)) {
@@ -376,7 +376,7 @@ public class TasksController {
         if (reviewerComment == null || isApproved == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!taskService.isExisted(eventId, taskId)) {

@@ -20,8 +20,8 @@ public class EventService {
     private final EventDAO eventDAO;
     private final ParticipantsService participantsService;
 
-    public boolean isExisted(UUID eventId) {
-        return eventDAO.isExisted(eventId);
+    public boolean isExistedAndNotDeleted(UUID eventId) {
+        return eventDAO.isExistedAndNotDeleted(eventId);
     }
 
     public Event getEventById(UUID eventId) {

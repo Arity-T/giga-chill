@@ -66,7 +66,7 @@ public class EventsController {
     public ResponseEntity<ResponseEventInfo> getEventById(
             Authentication authentication, @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -91,7 +91,7 @@ public class EventsController {
             Authentication authentication,
             @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -118,7 +118,7 @@ public class EventsController {
     public ResponseEntity<Void> deleteEventById(
             Authentication authentication, @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -145,7 +145,7 @@ public class EventsController {
     public ResponseEntity<Void> postEventLink(
             Authentication authentication, @PathVariable UUID eventId) {
         User user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -172,7 +172,7 @@ public class EventsController {
     public ResponseEntity<Map<String, String>> getEventLink(
             Authentication authentication, @PathVariable UUID eventId) {
         User user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {

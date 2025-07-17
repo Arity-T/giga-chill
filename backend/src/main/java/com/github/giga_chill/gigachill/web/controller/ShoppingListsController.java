@@ -35,7 +35,7 @@ public class ShoppingListsController {
     public ResponseEntity<List<ShoppingListInfo>> getShoppingList(
             Authentication authentication, @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -73,7 +73,7 @@ public class ShoppingListsController {
         if (title == null || description == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -98,7 +98,7 @@ public class ShoppingListsController {
         var user = userService.userAuthentication(authentication);
         var title = (String) body.get("title");
         var description = (String) body.get("description");
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!shoppingListsService.isExisted(shoppingListId)) {
@@ -141,7 +141,7 @@ public class ShoppingListsController {
             @PathVariable UUID shoppingListId) {
 
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!shoppingListsService.isExisted(shoppingListId)) {
@@ -193,7 +193,7 @@ public class ShoppingListsController {
         if (title == null || quantity == null || unit == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!shoppingListsService.isExisted(shoppingListId)) {
@@ -242,7 +242,7 @@ public class ShoppingListsController {
                         ? new BigDecimal(String.valueOf((Number) body.get("quantity")))
                         : null;
         var unit = (String) body.get("unit");
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!shoppingListsService.isExisted(shoppingListId)) {
@@ -295,7 +295,7 @@ public class ShoppingListsController {
         if (budget == null || budget.compareTo(new BigDecimal(0)) < 0) {
             throw new BadRequestException("Invalid request body: " + body);
         }
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!shoppingListsService.isExisted(shoppingListId)) {
@@ -346,7 +346,7 @@ public class ShoppingListsController {
         if (!shoppingListsService.isShoppingItemExisted(shoppingItemId)) {
             throw new NotFoundException("Shopping item with id " + shoppingItemId + " not found");
         }
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!shoppingListsService.isExisted(shoppingListId)) {
@@ -396,7 +396,7 @@ public class ShoppingListsController {
         if (!shoppingListsService.isShoppingItemExisted(shoppingItemId)) {
             throw new NotFoundException("Shopping item with id " + shoppingItemId + " not found");
         }
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!shoppingListsService.isExisted(shoppingListId)) {
@@ -454,7 +454,7 @@ public class ShoppingListsController {
         if (body == null || body.isEmpty()) {
             throw new BadRequestException("Invalid request body: " + body);
         }
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!shoppingListsService.isExisted(shoppingListId)) {
