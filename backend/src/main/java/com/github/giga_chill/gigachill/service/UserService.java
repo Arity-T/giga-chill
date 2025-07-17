@@ -1,12 +1,12 @@
 package com.github.giga_chill.gigachill.service;
 
 import com.github.giga_chill.gigachill.exception.BadRequestException;
+import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.exception.UnauthorizedException;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.repository.UserRepository;
 import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -62,15 +62,16 @@ public class UserService {
 
     public User userAuthentication(Authentication authentication) {
         var login = authentication.getName();
-        if (!userExistsByLogin(login)) {
-            throw new UnauthorizedException("User not found");
-        }
-        return usersRecordToUser(Objects.requireNonNull(findByLogin(login).orElse(null)));
+        return usersRecordToUser(
+                findByLogin(login).orElseThrow(() -> new UnauthorizedException("User not found")));
     }
 
     public User getById(UUID id) {
-        var user = userRepository.findById(id);
-        return usersRecordToUser(user.orElse(null));
+        return usersRecordToUser(
+                userRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () -> new NotFoundException("User with id " + id + " not found")));
     }
 
     private User usersRecordToUser(UsersRecord user) {
@@ -78,7 +79,12 @@ public class UserService {
     }
 
     public User getByLogin(String login) {
-        return usersRecordToUser(Objects.requireNonNull(findByLogin(login).orElse(null)));
+        return usersRecordToUser(
+                findByLogin(login)
+                        .orElseThrow(
+                                () ->
+                                        new NotFoundException(
+                                                "User with login " + login + " not found")));
     }
 
     /**
