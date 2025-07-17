@@ -169,7 +169,7 @@ export default function TaskShoppingLists({
                                     onToggleExpand={onToggleExpand}
                                     taskId={task.task_id}
                                     showStatus={false}
-                                    showBudgetInput={true}
+                                    enableBudgetInput={true}
                                 />
                             </div>
                         ))

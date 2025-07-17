@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Space, Typography, Tag, Tooltip, InputNumber, App } from 'antd';
-import { ShoppingListWithItems } from '@/types/api';
+import { ShoppingListStatus, ShoppingListWithItems } from '@/types/api';
 import { getStatusColor, getStatusText, getStatusTooltip } from '@/utils/shopping-status-utils';
 import { useSetShoppingListBudgetMutation } from '@/store/api';
 import InlineEditControls from '@/components/inline-edit-controls';
@@ -19,7 +19,7 @@ interface ShoppingListHeaderProps {
     onAddConsumers: () => void;
     canEdit: boolean;
     showStatus?: boolean;
-    showBudgetInput?: boolean;
+    enableBudgetInput?: boolean;
     eventId?: string;
     taskId: string;
 }
@@ -34,7 +34,7 @@ export default function ShoppingListHeader({
     onAddConsumers,
     canEdit,
     showStatus = true,
-    showBudgetInput = false,
+    enableBudgetInput = false,
     eventId,
     taskId
 }: ShoppingListHeaderProps) {
@@ -68,6 +68,11 @@ export default function ShoppingListHeader({
     const handleResetBudget = () => {
         setBudgetValue(shoppingList.budget);
     };
+
+    const showBudget = (budgetValue !== null
+        && (shoppingList.status === ShoppingListStatus.PARTIALLY_BOUGHT ||
+            shoppingList.status === ShoppingListStatus.BOUGHT));
+
     return (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
             <Space align="center">
@@ -87,26 +92,29 @@ export default function ShoppingListHeader({
                         </Tag>
                     </Tooltip>
                 )}
-                {showBudgetInput && (
+                {(enableBudgetInput || showBudget) && (
                     <div
                         style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '24px' }}
                         onClick={(e) => e.stopPropagation()}
                     >
                         <InputNumber
                             value={budgetValue}
-                            onChange={setBudgetValue}
+                            onChange={enableBudgetInput ? setBudgetValue : undefined}
                             placeholder="Бюджет"
                             min={0}
                             precision={2}
                             style={{ width: '120px' }}
                             addonAfter="₽"
+                            disabled={!enableBudgetInput}
                         />
-                        <InlineEditControls
-                            hasChanges={hasBudgetChanges}
-                            isLoading={isSavingBudget}
-                            onSave={handleSaveBudget}
-                            onReset={handleResetBudget}
-                        />
+                        {enableBudgetInput && (
+                            <InlineEditControls
+                                hasChanges={hasBudgetChanges}
+                                isLoading={isSavingBudget}
+                                onSave={handleSaveBudget}
+                                onReset={handleResetBudget}
+                            />
+                        )}
                     </div>
                 )}
             </Space>
