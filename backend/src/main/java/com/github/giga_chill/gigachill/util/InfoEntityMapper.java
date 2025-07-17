@@ -14,7 +14,8 @@ public final class InfoEntityMapper {
                 event.getStartDatetime(),
                 event.getEndDatetime(),
                 event.getDescription(),
-                event.getBudget());
+                event.getBudget(),
+                event.getIsFinalized());
     }
 
     public static ParticipantInfo toParticipantInfo(Participant participant) {

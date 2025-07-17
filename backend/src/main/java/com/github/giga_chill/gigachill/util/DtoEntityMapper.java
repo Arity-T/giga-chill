@@ -22,7 +22,8 @@ public final class DtoEntityMapper {
                 eventDTO.startDatetime(),
                 eventDTO.endDatetime(),
                 eventDTO.description(),
-                eventDTO.budget());
+                eventDTO.budget(),
+                eventDTO.isFinalized());
     }
 
     public static EventDTO toEventDto(Event event) {
@@ -33,7 +34,8 @@ public final class DtoEntityMapper {
                 event.getStartDatetime(),
                 event.getEndDatetime(),
                 event.getDescription(),
-                event.getBudget());
+                event.getBudget(),
+                event.getIsFinalized());
     }
 
     public static Participant toParticipantEntity(ParticipantDTO participantDTO) {

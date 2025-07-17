@@ -43,6 +43,7 @@ public class EventService {
                         requestEventInfo.startDatetime(),
                         requestEventInfo.endDatetime(),
                         requestEventInfo.description(),
+                        null,
                         null);
         eventDAO.updateEvent(eventId, event);
     }
@@ -56,7 +57,8 @@ public class EventService {
                         requestEventInfo.startDatetime(),
                         requestEventInfo.endDatetime(),
                         requestEventInfo.description(),
-                        BigDecimal.valueOf(0));
+                        BigDecimal.valueOf(0),
+                        null);
 
         eventDAO.createEvent(userId, DtoEntityMapper.toEventDto(event));
         return event.getEventId().toString();
