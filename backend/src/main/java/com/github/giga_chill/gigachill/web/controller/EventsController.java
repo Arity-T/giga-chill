@@ -231,4 +231,34 @@ public class EventsController {
         eventService.joinByLink(eventId, user);
         return ResponseEntity.ok(Collections.singletonMap("event_id", eventId.toString()));
     }
+
+    @PostMapping("/{eventId}/finalize")
+    // ACCESS: owner
+    public ResponseEntity<Void> postFinalizeEvent(
+            Authentication authentication, @PathVariable UUID eventId) {
+        User user = userService.userAuthentication(authentication);
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)) {
+            throw new ConflictException("Event with id " + eventId + " was finalized");
+        }
+        if (!participantsService.isParticipant(eventId, user.getId())) {
+            throw new ForbiddenException(
+                    "User with id "
+                            + user.getId()
+                            + " is not a participant of event with id "
+                            + eventId);
+        }
+        if (!participantsService.isOwnerRole(eventId, user.getId())) {
+            throw new ForbiddenException(
+                    "User with id "
+                            + user.getId()
+                            + " does not have permission to delete event with id "
+                            + eventId);
+        }
+
+        eventService.finalizeEvent(eventId);
+        return ResponseEntity.noContent().build();
+    }
 }
