@@ -90,7 +90,7 @@ public class EventService {
         participantsService.addParticipantToEvent(eventId, user);
     }
 
-    public void calculationEventBudget(UUID eventId) {
+    public void finalizeEvent(UUID eventId) {
         eventDAO.calculationEventBudget(eventId);
         eventDAO.finalizeEvent(eventId);
     }

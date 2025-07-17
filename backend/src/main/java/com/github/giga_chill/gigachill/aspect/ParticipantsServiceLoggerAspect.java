@@ -55,6 +55,16 @@ public class ParticipantsServiceLoggerAspect {
                     + "&& args(eventId, participantId)")
     public void getParticipantById(UUID eventId, UUID participantId) {}
 
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.getParticipantBalance(..)) "
+                    + "&& args(eventId, participantId)")
+    public void getParticipantBalance(UUID eventId, UUID participantId) {}
+
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.getParticipantsSummaryBalance(..)) "
+                    + "&& args(eventId)")
+    public void getParticipantsSummaryBalance(UUID eventId) {}
+
     @Around("getAllParticipantsByEventId(eventId)")
     public Object logGetAllParticipantsByEventId(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId) throws Throwable {
@@ -117,6 +127,7 @@ public class ParticipantsServiceLoggerAspect {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(
                     loggerColorConfig.getDELETE_COLOR()
+                            + loggerColorConfig.getDELETE_LABEL()
                             + "User with id: {} was deleted from event with id: {}"
                             + loggerColorConfig.getRESET_COLOR(),
                     participantId,
@@ -187,6 +198,42 @@ public class ParticipantsServiceLoggerAspect {
                             + loggerColorConfig.getRESET_COLOR(),
                     participantId,
                     (String) result,
+                    eventId);
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("getParticipantBalance(eventId, participantId)")
+    public Object logGetParticipantBalance(
+            ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UUID participantId)
+            throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            LOGGER.info(
+                    loggerColorConfig.getGET_COLOR()
+                            + loggerColorConfig.getGET_LABEL()
+                            + "User with id: {} received balance in event with id: {}"
+                            + loggerColorConfig.getRESET_COLOR(),
+                    participantId,
+                    eventId);
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("getParticipantsSummaryBalance(eventId)")
+    public Object logGetParticipantsSummaryBalance(
+            ProceedingJoinPoint proceedingJoinPoint, UUID eventId) throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            LOGGER.info(
+                    loggerColorConfig.getGET_COLOR()
+                            + loggerColorConfig.getGET_LABEL()
+                            + "The summary balance of event with id: {} participants was received"
+                            + loggerColorConfig.getRESET_COLOR(),
                     eventId);
             return result;
         } catch (Throwable ex) {
