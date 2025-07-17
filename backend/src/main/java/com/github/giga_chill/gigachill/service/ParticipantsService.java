@@ -74,13 +74,11 @@ public class ParticipantsService {
                 .equals(env.getProperty("roles.participant").toString());
     }
 
-    // TODO повесить логгер
     public ParticipantBalance getParticipantBalance(UUID eventId, UUID participantId) {
         return DtoEntityMapper.toParticipantBalanceEntity(
                 participantDAO.getParticipantBalance(eventId, participantId));
     }
 
-    // TODO повесить логгер
     public List<ParticipantSummaryBalance> getParticipantsSummaryBalance(UUID eventId) {
         return participantDAO.getSummaryParticipantBalance(eventId).stream()
                 .map(DtoEntityMapper::toParticipantSummaryBalance)

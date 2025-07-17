@@ -90,13 +90,11 @@ public class EventService {
         participantsService.addParticipantToEvent(eventId, user);
     }
 
-    // TODO логгер
     public void finalizeEvent(UUID eventId) {
         eventDAO.calculationEventBudget(eventId);
         eventDAO.finalizeEvent(eventId);
     }
 
-    // TODO логгер
     public boolean isFinalized(UUID eventId) {
         return eventDAO.isFinalized(eventId);
     }
