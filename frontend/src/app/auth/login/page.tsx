@@ -5,17 +5,19 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import AuthWrapper from '@/components/auth-wrapper/AuthWrapper';
 import { useLoginMutation } from '@/store/api';
 import { PAGES } from '@/config/pages.config';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { handleSuccessfulAuth, createAuthLinkWithReturnUrl } from '@/utils/redirect-utils';
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [login, { isLoading: loginLoading }] = useLoginMutation();
 
   const onFinish = async (values: any) => {
     try {
       await login(values).unwrap();
-      router.replace(PAGES.HOME);
+      handleSuccessfulAuth(searchParams, router);
     } catch (err) {
       console.log('error');
       console.log(err);
@@ -45,7 +47,7 @@ export default function LoginForm() {
           <Button block type="primary" htmlType="submit" loading={loginLoading}>
             Войти
           </Button>
-          или <Link href={PAGES.REGISTER}>Зарегистрироваться!</Link>
+          или <Link href={createAuthLinkWithReturnUrl(PAGES.REGISTER, searchParams)}>Зарегистрироваться!</Link>
         </Form.Item>
       </Form>
     </AuthWrapper>

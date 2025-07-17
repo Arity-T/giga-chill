@@ -5,11 +5,13 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import AuthWrapper from '@/components/auth-wrapper/AuthWrapper';
 import { useRegisterMutation } from '@/store/api';
 import { PAGES } from '@/config/pages.config';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { handleSuccessfulAuth, createAuthLinkWithReturnUrl } from '@/utils/redirect-utils';
 
 export default function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [register, { isLoading: registerLoading }] = useRegisterMutation();
 
   const onFinish = async (values: any) => {
@@ -21,7 +23,8 @@ export default function RegisterForm() {
         login: values.login,
         password: values.password
       }).unwrap();
-      router.replace(PAGES.HOME);
+
+      handleSuccessfulAuth(searchParams, router);
     } catch (err) {
       console.log('Ошибка регистрации:');
       console.log(err);
@@ -77,7 +80,7 @@ export default function RegisterForm() {
           <Button block type="primary" htmlType="submit" loading={registerLoading}>
             Зарегистрироваться
           </Button>
-          или <Link href={PAGES.LOGIN}>Войти!</Link>
+          или <Link href={createAuthLinkWithReturnUrl(PAGES.LOGIN, searchParams)}>Войти!</Link>
         </Form.Item>
       </Form>
     </AuthWrapper>
