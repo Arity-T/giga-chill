@@ -1,5 +1,6 @@
 package com.github.giga_chill.gigachill.data.access.object;
 
+import com.github.giga_chill.gigachill.data.transfer.object.ParticipantBalanceDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.ParticipantDTO;
 import java.util.List;
 import java.util.UUID;
@@ -70,4 +71,15 @@ public interface ParticipantDAO {
      * @return {@link ParticipantDTO} object for the specified event;
      */
     ParticipantDTO getParticipantById(UUID eventId, UUID participantId);
+
+
+    /**
+     * Retrieves the current balance summary for the specified participant.
+     *
+     * @param participantId the unique identifier of the participant
+     * @return a {@link ParticipantBalanceDTO} containing the participant’s total debits,
+     *         credits, and net balance; never {@code null}
+     */
+    ParticipantBalanceDTO getParticipantBalance(UUID participantId);
+
 }
