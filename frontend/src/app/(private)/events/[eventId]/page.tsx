@@ -49,7 +49,7 @@ export default function EventDetailsPage({ params }: EventIdPathParam) {
                         </span>
                     }
                 >
-                    {formatDateTime(event.start_datetime)}
+                    {event.start_datetime ? formatDateTime(event.start_datetime) : 'Не указано'}
                 </Descriptions.Item>
 
                 <Descriptions.Item
@@ -60,7 +60,7 @@ export default function EventDetailsPage({ params }: EventIdPathParam) {
                         </span>
                     }
                 >
-                    {formatDateTime(event.end_datetime)}
+                    {event.end_datetime ? formatDateTime(event.end_datetime) : 'Не указано'}
                 </Descriptions.Item>
 
                 <Descriptions.Item
@@ -71,7 +71,7 @@ export default function EventDetailsPage({ params }: EventIdPathParam) {
                         </span>
                     }
                 >
-                    {event.location}
+                    {event.location || 'Не указано'}
                 </Descriptions.Item>
 
                 <Descriptions.Item
@@ -82,7 +82,7 @@ export default function EventDetailsPage({ params }: EventIdPathParam) {
                         </span>
                     }
                 >
-                    {event.budget.toLocaleString('ru-RU')} ₽
+                    {event.budget != null ? `${event.budget.toLocaleString('ru-RU')} ₽` : 'Не указан'}
                 </Descriptions.Item>
             </Descriptions>
 
