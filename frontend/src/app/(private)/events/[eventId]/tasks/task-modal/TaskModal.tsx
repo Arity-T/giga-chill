@@ -12,6 +12,7 @@ import TaskDeadline from './TaskDeadline';
 import TaskShoppingLists from './TaskShoppingLists';
 import SendForReviewForm from './SendForReviewForm';
 import ReviewTaskForm from './ReviewTaskForm';
+import ReviewerComment from './ReviewerComment';
 
 const { Title } = Typography;
 
@@ -280,12 +281,17 @@ export default function TaskModal({
                         allShoppingLists={allShoppingLists}
                         canEdit={task.permissions.can_edit && task.status === TaskStatus.OPEN}
                         onUpdate={handleUpdateShoppingLists}
-                        isExecutorInProgress={isExecutorInProgress}
+                        showAsCards={isExecutorInProgress || task.permissions.can_review}
                         eventId={eventId}
                         expandedListId={expandedListId}
                         onToggleExpand={handleToggleExpand}
                         task={task}
                     />
+
+                    {/* Комментарий проверяющего для исполнителя */}
+                    {currentUser?.id === task.executor?.id && task.reviewer_comment && (
+                        <ReviewerComment reviewerComment={task.reviewer_comment} />
+                    )}
 
                     {/* Форма отправки на проверку для исполнителя */}
                     {isExecutorInProgress && (

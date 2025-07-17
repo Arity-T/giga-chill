@@ -15,8 +15,8 @@ interface TaskShoppingListsProps {
     allShoppingLists: ShoppingListWithItems[];
     canEdit: boolean;
     onUpdate: (shoppingListIds: string[]) => Promise<void>;
-    // Для режима исполнителя
-    isExecutorInProgress?: boolean;
+    // Показывать списки как карточки (для исполнителя и проверяющего)
+    showAsCards?: boolean;
     eventId?: string;
     expandedListId?: string;
     onToggleExpand?: (listId: string) => void;
@@ -28,7 +28,7 @@ export default function TaskShoppingLists({
     allShoppingLists,
     canEdit,
     onUpdate,
-    isExecutorInProgress = false,
+    showAsCards = false,
     eventId,
     expandedListId,
     onToggleExpand,
@@ -154,8 +154,8 @@ export default function TaskShoppingLists({
                 )}
             </div>
 
-            {isExecutorInProgress ? (
-                // Режим для исполнителя в процессе выполнения
+            {showAsCards ? (
+                // Режим карточек (для исполнителя и проверяющего)
                 <div style={{ minHeight: '24px' }}>
                     {shoppingLists && shoppingLists.length > 0 ? (
                         shoppingLists.map(list => (
