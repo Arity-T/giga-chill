@@ -3,7 +3,7 @@ CREATE INDEX IF NOT EXISTS idx_user_in_event_user_id ON user_in_event(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_in_event_event_id ON user_in_event(event_id);
 
 -- events
-CREATE INDEX idx_events_invite_token ON events(invite_token);
+CREATE INDEX IF NOT EXISTS idx_events_invite_token ON events(invite_token);
 
 -- tasks
 CREATE INDEX IF NOT EXISTS idx_task_event_id ON tasks(event_id);
@@ -22,4 +22,4 @@ CREATE INDEX IF NOT EXISTS idx_consumer_user_id ON consumer_in_list(user_id);
 CREATE INDEX IF NOT EXISTS idx_consumer_shopping_list_id ON consumer_in_list(shopping_list_id);
 
 -- debts
-CREATE INDEX idx_debts_event_id ON debts_per_event(event_id);
+CREATE INDEX IF NOT EXISTS idx_debts_event_id ON debts_per_event(event_id);
