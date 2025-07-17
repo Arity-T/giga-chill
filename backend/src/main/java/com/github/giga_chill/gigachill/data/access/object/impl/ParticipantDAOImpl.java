@@ -3,6 +3,7 @@ package com.github.giga_chill.gigachill.data.access.object.impl;
 import com.github.giga_chill.gigachill.data.access.object.ParticipantDAO;
 import com.github.giga_chill.gigachill.data.transfer.object.ParticipantBalanceDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.ParticipantDTO;
+import com.github.giga_chill.gigachill.data.transfer.object.ParticipantSummaryBalanceDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.UserDTO;
 import com.github.giga_chill.gigachill.repository.EventRepository;
 import com.github.giga_chill.gigachill.repository.UserInEventRepository;
@@ -10,6 +11,7 @@ import com.github.giga_chill.gigachill.repository.UserRepository;
 import com.github.giga_chill.jooq.generated.enums.EventRole;
 import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
 import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
+import java.math.BigDecimal;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -162,5 +164,56 @@ public class ParticipantDAOImpl implements ParticipantDAO {
                         .toList();
 
         return new ParticipantBalanceDTO(myDebts, debtsToMe);
+    }
+
+    /**
+     * Computes and retrieves a summary of balance information for each participant in the given
+     * event.
+     *
+     * @param eventId the unique identifier of the event for which to calculate participant balances
+     * @return a {@link List} of {@link ParticipantSummaryBalanceDTO} objects
+     */
+    @Override
+    public List<ParticipantSummaryBalanceDTO> getSummaryParticipantBalance(UUID eventId) {
+        // Получаем всех участников мероприятия
+        List<UserInEventRecord> participants = userInEventRepository.findByEventId(eventId);
+
+        List<ParticipantSummaryBalanceDTO> result = new ArrayList<>();
+
+        for (UserInEventRecord participant : participants) {
+            UUID userId = participant.getUserId();
+
+            // Считаем, сколько этот участник должен другим (по debtor_id)
+            BigDecimal totalDebts =
+                    eventRepository.findDebtsICreated(eventId, userId).stream()
+                            .map(Map.Entry::getValue)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            // Считаем, сколько должны этому участнику (по creditor_id)
+            BigDecimal totalCredits =
+                    eventRepository.findDebtsToMe(eventId, userId).stream()
+                            .map(Map.Entry::getValue)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            // Итоговый баланс: мне должны - я должен
+            BigDecimal totalBalance = totalCredits.subtract(totalDebts);
+
+            // Подробный баланс (детализация по каждому пользователю)
+            ParticipantBalanceDTO userBalance = getParticipantBalance(eventId, userId);
+
+            // Получаем UserDTO
+            UsersRecord userRecord = userRepository.findById(userId).orElse(null);
+            UserDTO userDTO =
+                    userRecord == null
+                            ? null
+                            : new UserDTO(
+                                    userRecord.getUserId(),
+                                    userRecord.getLogin(),
+                                    userRecord.getName());
+
+            result.add(new ParticipantSummaryBalanceDTO(userDTO, totalBalance, userBalance));
+        }
+
+        return result;
     }
 }
