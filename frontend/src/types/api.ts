@@ -26,6 +26,7 @@ export interface Event {
   description: string;
   budget: number;
   user_role: UserRole;
+  is_finalized: boolean;
 }
 
 export interface CreateEventRequest {

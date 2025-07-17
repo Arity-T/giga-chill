@@ -9,6 +9,8 @@ export const debtsApi = api.injectEndpoints({
                 method: 'POST',
             }),
             invalidatesTags: (_result, _error, eventId) => [
+                { type: 'Events', id: eventId },
+                { type: 'EventParticipants', id: eventId },
                 { type: 'Debts', id: eventId },
             ],
         }),
