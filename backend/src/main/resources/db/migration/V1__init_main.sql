@@ -88,5 +88,4 @@ JOIN tasks t ON sl.task_id = t.task_id
 JOIN consumer_in_list c ON c.shopping_list_id = sl.shopping_list_id
 WHERE sl.budget IS NOT NULL
   AND t.executor_id IS NOT NULL
-  AND c.user_id != t.executor_id
   AND t.status = 'completed';

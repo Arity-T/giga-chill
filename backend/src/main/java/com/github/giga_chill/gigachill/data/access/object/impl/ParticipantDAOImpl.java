@@ -129,6 +129,8 @@ public class ParticipantDAOImpl implements ParticipantDAO {
     public ParticipantBalanceDTO getParticipantBalance(UUID eventId, UUID participantId) {
         var myDebts =
                 eventRepository.findDebtsICreated(eventId, participantId).stream()
+                        // Фильтруем долги самому себе
+                        .filter(entry -> !entry.getKey().equals(participantId))
                         .map(
                                 entry -> {
                                     var userOpt = userRepository.findById(entry.getKey());
@@ -147,6 +149,8 @@ public class ParticipantDAOImpl implements ParticipantDAO {
 
         var debtsToMe =
                 eventRepository.findDebtsToMe(eventId, participantId).stream()
+                        // Фильтруем долги самому себе
+                        .filter(entry -> !entry.getKey().equals(participantId))
                         .map(
                                 entry -> {
                                     var userOpt = userRepository.findById(entry.getKey());
