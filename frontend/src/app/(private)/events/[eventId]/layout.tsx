@@ -78,10 +78,10 @@ export default function EventLayout({ children, params }: EventLayoutProps) {
             ),
         },
         {
-            key: PAGES.EVENT_BALANCE(eventId),
+            key: PAGES.EVENT_MY_BALANCE(eventId),
             icon: <DollarOutlined />,
             label: (
-                <Link href={PAGES.EVENT_BALANCE(eventId)}>
+                <Link href={PAGES.EVENT_MY_BALANCE(eventId)}>
                     Мой баланс
                 </Link>
             ),
