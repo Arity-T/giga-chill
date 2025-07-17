@@ -3,7 +3,6 @@ package com.github.giga_chill.gigachill.data.access.object;
 import com.github.giga_chill.gigachill.data.transfer.object.ParticipantBalanceDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.ParticipantDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.ParticipantSummaryBalanceDTO;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -85,11 +84,11 @@ public interface ParticipantDAO {
     ParticipantBalanceDTO getParticipantBalance(UUID eventId, UUID participantId);
 
     /**
-     * Computes and retrieves a summary of balance information for each participant in the given event.
+     * Computes and retrieves a summary of balance information for each participant in the given
+     * event.
      *
      * @param eventId the unique identifier of the event for which to calculate participant balances
      * @return a {@link List} of {@link ParticipantSummaryBalanceDTO} objects
      */
     List<ParticipantSummaryBalanceDTO> getSummaryParticipantBalance(UUID eventId);
-
 }
