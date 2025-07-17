@@ -22,16 +22,23 @@ interface ShoppingListCardProps {
     eventId: string;
     canEdit: boolean;
     canMarkAsPurchased: boolean;
+    expandedListId?: string;
+    onToggleExpand?: (listId: string) => void;
 }
 
 export default function ShoppingListCard({
     shoppingList,
     eventId,
     canEdit,
-    canMarkAsPurchased
+    canMarkAsPurchased,
+    expandedListId,
+    onToggleExpand
 }: ShoppingListCardProps) {
     const [activeKey, setActiveKey] = useState<string | string[]>([]);
     const [isHovered, setIsHovered] = useState(false);
+
+    // Определяем, раскрыт ли текущий список
+    const isExpanded = expandedListId === shoppingList.shopping_list_id;
 
     // Состояния модалок
     const [addItemModal, setAddItemModal] = useState(false);
@@ -56,7 +63,14 @@ export default function ShoppingListCard({
     const totalCount = shoppingList.shopping_items.length;
 
     const toggleCollapse = () => {
-        setActiveKey(activeKey.length > 0 ? [] : ['1']);
+        if (onToggleExpand) {
+            // Используем внешнее управление состоянием аккордеона
+            const newExpandedId = isExpanded ? '' : shoppingList.shopping_list_id;
+            onToggleExpand(newExpandedId);
+        } else {
+            // Fallback на локальное состояние для обратной совместимости
+            setActiveKey(activeKey.length > 0 ? [] : ['1']);
+        }
     };
 
     const handleToggleItemPurchased = async (itemId: string, isPurchased: boolean) => {
@@ -188,7 +202,7 @@ export default function ShoppingListCard({
                     <div
                         style={{
                             padding: '16px 24px',
-                            borderBottom: activeKey.length > 0 ? '1px solid #f0f0f0' : 'none',
+                            borderBottom: (onToggleExpand ? isExpanded : activeKey.length > 0) ? '1px solid #f0f0f0' : 'none',
                             cursor: 'pointer'
                         }}
                         onClick={toggleCollapse}
@@ -196,7 +210,7 @@ export default function ShoppingListCard({
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <CaretRightOutlined
                                 style={{
-                                    transform: activeKey.length > 0 ? 'rotate(90deg)' : 'rotate(0deg)',
+                                    transform: (onToggleExpand ? isExpanded : activeKey.length > 0) ? 'rotate(90deg)' : 'rotate(0deg)',
                                     transition: 'transform 0.2s ease',
                                     color: '#8c8c8c'
                                 }}
@@ -213,7 +227,7 @@ export default function ShoppingListCard({
                             />
                         </div>
                     </div>
-                    {activeKey.length > 0 && (
+                    {(onToggleExpand ? isExpanded : activeKey.length > 0) && (
                         <ShoppingListContent
                             description={shoppingList.description}
                             items={shoppingList.shopping_items}

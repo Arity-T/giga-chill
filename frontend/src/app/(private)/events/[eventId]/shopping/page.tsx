@@ -13,6 +13,7 @@ const { Title } = Typography;
 export default function ShoppingPage({ params }: EventIdPathParam) {
     const { eventId } = React.use(params);
     const [modalOpen, setModalOpen] = useState(false);
+    const [expandedListId, setExpandedListId] = useState<string>('');
 
     const { data: shoppingLists, isLoading } = useGetShoppingListsQuery(eventId);
 
@@ -22,6 +23,10 @@ export default function ShoppingPage({ params }: EventIdPathParam) {
 
     const handleCloseModal = () => {
         setModalOpen(false);
+    };
+
+    const handleToggleExpand = (listId: string) => {
+        setExpandedListId(listId);
     };
 
     if (isLoading) {
@@ -48,6 +53,8 @@ export default function ShoppingPage({ params }: EventIdPathParam) {
                         eventId={eventId}
                         canEdit={list.can_edit}
                         canMarkAsPurchased={false}
+                        expandedListId={expandedListId}
+                        onToggleExpand={handleToggleExpand}
                     />
                 ))
             ) : (
