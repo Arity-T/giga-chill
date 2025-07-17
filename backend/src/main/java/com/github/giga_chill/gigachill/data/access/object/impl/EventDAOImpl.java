@@ -38,7 +38,8 @@ public class EventDAOImpl implements EventDAO {
                                                 ? eventRecord.getEndDatetime().toString()
                                                 : null,
                                         eventRecord.getDescription(),
-                                        eventRecord.getBudget()))
+                                        eventRecord.getBudget(),
+                                        eventRecord.getIsFinalized()))
                 .orElse(null);
     }
 
@@ -63,7 +64,8 @@ public class EventDAOImpl implements EventDAO {
                                                         ? eventRecord.getEndDatetime().toString()
                                                         : null,
                                                 eventRecord.getDescription(),
-                                                eventRecord.getBudget()));
+                                                eventRecord.getBudget(),
+                                                eventRecord.getIsFinalized()));
                             });
         }
         return events;
