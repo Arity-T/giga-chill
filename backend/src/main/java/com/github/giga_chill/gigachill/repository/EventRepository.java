@@ -62,4 +62,19 @@ public class EventRepository {
                 .where(Events.EVENTS.EVENT_ID.eq(eventId))
                 .fetchOne(Events.EVENTS.END_DATETIME);
     }
+
+    public void finalizeEventById(UUID eventId) {
+        dsl.update(Events.EVENTS)
+                .set(Events.EVENTS.IS_FINALIZED, true)
+                .where(Events.EVENTS.EVENT_ID.eq(eventId))
+                .execute();
+    }
+
+    public boolean isFinalized(UUID eventId) {
+        return Boolean.TRUE.equals(
+                dsl.select(Events.EVENTS.IS_FINALIZED)
+                        .from(Events.EVENTS)
+                        .where(Events.EVENTS.EVENT_ID.eq(eventId))
+                        .fetchOne(Events.EVENTS.IS_FINALIZED));
+    }
 }
