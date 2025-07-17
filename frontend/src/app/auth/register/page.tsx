@@ -8,6 +8,8 @@ import { PAGES } from '@/config/pages.config';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { handleSuccessfulAuth, createAuthLinkWithReturnUrl } from '@/utils/redirect-utils';
+import { createFieldValidator } from '@/utils/validation-utils';
+import { LOGIN_VALIDATION_RULES, PASSWORD_VALIDATION_RULES } from '@/config/validation.config';
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -46,12 +48,21 @@ export default function RegisterForm() {
 
         <Form.Item
           name="login"
-          rules={[{ required: true, message: 'Введите логин!' }]}
+          rules={[
+            { required: true, message: 'Введите логин!' },
+            { validator: createFieldValidator(LOGIN_VALIDATION_RULES) }
+          ]}
         >
           <Input prefix={<UserOutlined />} placeholder="Логин" />
         </Form.Item>
 
-        <Form.Item name="password" rules={[{ required: true }]}>
+        <Form.Item
+          name="password"
+          rules={[
+            { required: true, message: 'Введите пароль!' },
+            { validator: createFieldValidator(PASSWORD_VALIDATION_RULES) }
+          ]}
+        >
           <Input prefix={<LockOutlined />} type="password" placeholder="Пароль" />
         </Form.Item>
 
