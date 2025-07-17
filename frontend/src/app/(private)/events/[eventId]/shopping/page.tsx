@@ -47,6 +47,7 @@ export default function ShoppingPage({ params }: EventIdPathParam) {
                         shoppingList={list}
                         eventId={eventId}
                         canEdit={list.can_edit}
+                        canMarkAsPurchased={false}
                     />
                 ))
             ) : (

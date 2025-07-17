@@ -20,13 +20,15 @@ import ShoppingListEditModal from './ShoppingListModal';
 interface ShoppingListCardProps {
     shoppingList: ShoppingListWithItems;
     eventId: string;
-    canEdit?: boolean;
+    canEdit: boolean;
+    canMarkAsPurchased: boolean;
 }
 
 export default function ShoppingListCard({
     shoppingList,
     eventId,
-    canEdit = shoppingList.can_edit
+    canEdit,
+    canMarkAsPurchased
 }: ShoppingListCardProps) {
     const [activeKey, setActiveKey] = useState<string | string[]>([]);
     const [isHovered, setIsHovered] = useState(false);
@@ -220,6 +222,7 @@ export default function ShoppingListCard({
                             onDeleteItem={handleDeleteItem}
                             onEditItem={handleEditItem}
                             canEdit={canEdit}
+                            canMarkAsPurchased={canMarkAsPurchased}
                         />
                     )}
                 </div>
