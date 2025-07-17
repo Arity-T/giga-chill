@@ -85,27 +85,21 @@ public final class InfoEntityMapper {
     public static ParticipantBalanceInfo toParticipantBalanceInfo(
             ParticipantBalance participantBalance) {
         return new ParticipantBalanceInfo(
-                participantBalance.getMyDebts().stream()
-                        .map(
-                                item ->
-                                        item.entrySet().stream()
-                                                .collect(
-                                                        Collectors.toMap(
-                                                                key ->
-                                                                        InfoEntityMapper.toUserInfo(
-                                                                                key.getKey()),
-                                                                Map.Entry::getValue)))
-                        .collect(Collectors.toList()),
                 participantBalance.getDebtsToMe().stream()
+                        .flatMap(map -> map.entrySet().stream())
                         .map(
-                                item ->
-                                        item.entrySet().stream()
-                                                .collect(
-                                                        Collectors.toMap(
-                                                                key ->
-                                                                        InfoEntityMapper.toUserInfo(
-                                                                                key.getKey()),
-                                                                Map.Entry::getValue)))
+                                e ->
+                                        new DebtInfo(
+                                                InfoEntityMapper.toUserInfo(e.getKey()),
+                                                e.getValue()))
+                        .collect(Collectors.toList()),
+                participantBalance.getMyDebts().stream()
+                        .flatMap(map -> map.entrySet().stream())
+                        .map(
+                                e ->
+                                        new DebtInfo(
+                                                InfoEntityMapper.toUserInfo(e.getKey()),
+                                                e.getValue()))
                         .collect(Collectors.toList()));
     }
 
