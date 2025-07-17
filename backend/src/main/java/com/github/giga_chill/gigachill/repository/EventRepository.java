@@ -92,16 +92,18 @@ public class EventRepository {
     }
 
     public BigDecimal calculateEventBudget(UUID eventId) {
-        return dsl.select(sum(ShoppingLists.SHOPPING_LISTS.BUDGET))
-                .from(ShoppingLists.SHOPPING_LISTS)
-                .join(Tasks.TASKS)
-                .on(ShoppingLists.SHOPPING_LISTS.TASK_ID.eq(Tasks.TASKS.TASK_ID))
-                .where(
-                        ShoppingLists.SHOPPING_LISTS
-                                .EVENT_ID
-                                .eq(eventId)
-                                .and(Tasks.TASKS.STATUS.eq(TaskStatus.completed)))
-                .fetchOne(0, BigDecimal.class);
+        BigDecimal result =
+                dsl.select(sum(ShoppingLists.SHOPPING_LISTS.BUDGET))
+                        .from(ShoppingLists.SHOPPING_LISTS)
+                        .join(Tasks.TASKS)
+                        .on(ShoppingLists.SHOPPING_LISTS.TASK_ID.eq(Tasks.TASKS.TASK_ID))
+                        .where(
+                                ShoppingLists.SHOPPING_LISTS
+                                        .EVENT_ID
+                                        .eq(eventId)
+                                        .and(Tasks.TASKS.STATUS.eq(TaskStatus.completed)))
+                        .fetchOne(0, BigDecimal.class);
+        return result != null ? result : BigDecimal.ZERO;
     }
 
     public void setEventBudget(UUID eventId, BigDecimal budget) {
