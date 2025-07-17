@@ -72,8 +72,11 @@ public class TasksController {
                 requestTaskInfo.executorId() != null
                         ? UuidUtils.safeUUID(requestTaskInfo.executorId())
                         : null;
-        if (!eventService.isExistedAndNotDeleted(eventId)) {
-            throw new NotFoundException("Event with id " + eventId + " not found");
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
+        }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
@@ -134,6 +137,9 @@ public class TasksController {
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
+        }
         if (!taskService.isExisted(eventId, taskId)) {
             throw new NotFoundException("Task with id " + taskId + " not found");
         }
@@ -173,6 +179,9 @@ public class TasksController {
                         : null;
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!taskService.isExisted(eventId, taskId)) {
             throw new NotFoundException("Task with id " + taskId + " not found");
@@ -225,6 +234,9 @@ public class TasksController {
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
+        }
         if (!taskService.isExisted(eventId, taskId)) {
             throw new NotFoundException("Task with id " + taskId + " not found");
         }
@@ -264,6 +276,9 @@ public class TasksController {
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
+        }
         if (!taskService.isExisted(eventId, taskId)) {
             throw new NotFoundException("Task with id " + taskId + " not found");
         }
@@ -294,6 +309,9 @@ public class TasksController {
         var user = userService.userAuthentication(authentication);
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!taskService.isExisted(eventId, taskId)) {
             throw new NotFoundException("Task with id " + taskId + " not found");
@@ -335,6 +353,9 @@ public class TasksController {
         }
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!taskService.isExisted(eventId, taskId)) {
             throw new NotFoundException("Task with id " + taskId + " not found");
@@ -378,6 +399,9 @@ public class TasksController {
         }
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!taskService.isExisted(eventId, taskId)) {
             throw new NotFoundException("Task with id " + taskId + " not found");

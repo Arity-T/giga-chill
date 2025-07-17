@@ -94,6 +94,9 @@ public class EventsController {
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
+        }
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -121,6 +124,9 @@ public class EventsController {
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
+        }
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -147,6 +153,9 @@ public class EventsController {
         User user = userService.userAuthentication(authentication);
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
@@ -207,6 +216,9 @@ public class EventsController {
         var eventId = eventService.getEventByLinkUuid(UuidUtils.safeUUID(rawToken));
         if (eventId == null) {
             throw new NotFoundException("Link with hash " + rawToken + " not found");
+        }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (participantsService.isParticipant(eventId, user.getId())) {
             throw new ConflictException(

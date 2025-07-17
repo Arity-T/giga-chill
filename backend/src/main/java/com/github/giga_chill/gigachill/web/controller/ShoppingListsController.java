@@ -76,6 +76,9 @@ public class ShoppingListsController {
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
+        }
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -100,6 +103,9 @@ public class ShoppingListsController {
         var description = (String) body.get("description");
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
@@ -143,6 +149,9 @@ public class ShoppingListsController {
         var user = userService.userAuthentication(authentication);
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
@@ -196,6 +205,9 @@ public class ShoppingListsController {
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
+        }
         if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
@@ -244,6 +256,9 @@ public class ShoppingListsController {
         var unit = (String) body.get("unit");
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
@@ -298,6 +313,9 @@ public class ShoppingListsController {
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
+        }
         if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
@@ -349,6 +367,9 @@ public class ShoppingListsController {
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
+        }
         if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
@@ -398,6 +419,9 @@ public class ShoppingListsController {
         }
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
@@ -456,6 +480,9 @@ public class ShoppingListsController {
         }
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)){
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
