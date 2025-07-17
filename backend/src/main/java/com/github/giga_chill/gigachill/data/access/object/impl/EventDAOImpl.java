@@ -113,9 +113,10 @@ public class EventDAOImpl implements EventDAO {
         userInEventRepository.save(userInEventRecord);
     }
 
+    // TODO Посмотреть Владу
     @Override
-    public boolean isExisted(UUID eventId) {
-        return eventRepository.exists(eventId);
+    public boolean isExistedAndNotDeleted(UUID eventId) {
+        return eventRepository.exists(eventId) && !eventRepository.getDeleteStatus(eventId);
     }
 
     /**
