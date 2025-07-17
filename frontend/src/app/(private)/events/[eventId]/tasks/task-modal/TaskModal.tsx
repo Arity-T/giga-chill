@@ -10,6 +10,7 @@ import TaskDescription from './TaskDescription';
 import TaskExecutor from './TaskExecutor';
 import TaskDeadline from './TaskDeadline';
 import TaskShoppingLists from './TaskShoppingLists';
+import SendForReviewForm from './SendForReviewForm';
 
 const { Title } = Typography;
 
@@ -284,6 +285,14 @@ export default function TaskModal({
                         onToggleExpand={handleToggleExpand}
                         task={task}
                     />
+
+                    {/* Форма отправки на проверку для исполнителя */}
+                    {isExecutorInProgress && (
+                        <SendForReviewForm
+                            eventId={eventId}
+                            taskId={task.task_id}
+                        />
+                    )}
 
                     {/* Кнопка "Взять в работу" */}
                     {task.permissions.can_take_in_work && (
