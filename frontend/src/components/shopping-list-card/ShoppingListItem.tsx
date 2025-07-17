@@ -11,9 +11,10 @@ interface ShoppingListItemProps {
     onDeleteItem: (itemId: string) => void;
     onEditItem: (itemId: string) => void;
     canEdit: boolean;
+    canMarkAsPurchased: boolean;
 }
 
-export default function ShoppingListItem({ item, onTogglePurchased, onDeleteItem, onEditItem, canEdit }: ShoppingListItemProps) {
+export default function ShoppingListItem({ item, onTogglePurchased, onDeleteItem, onEditItem, canEdit, canMarkAsPurchased }: ShoppingListItemProps) {
     const [isHovered, setIsHovered] = useState(false);
 
     return (
@@ -33,9 +34,9 @@ export default function ShoppingListItem({ item, onTogglePurchased, onDeleteItem
                     <Checkbox
                         checked={item.is_purchased}
                         onChange={(e) => onTogglePurchased(item.shopping_item_id, e.target.checked)}
-                        disabled={!canEdit}
+                        disabled={!canMarkAsPurchased}
                         style={{
-                            ...((!canEdit && item.is_purchased) && {
+                            ...((!canMarkAsPurchased && item.is_purchased) && {
                                 // Серый цвет для отмеченного чекбокса когда нельзя редактировать
                                 opacity: 0.6,
                             })
