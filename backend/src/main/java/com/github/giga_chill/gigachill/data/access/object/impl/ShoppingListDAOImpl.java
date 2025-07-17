@@ -144,15 +144,11 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
      * @param shoppingListId the unique identifier of the shopping list to update
      * @param title the new title, or {@code null} to leave unchanged
      * @param description the new description, or {@code null} to leave unchanged
-     * @param budget the new list budget, or {@code null} to leave unchanged
      */
     @Override
     public void updateShoppingList(
-            UUID shoppingListId,
-            @Nullable String title,
-            @Nullable String description,
-            @Nullable BigDecimal budget) {
-        shoppingListRepository.updateShoppingList(shoppingListId, title, description, budget);
+            UUID shoppingListId, @Nullable String title, @Nullable String description) {
+        shoppingListRepository.updateShoppingList(shoppingListId, title, description);
     }
 
     /**
@@ -432,5 +428,16 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
 
         int count = shoppingListRepository.countAllBindedToThisTaskOrNull(shoppingListsIds, taskId);
         return count == shoppingListsIds.size();
+    }
+
+    /**
+     * Sets or updates the budget for the specified shopping list.
+     *
+     * @param shoppingListId the unique identifier of the shopping list
+     * @param budget the {@link BigDecimal} amount representing the new budget
+     */
+    @Override
+    public void setBudget(UUID shoppingListId, BigDecimal budget) {
+        shoppingListRepository.setBudget(shoppingListId, budget);
     }
 }

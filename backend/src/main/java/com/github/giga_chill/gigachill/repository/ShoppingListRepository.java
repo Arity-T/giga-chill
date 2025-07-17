@@ -45,10 +45,7 @@ public class ShoppingListRepository {
     }
 
     public void updateShoppingList(
-            UUID shoppingListId,
-            @Nullable String title,
-            @Nullable String description,
-            @Nullable BigDecimal budget) {
+            UUID shoppingListId, @Nullable String title, @Nullable String description) {
         Map<Field<?>, Object> updates = new HashMap<>();
 
         if (title != null) {
@@ -56,9 +53,6 @@ public class ShoppingListRepository {
         }
         if (description != null) {
             updates.put(ShoppingLists.SHOPPING_LISTS.DESCRIPTION, description);
-        }
-        if (budget != null) {
-            updates.put(ShoppingLists.SHOPPING_LISTS.BUDGET, budget);
         }
 
         if (!updates.isEmpty()) {
@@ -145,5 +139,12 @@ public class ShoppingListRepository {
                                         .TASK_ID
                                         .eq(taskId)
                                         .or(ShoppingLists.SHOPPING_LISTS.TASK_ID.isNull())));
+    }
+
+    public void setBudget(UUID shoppingListId, BigDecimal budget) {
+        dsl.update(ShoppingLists.SHOPPING_LISTS)
+                .set(ShoppingLists.SHOPPING_LISTS.BUDGET, budget)
+                .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(shoppingListId))
+                .execute();
     }
 }
