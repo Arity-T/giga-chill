@@ -11,6 +11,7 @@ import TaskExecutor from './TaskExecutor';
 import TaskDeadline from './TaskDeadline';
 import TaskShoppingLists from './TaskShoppingLists';
 import SendForReviewForm from './SendForReviewForm';
+import ReviewTaskForm from './ReviewTaskForm';
 
 const { Title } = Typography;
 
@@ -291,6 +292,16 @@ export default function TaskModal({
                         <SendForReviewForm
                             eventId={eventId}
                             taskId={task.task_id}
+                        />
+                    )}
+
+                    {/* Форма проверки задачи для проверяющего */}
+                    {task.permissions.can_review && (
+                        <ReviewTaskForm
+                            eventId={eventId}
+                            taskId={task.task_id}
+                            executorComment={task.executor_comment}
+                            executor={task.executor}
                         />
                     )}
 
