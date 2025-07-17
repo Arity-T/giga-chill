@@ -50,13 +50,11 @@ public interface ShoppingListDAO {
      * @param shoppingListId the unique identifier of the shopping list to update
      * @param title the new title, or {@code null} to leave unchanged
      * @param description the new description, or {@code null} to leave unchanged
-     * @param budget the new list budget, or {@code null} to leave unchanged
      */
     void updateShoppingList(
             UUID shoppingListId,
             @Nullable String title,
-            @Nullable String description,
-            @Nullable BigDecimal budget);
+            @Nullable String description);
 
     /**
      * Deletes the specified shopping list.
@@ -219,4 +217,15 @@ public interface ShoppingListDAO {
      *     {@code false} otherwise
      */
     boolean canBindShoppingListsToTaskById(List<UUID> shoppingListsIds, UUID taskId);
+
+
+    /**
+     * Sets or updates the budget for the specified shopping list.
+     *
+     * @param shoppingListId the unique identifier of the shopping list
+     * @param budget         the {@link BigDecimal} amount representing the new budget
+     *
+     */
+    void setBudget(UUID shoppingListId, BigDecimal budget);
+
 }
