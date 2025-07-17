@@ -196,17 +196,6 @@ export default function TaskModal({
         }
     };
 
-    // Проверяем, нужно ли показывать кнопку "Взять в работу"
-    const shouldShowTakeInWorkButton = () => {
-        if (!task || !currentUser) return false;
-
-        // Кнопка показывается только если:
-        // 1. Задача в статусе OPEN
-        // 2. Текущий пользователь является исполнителем задачи
-        return task.status === TaskStatus.OPEN &&
-            task.executor?.id === currentUser.id;
-    };
-
     return (
         <Modal
             title={null}
@@ -281,7 +270,7 @@ export default function TaskModal({
                     />
 
                     {/* Кнопка "Взять в работу" */}
-                    {shouldShowTakeInWorkButton() && (
+                    {task.permissions.can_take_in_work && (
                         <div style={{ marginTop: '24px', marginBottom: '16px' }}>
                             <Button
                                 type="primary"
