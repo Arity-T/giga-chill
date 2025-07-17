@@ -1052,6 +1052,11 @@ components:
           type: number
           description: Бюджет мероприятия
           example: 10000
+        is_finished:
+          readOnly: true
+          type: boolean
+          description: Флаг, который показывает завершено ли мероприятие или нет.
+          example: false
 
     InvitationToken:
       type: object
