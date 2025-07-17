@@ -163,3 +163,19 @@ export interface TaskReviewRequest {
   reviewer_comment: string;
   is_approved: boolean;
 }
+
+export interface Debt {
+  user: User;
+  amount: number;
+}
+
+export interface UserBalance {
+  my_debts: Debt[];
+  debts_to_me: Debt[];
+}
+
+export interface EventBalanceSummary {
+  user: User;
+  total_balance: number;
+  user_balance: UserBalance;
+}
