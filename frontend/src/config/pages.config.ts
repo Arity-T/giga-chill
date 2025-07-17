@@ -7,6 +7,7 @@ export const PAGES = {
     EVENT_PARTICIPANTS: (eventId: string) => `/events/${eventId}/participants`,
     EVENT_TASKS: (eventId: string) => `/events/${eventId}/tasks`,
     EVENT_MY_BALANCE: (eventId: string) => `/events/${eventId}/my-balance`,
+    EVENT_BALANCE_SUMMARY: (eventId: string) => `/events/${eventId}/balance-summary`,
     EVENT_SHOPPING: (eventId: string) => `/events/${eventId}/shopping`,
     EVENT_SETTINGS: (eventId: string) => `/events/${eventId}/settings`,
     JOIN_BY_INVITATION: (invitationToken: string) => `/join/${invitationToken}`,

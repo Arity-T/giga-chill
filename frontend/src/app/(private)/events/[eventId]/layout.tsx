@@ -10,7 +10,8 @@ import {
     DollarOutlined,
     ShoppingCartOutlined,
     ArrowLeftOutlined,
-    SettingOutlined
+    SettingOutlined,
+    CalculatorOutlined
 } from '@ant-design/icons';
 import { useRouter, usePathname } from 'next/navigation';
 import { useGetEventQuery } from '@/store/api';
@@ -88,21 +89,40 @@ export default function EventLayout({ children, params }: EventLayoutProps) {
         },
     ];
 
-    // Добавляем пункт настроек только для владельца мероприятия
-    const menuItems = event?.user_role === UserRole.OWNER
-        ? [
-            ...baseMenuItems,
-            {
-                key: PAGES.EVENT_SETTINGS(eventId),
-                icon: <SettingOutlined />,
-                label: (
-                    <Link href={PAGES.EVENT_SETTINGS(eventId)}>
-                        Настройки
-                    </Link>
-                ),
-            },
-        ]
-        : baseMenuItems;
+    const adminMenuItems = [
+        {
+            key: PAGES.EVENT_BALANCE_SUMMARY(eventId),
+            icon: <CalculatorOutlined />,
+            label: (
+                <Link href={PAGES.EVENT_BALANCE_SUMMARY(eventId)}>
+                    Общие расчёты
+                </Link>
+            ),
+        },
+    ];
+
+    const ownerMenuItems = [
+        {
+            key: PAGES.EVENT_SETTINGS(eventId),
+            icon: <SettingOutlined />,
+            label: (
+                <Link href={PAGES.EVENT_SETTINGS(eventId)}>
+                    Настройки
+                </Link>
+            ),
+        },
+    ];
+
+    // Собираем меню в зависимости от роли
+    let menuItems = [...baseMenuItems];
+
+    if (event?.user_role === UserRole.ADMIN || event?.user_role === UserRole.OWNER) {
+        menuItems = [...menuItems, ...adminMenuItems];
+    }
+
+    if (event?.user_role === UserRole.OWNER) {
+        menuItems = [...menuItems, ...ownerMenuItems];
+    }
 
     if (isLoading) {
         return (
