@@ -292,7 +292,7 @@ public class ShoppingListsController {
                 body.get("budget") != null
                         ? new BigDecimal(String.valueOf((Number) body.get("budget")))
                         : null;
-        if (budget == null) {
+        if (budget == null || budget.compareTo(new BigDecimal(0)) < 0) {
             throw new BadRequestException("Invalid request body: " + body);
         }
         if (!eventService.isExisted(eventId)) {
@@ -308,7 +308,8 @@ public class ShoppingListsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
-        var executorId = taskService.getExecutorId(taskService.getExecutorId(user.getId()));
+        var taskId = shoppingListsService.getTaskIdForShoppingList(shoppingListId);
+        var executorId = taskService.getExecutorId(taskId);
         if (executorId == null) {
             throw new ConflictException(
                     "Shopping list with id: "
@@ -316,15 +317,12 @@ public class ShoppingListsController {
                             + " does not"
                             + " have \"in progress\", \"bought\" or \"partially_bought\" status");
         }
-        var shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
-        if (!(shoppingListStatus.equals(env.getProperty("shopping_list_status.in_progress"))
+        var taskStatus = taskService.getTaskStatus(taskId);
+        if (!((taskStatus.equals(env.getProperty("task_status.in_progress"))
                         && executorId.equals(user.getId()))
-                || !((shoppingListStatus.equals(env.getProperty("shopping_list_status.bought"))
-                                        || shoppingListStatus.equals(
-                                                env.getProperty(
-                                                        "shopping_list_status.partially_bought")))
-                                && !participantsService.isParticipantRole(eventId, user.getId()))
-                        && !executorId.equals(user.getId())) {
+                || (taskStatus.equals(env.getProperty("task_status.under_review"))
+                        && !participantsService.isParticipantRole(eventId, user.getId())
+                        && !executorId.equals(user.getId())))) {
             throw new ConflictException(
                     "User with id: "
                             + user.getId()
