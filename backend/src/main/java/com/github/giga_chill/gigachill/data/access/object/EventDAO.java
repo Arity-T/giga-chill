@@ -2,6 +2,8 @@ package com.github.giga_chill.gigachill.data.access.object;
 
 import com.github.giga_chill.gigachill.data.transfer.object.EventDTO;
 import jakarta.annotation.Nullable;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,7 +36,8 @@ public interface EventDAO {
      * Updates the details of an existing event.
      *
      * @param eventId the unique identifier of the event to update
-     * @param event the {@link EventDTO} object containing updated fields
+     * @param event the {@link EventDTO} object containing updated fields;
+     *             budget is not updated
      */
     void updateEvent(UUID eventId, EventDTO event);
 
@@ -94,4 +97,30 @@ public interface EventDAO {
      */
     @Nullable
     UUID getEventByLinkUuid(UUID linkUuid);
+
+
+    /**
+     * Calculates and updates the overall budget for the specified event.
+     * This may involve aggregating individual shopping list budgets and
+     * other cost components, then persisting the updated total.
+     *
+     * @param eventId the unique identifier of the event to recalculate the budget for
+     */
+    void calculationEventBudget(UUID eventId);
+
+    /**
+     * Marks the specified event as closed, preventing further modifications.
+     * Executes any finalization logic before setting the event’s status to closed.
+     *
+     * @param eventId the unique identifier of the event to close
+     */
+    void closeEvent(UUID eventId);
+
+    /**
+     * Determines whether the specified event has been finalized (closed).
+     *
+     * @param eventId the unique identifier of the event to check
+     * @return {@code true} if the event is finalized and no longer editable; {@code false} otherwise
+     */
+    boolean isFinalized(UUID eventId);
 }
