@@ -1,13 +1,16 @@
 package com.github.giga_chill.gigachill.web.info;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.math.BigDecimal;
 import java.util.List;
 
-public record ShoppingListInfo(String shopping_list_id,
-                               String task_id,
-                               String title,
-                               String description,
-                               String status,
-                               Boolean can_edit,
-                               List<ShoppingItemInfo> shopping_items,
-                               List<ConsumerInfo> consumers) {
-}
+public record ShoppingListInfo(
+        @JsonProperty("shopping_list_id") String shoppingListId,
+        @JsonProperty("task_id") String taskId,
+        @JsonProperty("title") String title,
+        @JsonProperty("description") String description,
+        @JsonProperty("status") String status,
+        @JsonProperty("can_edit") Boolean canEdit,
+        @JsonProperty("budget") BigDecimal budget,
+        @JsonProperty("shopping_items") List<ShoppingItemInfo> shoppingItems,
+        @JsonProperty("consumers") List<ConsumerInfo> consumers) {}

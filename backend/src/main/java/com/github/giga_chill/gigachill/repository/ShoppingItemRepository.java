@@ -1,16 +1,14 @@
 package com.github.giga_chill.gigachill.repository;
 
 import com.github.giga_chill.jooq.generated.tables.ShoppingItems;
-import com.github.giga_chill.jooq.generated.tables.ShoppingLists;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingItemsRecord;
-import lombok.RequiredArgsConstructor;
-import org.jooq.DSLContext;
-import org.springframework.stereotype.Repository;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.jooq.DSLContext;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
@@ -30,12 +28,15 @@ public class ShoppingItemRepository {
     }
 
     public void save(ShoppingItemsRecord record) {
-        dsl.insertInto(ShoppingItems.SHOPPING_ITEMS)
-                .set(record)
-                .execute();
+        dsl.insertInto(ShoppingItems.SHOPPING_ITEMS).set(record).execute();
     }
 
-    public void update(UUID shoppingItemId, String title, BigDecimal quantity, String unit, Boolean isPurchased) {
+    public void update(
+            UUID shoppingItemId,
+            String title,
+            BigDecimal quantity,
+            String unit,
+            Boolean isPurchased) {
         dsl.update(ShoppingItems.SHOPPING_ITEMS)
                 .set(ShoppingItems.SHOPPING_ITEMS.TITLE, title)
                 .set(ShoppingItems.SHOPPING_ITEMS.QUANTITY, quantity)
@@ -68,8 +69,24 @@ public class ShoppingItemRepository {
     public boolean exists(UUID shoppingItemId) {
         // Сделано через count для оптимизации
         return dsl.fetchCount(
-                dsl.selectFrom(ShoppingItems.SHOPPING_ITEMS)
-                        .where(ShoppingItems.SHOPPING_ITEMS.SHOPPING_ITEM_ID.eq(shoppingItemId))
-        ) > 0;
+                        dsl.selectFrom(ShoppingItems.SHOPPING_ITEMS)
+                                .where(
+                                        ShoppingItems.SHOPPING_ITEMS.SHOPPING_ITEM_ID.eq(
+                                                shoppingItemId)))
+                > 0;
+    }
+
+    public void resetAllStatusByListId(UUID shoppingListId) {
+        dsl.update(ShoppingItems.SHOPPING_ITEMS)
+                .set(ShoppingItems.SHOPPING_ITEMS.IS_PURCHASED, false)
+                .where(ShoppingItems.SHOPPING_ITEMS.SHOPPING_LIST_ID.eq(shoppingListId))
+                .execute();
+    }
+
+    public void resetAllStatusByListIds(List<UUID> shoppingListIds) {
+        dsl.update(ShoppingItems.SHOPPING_ITEMS)
+                .set(ShoppingItems.SHOPPING_ITEMS.IS_PURCHASED, false)
+                .where(ShoppingItems.SHOPPING_ITEMS.SHOPPING_LIST_ID.in(shoppingListIds))
+                .execute();
     }
 }

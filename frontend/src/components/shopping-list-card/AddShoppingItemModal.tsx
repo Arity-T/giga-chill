@@ -1,19 +1,18 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Modal, Form, Input, InputNumber, Button, App, Select } from 'antd';
-import { useUpdateShoppingItemMutation } from '@/store/api/api';
-import type { ShoppingItemRequest, ShoppingItem } from '@/types/api';
+import { useAddShoppingItemMutation } from '@/store/api';
+import type { ShoppingItemRequest } from '@/types/api';
 
-interface EditShoppingItemModalProps {
+interface AddShoppingItemModalProps {
     open: boolean;
     onCancel: () => void;
     eventId: string;
     shoppingListId: string;
-    item: ShoppingItem | null;
 }
 
-interface EditShoppingItemFormData {
+interface AddShoppingItemFormData {
     title: string;
     quantity: number;
     unit: string;
@@ -27,37 +26,18 @@ const popularUnits = [
     { value: 'мл', label: 'мл' },
 ];
 
-export default function EditShoppingItemModal({
+export default function AddShoppingItemModal({
     open,
     onCancel,
     eventId,
-    shoppingListId,
-    item
-}: EditShoppingItemModalProps) {
-    const [form] = Form.useForm<EditShoppingItemFormData>();
-    const [updateShoppingItem, { isLoading }] = useUpdateShoppingItemMutation();
+    shoppingListId
+}: AddShoppingItemModalProps) {
+    const [form] = Form.useForm<AddShoppingItemFormData>();
+    const [addShoppingItem, { isLoading }] = useAddShoppingItemMutation();
     const { message } = App.useApp();
     const [units, setUnits] = React.useState(popularUnits);
 
-    // Заполняем форму данными товара при открытии модального окна
-    useEffect(() => {
-        if (open && item) {
-            form.setFieldsValue({
-                title: item.title,
-                quantity: item.quantity,
-                unit: item.unit
-            });
-
-            // Добавляем единицу товара в список, если её там нет
-            if (!popularUnits.some(unit => unit.value === item.unit)) {
-                setUnits([...popularUnits, { value: item.unit, label: item.unit }]);
-            }
-        }
-    }, [open, item, form]);
-
-    const handleSubmit = async (values: EditShoppingItemFormData) => {
-        if (!item) return;
-
+    const handleSubmit = async (values: AddShoppingItemFormData) => {
         try {
             const shoppingItemData: ShoppingItemRequest = {
                 title: values.title,
@@ -65,17 +45,17 @@ export default function EditShoppingItemModal({
                 unit: values.unit,
             };
 
-            await updateShoppingItem({
+            await addShoppingItem({
                 eventId,
                 shoppingListId,
-                shoppingItemId: item.shopping_item_id,
                 shoppingItem: shoppingItemData
             }).unwrap();
 
-            message.success('Товар успешно обновлен!');
+            message.success('Товар успешно добавлен!');
+            form.resetFields();
             onCancel();
         } catch (error) {
-            message.error('Ошибка при обновлении товара');
+            message.error('Ошибка при добавлении товара');
         }
     };
 
@@ -87,7 +67,7 @@ export default function EditShoppingItemModal({
 
     return (
         <Modal
-            title="Редактировать товар"
+            title="Добавить покупку"
             open={open}
             onCancel={handleCancel}
             footer={null}
@@ -98,6 +78,7 @@ export default function EditShoppingItemModal({
                 layout="vertical"
                 onFinish={handleSubmit}
                 requiredMark={false}
+                initialValues={{ quantity: 1, unit: 'шт' }}
             >
                 <Form.Item
                     name="title"
@@ -165,7 +146,7 @@ export default function EditShoppingItemModal({
                         Отмена
                     </Button>
                     <Button type="primary" htmlType="submit" loading={isLoading}>
-                        Сохранить
+                        Добавить
                     </Button>
                 </Form.Item>
             </Form>

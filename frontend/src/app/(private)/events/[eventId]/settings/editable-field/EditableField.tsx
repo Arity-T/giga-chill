@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Button, Typography } from 'antd';
-import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { Typography } from 'antd';
+import InlineEditControls from '@/components/inline-edit-controls';
 import styles from './EditableField.module.css';
 
 const { Text } = Typography;
@@ -33,20 +33,12 @@ export default function EditableField({
                 <div className={styles.inputContent}>
                     {children}
                 </div>
-                <div className={`${styles.buttonContainer} ${hasChanges ? styles.visible : styles.hidden}`}>
-                    <Button
-                        type="text"
-                        icon={<CheckOutlined />}
-                        onClick={onSave}
-                        loading={isLoading}
-                        size="small"
-                    />
-                    <Button
-                        type="text"
-                        icon={<CloseOutlined />}
-                        onClick={onReset}
-                        disabled={isLoading}
-                        size="small"
+                <div className={styles.buttonContainer}>
+                    <InlineEditControls
+                        hasChanges={hasChanges}
+                        isLoading={isLoading}
+                        onSave={onSave}
+                        onReset={onReset}
                     />
                 </div>
             </div>

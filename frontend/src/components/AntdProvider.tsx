@@ -17,7 +17,12 @@ dayjs.locale('ru');
 const AntdProvider: FC<PropsWithChildren> = ({ children }) => (
   <StyleProvider layer>
     <ConfigProvider
-      theme={{ cssVar: true, hashed: false }}
+      theme={{
+        cssVar: true, hashed: false,
+        token: {
+          colorBorderSecondary: '#E5E5E5',
+        }
+      }}
       locale={locale}
     >
       <App>{children}</App>

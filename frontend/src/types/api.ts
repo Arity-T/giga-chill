@@ -73,6 +73,7 @@ export interface ShoppingListWithItems {
   title: string;
   description: string;
   status: ShoppingListStatus;
+  budget: number;
   can_edit: boolean;
   shopping_items: ShoppingItem[];
   consumers: UserInEvent[];
@@ -100,4 +101,65 @@ export interface ShoppingItemRequest {
 
 export interface ShoppingItemPurchasedStateRequest {
   is_purchased: boolean;
+}
+
+export interface TaskRequest {
+  title: string;
+  description: string;
+  deadline_datetime: string;
+  executor_id: string | null;
+  shopping_lists_ids: string[];
+}
+
+export interface TaskPatchRequest {
+  title?: string;
+  description?: string;
+  deadline_datetime?: string;
+}
+
+export interface TaskExecutorId {
+  executor_id: string | null;
+}
+
+export enum TaskStatus {
+  OPEN = 'open',
+  IN_PROGRESS = 'in_progress',
+  UNDER_REVIEW = 'under_review',
+  COMPLETED = 'completed',
+}
+
+export interface TaskPermissions {
+  can_edit: boolean;
+  can_take_in_work: boolean;
+  can_review: boolean;
+}
+
+export interface Task {
+  task_id: string;
+  title: string;
+  description: string;
+  status: TaskStatus;
+  deadline_datetime: string;
+  executor_comment: string;
+  reviewer_comment: string;
+  permissions: TaskPermissions;
+  author: User;
+  executor: User | null;
+}
+
+export interface TaskWithShoppingLists extends Task {
+  shopping_lists: ShoppingListWithItems[];
+}
+
+export interface InvitationToken {
+  invitation_token: string;
+}
+
+export interface TaskSendForReviewRequest {
+  executor_comment: string;
+}
+
+export interface TaskReviewRequest {
+  reviewer_comment: string;
+  is_approved: boolean;
 }

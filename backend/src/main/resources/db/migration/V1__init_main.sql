@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS events (
   start_datetime TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   end_datetime TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   budget NUMERIC(12, 2) DEFAULT NULL,
+  invite_token UUID DEFAULT gen_random_uuid(),
   is_deleted BOOLEAN DEFAULT FALSE
 );
 
@@ -54,26 +55,19 @@ CREATE TABLE IF NOT EXISTS tasks (
   title VARCHAR(50) NOT NULL,
   description VARCHAR(500) DEFAULT NULL,
   status task_status NOT NULL DEFAULT 'open',
-  deadline_datetime TIMESTAMP WITH TIME ZONE NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS task_approvals (
-  task_approval_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  task_id UUID NOT NULL REFERENCES tasks(task_id) ON DELETE CASCADE, 
+  deadline_datetime TIMESTAMP WITH TIME ZONE NOT NULL,
   executor_comment VARCHAR(500) DEFAULT NULL,
   reviewer_comment VARCHAR(500) DEFAULT NULL
 );
 
--- Отдельно добавляем цикличную связь 1-к-1
-ALTER TABLE tasks
-ADD COLUMN IF NOT EXISTS actual_approval_id UUID DEFAULT NULL REFERENCES task_approvals(task_approval_id);
-
 CREATE TABLE IF NOT EXISTS shopping_lists (
   shopping_list_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  task_id UUID DEFAULT NULL REFERENCES tasks(task_id),
+  task_id UUID DEFAULT NULL REFERENCES tasks(task_id) ON DELETE SET NULL,
   event_id UUID NOT NULL REFERENCES events(event_id),
   title VARCHAR(50) NOT NULL,
-  description VARCHAR(500) DEFAULT NULL
+  description VARCHAR(500) DEFAULT NULL,
+  file_link TEXT DEFAULT NULL,
+  budget NUMERIC(12, 2) DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS shopping_items (
@@ -89,12 +83,4 @@ CREATE TABLE IF NOT EXISTS consumer_in_list (
   user_id UUID NOT NULL REFERENCES users(user_id),
   shopping_list_id UUID NOT NULL REFERENCES shopping_lists(shopping_list_id) ON DELETE CASCADE,
   PRIMARY KEY (user_id, shopping_list_id)
-);
-
-CREATE TABLE IF NOT EXISTS shopping_list_approvals (
-  shopping_list_approval_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  task_approval_id UUID NOT NULL REFERENCES task_approvals(task_approval_id) ON DELETE CASCADE,
-  shopping_list_id UUID NOT NULL REFERENCES shopping_lists(shopping_list_id) ON DELETE CASCADE,
-  budget NUMERIC(12, 2) NOT NULL,
-  file_link TEXT NOT NULL
 );

@@ -1,10 +1,9 @@
 package com.github.giga_chill.gigachill.model;
 
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -14,11 +13,9 @@ public class User {
     private String login;
     private String name;
 
-    public User(String login, String name){
+    public User(String login, String name) {
         this.id = UUID.randomUUID();
         this.login = login;
         this.name = name;
     }
-
-
 }
