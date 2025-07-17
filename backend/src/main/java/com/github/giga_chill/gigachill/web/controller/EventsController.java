@@ -305,7 +305,7 @@ public class EventsController {
             throw new ForbiddenException(
                     "User with id "
                             + user.getId()
-                            + " does not have permission to view summary balance in event with id: {} "
+                            + " does not have permission to view summary balance in event with id "
                             + eventId);
         }
 

@@ -72,8 +72,8 @@ public class TasksController {
                 requestTaskInfo.executorId() != null
                         ? UuidUtils.safeUUID(requestTaskInfo.executorId())
                         : null;
-        if (eventService.isFinalized(eventId)) {
-            throw new ConflictException("Event with id " + eventId + " was finalized");
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
