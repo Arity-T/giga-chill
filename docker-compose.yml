@@ -1,0 +1,73 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: gigachill-db
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "${DB_HOST_PORT}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gigachill-network
+
+  builder:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.builder
+    image: gigachill-builder
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    command: ["./build.sh"]
+    networks:
+      - gigachill-network
+    volumes:
+      - backend-build:/app/build
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.backend
+    depends_on:
+      builder:
+        condition: service_completed_successfully
+    env_file:
+      - .env
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    networks:
+      - gigachill-network
+    volumes:
+      - backend-build:/app/build
+
+  frontend:
+    build:
+      context: ./frontend
+    env_file:
+      - frontend/.env
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    environment:
+      - NODE_ENV=production
+      - PORT=${FRONTEND_PORT}
+    depends_on:
+      - backend
+
+volumes:
+  postgres-data:
+  backend-build:
+
+networks:
+  gigachill-network:
+    driver: bridge 
