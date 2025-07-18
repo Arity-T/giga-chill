@@ -20,6 +20,7 @@ tags:
   - name: Shopping List Items
   - name: Shopping List Consumers
   - name: Tasks
+  - name: Debts
 
 paths:
   /auth/login:
@@ -841,6 +842,65 @@ paths:
         "403":
           $ref: "#/components/responses/ForbiddenError"
 
+  /events/{eventId}/finalize:
+    post:
+      summary: Завершить мероприятие и провести расчёты долгов участников
+      tags: [Debts]
+      operationId: finalizeEvent
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /events/{eventId}/my-balance:
+    get:
+      summary: Получить баланс пользователя в мероприятии
+      tags: [Debts]
+      operationId: getMyBalance
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserBalance"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /events/{eventId}/balance-summary:
+    get:
+      summary: Получить сводку по балансу мероприятия
+      tags: [Debts]
+      operationId: getEventBalanceSummary
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventBalanceSummary"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
 components:
   responses:
     InvalidDataError:
@@ -1052,6 +1112,11 @@ components:
           type: number
           description: Бюджет мероприятия
           example: 10000
+        is_finalized:
+          readOnly: true
+          type: boolean
+          description: Флаг, который показывает завершено ли мероприятие или нет.
+          example: false
 
     InvitationToken:
       type: object
@@ -1309,3 +1374,39 @@ components:
         is_approved:
           type: boolean
           description: Признак того, что задача одобрена
+
+    UserBalance:
+      type: object
+      properties:
+        my_debts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Debt"
+        debts_to_me:
+          type: array
+          items:
+            $ref: "#/components/schemas/Debt"
+
+    Debt:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        amount:
+          type: number
+          description: Сумма долга
+          example: 1000
+
+    EventBalanceSummary:
+      type: array
+      items:
+        type: object
+        properties:
+          user:
+            $ref: "#/components/schemas/User"
+          total_balance:
+            type: number
+            description: Сумма долгов пользователя в мероприятии (может быть отрицательной)
+            example: 200
+          user_balance:
+            $ref: "#/components/schemas/UserBalance"

@@ -36,7 +36,9 @@ CREATE TABLE IF NOT EXISTS events (
   end_datetime TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   budget NUMERIC(12, 2) DEFAULT NULL,
   invite_token UUID DEFAULT gen_random_uuid(),
-  is_deleted BOOLEAN DEFAULT FALSE
+  is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  is_finalized BOOLEAN NOT NULL DEFAULT FALSE,
+  finalized_at TIMESTAMP WITH TIME ZONE DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS user_in_event (
@@ -84,3 +86,16 @@ CREATE TABLE IF NOT EXISTS consumer_in_list (
   shopping_list_id UUID NOT NULL REFERENCES shopping_lists(shopping_list_id) ON DELETE CASCADE,
   PRIMARY KEY (user_id, shopping_list_id)
 );
+
+CREATE MATERIALIZED VIEW debts_per_event AS
+SELECT
+  sl.event_id,
+  c.user_id AS debtor_id,
+  t.executor_id AS creditor_id,
+  ROUND(sl.budget / COUNT(*) OVER (PARTITION BY sl.shopping_list_id), 2) AS amount
+FROM shopping_lists sl
+JOIN tasks t ON sl.task_id = t.task_id
+JOIN consumer_in_list c ON c.shopping_list_id = sl.shopping_list_id
+WHERE sl.budget IS NOT NULL
+  AND t.executor_id IS NOT NULL
+  AND t.status = 'completed';
