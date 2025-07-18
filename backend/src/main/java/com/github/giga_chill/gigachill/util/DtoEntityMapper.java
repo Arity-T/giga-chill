@@ -2,7 +2,10 @@ package com.github.giga_chill.gigachill.util;
 
 import com.github.giga_chill.gigachill.data.transfer.object.*;
 import com.github.giga_chill.gigachill.model.*;
+import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class DtoEntityMapper {
 
@@ -22,7 +25,8 @@ public final class DtoEntityMapper {
                 eventDTO.startDatetime(),
                 eventDTO.endDatetime(),
                 eventDTO.description(),
-                eventDTO.budget());
+                eventDTO.budget() != null ? eventDTO.budget().setScale(2, RoundingMode.UP) : null,
+                eventDTO.isFinalized());
     }
 
     public static EventDTO toEventDto(Event event) {
@@ -33,7 +37,8 @@ public final class DtoEntityMapper {
                 event.getStartDatetime(),
                 event.getEndDatetime(),
                 event.getDescription(),
-                event.getBudget());
+                event.getBudget(),
+                event.getIsFinalized());
     }
 
     public static Participant toParticipantEntity(ParticipantDTO participantDTO) {
@@ -162,5 +167,45 @@ public final class DtoEntityMapper {
                 DtoEntityMapper.toUserDto(task.getAuthor()),
                 task.getExecutor() != null ? DtoEntityMapper.toUserDto(task.getExecutor()) : null,
                 task.getShoppingLists().stream().map(DtoEntityMapper::toShoppingListDto).toList());
+    }
+
+    public static ParticipantBalance toParticipantBalanceEntity(
+            ParticipantBalanceDTO participantBalanceDTO) {
+        return new ParticipantBalance(
+                participantBalanceDTO.myDebts().stream()
+                        .map(
+                                item ->
+                                        item.entrySet().stream()
+                                                .collect(
+                                                        Collectors.toMap(
+                                                                key ->
+                                                                        DtoEntityMapper
+                                                                                .toUserEntity(
+                                                                                        key
+                                                                                                .getKey()),
+                                                                Map.Entry::getValue)))
+                        .collect(Collectors.toList()),
+                participantBalanceDTO.debtsToMe().stream()
+                        .map(
+                                item ->
+                                        item.entrySet().stream()
+                                                .collect(
+                                                        Collectors.toMap(
+                                                                key ->
+                                                                        DtoEntityMapper
+                                                                                .toUserEntity(
+                                                                                        key
+                                                                                                .getKey()),
+                                                                Map.Entry::getValue)))
+                        .collect(Collectors.toList()));
+    }
+
+    public static ParticipantSummaryBalance toParticipantSummaryBalance(
+            ParticipantSummaryBalanceDTO participantSummaryBalanceDTO) {
+        return new ParticipantSummaryBalance(
+                DtoEntityMapper.toUserEntity(participantSummaryBalanceDTO.user()),
+                participantSummaryBalanceDTO.totalBalance(),
+                DtoEntityMapper.toParticipantBalanceEntity(
+                        participantSummaryBalanceDTO.userBalance()));
     }
 }

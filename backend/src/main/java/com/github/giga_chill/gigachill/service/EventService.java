@@ -43,7 +43,8 @@ public class EventService {
                         requestEventInfo.startDatetime(),
                         requestEventInfo.endDatetime(),
                         requestEventInfo.description(),
-                        BigDecimal.valueOf(0));
+                        null,
+                        null);
         eventDAO.updateEvent(eventId, event);
     }
 
@@ -56,7 +57,8 @@ public class EventService {
                         requestEventInfo.startDatetime(),
                         requestEventInfo.endDatetime(),
                         requestEventInfo.description(),
-                        BigDecimal.valueOf(0));
+                        BigDecimal.valueOf(0),
+                        null);
 
         eventDAO.createEvent(userId, DtoEntityMapper.toEventDto(event));
         return event.getEventId().toString();
@@ -86,5 +88,14 @@ public class EventService {
 
     public void joinByLink(UUID eventId, User user) {
         participantsService.addParticipantToEvent(eventId, user);
+    }
+
+    public void finalizeEvent(UUID eventId) {
+        eventDAO.calculationEventBudget(eventId);
+        eventDAO.finalizeEvent(eventId);
+    }
+
+    public boolean isFinalized(UUID eventId) {
+        return eventDAO.isFinalized(eventId);
     }
 }

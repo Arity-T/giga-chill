@@ -11,4 +11,5 @@ public record EventDTO(
         @Nullable String startDatetime,
         @Nullable String endDatetime,
         @Nullable String description,
-        @Nullable BigDecimal budget) {}
+        @Nullable BigDecimal budget,
+        @Nullable Boolean isFinalized) {}

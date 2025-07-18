@@ -75,6 +75,16 @@ public class EventServiceLoggerAspect {
                     + "&& args(eventId)")
     public void getEndDatetime(UUID eventId) {}
 
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.EventService.finalizeEvent(..)) "
+                    + "&& args(eventId)")
+    public void finalizeEvent(UUID eventId) {}
+
+    @Pointcut(
+            "execution(public * com.github.giga_chill.gigachill.service.EventService.isFinalized(..)) "
+                    + "&& args(eventId)")
+    public void isFinalized(UUID eventId) {}
+
     @Around("createEvent(userId, requestEventInfo)")
     public Object logCreateEvent(
             ProceedingJoinPoint proceedingJoinPoint, UUID userId, RequestEventInfo requestEventInfo)
@@ -261,7 +271,7 @@ public class EventServiceLoggerAspect {
             LOGGER.info(
                     loggerColorConfig.getPOST_COLOR()
                             + loggerColorConfig.getPOST_LABEL()
-                            + "The user with id: {} joined event with id: {} via a link"
+                            + "User with id: {} joined event with id: {} via a link"
                             + loggerColorConfig.getRESET_COLOR(),
                     user.getId(),
                     eventId);
@@ -283,6 +293,49 @@ public class EventServiceLoggerAspect {
                             + loggerColorConfig.getRESET_COLOR(),
                     eventId,
                     (String) result);
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("finalizeEvent(eventId)")
+    public Object logFinalizeEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
+            throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            LOGGER.info(
+                    loggerColorConfig.getPOST_COLOR()
+                            + loggerColorConfig.getPOST_LABEL()
+                            + "Event with id: {} was finalized"
+                            + loggerColorConfig.getRESET_COLOR(),
+                    eventId);
+            return result;
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    @Around("isFinalized(eventId)")
+    public Object logIsFinalized(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
+            throws Throwable {
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            if ((Boolean) result) {
+                LOGGER.info(
+                        loggerColorConfig.getGET_COLOR()
+                                + loggerColorConfig.getGET_LABEL()
+                                + "Event with id: {} has status finalized"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        eventId);
+            } else {
+                LOGGER.info(
+                        loggerColorConfig.getGET_COLOR()
+                                + loggerColorConfig.getGET_LABEL()
+                                + "Event with id: {} has status not finalized"
+                                + loggerColorConfig.getRESET_COLOR(),
+                        eventId);
+            }
             return result;
         } catch (Throwable ex) {
             throw ex;

@@ -59,10 +59,10 @@ public class TaskRepository {
                     Tasks.TASKS.DEADLINE_DATETIME, OffsetDateTime.parse(dto.deadlineDatetime()));
         }
         if (dto.executorComment() != null) {
-            updates.put(Tasks.TASKS.EXECUTOR_COMMENT, OffsetDateTime.parse(dto.executorComment()));
+            updates.put(Tasks.TASKS.EXECUTOR_COMMENT, dto.executorComment());
         }
         if (dto.reviewerComment() != null) {
-            updates.put(Tasks.TASKS.REVIEWER_COMMENT, OffsetDateTime.parse(dto.reviewerComment()));
+            updates.put(Tasks.TASKS.REVIEWER_COMMENT, dto.reviewerComment());
         }
 
         if (!updates.isEmpty()) {
