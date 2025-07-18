@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# Подразумевается, что скрипт используется в Docker контейнере с нужной версией gradle
 # === Проверка переменной окружения KEEP_DATABASE ===
 if [ -z "$KEEP_DATABASE" ]; then
     echo "Переменная окружения KEEP_DATABASE не установлена. Используйте KEEP_DATABASE=true или KEEP_DATABASE=false в .env файле."
@@ -32,7 +32,7 @@ echo "Все миграции применены успешно!"
 
 # === Генерация Jooq ===
 echo "=== Генерация классов Jooq ==="
-./gradlew generateJooq
+gradle generateJooq --no-daemon
 if [ $? -ne 0 ]; then
     echo "Ошибка при генерации Jooq"
     exit 1
@@ -41,7 +41,7 @@ echo "Классы Jooq сгенерированы успешно!"
 
 # === Сборка приложения ===
 echo "=== Сборка приложения ==="
-./gradlew bootJar
+gradle bootJar --no-daemon
 if [ $? -ne 0 ]; then
     echo "Ошибка при сборке приложения"
     exit 1
