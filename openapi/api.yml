@@ -204,6 +204,8 @@ paths:
       description: Токен генерирует пользователь со статусом **owner**.
       tags: [Invite Links]
       operationId: createEventInvitationToken
+      parameters:
+        - $ref: "#/components/parameters/eventId"
       responses:
         "204":
           description: No Content
@@ -221,6 +223,8 @@ paths:
         Если токен ещё не был сгенерирован, то в поле token возвращается null.
       tags: [Invite Links]
       operationId: getEventInvitationToken
+      parameters:
+        - $ref: "#/components/parameters/eventId"
       responses:
         "200":
           description: OK
@@ -241,6 +245,8 @@ paths:
       description: Пользователь становится участником мероприятия.
       tags: [Invite Links]
       operationId: joinByInvitationToken
+      parameters:
+        - $ref: "#/components/parameters/eventId"
       requestBody:
         required: true
         content:
