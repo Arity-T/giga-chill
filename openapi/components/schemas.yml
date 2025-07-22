@@ -73,17 +73,17 @@ User:
     - $ref: "#/UserName"
     - $ref: "#/UserId"
 
-RoleEnum:
+UserRole:
   type: string
   enum: [owner, admin, participant]
   description: Роль пользователя в мероприятии
   example: owner
 
-UserRole:
+UserRoleResponse:
   type: object
   properties:
     role:
-      $ref: "#/RoleEnum"
+      $ref: "#/UserRole"
 
 UserInEvent:
   allOf:
@@ -91,7 +91,7 @@ UserInEvent:
     - type: object
       properties:
         user_role:
-          $ref: "#/RoleEnum"
+          $ref: "#/UserRole"
         balance:
           type: number
           description: Баланс пользователя в мероприятии (сумма долгов)
@@ -104,45 +104,74 @@ UsersInEvent:
 
 Event:
   type: object
+  required:
+    - event_id
+    - user_role
+    - title
+    - location
+    - start_datetime
+    - end_datetime
+    - description
+    - budget
+    - is_finalized
   properties:
     event_id:
-      $ref: "#/ReadOnlyUUID"
+      $ref: "#/UUID"
     user_role:
-      readOnly: true
       allOf:
-        - $ref: "#/RoleEnum"
+        - $ref: "#/UserRole"
     title:
-      type: string
-      description: Название мероприятия
-      example: "Встреча с друзьями"
+      $ref: "./properties/Event.yml#/title"
     location:
-      type: string
-      description: Место мероприятия
-      example: Политехническая улица, 29 лит П
+      $ref: "./properties/Event.yml#/location"
     start_datetime:
-      type: string
-      format: date-time
-      description: Дата и время начала мероприятия
-      example: "2025-01-01T10:00:00Z"
+      $ref: "./properties/Event.yml#/start_datetime"
     end_datetime:
-      type: string
-      format: date-time
-      description: Дата и время окончания мероприятия
-      example: "2025-01-01T12:00:00Z"
+      $ref: "./properties/Event.yml#/end_datetime"
     description:
-      type: string
-      description: Описание мероприятия
-      example: "Встреча с друзьями в кафе"
+      $ref: "./properties/Event.yml#/description"
     budget:
-      readOnly: true
-      type: number
-      description: Бюджет мероприятия
-      example: 10000
+      $ref: "./properties/Event.yml#/budget"
     is_finalized:
-      readOnly: true
-      type: boolean
-      description: Флаг, который показывает завершено ли мероприятие или нет.
-      example: false
+      $ref: "./properties/Event.yml#/is_finalized"
+
+Events:
+  type: array
+  items:
+    $ref: "#/Event"
+
+EventCreate:
+  type: object
+  required:
+    - title
+    - location
+    - start_datetime
+    - end_datetime
+  properties:
+    title:
+      $ref: "./properties/Event.yml#/title"
+    location:
+      $ref: "./properties/Event.yml#/location"
+    start_datetime:
+      $ref: "./properties/Event.yml#/start_datetime"
+    end_datetime:
+      $ref: "./properties/Event.yml#/end_datetime"
+    description:
+      $ref: "./properties/Event.yml#/description"
+
+EventUpdate:
+  type: object
+  properties:
+    title:
+      $ref: "./properties/Event.yml#/title"
+    location:
+      $ref: "./properties/Event.yml#/location"
+    start_datetime:
+      $ref: "./properties/Event.yml#/start_datetime"
+    end_datetime:
+      $ref: "./properties/Event.yml#/end_datetime"
+    description:
+      $ref: "./properties/Event.yml#/description"
 
 InvitationToken:
   type: object
@@ -151,11 +180,6 @@ InvitationToken:
       type: string
       description: Токен-приглашение
       example: "0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c"
-
-Events:
-  type: array
-  items:
-    $ref: "#/Event"
 
 ShoppingItem:
   type: object

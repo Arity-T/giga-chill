@@ -124,7 +124,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Event"
+              $ref: "#/components/schemas/EventCreate"
       responses:
         "204":
           description: No Content
@@ -168,7 +168,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Event"
+              $ref: "#/components/schemas/EventUpdate"
       responses:
         "204":
           description: No Content
@@ -356,7 +356,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserRole"
+              $ref: "#/components/schemas/UserRoleResponse"
       responses:
         "204":
           description: No Content
