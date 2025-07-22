@@ -18,7 +18,7 @@ const config: ConfigFile = {
         'getMe',
 
         'getEvents',
-        // 'createEvent',
+        'createEvent',
         // 'getEvent',
         // 'updateEvent',
         // 'deleteEvent',
