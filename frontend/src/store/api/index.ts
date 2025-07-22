@@ -13,5 +13,5 @@ export * from './tasks.api'
 export * from './invitation-tokens.api'
 export * from './debts.api'
 
-// Export the main API instance
+// Экспорт api нужен только для подключения в store.ts
 export { api } from './api' 
