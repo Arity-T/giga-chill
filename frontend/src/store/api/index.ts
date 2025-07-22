@@ -5,7 +5,7 @@ export * from './codegenApi'
 
 // И только потом импортируем остальные файлы, 
 // так как в них сгенерированные эндпоинты изменяются (enhanceEndpoints)
-import './auth.api'
+import './me.api'
 export * from './events.api'
 export * from './participants.api'
 export * from './shopping.api'
