@@ -998,15 +998,16 @@ components:
 
     ErrorResponse:
       type: object
+      required: [message]
       properties:
         message:
           type: string
           description: Сообщение об ошибке
           example: "Something went wrong"
-      required: [message]
 
     UserLogin:
       type: object
+      required: [login]
       properties:
         login:
           type: string
@@ -1015,6 +1016,7 @@ components:
 
     UserPassword:
       type: object
+      required: [password]
       properties:
         password:
           type: string
@@ -1023,6 +1025,7 @@ components:
 
     UserName:
       type: object
+      required: [name]
       properties:
         name:
           type: string
@@ -1042,6 +1045,7 @@ components:
 
     UserId:
       type: object
+      required: [id]
       properties:
         id:
           $ref: "#/components/schemas/UUID"
