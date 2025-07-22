@@ -42,13 +42,6 @@ LoginRequest:
     password:
       $ref: "./properties/User.yml#/password"
 
-AddParticipant:
-  type: object
-  required: [login]
-  properties:
-    login:
-      $ref: "./properties/User.yml#/login"
-
 User:
   type: object
   required: [login, name, id]
@@ -59,36 +52,6 @@ User:
       $ref: "./properties/User.yml#/login"
     name:
       $ref: "./properties/User.yml#/name"
-
-UserRoleSet:
-  type: object
-  required: [user_role]
-  properties:
-    user_role:
-      $ref: "./properties/User.yml#/user_role"
-
-UserRoleResponse:
-  type: object
-  properties:
-    role:
-      $ref: "./properties/User.yml#/user_role"
-
-UserInEvent:
-  allOf:
-    - $ref: "#/User"
-    - type: object
-      properties:
-        user_role:
-          $ref: "./properties/User.yml#/user_role"
-        balance:
-          type: number
-          description: Баланс пользователя в мероприятии (сумма долгов)
-          example: 200
-
-UsersInEvent:
-  type: array
-  items:
-    $ref: "#/UserInEvent"
 
 Event:
   type: object
@@ -168,6 +131,47 @@ InvitationToken:
       type: string
       description: Токен-приглашение
       example: "0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c"
+
+Participant:
+  type: object
+  required:
+    - id
+    - login
+    - name
+    - user_role
+    - balance
+  properties:
+    id:
+      $ref: "#/UUID"
+    login:
+      $ref: "./properties/User.yml#/login"
+    name:
+      $ref: "./properties/User.yml#/name"
+    user_role:
+      $ref: "./properties/User.yml#/user_role"
+    balance:
+      type: number
+      description: Баланс пользователя в мероприятии (сумма долгов)
+      example: 200
+
+Participants:
+  type: array
+  items:
+    $ref: "#/Participant"
+
+ParticipantCreate:
+  type: object
+  required: [login]
+  properties:
+    login:
+      $ref: "./properties/User.yml#/login"
+
+ParticipantSetRole:
+  type: object
+  required: [user_role]
+  properties:
+    user_role:
+      $ref: "./properties/User.yml#/user_role"
 
 ShoppingItem:
   type: object
@@ -266,7 +270,7 @@ ShoppingListWithItems:
       readOnly: true
       type: array
       items:
-        $ref: "#/UserInEvent"
+        $ref: "#/Participant"
 
 ShoppingListsWithItems:
   type: array

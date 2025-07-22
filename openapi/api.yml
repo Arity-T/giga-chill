@@ -286,7 +286,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UsersInEvent"
+                $ref: "#/components/schemas/Participants"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
@@ -306,7 +306,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AddParticipant"
+              $ref: "#/components/schemas/ParticipantCreate"
       responses:
         "204":
           description: No Content
@@ -356,7 +356,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserRoleSet"
+              $ref: "#/components/schemas/ParticipantSetRole"
       responses:
         "204":
           description: No Content
