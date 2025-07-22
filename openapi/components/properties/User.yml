@@ -12,9 +12,3 @@ name:
   type: string
   description: Имя пользователя
   example: Иван Иванов
-
-user_role:
-  type: string
-  enum: [owner, admin, participant]
-  description: Роль пользователя в мероприятии
-  example: owner

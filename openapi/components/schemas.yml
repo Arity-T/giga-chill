@@ -37,6 +37,12 @@ LoginRequest:
     password:
       $ref: "./properties/User.yml#/password"
 
+UserRole:
+  type: string
+  enum: [owner, admin, participant]
+  description: Роль пользователя в мероприятии
+  example: owner
+
 User:
   type: object
   required: [login, name, id]
@@ -64,7 +70,7 @@ Event:
     event_id:
       $ref: "#/UUID"
     user_role:
-      $ref: "./properties/User.yml#/user_role"
+      $ref: "#/UserRole"
     title:
       $ref: "./properties/Event.yml#/title"
     location:
@@ -143,7 +149,7 @@ Participant:
     name:
       $ref: "./properties/User.yml#/name"
     user_role:
-      $ref: "./properties/User.yml#/user_role"
+      $ref: "#/UserRole"
     balance:
       type: number
       description: Баланс пользователя в мероприятии (сумма долгов)
@@ -166,7 +172,7 @@ ParticipantSetRole:
   required: [user_role]
   properties:
     user_role:
-      $ref: "./properties/User.yml#/user_role"
+      $ref: "#/UserRole"
 
 ShoppingItem:
   type: object
