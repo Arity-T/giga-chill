@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { Typography, Alert, Table, Tag, Spin, List, Badge, Divider } from 'antd';
 import { CalculatorOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { EventIdPathParam } from '@/types/path-params';
-import { useGetEventQuery, useGetBalanceSummaryQuery } from '@/store/api';
-import { UserRole, EventBalanceSummary } from '@/types/api';
+import { UserRole, useGetEventQuery, useGetBalanceSummaryQuery } from '@/store/api';
+import { EventBalanceSummary } from '@/types/api';
 import { FinalizeEventButton } from '@/components/finalize-event-button';
 import type { ColumnsType } from 'antd/es/table';
 

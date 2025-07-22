@@ -5,13 +5,14 @@ import { Typography, Alert, Spin, App, Button, Flex } from 'antd';
 import { TeamOutlined, UserAddOutlined } from '@ant-design/icons';
 import { EventIdPathParam } from '@/types/path-params';
 import {
+    UserRole,
     useGetEventQuery,
     useGetMeQuery,
     useGetEventParticipantsQuery,
     useDeleteParticipantMutation,
     useUpdateParticipantRoleMutation
 } from '@/store/api';
-import { UserRole, UserInEvent } from '@/types/api';
+import { UserInEvent } from '@/types/api';
 import ParticipantTable from './ParticipantTable';
 import AddParticipantModal from './AddParticipantModal';
 

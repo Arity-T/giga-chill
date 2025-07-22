@@ -6,7 +6,8 @@ import {
     useGetTasksQuery,
     useGetShoppingListsQuery
 } from '@/store/api';
-import { TaskStatus, ShoppingListStatus, Event } from '@/types/api';
+import { TaskStatus, ShoppingListStatus } from '@/types/api';
+import type { Event } from '@/store/api';
 
 export interface FinalizeEventButtonProps {
     event: Event;

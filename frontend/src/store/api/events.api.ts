@@ -8,9 +8,9 @@ api.enhanceEndpoints({
         createEvent: {
             invalidatesTags: [{ type: 'Events', id: 'LIST' }],
         },
-        // getEvent: {
-        //     providesTags: (_result, _error, eventId: string) => [{ type: 'Events', id: eventId }],
-        // },
+        getEvent: {
+            providesTags: (_result: any, _error: any, eventId: string) => [{ type: 'Events', id: eventId }],
+        },
         // updateEvent: {
         //     invalidatesTags: (_result, _error, { eventId }: { eventId: string }) => [
         //         { type: 'Events', id: eventId },
@@ -31,10 +31,10 @@ import type { Event, CreateEventRequest, UpdateEventRequest } from '@/types/api'
 
 export const eventsApi = api.injectEndpoints({
     endpoints: (builder) => ({
-        getEvent: builder.query<Event, string>({
-            query: (eventId) => `/events/${eventId}`,
-            providesTags: (_result, _error, eventId) => [{ type: 'Events', id: eventId }],
-        }),
+        // getEvent: builder.query<Event, string>({
+        //     query: (eventId) => `/events/${eventId}`,
+        //     providesTags: (_result, _error, eventId) => [{ type: 'Events', id: eventId }],
+        // }),
 
         deleteEvent: builder.mutation<void, string>({
             query: (eventId) => ({
@@ -61,7 +61,7 @@ export const eventsApi = api.injectEndpoints({
 })
 
 export const {
-    useGetEventQuery,
+    // useGetEventQuery,
     useDeleteEventMutation,
     useUpdateEventMutation,
 } = eventsApi 

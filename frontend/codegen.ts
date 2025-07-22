@@ -19,7 +19,7 @@ const config: ConfigFile = {
 
         'getEvents',
         'createEvent',
-        // 'getEvent',
+        'getEvent',
         // 'updateEvent',
         // 'deleteEvent',
     ],

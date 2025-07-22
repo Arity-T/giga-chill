@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { Input, DatePicker, App } from 'antd';
 import { useUpdateEventMutation } from '@/store/api';
-import { Event, UpdateEventRequest } from '@/types/api';
+import { UpdateEventRequest } from '@/types/api';
+import type { Event } from '@/store/api';
 import dayjs, { Dayjs } from 'dayjs';
 import EditableField from './editable-field/EditableField';
 
@@ -33,7 +34,7 @@ export default function EditEventForm({ event }: EditEventFormProps) {
     const [values, setValues] = useState<FormValues>({
         title: event.title,
         location: event.location,
-        description: event.description,
+        description: event.description || '',
         dateRange: [dayjs(event.start_datetime), dayjs(event.end_datetime)],
     });
 
@@ -68,7 +69,7 @@ export default function EditEventForm({ event }: EditEventFormProps) {
         const resetValues: Record<FieldKey, () => void> = {
             title: () => setValues(prev => ({ ...prev, title: event.title })),
             location: () => setValues(prev => ({ ...prev, location: event.location })),
-            description: () => setValues(prev => ({ ...prev, description: event.description })),
+            description: () => setValues(prev => ({ ...prev, description: event.description || '' })),
             dateRange: () => setValues(prev => ({ ...prev, dateRange: [dayjs(event.start_datetime), dayjs(event.end_datetime)] })),
         };
 

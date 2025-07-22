@@ -1,7 +1,8 @@
 import React from 'react';
 import { Button, App } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
-import { UserInEvent, Event } from '@/types/api';
+import { UserInEvent } from '@/types/api';
+import type { Event } from '@/store/api';
 
 interface ParticipantActionsProps {
     participant: UserInEvent;

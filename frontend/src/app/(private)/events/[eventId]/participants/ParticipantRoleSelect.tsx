@@ -1,6 +1,7 @@
 import React from 'react';
 import { Select } from 'antd';
-import { UserRole, UserInEvent } from '@/types/api';
+import { UserInEvent } from '@/types/api';
+import { UserRole } from '@/store/api';
 import UserRoleTag from '@/components/UserRoleTag';
 
 const { Option } = Select;

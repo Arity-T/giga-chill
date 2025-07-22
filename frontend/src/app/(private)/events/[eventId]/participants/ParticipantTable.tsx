@@ -1,7 +1,8 @@
 import React from 'react';
 import { Table, Space, Tag } from 'antd';
-import { UserRole, UserInEvent, Event } from '@/types/api';
-import type { User } from '@/store/api';
+import { UserInEvent } from '@/types/api';
+import { UserRole } from '@/store/api';
+import type { User, Event } from '@/store/api';
 import ParticipantRoleSelect from './ParticipantRoleSelect';
 import ParticipantActions from './ParticipantActions';
 
