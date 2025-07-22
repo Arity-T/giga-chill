@@ -1,5 +1,11 @@
-// Re-export all API hooks from their respective files
-export * from './auth.api'
+// Порядок важен!
+// Сначала экспортируем codegenApi, 
+// так как в нём определяются эндпоинты (injectEndpoints)
+export * from './codegenApi'
+
+// И только потом импортируем остальные файлы, 
+// так как в них сгенерированные эндпоинты изменяются (enhanceEndpoints)
+import './auth.api'
 export * from './events.api'
 export * from './participants.api'
 export * from './shopping.api'

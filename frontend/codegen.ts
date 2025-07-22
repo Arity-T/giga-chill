@@ -2,12 +2,16 @@ import type { ConfigFile } from '@rtk-query/codegen-openapi'
 
 // https://redux-toolkit.js.org/rtk-query/usage/code-generation#openapi
 const config: ConfigFile = {
-    schemaFile: '../openapi/api.yml',
     apiFile: './src/store/api/api.ts',
+    schemaFile: '../openapi/api.yml',
     apiImport: 'api',
+    exportName: "codegenApi",
+    argSuffix: 'Props',
+    responseSuffix: "Response",
     outputFile: './src/store/api/codegenApi.ts',
-    exportName: 'codegenApi',
     hooks: true,
+    filterEndpoints: ['login', 'register', 'logout', 'getMe'],
+    flattenArg: true
 }
 
 export default config
