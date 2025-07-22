@@ -51,9 +51,9 @@ export interface UserInEvent extends User {
 }
 
 export enum UserRole {
-  OWNER = 'owner',
-  ADMIN = 'admin',
-  PARTICIPANT = 'participant',
+  Owner = 'owner',
+  Admin = 'admin',
+  Participant = 'participant',
 }
 
 export interface ShoppingItemPurchasedState {

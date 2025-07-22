@@ -38,7 +38,7 @@ export default function BalanceSummaryPage({ params }: EventIdPathParam) {
         );
     }
 
-    const isOwner = event.user_role === UserRole.OWNER;
+    const isOwner = event.user_role === UserRole.Owner;
 
     // Если мероприятие не завершено
     if (!event.is_finalized) {

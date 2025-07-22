@@ -10,7 +10,19 @@ const config: ConfigFile = {
     responseSuffix: "Response",
     outputFile: './src/store/api/codegenApi.ts',
     hooks: true,
-    filterEndpoints: ['login', 'register', 'logout', 'getMe'],
+    useEnumType: true,
+    filterEndpoints: [
+        'login',
+        'register',
+        'logout',
+        'getMe',
+
+        'getEvents',
+        // 'createEvent',
+        // 'getEvent',
+        // 'updateEvent',
+        // 'deleteEvent',
+    ],
     flattenArg: true
 }
 

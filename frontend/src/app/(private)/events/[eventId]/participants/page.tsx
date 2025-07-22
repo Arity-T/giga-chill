@@ -69,7 +69,7 @@ export default function ParticipantsPage({ params }: EventIdPathParam) {
     };
 
     // Проверяем, может ли пользователь добавлять участников (owner или admin)
-    const canAddParticipants = event?.user_role === UserRole.OWNER || event?.user_role === UserRole.ADMIN;
+    const canAddParticipants = event?.user_role === UserRole.Owner || event?.user_role === UserRole.Admin;
 
     // Показываем спиннер пока загружаются данные или идет обновление/удаление
     const isLoadingOrFetching = eventLoading || userLoading || participantsLoading || participantsFetching || isUpdatingRole || isDeleting;

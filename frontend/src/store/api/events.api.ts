@@ -1,13 +1,36 @@
 import { api } from './api'
+
+api.enhanceEndpoints({
+    endpoints: {
+        getEvents: {
+            providesTags: [{ type: 'Events', id: 'LIST' }],
+        },
+        // createEvent: {
+        //     invalidatesTags: [{ type: 'Events', id: 'LIST' }],
+        // },
+        // getEvent: {
+        //     providesTags: (_result, _error, eventId: string) => [{ type: 'Events', id: eventId }],
+        // },
+        // updateEvent: {
+        //     invalidatesTags: (_result, _error, { eventId }: { eventId: string }) => [
+        //         { type: 'Events', id: eventId },
+        //         { type: 'Events', id: 'LIST' }
+        //     ],
+        // },
+        // deleteEvent: {
+        //     invalidatesTags: (_result, _error, eventId) => [
+        //         { type: 'Events', id: eventId },
+        //         { type: 'Events', id: 'LIST' }
+        //     ],
+        // },
+    },
+})
+
+
 import type { Event, CreateEventRequest, UpdateEventRequest } from '@/types/api'
 
 export const eventsApi = api.injectEndpoints({
     endpoints: (builder) => ({
-        getEvents: builder.query<Event[], void>({
-            query: () => '/events',
-            providesTags: [{ type: 'Events', id: 'LIST' }],
-        }),
-
         createEvent: builder.mutation<void, CreateEventRequest>({
             query: (body) => ({
                 url: '/events',
@@ -47,7 +70,6 @@ export const eventsApi = api.injectEndpoints({
 })
 
 export const {
-    useGetEventsQuery,
     useCreateEventMutation,
     useGetEventQuery,
     useDeleteEventMutation,

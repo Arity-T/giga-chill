@@ -21,8 +21,8 @@ export default function ParticipantTable({
     onDeleteParticipant
 }: ParticipantTableProps) {
     const currentUserRole = event.user_role;
-    const isOwner = currentUserRole === UserRole.OWNER;
-    const isAdmin = currentUserRole === UserRole.ADMIN;
+    const isOwner = currentUserRole === UserRole.Owner;
+    const isAdmin = currentUserRole === UserRole.Admin;
 
     const columns = [
         {
@@ -46,7 +46,7 @@ export default function ParticipantTable({
             key: 'user_role',
             render: (_: unknown, record: UserInEvent) => {
                 const isCurrentUser = record.id === currentUser.id;
-                const canChangeRole = isOwner && record.user_role !== UserRole.OWNER && !isCurrentUser;
+                const canChangeRole = isOwner && record.user_role !== UserRole.Owner && !isCurrentUser;
 
                 return (
                     <ParticipantRoleSelect
@@ -65,8 +65,8 @@ export default function ParticipantTable({
                 const isCurrentUser = record.id === currentUser.id;
                 const canDelete =
                     !isCurrentUser && (
-                        (isOwner && record.user_role !== UserRole.OWNER) ||
-                        (isAdmin && record.user_role === UserRole.PARTICIPANT)
+                        (isOwner && record.user_role !== UserRole.Owner) ||
+                        (isAdmin && record.user_role === UserRole.Participant)
                     );
 
                 return (

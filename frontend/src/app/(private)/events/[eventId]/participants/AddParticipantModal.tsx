@@ -6,7 +6,7 @@ import { UserAddOutlined, LinkOutlined, UserOutlined, CopyOutlined, ReloadOutlin
 import { useAddParticipantMutation, useGetEventInvitationTokenQuery, useCreateEventInvitationTokenMutation } from '@/store/api';
 import { APP_CONFIG } from '@/config/app.config';
 import { PAGES } from '@/config/pages.config';
-import { UserRole } from '@/types/api';
+import { UserRole } from '@/store/api';
 
 export interface AddParticipantModalProps {
     visible: boolean;
@@ -72,7 +72,7 @@ export default function AddParticipantModal({ visible, onCancel, eventId, onSucc
         }
     };
 
-    const isOwner = userRole === UserRole.OWNER;
+    const isOwner = userRole === UserRole.Owner;
 
     const tabItems = [
         {

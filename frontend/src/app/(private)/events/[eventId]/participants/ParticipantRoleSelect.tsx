@@ -48,11 +48,11 @@ export default function ParticipantRoleSelect({
                 }
             }}
         >
-            <Option value={UserRole.ADMIN} style={{ padding: '6px 12px' }}>
-                <UserRoleTag role={UserRole.ADMIN} tooltip="" />
+            <Option value={UserRole.Admin} style={{ padding: '6px 12px' }}>
+                <UserRoleTag role={UserRole.Admin} tooltip="" />
             </Option>
-            <Option value={UserRole.PARTICIPANT} style={{ padding: '6px 12px' }}>
-                <UserRoleTag role={UserRole.PARTICIPANT} tooltip="" />
+            <Option value={UserRole.Participant} style={{ padding: '6px 12px' }}>
+                <UserRoleTag role={UserRole.Participant} tooltip="" />
             </Option>
         </Select>
     );
