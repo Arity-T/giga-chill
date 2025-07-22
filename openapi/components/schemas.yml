@@ -162,6 +162,7 @@ EventUpdate:
 
 InvitationToken:
   type: object
+  required: [invitation_token]
   properties:
     invitation_token:
       type: string

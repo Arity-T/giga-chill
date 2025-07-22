@@ -13,7 +13,7 @@ security:
 tags:
   - name: Me
   - name: Events
-  - name: Invite Links
+  - name: Invitation Tokens
   - name: Participants
   - name: Shopping Lists
   - name: Shopping List Items
@@ -201,7 +201,7 @@ paths:
     post:
       summary: Создать новый токен
       description: Токен генерирует пользователь со статусом **owner**.
-      tags: [Invite Links]
+      tags: [Invitation Tokens]
       operationId: createEventInvitationToken
       parameters:
         - $ref: "#/components/parameters/eventId"
@@ -220,7 +220,7 @@ paths:
       description: Возвращает заранее сгенерированный токен-приглашение.
         Доступно пользователям с ролью **admin** или **owner**.
         Если токен ещё не был сгенерирован, то в поле token возвращается null.
-      tags: [Invite Links]
+      tags: [Invitation Tokens]
       operationId: getEventInvitationToken
       parameters:
         - $ref: "#/components/parameters/eventId"
@@ -242,7 +242,7 @@ paths:
     post:
       summary: Присоединиться к мероприятию по токену
       description: Пользователь становится участником мероприятия.
-      tags: [Invite Links]
+      tags: [Invitation Tokens]
       operationId: joinByInvitationToken
       parameters:
         - $ref: "#/components/parameters/eventId"
