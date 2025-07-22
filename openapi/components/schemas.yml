@@ -175,107 +175,119 @@ ParticipantSetRole:
 
 ShoppingItem:
   type: object
+  required:
+    - shopping_item_id
+    - title
+    - quantity
+    - unit
+    - is_purchased
   properties:
     shopping_item_id:
-      $ref: "#/ReadOnlyUUID"
+      $ref: "#/UUID"
     title:
-      type: string
-      description: Название элемента списка покупок
-      example: "Яблоки"
+      $ref: "./properties/ShoppingItem.yml#/title"
     quantity:
-      type: number
-      description: Количество элемента списка покупок
-      example: 10
+      $ref: "./properties/ShoppingItem.yml#/quantity"
     unit:
-      type: string
-      description: Единицы измерения
-      example: "шт"
+      $ref: "./properties/ShoppingItem.yml#/unit"
     is_purchased:
-      readOnly: true
-      type: boolean
-      description: Признак того, что элемент списка покупок куплен
-      example: false
+      $ref: "./properties/ShoppingItem.yml#/is_purchased"
 
 ShoppingItems:
   type: array
   items:
     $ref: "#/ShoppingItem"
 
-ShoppingItemPurchasedState:
+ShoppingItemCreate:
   type: object
+  required: [title, quantity, unit]
   properties:
-    is_purchased:
-      type: boolean
-      description: Признак того, что элемент списка покупок куплен
-      example: false
+    title:
+      $ref: "./properties/ShoppingItem.yml#/title"
+    quantity:
+      $ref: "./properties/ShoppingItem.yml#/quantity"
+    unit:
+      $ref: "./properties/ShoppingItem.yml#/unit"
 
-CreateShoppingListRequest:
+ShoppingItemUpdate:
   type: object
   properties:
     title:
-      type: string
-      description: Название списка покупок
-      example: "Купить фрукты"
-    description:
-      type: string
-      description: Описание списка покупок
-      example: "Купить фрукты для вечеринки"
+      $ref: "./properties/ShoppingItem.yml#/title"
+    quantity:
+      $ref: "./properties/ShoppingItem.yml#/quantity"
+    unit:
+      $ref: "./properties/ShoppingItem.yml#/unit"
 
-ShoppingListBudget:
+ShoppingItemSetPurchased:
   type: object
+  required: [is_purchased]
   properties:
-    budget:
-      type: number
-      description: Бюджет списка покупок
-      example: 1000
+    is_purchased:
+      $ref: "./properties/ShoppingItem.yml#/is_purchased"
 
 ShoppingListWithItems:
   type: object
+  required:
+    - shopping_list_id
+    - task_id
+    - title
+    - description
+    - status
+    - can_edit
+    - budget
+    - shopping_items
+    - consumers
   properties:
     shopping_list_id:
-      $ref: "#/ReadOnlyUUID"
+      $ref: "#/UUID"
     task_id:
-      $ref: "#/ReadOnlyUUID"
+      $ref: "#/UUID"
     title:
-      type: string
-      description: Название задачи
-      example: "Купить фрукты"
+      $ref: "./properties/ShoppingList.yml#/title"
     description:
-      type: string
-      description: Описание списка покупок
-      example: "Купить фрукты для вечеринки"
+      $ref: "./properties/ShoppingList.yml#/description"
     status:
-      readOnly: true
-      type: string
-      enum:
-        [unassigned, assigned, in_progress, bought, partially_bought, cancelled]
-      description: Статус списка покупок
-      example: unassigned
+      $ref: "./properties/ShoppingList.yml#/status"
     can_edit:
-      readOnly: true
       type: boolean
       description: Может ли пользователь редактировать список покупок
       example: true
     budget:
-      readOnly: true
-      type: number
-      description: Реальная стоимость списка покупок
-      example: 499.99
+      $ref: "./properties/ShoppingList.yml#/budget"
     shopping_items:
-      readOnly: true
-      type: array
-      items:
-        $ref: "#/ShoppingItem"
+      $ref: "#/ShoppingItems"
     consumers:
-      readOnly: true
-      type: array
-      items:
-        $ref: "#/Participant"
+      $ref: "#/Participants"
 
 ShoppingListsWithItems:
   type: array
   items:
     $ref: "#/ShoppingListWithItems"
+
+ShoppingListCreate:
+  type: object
+  required: [title]
+  properties:
+    title:
+      $ref: "./properties/ShoppingList.yml#/title"
+    description:
+      $ref: "./properties/ShoppingList.yml#/description"
+
+ShoppingListUpdate:
+  type: object
+  properties:
+    title:
+      $ref: "./properties/ShoppingList.yml#/title"
+    description:
+      $ref: "./properties/ShoppingList.yml#/description"
+
+ShoppingListSetBudget:
+  type: object
+  required: [budget]
+  properties:
+    budget:
+      $ref: "./properties/ShoppingList.yml#/budget"
 
 TaskExecutorId:
   type: object

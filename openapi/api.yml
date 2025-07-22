@@ -404,7 +404,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateShoppingListRequest"
+              $ref: "#/components/schemas/ShoppingListCreate"
       responses:
         "204":
           description: No Content
@@ -430,7 +430,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ShoppingListWithItems"
+              $ref: "#/components/schemas/ShoppingListUpdate"
       responses:
         "204":
           description: No Content
@@ -473,7 +473,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ShoppingListBudget"
+              $ref: "#/components/schemas/ShoppingListSetBudget"
       responses:
         "204":
           description: No Content
@@ -499,7 +499,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ShoppingItem"
+              $ref: "#/components/schemas/ShoppingItemCreate"
       responses:
         "204":
           description: No Content
@@ -526,7 +526,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ShoppingItem"
+              $ref: "#/components/schemas/ShoppingItemUpdate"
       responses:
         "204":
           description: No Content
@@ -571,7 +571,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ShoppingItemPurchasedState"
+              $ref: "#/components/schemas/ShoppingItemSetPurchased"
       responses:
         "204":
           description: No Content

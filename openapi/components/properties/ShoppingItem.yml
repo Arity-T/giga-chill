@@ -1,0 +1,19 @@
+title:
+  type: string
+  description: Название элемента списка покупок
+  example: "Яблоки"
+
+quantity:
+  type: number
+  description: Количество элемента списка покупок
+  example: 10
+
+unit:
+  type: string
+  description: Единицы измерения
+  example: "шт"
+
+is_purchased:
+  type: boolean
+  description: Признак того, что элемент списка покупок куплен
+  example: false

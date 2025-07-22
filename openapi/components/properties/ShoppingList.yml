@@ -1,0 +1,26 @@
+title:
+  type: string
+  description: Название списка покупок
+  example: "Купить фрукты"
+
+description:
+  type: string
+  description: Описание списка покупок
+  example: "Купить фрукты для вечеринки"
+
+budget:
+  type: number
+  description: Реальная стоимость списка покупок
+  example: 499.99
+
+status:
+  type: string
+  enum:
+    - unassigned
+    - assigned
+    - in_progress
+    - bought
+    - partially_bought
+    - cancelled
+  description: Статус списка покупок
+  example: unassigned
