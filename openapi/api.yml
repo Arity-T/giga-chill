@@ -34,7 +34,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserLoginPassword"
+              $ref: "#/components/schemas/LoginRequest"
       responses:
         "204":
           description: JWT отправлен в Set-Cookie (HttpOnly). Тело пустое.
@@ -56,7 +56,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserRegister"
+              $ref: "#/components/schemas/RegisterRequest"
       responses:
         "204":
           description: Пользователь создан. JWT-токен отправлен в Set-Cookie (HttpOnly). Тело пустое.
@@ -306,7 +306,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserLogin"
+              $ref: "#/components/schemas/AddParticipant"
       responses:
         "204":
           description: No Content
@@ -356,7 +356,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserRoleResponse"
+              $ref: "#/components/schemas/UserRoleSet"
       responses:
         "204":
           description: No Content

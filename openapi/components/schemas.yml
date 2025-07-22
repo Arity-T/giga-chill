@@ -22,68 +22,56 @@ ErrorResponse:
       description: Сообщение об ошибке
       example: "Something went wrong"
 
-UserLogin:
+RegisterRequest:
+  type: object
+  required: [login, password, name]
+  properties:
+    login:
+      $ref: "./properties/User.yml#/login"
+    password:
+      $ref: "./properties/User.yml#/password"
+    name:
+      $ref: "./properties/User.yml#/name"
+
+LoginRequest:
+  type: object
+  required: [login, password]
+  properties:
+    login:
+      $ref: "./properties/User.yml#/login"
+    password:
+      $ref: "./properties/User.yml#/password"
+
+AddParticipant:
   type: object
   required: [login]
   properties:
     login:
-      type: string
-      description: Логин пользователя
-      example: user123
+      $ref: "./properties/User.yml#/login"
 
-UserPassword:
+User:
   type: object
-  required: [password]
-  properties:
-    password:
-      type: string
-      description: Пароль пользователя
-      example: mysecurepassword
-
-UserName:
-  type: object
-  required: [name]
-  properties:
-    name:
-      type: string
-      description: Имя пользователя
-      example: Иван Иванов
-
-UserLoginPassword:
-  allOf:
-    - $ref: "#/UserLogin"
-    - $ref: "#/UserPassword"
-
-UserRegister:
-  allOf:
-    - $ref: "#/UserLogin"
-    - $ref: "#/UserPassword"
-    - $ref: "#/UserName"
-
-UserId:
-  type: object
-  required: [id]
+  required: [login, name, id]
   properties:
     id:
       $ref: "#/UUID"
+    login:
+      $ref: "./properties/User.yml#/login"
+    name:
+      $ref: "./properties/User.yml#/name"
 
-User:
-  allOf:
-    - $ref: "#/UserLogin"
-    - $ref: "#/UserName"
-    - $ref: "#/UserId"
-
-UserRole:
-  type: string
-  enum: [owner, admin, participant]
-  description: Роль пользователя в мероприятии
-  example: owner
+UserRoleSet:
+  type: object
+  required: [user_role]
+  properties:
+    user_role:
+      $ref: "./properties/User.yml#/user_role"
 
 UserRoleResponse:
   type: object
   properties:
     role:
-      $ref: "#/UserRole"
+      $ref: "./properties/User.yml#/user_role"
 
 UserInEvent:
   allOf:
@@ -91,7 +79,7 @@ UserInEvent:
     - type: object
       properties:
         user_role:
-          $ref: "#/UserRole"
+          $ref: "./properties/User.yml#/user_role"
         balance:
           type: number
           description: Баланс пользователя в мероприятии (сумма долгов)
@@ -118,8 +106,7 @@ Event:
     event_id:
       $ref: "#/UUID"
     user_role:
-      allOf:
-        - $ref: "#/UserRole"
+      $ref: "./properties/User.yml#/user_role"
     title:
       $ref: "./properties/Event.yml#/title"
     location:
