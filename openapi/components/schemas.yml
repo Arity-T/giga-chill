@@ -3,11 +3,6 @@ UUID:
   format: uuid
   example: 123e4567-e89b-12d3-a456-426614174000
 
-ReadOnlyUUID:
-  allOf:
-    - $ref: "#/UUID"
-    - readOnly: true
-
 UUIDList:
   type: array
   items:
@@ -289,135 +284,101 @@ ShoppingListSetBudget:
     budget:
       $ref: "./properties/ShoppingList.yml#/budget"
 
-TaskExecutorId:
-  type: object
-  properties:
-    executor_id:
-      description: Идентификатор исполнителя задачи
-      $ref: "#/UUID"
-
-TaskCreateRequest:
-  type: object
-  properties:
-    title:
-      type: string
-      description: Название задачи
-      example: "Купить фрукты"
-    description:
-      type: string
-      description: Описание задачи
-      example: "Купить фрукты для вечеринки"
-    deadline_datetime:
-      type: string
-      format: date-time
-      description: Дедлайн задачи
-      example: "2025-01-01T12:00:00Z"
-    executor_id:
-      $ref: "#/UUID"
-    shopping_lists_ids:
-      type: array
-      items:
-        $ref: "#/UUID"
-
-TaskPatchRequest:
-  type: object
-  properties:
-    title:
-      type: string
-      description: Название задачи
-      example: "Купить фрукты"
-    description:
-      type: string
-      description: Описание задачи
-      example: "Купить фрукты для вечеринки"
-    deadline_datetime:
-      type: string
-      format: date-time
-      description: Дедлайн задачи
-      example: "2025-01-01T12:00:00Z"
-
 Task:
   type: object
+  required:
+    - task_id
+    - title
+    - description
+    - status
+    - deadline_datetime
+    - permissions
+    - author
   properties:
     task_id:
-      $ref: "#/ReadOnlyUUID"
+      $ref: "#/UUID"
     title:
-      type: string
-      description: Название задачи
-      example: "Купить фрукты"
+      $ref: "./properties/Task.yml#/title"
     description:
-      type: string
-      description: Описание задачи
-      example: "Купить фрукты для вечеринки"
+      $ref: "./properties/Task.yml#/description"
     status:
-      type: string
-      enum: [open, in_progress, under_review, completed]
-      description: Статус задачи
+      $ref: "./properties/Task.yml#/status"
     deadline_datetime:
-      type: string
-      format: date-time
-      description: Дедлайн задачи
-      example: "2025-01-01T12:00:00Z"
+      $ref: "./properties/Task.yml#/deadline_datetime"
     executor_comment:
-      type: string
-      description: Комментарий исполнителя
-      example: "Задача выполнена"
+      $ref: "./properties/Task.yml#/executor_comment"
     reviewer_comment:
-      type: string
-      description: Комментарий проверяющего
-      example: "Подтверждаю выполнение задачи"
+      $ref: "./properties/Task.yml#/reviewer_comment"
     permissions:
-      type: object
-      properties:
-        can_edit:
-          type: boolean
-          description: Может ли пользователь редактировать задачу
-          example: true
-        can_take_in_work:
-          type: boolean
-          description: Может ли пользователь взять задачу в работу
-          example: true
-        can_review:
-          type: boolean
-          description: Может ли пользователь подтвердить или отклонить задачу
-          example: true
+      $ref: "./properties/Task.yml#/permissions"
     author:
-      allOf:
-        - $ref: "#/User"
+      $ref: "#/User"
     executor:
-      allOf:
-        - $ref: "#/User"
-
-TaskWithShoppingLists:
-  allOf:
-    - $ref: "#/Task"
-    - type: object
-      properties:
-        shopping_lists:
-          type: array
-          items:
-            $ref: "#/ShoppingListsWithItems"
+      $ref: "#/User"
 
 Tasks:
   type: array
   items:
     $ref: "#/Task"
 
-TaskSendForReviewRequest:
+TaskWithShoppingLists:
+  allOf:
+    - $ref: "#/Task"
+    - type: object
+      required: [shopping_lists]
+      properties:
+        shopping_lists:
+          $ref: "#/ShoppingListsWithItems"
+
+TaskCreate:
+  type: object
+  required:
+    - title
+    - deadline_datetime
+  properties:
+    title:
+      $ref: "./properties/Task.yml#/title"
+    description:
+      $ref: "./properties/Task.yml#/description"
+    deadline_datetime:
+      $ref: "./properties/Task.yml#/deadline_datetime"
+    executor_id:
+      description: Идентификатор исполнителя задачи
+      $ref: "#/UUID"
+    shopping_lists_ids:
+      $ref: "#/UUIDList"
+
+TaskUpdate:
   type: object
   properties:
+    title:
+      $ref: "./properties/Task.yml#/title"
+    description:
+      $ref: "./properties/Task.yml#/description"
+    deadline_datetime:
+      $ref: "./properties/Task.yml#/deadline_datetime"
+
+TaskSetExecutor:
+  type: object
+  required: [executor_id]
+  properties:
+    executor_id:
+      description: Идентификатор исполнителя задачи
+      $ref: "#/UUID"
+
+TaskSendForReviewRequest:
+  type: object
+  required: [executor_comment]
+  properties:
     executor_comment:
-      type: string
-      description: Комментарий исполнителя
-      example: "Задача выполнена"
+      $ref: "./properties/Task.yml#/executor_comment"
 
 TaskReviewRequest:
   type: object
+  required: [reviewer_comment, is_approved]
   properties:
     reviewer_comment:
-      type: string
-      description: Комментарий проверяющего
-      example: "Подтверждаю выполнение задачи"
+      $ref: "./properties/Task.yml#/reviewer_comment"
     is_approved:
       type: boolean
       description: Признак того, что задача одобрена

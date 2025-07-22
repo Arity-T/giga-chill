@@ -261,7 +261,7 @@ paths:
                 type: object
                 properties:
                   event_id:
-                    $ref: "#/components/schemas/ReadOnlyUUID"
+                    $ref: "#/components/schemas/UUID"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "404":
@@ -653,7 +653,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TaskCreateRequest"
+              $ref: "#/components/schemas/TaskCreate"
       responses:
         "204":
           description: No Content
@@ -700,7 +700,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TaskPatchRequest"
+              $ref: "#/components/schemas/TaskUpdate"
       responses:
         "204":
           description: No Content
@@ -745,7 +745,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TaskExecutorId"
+              $ref: "#/components/schemas/TaskSetExecutor"
       responses:
         "204":
           description: No Content
