@@ -1,5 +1,5 @@
 import { api } from './api'
-import type { Task, TaskRequest, TaskPatchRequest, TaskExecutorId, TaskWithShoppingLists } from '@/types/api'
+import type { Task, TaskRequest, TaskPatchRequest, TaskExecutorId, TaskWithShoppingLists, TaskSendForReviewRequest, TaskReviewRequest } from '@/types/api'
 
 export const tasksApi = api.injectEndpoints({
     endpoints: (builder) => ({
@@ -88,6 +88,31 @@ export const tasksApi = api.injectEndpoints({
                 { type: 'ShoppingLists', id: eventId }
             ],
         }),
+
+        sendTaskForReview: builder.mutation<void, { eventId: string; taskId: string; reviewData: TaskSendForReviewRequest }>({
+            query: ({ eventId, taskId, reviewData }) => ({
+                url: `/events/${eventId}/tasks/${taskId}/send-for-review`,
+                method: 'POST',
+                body: reviewData,
+            }),
+            invalidatesTags: (_result, _error, { eventId, taskId }) => [
+                { type: 'Tasks', id: eventId },
+                { type: 'Tasks', id: `${eventId}-${taskId}` }
+            ],
+        }),
+
+        reviewTask: builder.mutation<void, { eventId: string; taskId: string; reviewData: TaskReviewRequest }>({
+            query: ({ eventId, taskId, reviewData }) => ({
+                url: `/events/${eventId}/tasks/${taskId}/review`,
+                method: 'POST',
+                body: reviewData,
+            }),
+            invalidatesTags: (_result, _error, { eventId, taskId }) => [
+                { type: 'Tasks', id: eventId },
+                { type: 'Tasks', id: `${eventId}-${taskId}` },
+                { type: 'ShoppingLists', id: eventId }
+            ],
+        }),
     }),
 })
 
@@ -100,4 +125,6 @@ export const {
     useAssignShoppingListsMutation,
     useDeleteTaskMutation,
     useTakeTaskInWorkMutation,
+    useSendTaskForReviewMutation,
+    useReviewTaskMutation,
 } = tasksApi 

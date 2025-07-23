@@ -24,8 +24,11 @@ public class AuthController {
     @PostMapping("/auth/login")
     public ResponseEntity<Void> login(
             @RequestBody AuthRequest request, HttpServletResponse response) {
+        userService.validateLogin(request.login);
+        userService.validatePassword(request.password);
+
         if (!userService.validate(request.login, request.password)) {
-            throw new UnauthorizedException("Неверный логин или пароль");
+            throw new UnauthorizedException("Invalid login or password");
         }
 
         String jwt = jwtService.generateToken(request.login);
@@ -45,15 +48,11 @@ public class AuthController {
     @PostMapping("/auth/register")
     public ResponseEntity<Void> register(
             @RequestBody AuthRequest request, HttpServletResponse response) {
-        if (userService.userExistsByLogin(request.login)) {
-            throw new ConflictException("Пользователь с таким логином уже существует");
-        }
+        userService.validateLogin(request.login);
+        userService.validatePassword(request.password);
 
-        if (request.login == null
-                || request.login.length() < 4
-                || request.password == null
-                || request.password.length() < 4) {
-            throw new BadRequestException("Логин и пароль должны быть не короче 4 символов");
+        if (userService.userExistsByLogin(request.login)) {
+            throw new ConflictException("A user with this login already exists");
         }
 
         userService.register(request.login, request.password, request.name);
@@ -91,7 +90,7 @@ public class AuthController {
     public ResponseEntity<UserInfo> me(Authentication authentication) {
         var user = userService.findByLogin(authentication.getName());
         if (user.isEmpty()) {
-            throw new UnauthorizedException("Пользователь не найден");
+            throw new UnauthorizedException("User not found");
         }
 
         return ResponseEntity.ok(

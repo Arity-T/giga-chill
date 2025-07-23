@@ -38,7 +38,7 @@ public class TasksController {
     public ResponseEntity<List<ResponseTaskInfo>> getTasks(
             Authentication authentication, @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
@@ -72,8 +72,11 @@ public class TasksController {
                 requestTaskInfo.executorId() != null
                         ? UuidUtils.safeUUID(requestTaskInfo.executorId())
                         : null;
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)) {
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
@@ -101,7 +104,7 @@ public class TasksController {
     public ResponseEntity<ResponseTaskWithShoppingListsInfo> getTask(
             Authentication authentication, @PathVariable UUID eventId, @PathVariable UUID taskId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
         if (!taskService.isExisted(eventId, taskId)) {
@@ -131,8 +134,11 @@ public class TasksController {
             @PathVariable UUID taskId,
             @RequestBody RequestTaskInfo requestTaskInfo) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)) {
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!taskService.isExisted(eventId, taskId)) {
             throw new NotFoundException("Task with id " + taskId + " not found");
@@ -171,8 +177,11 @@ public class TasksController {
                 body.get("executor_id") != null
                         ? UuidUtils.safeUUID((String) body.get("executor_id"))
                         : null;
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)) {
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!taskService.isExisted(eventId, taskId)) {
             throw new NotFoundException("Task with id " + taskId + " not found");
@@ -222,8 +231,11 @@ public class TasksController {
         var shoppingListsIds =
                 body != null ? body.stream().map(UuidUtils::safeUUID).toList() : null;
 
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)) {
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!taskService.isExisted(eventId, taskId)) {
             throw new NotFoundException("Task with id " + taskId + " not found");
@@ -261,8 +273,11 @@ public class TasksController {
     public ResponseEntity<Void> deleteTask(
             Authentication authentication, @PathVariable UUID eventId, @PathVariable UUID taskId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)) {
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!taskService.isExisted(eventId, taskId)) {
             throw new NotFoundException("Task with id " + taskId + " not found");
@@ -292,8 +307,11 @@ public class TasksController {
     public ResponseEntity<Void> postExecutorToTask(
             Authentication authentication, @PathVariable UUID eventId, @PathVariable UUID taskId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExisted(eventId)) {
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)) {
+            throw new ConflictException("Event with id " + eventId + " was finalized");
         }
         if (!taskService.isExisted(eventId, taskId)) {
             throw new NotFoundException("Task with id " + taskId + " not found");
@@ -321,6 +339,99 @@ public class TasksController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{taskId}/send-for-review")
+    // ACCESS: Только исполнитель
+    public ResponseEntity<Void> postTaskForReview(
+            Authentication authentication,
+            @PathVariable UUID eventId,
+            @PathVariable UUID taskId,
+            @RequestBody Map<String, String> body) {
+        var user = userService.userAuthentication(authentication);
+        var executorComment = body.get("executor_comment");
+        if (executorComment == null) {
+            throw new BadRequestException("Invalid request body: " + body);
+        }
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)) {
+            throw new ConflictException("Event with id " + eventId + " was finalized");
+        }
+        if (!taskService.isExisted(eventId, taskId)) {
+            throw new NotFoundException("Task with id " + taskId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.getId())) {
+            throw new ForbiddenException(
+                    "User with id "
+                            + user.getId()
+                            + " is not a participant of event with id "
+                            + eventId);
+        }
+        if (!taskService.getTaskStatus(taskId).equals(env.getProperty("task_status.in_progress"))) {
+            throw new ConflictException("Task with id " + taskId + " is not \"in progress\"");
+        }
+        if (!taskService.getExecutorId(taskId).equals(user.getId())) {
+            throw new ConflictException(
+                    "User with id "
+                            + user.getId()
+                            + " cannot send "
+                            + "task with id: "
+                            + taskId
+                            + " for review");
+        }
+
+        taskService.setExecutorComment(taskId, executorComment);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{taskId}/review")
+    // ACCESS: owner, admin(Если не исполнители)
+    public ResponseEntity<Void> postTaskReview(
+            Authentication authentication,
+            @PathVariable UUID eventId,
+            @PathVariable UUID taskId,
+            @RequestBody Map<String, Object> body) {
+        var user = userService.userAuthentication(authentication);
+        var reviewerComment = (String) body.get("reviewer_comment");
+        var isApproved = (Boolean) body.get("is_approved");
+        if (reviewerComment == null || isApproved == null) {
+            throw new BadRequestException("Invalid request body: " + body);
+        }
+        if (!eventService.isExistedAndNotDeleted(eventId)) {
+            throw new NotFoundException("Event with id " + eventId + " not found");
+        }
+        if (eventService.isFinalized(eventId)) {
+            throw new ConflictException("Event with id " + eventId + " was finalized");
+        }
+        if (!taskService.isExisted(eventId, taskId)) {
+            throw new NotFoundException("Task with id " + taskId + " not found");
+        }
+        if (!participantsService.isParticipant(eventId, user.getId())) {
+            throw new ForbiddenException(
+                    "User with id "
+                            + user.getId()
+                            + " is not a participant of event with id "
+                            + eventId);
+        }
+        if (!taskService
+                .getTaskStatus(taskId)
+                .equals(env.getProperty("task_status.under_review"))) {
+            throw new ConflictException("Task with id " + taskId + " is not \"under review\"");
+        }
+        if (taskService.getExecutorId(taskId).equals(user.getId())
+                || participantsService.isParticipantRole(eventId, user.getId())) {
+            throw new ConflictException(
+                    "User with id "
+                            + user.getId()
+                            + " cannot approve "
+                            + "task with id: "
+                            + taskId);
+        }
+
+        taskService.setReviewerComment(taskId, reviewerComment, isApproved);
+        return ResponseEntity.noContent().build();
+    }
+
     private ResponseTaskWithShoppingListsInfo toResponseTaskWithShoppingListsInfo(
             UUID eventId, UUID userI, Task task, Map<String, Boolean> permissions) {
         return new ResponseTaskWithShoppingListsInfo(
@@ -329,7 +440,8 @@ public class TasksController {
                 task.getDescription(),
                 task.getStatus(),
                 task.getDeadlineDatetime(),
-                task.getActualApprovalId() != null ? task.getTaskId().toString() : null,
+                task.getExecutorComment(),
+                task.getReviewerComment(),
                 permissions,
                 InfoEntityMapper.toUserInfo(task.getAuthor()),
                 task.getExecutor() != null ? InfoEntityMapper.toUserInfo(task.getExecutor()) : null,

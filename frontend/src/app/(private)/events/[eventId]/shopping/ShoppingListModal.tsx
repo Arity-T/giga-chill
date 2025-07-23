@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Modal, Form, Input, Button, App } from 'antd';
-import { useCreateShoppingListMutation, useUpdateShoppingListMutation } from '@/store/api';
-import type { ShoppingListRequest, ShoppingListWithItems } from '@/types/api';
+import { useCreateShoppingListMutation } from '@/store/api';
+import type { ShoppingListRequest } from '@/types/api';
 
 const { TextArea } = Input;
 
@@ -11,7 +11,6 @@ interface ShoppingListModalProps {
     open: boolean;
     onCancel: () => void;
     eventId: string;
-    shoppingList?: ShoppingListWithItems; // Если передан, то режим редактирования
 }
 
 interface ShoppingListFormData {
@@ -19,30 +18,10 @@ interface ShoppingListFormData {
     description: string;
 }
 
-export default function ShoppingListModal({ open, onCancel, eventId, shoppingList }: ShoppingListModalProps) {
+export default function ShoppingListModal({ open, onCancel, eventId }: ShoppingListModalProps) {
     const [form] = Form.useForm<ShoppingListFormData>();
-    const [createShoppingList, { isLoading: isCreating }] = useCreateShoppingListMutation();
-    const [updateShoppingList, { isLoading: isUpdating }] = useUpdateShoppingListMutation();
+    const [createShoppingList, { isLoading }] = useCreateShoppingListMutation();
     const { message } = App.useApp();
-
-    const isEditMode = !!shoppingList;
-    const isLoading = isCreating || isUpdating;
-
-    // Управление состоянием формы
-    useEffect(() => {
-        if (open) {
-            if (isEditMode && shoppingList) {
-                // Режим редактирования - заполняем форму
-                form.setFieldsValue({
-                    title: shoppingList.title,
-                    description: shoppingList.description,
-                });
-            } else {
-                // Режим создания - очищаем форму
-                form.resetFields();
-            }
-        }
-    }, [open, isEditMode, shoppingList, form]);
 
     const handleSubmit = async (values: ShoppingListFormData) => {
         try {
@@ -51,34 +30,24 @@ export default function ShoppingListModal({ open, onCancel, eventId, shoppingLis
                 description: values.description || '',
             };
 
-            if (isEditMode && shoppingList) {
-                await updateShoppingList({
-                    eventId,
-                    shoppingListId: shoppingList.shopping_list_id,
-                    shoppingList: shoppingListData
-                }).unwrap();
-                message.success('Список покупок успешно обновлен!');
-            } else {
-                await createShoppingList({ eventId, shoppingList: shoppingListData }).unwrap();
-                message.success('Список покупок успешно создан!');
-            }
+            await createShoppingList({ eventId, shoppingList: shoppingListData }).unwrap();
+            message.success('Список покупок успешно создан!');
 
-            onCancel(); // Закрываем модалку (сброс формы произойдет в useEffect)
+            form.resetFields();
+            onCancel();
         } catch (error) {
-            message.error(isEditMode
-                ? 'Ошибка при обновлении списка покупок'
-                : 'Ошибка при создании списка покупок'
-            );
+            message.error('Ошибка при создании списка покупок');
         }
     };
 
     const handleCancel = () => {
-        onCancel(); // Сброс формы произойдет в useEffect при следующем открытии
+        form.resetFields();
+        onCancel();
     };
 
     return (
         <Modal
-            title={isEditMode ? 'Редактировать список покупок' : 'Создать список покупок'}
+            title="Создать список покупок"
             open={open}
             onCancel={handleCancel}
             footer={null}
@@ -121,7 +90,7 @@ export default function ShoppingListModal({ open, onCancel, eventId, shoppingLis
                         Отмена
                     </Button>
                     <Button type="primary" htmlType="submit" loading={isLoading}>
-                        {isEditMode ? 'Сохранить' : 'Создать'}
+                        Создать
                     </Button>
                 </Form.Item>
             </Form>

@@ -11,4 +11,5 @@ public record ResponseEventInfo(
         @JsonProperty("start_datetime") String startDatetime,
         @JsonProperty("end_datetime") String endDatetime,
         @JsonProperty("description") String description,
-        @JsonProperty("budget") BigDecimal budget) {}
+        @JsonProperty("budget") BigDecimal budget,
+        @JsonProperty("is_finalized") Boolean isFinalized) {}

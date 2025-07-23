@@ -18,4 +18,5 @@ public class Event {
     private String endDatetime;
     private String description;
     private BigDecimal budget;
+    private Boolean isFinalized;
 }

@@ -9,6 +9,7 @@ import com.github.giga_chill.gigachill.repository.*;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingItemsRecord;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingListsRecord;
 import jakarta.annotation.Nullable;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -82,6 +83,7 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
                                         list.getTaskId(),
                                         list.getTitle(),
                                         list.getDescription(),
+                                        list.getBudget(),
                                         toShoppingItemDTO(list.getShoppingListId()),
                                         toConsumerDTO(list.getShoppingListId())))
                 .toList();
@@ -111,6 +113,7 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
                 record.getTaskId(),
                 record.getTitle(),
                 record.getDescription(),
+                record.getBudget(),
                 shoppingItems,
                 consumers);
     }
@@ -128,7 +131,8 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
     public void createShoppingList(
             UUID eventId, UUID shoppingListId, UUID userId, String title, String description) {
         shoppingListRepository.save(
-                new ShoppingListsRecord(shoppingListId, null, eventId, title, description));
+                new ShoppingListsRecord(
+                        shoppingListId, null, eventId, title, description, null, null));
 
         consumerInListRepository.addConsumer(shoppingListId, userId);
     }
@@ -144,7 +148,7 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
     @Override
     public void updateShoppingList(
             UUID shoppingListId, @Nullable String title, @Nullable String description) {
-        shoppingListRepository.updateTitleAndDescription(shoppingListId, title, description);
+        shoppingListRepository.updateShoppingList(shoppingListId, title, description);
     }
 
     /**
@@ -310,6 +314,7 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
                                         list.getTaskId(),
                                         list.getTitle(),
                                         list.getDescription(),
+                                        list.getBudget(),
                                         toShoppingItemDTO(list.getShoppingListId()),
                                         toConsumerDTO(list.getShoppingListId())))
                 .toList();
@@ -423,5 +428,16 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
 
         int count = shoppingListRepository.countAllBindedToThisTaskOrNull(shoppingListsIds, taskId);
         return count == shoppingListsIds.size();
+    }
+
+    /**
+     * Sets or updates the budget for the specified shopping list.
+     *
+     * @param shoppingListId the unique identifier of the shopping list
+     * @param budget the {@link BigDecimal} amount representing the new budget
+     */
+    @Override
+    public void setBudget(UUID shoppingListId, BigDecimal budget) {
+        shoppingListRepository.setBudget(shoppingListId, budget);
     }
 }

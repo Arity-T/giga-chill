@@ -26,6 +26,7 @@ export interface Event {
   description: string;
   budget: number;
   user_role: UserRole;
+  is_finalized: boolean;
 }
 
 export interface CreateEventRequest {
@@ -73,6 +74,7 @@ export interface ShoppingListWithItems {
   title: string;
   description: string;
   status: ShoppingListStatus;
+  budget: number;
   can_edit: boolean;
   shopping_items: ShoppingItem[];
   consumers: UserInEvent[];
@@ -130,6 +132,7 @@ export enum TaskStatus {
 export interface TaskPermissions {
   can_edit: boolean;
   can_take_in_work: boolean;
+  can_review: boolean;
 }
 
 export interface Task {
@@ -138,7 +141,8 @@ export interface Task {
   description: string;
   status: TaskStatus;
   deadline_datetime: string;
-  actual_approval_id: string;
+  executor_comment: string;
+  reviewer_comment: string;
   permissions: TaskPermissions;
   author: User;
   executor: User | null;
@@ -150,4 +154,29 @@ export interface TaskWithShoppingLists extends Task {
 
 export interface InvitationToken {
   invitation_token: string;
+}
+
+export interface TaskSendForReviewRequest {
+  executor_comment: string;
+}
+
+export interface TaskReviewRequest {
+  reviewer_comment: string;
+  is_approved: boolean;
+}
+
+export interface Debt {
+  user: User;
+  amount: number;
+}
+
+export interface UserBalance {
+  my_debts: Debt[];
+  debts_to_me: Debt[];
+}
+
+export interface EventBalanceSummary {
+  user: User;
+  total_balance: number;
+  user_balance: UserBalance;
 }

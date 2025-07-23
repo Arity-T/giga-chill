@@ -80,14 +80,15 @@ export const shoppingApi = api.injectEndpoints({
             ],
         }),
 
-        updateShoppingItemPurchasedState: builder.mutation<void, { eventId: string; shoppingListId: string; shoppingItemId: string; shoppingItem: ShoppingItemPurchasedStateRequest }>({
+        updateShoppingItemPurchasedState: builder.mutation<void, { taskId: string; eventId: string; shoppingListId: string; shoppingItemId: string; shoppingItem: ShoppingItemPurchasedStateRequest }>({
             query: ({ eventId, shoppingListId, shoppingItemId, shoppingItem }) => ({
                 url: `/events/${eventId}/shopping-lists/${shoppingListId}/shopping-items/${shoppingItemId}/purchased-state`,
                 method: 'PATCH',
                 body: shoppingItem,
             }),
-            invalidatesTags: (_result, _error, { eventId }) => [
-                { type: 'ShoppingLists', id: eventId }
+            invalidatesTags: (_result, _error, { eventId, taskId }) => [
+                { type: 'ShoppingLists', id: eventId },
+                { type: 'Tasks', id: `${eventId}-${taskId}` }
             ],
         }),
 
@@ -99,6 +100,18 @@ export const shoppingApi = api.injectEndpoints({
             }),
             invalidatesTags: (_result, _error, { eventId }) => [
                 { type: 'ShoppingLists', id: eventId }
+            ],
+        }),
+
+        setShoppingListBudget: builder.mutation<void, { taskId: string; eventId: string; shoppingListId: string; budget: number }>({
+            query: ({ eventId, shoppingListId, budget }) => ({
+                url: `/events/${eventId}/shopping-lists/${shoppingListId}/budget`,
+                method: 'PUT',
+                body: { budget },
+            }),
+            invalidatesTags: (_result, _error, { eventId, taskId }) => [
+                { type: 'ShoppingLists', id: eventId },
+                { type: 'Tasks', id: `${eventId}-${taskId}` }
             ],
         }),
     }),
@@ -114,4 +127,5 @@ export const {
     useDeleteShoppingItemMutation,
     useUpdateShoppingItemPurchasedStateMutation,
     useSetShoppingListConsumersMutation,
+    useSetShoppingListBudgetMutation,
 } = shoppingApi 

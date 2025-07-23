@@ -34,7 +34,7 @@ public interface EventDAO {
      * Updates the details of an existing event.
      *
      * @param eventId the unique identifier of the event to update
-     * @param event the {@link EventDTO} object containing updated fields
+     * @param event the {@link EventDTO} object containing updated fields; budget is not updated
      */
     void updateEvent(UUID eventId, EventDTO event);
 
@@ -57,9 +57,9 @@ public interface EventDAO {
      * Checks whether an event with the given identifier exists.
      *
      * @param eventId the unique identifier of the event
-     * @return {@code true} if the event exists, {@code false} otherwise
+     * @return {@code true} if the event exists and delete status false, {@code false} otherwise
      */
-    boolean isExisted(UUID eventId);
+    boolean isExistedAndNotDeleted(UUID eventId);
 
     /**
      * Retrieves the end date and time of the specified event.
@@ -94,4 +94,28 @@ public interface EventDAO {
      */
     @Nullable
     UUID getEventByLinkUuid(UUID linkUuid);
+
+    /**
+     * Calculates and updates the overall budget for the specified event.
+     *
+     * @param eventId the unique identifier of the event to recalculate the budget for
+     */
+    void calculationEventBudget(UUID eventId);
+
+    /**
+     * Marks the specified event as finalized, preventing further modifications. Executes any
+     * finalization logic before setting the event’s status to closed.
+     *
+     * @param eventId the unique identifier of the event to close
+     */
+    void finalizeEvent(UUID eventId);
+
+    /**
+     * Determines whether the specified event has been finalized (closed).
+     *
+     * @param eventId the unique identifier of the event to check
+     * @return {@code true} if the event is finalized and no longer editable; {@code false}
+     *     otherwise
+     */
+    boolean isFinalized(UUID eventId);
 }

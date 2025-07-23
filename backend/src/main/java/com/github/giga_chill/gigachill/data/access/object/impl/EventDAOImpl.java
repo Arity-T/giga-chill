@@ -38,7 +38,8 @@ public class EventDAOImpl implements EventDAO {
                                                 ? eventRecord.getEndDatetime().toString()
                                                 : null,
                                         eventRecord.getDescription(),
-                                        eventRecord.getBudget()))
+                                        eventRecord.getBudget(),
+                                        eventRecord.getIsFinalized()))
                 .orElse(null);
     }
 
@@ -63,7 +64,8 @@ public class EventDAOImpl implements EventDAO {
                                                         ? eventRecord.getEndDatetime().toString()
                                                         : null,
                                                 eventRecord.getDescription(),
-                                                eventRecord.getBudget()));
+                                                eventRecord.getBudget(),
+                                                eventRecord.getIsFinalized()));
                             });
         }
         return events;
@@ -85,7 +87,6 @@ public class EventDAOImpl implements EventDAO {
                                         OffsetDateTime.parse(event.endDatetime()));
                             if (event.description() != null)
                                 eventRecord.setDescription(event.description());
-                            if (event.budget() != null) eventRecord.setBudget(event.budget());
                             // Обновление через dsl
                             eventRecord.update();
                         });
@@ -113,9 +114,15 @@ public class EventDAOImpl implements EventDAO {
         userInEventRepository.save(userInEventRecord);
     }
 
+    /**
+     * Checks whether an event with the given identifier exists.
+     *
+     * @param eventId the unique identifier of the event
+     * @return {@code true} if the event exists and delete status false, {@code false} otherwise
+     */
     @Override
-    public boolean isExisted(UUID eventId) {
-        return eventRepository.exists(eventId);
+    public boolean isExistedAndNotDeleted(UUID eventId) {
+        return eventRepository.existsAndNotDeleted(eventId);
     }
 
     /**
@@ -140,7 +147,7 @@ public class EventDAOImpl implements EventDAO {
         EventsRecord event = eventRepository.findById(eventId).orElse(null);
         if (event == null) return null;
 
-        return event.getInviteLink();
+        return event.getInviteToken();
     }
 
     /**
@@ -159,6 +166,41 @@ public class EventDAOImpl implements EventDAO {
         }
 
         return event.getEventId();
+    }
+
+    /**
+     * Calculates and updates the overall budget for the specified event.
+     *
+     * @param eventId the unique identifier of the event to recalculate the budget for
+     */
+    @Override
+    public void calculationEventBudget(UUID eventId) {
+        eventRepository.refreshDebtsView();
+
+        eventRepository.setEventBudget(eventId, eventRepository.calculateEventBudget(eventId));
+    }
+
+    /**
+     * Marks the specified event as finalized, preventing further modifications. Executes any
+     * finalization logic before setting the event’s status to closed.
+     *
+     * @param eventId the unique identifier of the event to close
+     */
+    @Override
+    public void finalizeEvent(UUID eventId) {
+        eventRepository.finalizeEventById(eventId);
+    }
+
+    /**
+     * Determines whether the specified event has been finalized (closed).
+     *
+     * @param eventId the unique identifier of the event to check
+     * @return {@code true} if the event is finalized and no longer editable; {@code false}
+     *     otherwise
+     */
+    @Override
+    public boolean isFinalized(UUID eventId) {
+        return eventRepository.isFinalized(eventId);
     }
 
     @Override

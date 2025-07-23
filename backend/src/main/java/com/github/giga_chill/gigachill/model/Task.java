@@ -16,7 +16,8 @@ public class Task {
     @Nullable private String description;
     private String status;
     private String deadlineDatetime;
-    @Nullable private UUID actualApprovalId;
+    @Nullable private String executorComment;
+    @Nullable private String reviewerComment;
     private User author;
     @Nullable private User executor;
     private List<ShoppingList> shoppingLists;

@@ -14,6 +14,7 @@ interface ShoppingListContentProps {
     onDeleteItem: (itemId: string) => void;
     onEditItem: (itemId: string) => void;
     canEdit: boolean;
+    canMarkAsPurchased: boolean;
 }
 
 export default function ShoppingListContent({
@@ -23,7 +24,8 @@ export default function ShoppingListContent({
     onAddItem,
     onDeleteItem,
     onEditItem,
-    canEdit
+    canEdit,
+    canMarkAsPurchased
 }: ShoppingListContentProps) {
     return (
         <div style={{ padding: '16px 24px 16px' }}>
@@ -43,6 +45,7 @@ export default function ShoppingListContent({
                             onDeleteItem={() => onDeleteItem(item.shopping_item_id)}
                             onEditItem={() => onEditItem(item.shopping_item_id)}
                             canEdit={canEdit}
+                            canMarkAsPurchased={canMarkAsPurchased}
                         />
                     ))}
                     {canEdit && (
