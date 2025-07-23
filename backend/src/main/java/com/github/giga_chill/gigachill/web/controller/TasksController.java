@@ -4,7 +4,6 @@ import com.github.giga_chill.gigachill.exception.BadRequestException;
 import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.ForbiddenException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
-import com.github.giga_chill.gigachill.model.Task;
 import com.github.giga_chill.gigachill.service.*;
 import com.github.giga_chill.gigachill.util.InfoEntityMapper;
 import com.github.giga_chill.gigachill.util.UuidUtils;
@@ -31,7 +30,6 @@ public class TasksController {
     private final ParticipantsService participantsService;
     private final TaskService taskService;
     private final ShoppingListsService shoppingListsService;
-    private final ShoppingListsController shoppingListsController;
 
     @GetMapping
     // ACCESS: owner, admin, participant
@@ -50,14 +48,7 @@ public class TasksController {
         }
 
         return ResponseEntity.ok(
-                taskService.getAllTasksFromEvent(eventId).stream()
-                        .map(
-                                item ->
-                                        InfoEntityMapper.toResponseTaskInfo(
-                                                item,
-                                                taskService.taskPermissions(
-                                                        eventId, item.getTaskId(), user.getId())))
-                        .toList());
+                taskService.getAllTasksFromEvent(eventId, user.getId()));
     }
 
     @PostMapping
@@ -119,11 +110,7 @@ public class TasksController {
         }
 
         return ResponseEntity.ok(
-                toResponseTaskWithShoppingListsInfo(
-                        eventId,
-                        user.getId(),
-                        taskService.getTaskById(taskId),
-                        taskService.taskPermissions(eventId, taskId, user.getId())));
+                        taskService.getTaskById(taskId, eventId, user.getId()));
     }
 
     @PatchMapping("/{taskId}")
@@ -432,26 +419,5 @@ public class TasksController {
         return ResponseEntity.noContent().build();
     }
 
-    private ResponseTaskWithShoppingListsInfo toResponseTaskWithShoppingListsInfo(
-            UUID eventId, UUID userI, Task task, Map<String, Boolean> permissions) {
-        return new ResponseTaskWithShoppingListsInfo(
-                task.getTaskId().toString(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getStatus(),
-                task.getDeadlineDatetime(),
-                task.getExecutorComment(),
-                task.getReviewerComment(),
-                permissions,
-                InfoEntityMapper.toUserInfo(task.getAuthor()),
-                task.getExecutor() != null ? InfoEntityMapper.toUserInfo(task.getExecutor()) : null,
-                task.getShoppingLists().stream()
-                        .map(
-                                item ->
-                                        InfoEntityMapper.toShoppingListInfo(
-                                                item,
-                                                shoppingListsController.canEdit(
-                                                        eventId, item.getShoppingListId(), userI)))
-                        .toList());
-    }
+
 }

@@ -2,16 +2,24 @@ package com.github.giga_chill.gigachill.web.info;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.annotation.Nullable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Map;
 
-public record ResponseTaskInfo(
-        @JsonProperty("task_id") String taskId,
-        @JsonProperty("title") String title,
-        @JsonProperty("description") String description,
-        @JsonProperty("status") String status,
-        @JsonProperty("deadline_datetime") String deadlineDatetime,
-        @Nullable @JsonProperty("executor_comment") String executorComment,
-        @Nullable @JsonProperty("reviewer_comment") String reviewerComment,
-        @JsonProperty("permissions") Map<String, Boolean> permissions,
-        @JsonProperty("author") UserInfo author,
-        @Nullable @JsonProperty("executor") UserInfo executor) {}
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ResponseTaskInfo{
+        @JsonProperty("task_id") private String taskId;
+        @JsonProperty("title") private String title;
+        @JsonProperty("description") private String description;
+        @JsonProperty("status") private String status;
+        @JsonProperty("deadline_datetime") private String deadlineDatetime;
+        @Nullable @JsonProperty("executor_comment") private String executorComment;
+        @Nullable @JsonProperty("reviewer_comment") private String reviewerComment;
+        @JsonProperty("permissions") private Map<String, Boolean> permissions;
+        @JsonProperty("author") private UserInfo author;
+        @Nullable @JsonProperty("executor") private UserInfo executor;}

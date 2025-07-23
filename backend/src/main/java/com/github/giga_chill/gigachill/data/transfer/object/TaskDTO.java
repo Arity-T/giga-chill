@@ -1,15 +1,23 @@
 package com.github.giga_chill.gigachill.data.transfer.object;
 
 import jakarta.annotation.Nullable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.UUID;
 
-public record TaskDTO(
-        UUID taskId,
-        @Nullable String title,
-        @Nullable String description,
-        @Nullable String status,
-        @Nullable String deadlineDatetime,
-        @Nullable String executorComment,
-        @Nullable String reviewerComment,
-        @Nullable UserDTO author,
-        @Nullable UserDTO executor) {}
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class TaskDTO{
+        private UUID taskId;
+        @Nullable private String title;
+        @Nullable private String description;
+        @Nullable private String status;
+        @Nullable private String deadlineDatetime;
+        @Nullable private String executorComment;
+        @Nullable private String reviewerComment;
+        @Nullable private UserDTO author;
+        @Nullable private UserDTO executor;}

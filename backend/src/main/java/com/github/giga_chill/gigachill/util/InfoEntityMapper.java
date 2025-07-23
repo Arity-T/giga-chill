@@ -12,22 +12,6 @@ public final class InfoEntityMapper {
         return new UserInfo(user.getLogin(), user.getName(), user.getId().toString());
     }
 
-    public static ResponseTaskInfo toResponseTaskInfo(Task task, Map<String, Boolean> permissions) {
-        return new ResponseTaskInfo(
-                task.getTaskId().toString(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getStatus(),
-                task.getDeadlineDatetime(),
-                task.getExecutorComment(),
-                task.getReviewerComment(),
-                permissions,
-                InfoEntityMapper.toUserInfo(task.getAuthor()),
-                task.getExecutor() != null
-                        ? InfoEntityMapper.toUserInfo(task.getExecutor())
-                        : null);
-    }
-
     public static ParticipantBalanceInfo toParticipantBalanceInfo(
             ParticipantBalance participantBalance) {
         return new ParticipantBalanceInfo(

@@ -107,7 +107,7 @@ public class TaskDAOImpl implements TaskDAO {
 
         List<ShoppingListDTO> shoppingLists =
                 shoppingListDAOImpl.getAllShoppingListsFromEvent(taskRecord.getEventId()).stream()
-                        .filter(list -> taskId.equals(list.taskId()))
+                        .filter(list -> taskId.equals(list.getTaskId()))
                         .toList();
 
         return convertToTaskWithShoppingListsDTO(taskRecord, shoppingLists);
@@ -125,22 +125,22 @@ public class TaskDAOImpl implements TaskDAO {
     public void createTask(UUID eventId, TaskDTO taskDTO, List<UUID> shoppingListsIds) {
         taskRepository.save(
                 new TasksRecord(
-                        taskDTO.taskId(),
+                        taskDTO.getTaskId(),
                         eventId,
-                        taskDTO.author() != null ? taskDTO.author().id() : null,
-                        taskDTO.executor() != null ? taskDTO.executor().id() : null,
-                        taskDTO.title(),
-                        taskDTO.description(),
-                        taskDTO.status() != null ? TaskStatus.valueOf(taskDTO.status()) : null,
-                        taskDTO.deadlineDatetime() != null
-                                ? OffsetDateTime.parse(taskDTO.deadlineDatetime())
+                        taskDTO.getAuthor() != null ? taskDTO.getAuthor().getId() : null,
+                        taskDTO.getExecutor() != null ? taskDTO.getExecutor().getId() : null,
+                        taskDTO.getTitle(),
+                        taskDTO.getDescription(),
+                        taskDTO.getStatus() != null ? TaskStatus.valueOf(taskDTO.getStatus()) : null,
+                        taskDTO.getDeadlineDatetime() != null
+                                ? OffsetDateTime.parse(taskDTO.getDeadlineDatetime())
                                 : null,
-                        taskDTO.executorComment(),
-                        taskDTO.reviewerComment()));
+                        taskDTO.getExecutorComment(),
+                        taskDTO.getReviewerComment()));
 
         // Привязываем shopping lists к задаче
         for (UUID shoppingListId : shoppingListsIds) {
-            shoppingListRepository.updateTaskId(shoppingListId, taskDTO.taskId());
+            shoppingListRepository.updateTaskId(shoppingListId, taskDTO.getTaskId());
         }
     }
 
