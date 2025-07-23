@@ -5,12 +5,8 @@ import com.github.giga_chill.gigachill.web.info.ConsumerInfo;
 import com.github.giga_chill.gigachill.web.info.ParticipantInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
 
-@Mapper(
-        componentModel = "spring",
-        unmappedSourcePolicy = ReportingPolicy.IGNORE,
-        unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", uses = UuidMapper.class)
 public interface ParticipantMapper {
 
     @Mapping(source = "role", target = "userRole")
