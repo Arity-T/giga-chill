@@ -3,7 +3,7 @@
 import React from 'react';
 import { Typography, Space, Alert } from 'antd';
 import { useGetEventQuery } from '@/store/api';
-import { EventIdPathParam } from '@/types/path-params';
+import type { EventIdPathParam } from '@/types/path-params';
 import { UserRole } from '@/store/api';
 import DeleteEventButton from './DeleteEventButton';
 import EditEventForm from './EditEventForm';

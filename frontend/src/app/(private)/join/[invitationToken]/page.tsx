@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Card, Spin, Typography, Button, Space, App } from 'antd';
 import { TeamOutlined, CheckCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useJoinByInvitationTokenMutation } from '@/store/api';
-import { InvitationTokenPathParam } from '@/types/path-params';
+import type { InvitationTokenPathParam } from '@/types/path-params';
 import { PAGES } from '@/config/pages.config';
 
 const { Title, Text } = Typography;

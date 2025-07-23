@@ -3,7 +3,7 @@
 import React from 'react';
 import { Typography, Alert, Card, List, Statistic, Row, Col, Spin, Badge } from 'antd';
 import { DollarOutlined, ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
-import { EventIdPathParam } from '@/types/path-params';
+import type { EventIdPathParam } from '@/types/path-params';
 import { useGetEventQuery, useGetMyBalanceQuery } from '@/store/api';
 import { UserRole } from '@/store/api';
 import { FinalizeEventButton } from '@/components/finalize-event-button';

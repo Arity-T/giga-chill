@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Typography, Alert, Spin, App, Button, Flex } from 'antd';
 import { TeamOutlined, UserAddOutlined } from '@ant-design/icons';
-import { EventIdPathParam } from '@/types/path-params';
+import type { EventIdPathParam } from '@/types/path-params';
 import {
     UserRole,
     useGetEventQuery,

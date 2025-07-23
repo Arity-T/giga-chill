@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Typography, Button, Empty } from 'antd';
 import { ShoppingCartOutlined, PlusOutlined } from '@ant-design/icons';
-import { EventIdPathParam } from '@/types/path-params';
+import type { EventIdPathParam } from '@/types/path-params';
 import ShoppingListCard from '@/components/shopping-list-card';
 import { useGetShoppingListsQuery } from '@/store/api';
 import ShoppingListModal from './ShoppingListModal';

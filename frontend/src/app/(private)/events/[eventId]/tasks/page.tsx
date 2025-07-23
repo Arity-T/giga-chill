@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { Typography, Tabs, Button, Row, Col, Empty, Modal, App } from 'antd';
 import { CheckSquareOutlined, PlusOutlined } from '@ant-design/icons';
-import { EventIdPathParam } from '@/types/path-params';
+import type { EventIdPathParam } from '@/types/path-params';
 import { TaskStatus, useGetParticipantsQuery, useGetShoppingListsQuery, useGetTasksQuery, useDeleteTaskMutation } from '@/store/api';
 import type { Task } from '@/store/api';
 import { getTaskStatusText, getAllTaskStatuses } from '@/utils/task-status-utils';
