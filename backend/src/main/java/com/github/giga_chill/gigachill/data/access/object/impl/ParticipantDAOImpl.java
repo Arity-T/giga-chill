@@ -43,9 +43,9 @@ public class ParticipantDAOImpl implements ParticipantDAO {
     @Override
     public void addParticipantToEvent(UUID eventId, ParticipantDTO participant) {
         UserInEventRecord record = new UserInEventRecord();
-        record.setUserId(participant.id());
+        record.setUserId(participant.getId());
         record.setEventId(eventId);
-        record.setRole(participant.role() != null ? EventRole.valueOf(participant.role()) : null);
+        record.setRole(participant.getRole() != null ? EventRole.valueOf(participant.getRole()) : null);
         userInEventRepository.save(record);
     }
 

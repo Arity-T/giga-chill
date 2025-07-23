@@ -39,9 +39,7 @@ public class ParticipantsController {
                             + eventId);
         }
         return ResponseEntity.ok(
-                participantsService.getAllParticipantsByEventId(eventId).stream()
-                        .map(InfoEntityMapper::toParticipantInfo)
-                        .toList());
+                participantsService.getAllParticipantsByEventId(eventId));
     }
 
     @PostMapping("/{eventId}/participants")

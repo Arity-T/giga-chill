@@ -16,24 +16,6 @@ public final class DtoEntityMapper {
         return new UserDTO(user.getId(), user.getLogin(), user.getName());
     }
 
-    public static Participant toParticipantEntity(ParticipantDTO participantDTO) {
-        return new Participant(
-                participantDTO.id(),
-                participantDTO.login(),
-                participantDTO.name(),
-                participantDTO.role(),
-                participantDTO.balance());
-    }
-
-    public static ParticipantDTO toParticipantDto(Participant participant) {
-        return new ParticipantDTO(
-                participant.getId(),
-                participant.getLogin(),
-                participant.getName(),
-                participant.getRole(),
-                participant.getBalance());
-    }
-
     public static ShoppingList toShoppingListEntity(ShoppingListDTO shoppingListDTO) {
         return new ShoppingList(
                 shoppingListDTO.shoppingListId(),
