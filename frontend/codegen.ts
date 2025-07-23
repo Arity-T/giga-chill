@@ -22,6 +22,10 @@ const config: ConfigFile = {
         'getEvent',
         'updateEvent',
         'deleteEvent',
+
+        'getInvitationToken',
+        'createInvitationToken',
+        'joinByInvitationToken',
     ],
     flattenArg: true
 }

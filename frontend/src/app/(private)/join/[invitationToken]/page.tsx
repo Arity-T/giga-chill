@@ -34,7 +34,7 @@ export default function JoinByInvitationPage({ params }: InvitationTokenPathPara
             hasJoined.current = true;
 
             try {
-                const result = await joinByInvitationToken(invitationToken).unwrap();
+                const result = await joinByInvitationToken({ invitation_token: invitationToken }).unwrap();
 
                 setEventId(result.event_id);
                 setJoinStatus('success');
@@ -75,7 +75,7 @@ export default function JoinByInvitationPage({ params }: InvitationTokenPathPara
         hasJoined.current = false;
 
         try {
-            const result = await joinByInvitationToken(invitationToken).unwrap();
+            const result = await joinByInvitationToken({ invitation_token: invitationToken }).unwrap();
 
             setEventId(result.event_id);
             setJoinStatus('success');
