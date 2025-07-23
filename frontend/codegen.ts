@@ -11,49 +11,6 @@ const config: ConfigFile = {
     outputFile: './src/store/api/codegenApi.ts',
     hooks: true,
     useEnumType: true,
-    filterEndpoints: [
-        'login',
-        'register',
-        'logout',
-        'getMe',
-
-        'getEvents',
-        'createEvent',
-        'getEvent',
-        'updateEvent',
-        'deleteEvent',
-
-        'getInvitationToken',
-        'createInvitationToken',
-        'joinByInvitationToken',
-
-        'getParticipants',
-        'addParticipant',
-        'deleteParticipant',
-        'setParticipantRole',
-
-        'getShoppingLists',
-        'createShoppingList',
-        'updateShoppingList',
-        'deleteShoppingList',
-        'setShoppingListBudget',
-        'setShoppingListConsumers',
-        'createShoppingItem',
-        'updateShoppingItem',
-        'deleteShoppingItem',
-        'setShoppingItemPurchased',
-
-        'getTasks',
-        'createTask',
-        'getTask',
-        'updateTask',
-        'deleteTask',
-        'setTaskExecutor',
-        'setTaskShoppingLists',
-        'takeTaskInWork',
-        'sendTaskForReview',
-        'reviewTask',
-    ],
     flattenArg: true
 }
 
