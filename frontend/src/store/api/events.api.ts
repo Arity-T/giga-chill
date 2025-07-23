@@ -11,57 +11,16 @@ api.enhanceEndpoints({
         getEvent: {
             providesTags: (_result: any, _error: any, eventId: string) => [{ type: 'Events', id: eventId }],
         },
-        // updateEvent: {
-        //     invalidatesTags: (_result, _error, { eventId }: { eventId: string }) => [
-        //         { type: 'Events', id: eventId },
-        //         { type: 'Events', id: 'LIST' }
-        //     ],
-        // },
-        // deleteEvent: {
-        //     invalidatesTags: (_result, _error, eventId) => [
-        //         { type: 'Events', id: eventId },
-        //         { type: 'Events', id: 'LIST' }
-        //     ],
-        // },
-    },
-})
-
-
-import type { Event, CreateEventRequest, UpdateEventRequest } from '@/types/api'
-
-export const eventsApi = api.injectEndpoints({
-    endpoints: (builder) => ({
-        // getEvent: builder.query<Event, string>({
-        //     query: (eventId) => `/events/${eventId}`,
-        //     providesTags: (_result, _error, eventId) => [{ type: 'Events', id: eventId }],
-        // }),
-
-        deleteEvent: builder.mutation<void, string>({
-            query: (eventId) => ({
-                url: `/events/${eventId}`,
-                method: 'DELETE',
-            }),
-            invalidatesTags: [{ type: 'Events', id: 'LIST' }],
-            // Не ивалидируем тег с конкретным eventId, потому что иначе сразу после удаления
-            // будет отправляться лишний запрос.
-        }),
-
-        updateEvent: builder.mutation<void, { eventId: string; event: UpdateEventRequest }>({
-            query: ({ eventId, event }) => ({
-                url: `/events/${eventId}`,
-                method: 'PATCH',
-                body: event,
-            }),
-            invalidatesTags: (_result, _error, { eventId }) => [
+        updateEvent: {
+            invalidatesTags: (_result: any, _error: any, { eventId }: { eventId: string }) => [
                 { type: 'Events', id: eventId },
                 { type: 'Events', id: 'LIST' }
             ],
-        }),
-    }),
+        },
+        deleteEvent: {
+            invalidatesTags: [{ type: 'Events', id: 'LIST' }],
+            // Не инвалидируем тег с конкретным eventId, потому что иначе сразу после удаления
+            // будет отправляться лишний запрос.
+        },
+    },
 })
-
-export const {
-    // useGetEventQuery,
-    useDeleteEventMutation,
-    useUpdateEventMutation,
-} = eventsApi 

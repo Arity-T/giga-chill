@@ -20,8 +20,8 @@ const config: ConfigFile = {
         'getEvents',
         'createEvent',
         'getEvent',
-        // 'updateEvent',
-        // 'deleteEvent',
+        'updateEvent',
+        'deleteEvent',
     ],
     flattenArg: true
 }
