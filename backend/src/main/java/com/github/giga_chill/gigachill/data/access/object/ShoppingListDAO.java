@@ -2,7 +2,6 @@ package com.github.giga_chill.gigachill.data.access.object;
 
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingItemDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingListDTO;
-import com.github.giga_chill.gigachill.model.ShoppingList;
 import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.List;
@@ -139,7 +138,7 @@ public interface ShoppingListDAO {
      *
      * @param shoppingListsIds a {@link List} of {@link UUID} representing the IDs of the shopping
      *     lists to fetch
-     * @return a {@link List} of {@link ShoppingList} instances matching the provided IDs; if an ID
+     * @return a {@link List} of {@link ShoppingListDTO} instances matching the provided IDs; if an ID
      *     does not correspond to an existing shopping list, it will be omitted
      */
     List<ShoppingListDTO> getShoppingListsByIds(List<UUID> shoppingListsIds);

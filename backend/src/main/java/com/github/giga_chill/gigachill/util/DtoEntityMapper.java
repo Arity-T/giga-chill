@@ -16,55 +16,6 @@ public final class DtoEntityMapper {
         return new UserDTO(user.getId(), user.getLogin(), user.getName());
     }
 
-    public static ShoppingList toShoppingListEntity(ShoppingListDTO shoppingListDTO) {
-        return new ShoppingList(
-                shoppingListDTO.shoppingListId(),
-                shoppingListDTO.taskId(),
-                shoppingListDTO.title(),
-                shoppingListDTO.description(),
-                null,
-                shoppingListDTO.budget(),
-                shoppingListDTO.shoppingItems().stream()
-                        .map(DtoEntityMapper::toShoppingItemEntity)
-                        .toList(),
-                shoppingListDTO.consumers().stream()
-                        .map(DtoEntityMapper::toParticipantEntity)
-                        .toList());
-    }
-
-    public static ShoppingListDTO toShoppingListDto(ShoppingList shoppingList) {
-        return new ShoppingListDTO(
-                shoppingList.getShoppingListId(),
-                shoppingList.getTaskId(),
-                shoppingList.getTitle(),
-                shoppingList.getDescription(),
-                shoppingList.getBudget(),
-                shoppingList.getShoppingItems().stream()
-                        .map(DtoEntityMapper::toShoppingItemDto)
-                        .toList(),
-                shoppingList.getConsumers().stream()
-                        .map(DtoEntityMapper::toParticipantDto)
-                        .toList());
-    }
-
-    public static ShoppingItemDTO toShoppingItemDto(ShoppingItem shoppingItem) {
-        return new ShoppingItemDTO(
-                shoppingItem.getShoppingItemId(),
-                shoppingItem.getTitle(),
-                shoppingItem.getQuantity(),
-                shoppingItem.getUnit(),
-                shoppingItem.getIsPurchased());
-    }
-
-    public static ShoppingItem toShoppingItemEntity(ShoppingItemDTO shoppingItemDTO) {
-        return new ShoppingItem(
-                shoppingItemDTO.shoppingItemId(),
-                shoppingItemDTO.title(),
-                shoppingItemDTO.quantity(),
-                shoppingItemDTO.unit(),
-                shoppingItemDTO.isPurchased());
-    }
-
     public static Task toTaskEntity(TaskDTO TaskDTO) {
         return new Task(
                 TaskDTO.taskId(),

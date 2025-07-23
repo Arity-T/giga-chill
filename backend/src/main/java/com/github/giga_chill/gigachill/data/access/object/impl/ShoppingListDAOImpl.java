@@ -4,7 +4,6 @@ import com.github.giga_chill.gigachill.data.access.object.ShoppingListDAO;
 import com.github.giga_chill.gigachill.data.transfer.object.ParticipantDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingItemDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingListDTO;
-import com.github.giga_chill.gigachill.model.ShoppingList;
 import com.github.giga_chill.gigachill.repository.*;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingItemsRecord;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingListsRecord;
@@ -171,12 +170,12 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
     public void addShoppingItem(UUID shoppingListId, ShoppingItemDTO shoppingItemDTO) {
         shoppingItemRepository.save(
                 new ShoppingItemsRecord(
-                        shoppingItemDTO.shoppingItemId(),
+                        shoppingItemDTO.getShoppingItemId(),
                         shoppingListId,
-                        shoppingItemDTO.title(),
-                        shoppingItemDTO.quantity(),
-                        shoppingItemDTO.unit(),
-                        shoppingItemDTO.isPurchased()));
+                        shoppingItemDTO.getTitle(),
+                        shoppingItemDTO.getQuantity(),
+                        shoppingItemDTO.getUnit(),
+                        shoppingItemDTO.getIsPurchased()));
     }
 
     /**
@@ -289,11 +288,11 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
     @Override
     public void updateShoppingItem(ShoppingItemDTO shoppingItemDTO) {
         shoppingItemRepository.update(
-                shoppingItemDTO.shoppingItemId(),
-                shoppingItemDTO.title(),
-                shoppingItemDTO.quantity(),
-                shoppingItemDTO.unit(),
-                shoppingItemDTO.isPurchased());
+                shoppingItemDTO.getShoppingItemId(),
+                shoppingItemDTO.getTitle(),
+                shoppingItemDTO.getQuantity(),
+                shoppingItemDTO.getUnit(),
+                shoppingItemDTO.getIsPurchased());
     }
 
     /**
@@ -301,7 +300,7 @@ public class ShoppingListDAOImpl implements ShoppingListDAO {
      *
      * @param shoppingListsIds a {@link List} of {@link UUID} representing the IDs of the shopping
      *     lists to fetch
-     * @return a {@link List} of {@link ShoppingList} instances matching the provided IDs; if an ID
+     * @return a {@link List} of {@link ShoppingListDTO} instances matching the provided IDs; if an ID
      *     does not correspond to an existing shopping list, it will be omitted
      */
     @Override

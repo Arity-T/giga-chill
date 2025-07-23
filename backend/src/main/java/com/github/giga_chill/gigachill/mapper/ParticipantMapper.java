@@ -19,11 +19,4 @@ public interface ParticipantMapper {
     @Mapping(source = "role", target = "userRole")
     ConsumerInfo toConsumerInfo(ParticipantDTO dto);
 
-
-
-    @Named("uuidToString")
-    default String uuidToString(UUID eventId) {
-        return eventId == null ? null : eventId.toString();
-    }
-
 }

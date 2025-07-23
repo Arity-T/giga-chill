@@ -45,19 +45,8 @@ public class ShoppingListsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
-        List<ShoppingListInfo> shoppingLists =
-                shoppingListsService.getAllShoppingListsFromEvent(eventId).stream()
-                        .map(
-                                item ->
-                                        InfoEntityMapper.toShoppingListInfo(
-                                                item,
-                                                canEdit(
-                                                        eventId,
-                                                        item.getShoppingListId(),
-                                                        user.getId())))
-                        .toList();
 
-        return ResponseEntity.ok(shoppingLists);
+        return ResponseEntity.ok(shoppingListsService.getAllShoppingListsFromEvent(eventId, user.getId()));
     }
 
     @PostMapping
@@ -521,18 +510,4 @@ public class ShoppingListsController {
         return ResponseEntity.noContent().build();
     }
 
-    public boolean canEdit(UUID eventId, UUID shoppingListId, UUID userId) {
-        var isParticipant = participantsService.isParticipantRole(eventId, userId);
-        var isConsumer = shoppingListsService.isConsumer(shoppingListId, userId);
-        if (isParticipant && !isConsumer) {
-            return false;
-        }
-
-        var shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
-        var isUnassigned =
-                shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned"));
-        var isAssigned =
-                shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"));
-        return (isUnassigned || isAssigned);
-    }
 }
