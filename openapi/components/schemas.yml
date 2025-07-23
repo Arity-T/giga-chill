@@ -405,6 +405,7 @@ TaskReviewRequest:
 
 UserBalance:
   type: object
+  required: [my_debts, debts_to_me]
   properties:
     my_debts:
       type: array
@@ -417,6 +418,7 @@ UserBalance:
 
 Debt:
   type: object
+  required: [user, amount]
   properties:
     user:
       $ref: "#/User"
@@ -425,16 +427,20 @@ Debt:
       description: Сумма долга
       example: 1000
 
+ParticipantBalanceSummary:
+  type: object
+  required: [user, total_balance, user_balance]
+  properties:
+    user:
+      $ref: "#/User"
+    total_balance:
+      type: number
+      description: Сумма долгов пользователя в мероприятии (может быть отрицательной)
+      example: 200
+    user_balance:
+      $ref: "#/UserBalance"
+
 EventBalanceSummary:
   type: array
   items:
-    type: object
-    properties:
-      user:
-        $ref: "#/User"
-      total_balance:
-        type: number
-        description: Сумма долгов пользователя в мероприятии (может быть отрицательной)
-        example: 200
-      user_balance:
-        $ref: "#/UserBalance"
+    $ref: "#/ParticipantBalanceSummary"

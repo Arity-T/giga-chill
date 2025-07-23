@@ -887,7 +887,7 @@ paths:
     get:
       summary: Получить сводку по балансу мероприятия
       tags: [Debts]
-      operationId: getEventBalanceSummary
+      operationId: getBalanceSummary
       parameters:
         - $ref: "#/components/parameters/eventId"
       responses:
