@@ -32,7 +32,7 @@ public class EventServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.getEventById(..)) "
-                    + "&& args(eventId)")
+                    + "&& args(eventId, ..)")
     public void getEventById(UUID eventId) {}
 
     @Pointcut(
