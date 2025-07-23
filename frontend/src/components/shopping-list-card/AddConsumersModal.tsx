@@ -75,7 +75,7 @@ export default function AddConsumersModal({
             await setShoppingListConsumers({
                 eventId,
                 shoppingListId,
-                consumers: selectedConsumerIds
+                uuidList: selectedConsumerIds
             }).unwrap();
 
             message.success('Потребители успешно обновлены');

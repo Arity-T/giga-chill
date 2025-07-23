@@ -3,7 +3,8 @@
 import React, { useState, useMemo } from 'react';
 import { Typography, Space, Button, App, Select, Tag } from 'antd';
 import { EditOutlined, CheckOutlined, CloseOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { ShoppingListWithItems, Task } from '@/types/api';
+import type { ShoppingListWithItems } from '@/store/api';
+import { Task } from '@/types/api';
 import { getTaskShoppingListsOptions, shoppingListsToSelectOptions } from '@/utils/shopping-list-utils';
 import ShoppingListCard from '@/components/shopping-list-card/ShoppingListCard';
 
@@ -167,7 +168,6 @@ export default function TaskShoppingLists({
                                     canMarkAsPurchased={true}
                                     expandedListId={expandedListId}
                                     onToggleExpand={onToggleExpand}
-                                    taskId={task.task_id}
                                     showStatus={false}
                                     enableBudgetInput={true}
                                 />

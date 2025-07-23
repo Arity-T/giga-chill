@@ -31,6 +31,17 @@ const config: ConfigFile = {
         'addParticipant',
         'deleteParticipant',
         'setParticipantRole',
+
+        'getShoppingLists',
+        'createShoppingList',
+        'updateShoppingList',
+        'deleteShoppingList',
+        'setShoppingListBudget',
+        'setShoppingListConsumers',
+        'createShoppingItem',
+        'updateShoppingItem',
+        'deleteShoppingItem',
+        'setShoppingItemPurchased',
     ],
     flattenArg: true
 }

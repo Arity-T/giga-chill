@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, Button, App } from 'antd';
 import { useUpdateShoppingListMutation } from '@/store/api';
-import type { ShoppingListRequest, ShoppingListWithItems } from '@/types/api';
+import type { ShoppingListUpdate, ShoppingListWithItems } from '@/store/api';
 
 const { TextArea } = Input;
 
@@ -41,7 +41,7 @@ export default function ShoppingListEditModal({
 
     const handleSubmit = async (values: ShoppingListFormData) => {
         try {
-            const shoppingListData: ShoppingListRequest = {
+            const shoppingListData: ShoppingListUpdate = {
                 title: values.title,
                 description: values.description || '',
             };
@@ -49,7 +49,7 @@ export default function ShoppingListEditModal({
             await updateShoppingList({
                 eventId,
                 shoppingListId: shoppingList.shopping_list_id,
-                shoppingList: shoppingListData
+                shoppingListUpdate: shoppingListData
             }).unwrap();
 
             message.success('Список покупок успешно обновлен!');

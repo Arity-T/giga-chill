@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { Modal, Typography, Tag, Tooltip, Row, Col, App, Space, Spin, Button, Popconfirm } from 'antd';
 import { EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { User, TaskRequest, TaskStatus } from '@/types/api';
+import { TaskRequest, TaskStatus } from '@/types/api';
+import type { User } from '@/store/api';
 import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useAssignTaskMutation, useAssignShoppingListsMutation, useGetShoppingListsQuery, useTakeTaskInWorkMutation, useGetMeQuery, useGetEventQuery } from '@/store/api';
 import { getTaskStatusText, getTaskStatusColor, getTaskStatusTooltip } from '@/utils/task-status-utils';
 import TaskDescription from './TaskDescription';
@@ -277,7 +278,8 @@ export default function TaskModal({
 
                     {/* Списки покупок */}
                     <TaskShoppingLists
-                        shoppingLists={task.shopping_lists || []}
+                        // shoppingLists={task.shopping_lists || []}
+                        shoppingLists={[]}
                         allShoppingLists={allShoppingLists}
                         canEdit={task.permissions.can_edit && task.status === TaskStatus.OPEN}
                         onUpdate={handleUpdateShoppingLists}

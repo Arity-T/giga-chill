@@ -24,8 +24,16 @@ export const tasksApi = api.injectEndpoints({
 
         getTask: builder.query<TaskWithShoppingLists, { eventId: string; taskId: string }>({
             query: ({ eventId, taskId }) => `/events/${eventId}/tasks/${taskId}`,
-            providesTags: (_result, _error, { eventId, taskId }) => [
-                { type: 'Tasks', id: `${eventId}-${taskId}` }
+            providesTags: (result, _error, { eventId, taskId }) => [
+                { type: 'Tasks', id: `${eventId}-${taskId}` },
+
+                // Вместе с задачей возвращаются списки покупок, которые относятся 
+                // к этой задаче. Их можно инвалидировать при изменении этих списков,
+                // чтобы запрос на получения задачи выполнялся заново.
+                ...(result?.shopping_lists ?? []).map((shoppingList) => ({
+                    type: 'ShoppingListInTask' as const,
+                    id: `${eventId}-${shoppingList.shopping_list_id}`,
+                }))
             ],
         }),
 

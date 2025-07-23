@@ -7,6 +7,15 @@ export const api = createApi({
         baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
         credentials: 'include',
     }),
-    tagTypes: ['Me', 'Events', 'InvitationTokens', 'Participants', 'ShoppingLists', 'Tasks', 'Debts'],
+    tagTypes: [
+        'Me',
+        'Events',
+        'InvitationTokens',
+        'Participants',
+        'ShoppingLists',
+        'ShoppingListInTask',
+        'Tasks',
+        'Debts',
+    ],
     endpoints: () => ({}),
 })

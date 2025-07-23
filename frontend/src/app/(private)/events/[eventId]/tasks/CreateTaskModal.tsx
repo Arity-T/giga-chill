@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { Modal, Form, Input, DatePicker, Select, App } from 'antd';
-import { TaskRequest, User, ShoppingListWithItems } from '@/types/api';
+import { TaskRequest } from '@/types/api';
+import type { User, ShoppingListWithItems } from '@/store/api';
 import { useCreateTaskMutation, useGetEventQuery } from '@/store/api';
 import { getAvailableShoppingLists } from '@/utils/shopping-list-utils';
 import dayjs from 'dayjs';

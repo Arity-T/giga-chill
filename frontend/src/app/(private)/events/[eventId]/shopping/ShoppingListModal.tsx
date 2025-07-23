@@ -3,7 +3,7 @@
 import React from 'react';
 import { Modal, Form, Input, Button, App } from 'antd';
 import { useCreateShoppingListMutation } from '@/store/api';
-import type { ShoppingListRequest } from '@/types/api';
+import type { ShoppingListCreate } from '@/store/api';
 
 const { TextArea } = Input;
 
@@ -25,12 +25,15 @@ export default function ShoppingListModal({ open, onCancel, eventId }: ShoppingL
 
     const handleSubmit = async (values: ShoppingListFormData) => {
         try {
-            const shoppingListData: ShoppingListRequest = {
+            const shoppingListData: ShoppingListCreate = {
                 title: values.title,
                 description: values.description || '',
             };
 
-            await createShoppingList({ eventId, shoppingList: shoppingListData }).unwrap();
+            await createShoppingList({
+                eventId,
+                shoppingListCreate: shoppingListData
+            }).unwrap();
             message.success('Список покупок успешно создан!');
 
             form.resetFields();
