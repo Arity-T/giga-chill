@@ -151,8 +151,8 @@ export default function TaskModal({
         }
 
         // Проверяем, изменился ли исполнитель
-        const currentExecutorId = task.executor?.id || undefined;
-        const newExecutorId = executor?.id || undefined;
+        const currentExecutorId = task.executor?.id || null;
+        const newExecutorId = executor?.id || null;
         if (newExecutorId === currentExecutorId) {
             return; // Исполнитель не изменился, ничего не делаем
         }

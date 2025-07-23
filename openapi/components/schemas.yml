@@ -381,10 +381,12 @@ TaskUpdate:
 
 TaskSetExecutor:
   type: object
+  required: [executor_id]
   properties:
     executor_id:
-      description: Идентификатор исполнителя задачи
-      $ref: "#/UUID"
+      allOf:
+        - $ref: "#/UUID"
+      nullable: true
 
 TaskSendForReviewRequest:
   type: object
