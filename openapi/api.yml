@@ -202,7 +202,7 @@ paths:
       summary: Создать новый токен
       description: Токен генерирует пользователь со статусом **owner**.
       tags: [Invitation Tokens]
-      operationId: createEventInvitationToken
+      operationId: createInvitationToken
       parameters:
         - $ref: "#/components/parameters/eventId"
       responses:
@@ -221,7 +221,7 @@ paths:
         Доступно пользователям с ролью **admin** или **owner**.
         Если токен ещё не был сгенерирован, то в поле token возвращается null.
       tags: [Invitation Tokens]
-      operationId: getEventInvitationToken
+      operationId: getInvitationToken
       parameters:
         - $ref: "#/components/parameters/eventId"
       responses:
@@ -244,8 +244,6 @@ paths:
       description: Пользователь становится участником мероприятия.
       tags: [Invitation Tokens]
       operationId: joinByInvitationToken
-      parameters:
-        - $ref: "#/components/parameters/eventId"
       requestBody:
         required: true
         content:
@@ -259,6 +257,7 @@ paths:
             application/json:
               schema:
                 type: object
+                required: [event_id]
                 properties:
                   event_id:
                     $ref: "#/components/schemas/UUID"
