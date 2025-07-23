@@ -32,7 +32,9 @@ export default function AddParticipantModal({ visible, onCancel, eventId, onSucc
         try {
             await addParticipant({
                 eventId,
-                login: values.login,
+                participantCreate: {
+                    login: values.login,
+                },
             }).unwrap();
             onSuccess();
             onCancel();

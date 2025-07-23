@@ -26,6 +26,11 @@ const config: ConfigFile = {
         'getInvitationToken',
         'createInvitationToken',
         'joinByInvitationToken',
+
+        'getParticipants',
+        'addParticipant',
+        'deleteParticipant',
+        'setParticipantRole',
     ],
     flattenArg: true
 }

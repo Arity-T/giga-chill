@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { Typography, Tabs, Button, Row, Col, Empty, Modal, App } from 'antd';
 import { CheckSquareOutlined, PlusOutlined } from '@ant-design/icons';
 import { EventIdPathParam } from '@/types/path-params';
-import { useGetEventParticipantsQuery, useGetShoppingListsQuery, useGetTasksQuery, useDeleteTaskMutation } from '@/store/api';
+import { useGetParticipantsQuery, useGetShoppingListsQuery, useGetTasksQuery, useDeleteTaskMutation } from '@/store/api';
 import { Task, TaskRequest, TaskStatus } from '@/types/api';
 import { getTaskStatusText, getAllTaskStatuses } from '@/utils/task-status-utils';
 import TaskCard from './TaskCard';
@@ -21,7 +21,7 @@ export default function TasksPage({ params }: EventIdPathParam) {
     const { data: tasks = [], isLoading: isTasksLoading } = useGetTasksQuery(eventId);
 
     // Получаем участников мероприятия для выбора исполнителя
-    const { data: participants = [] } = useGetEventParticipantsQuery(eventId);
+    const { data: participants = [] } = useGetParticipantsQuery(eventId);
 
     // Получаем списки покупок для выбора в задаче
     const { data: shoppingLists = [] } = useGetShoppingListsQuery(eventId);

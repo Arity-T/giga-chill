@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Modal, Input, Checkbox, List, Typography, Space, App } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { useGetEventParticipantsQuery, useSetShoppingListConsumersMutation } from '@/store/api';
-import { UserInEvent } from '@/types/api';
+import { useGetParticipantsQuery, useSetShoppingListConsumersMutation } from '@/store/api';
+import type { Participants } from '@/store/api';
 
 const { Text } = Typography;
 
@@ -11,7 +11,7 @@ interface AddConsumersModalProps {
     onCancel: () => void;
     eventId: string;
     shoppingListId: string;
-    currentConsumers: UserInEvent[];
+    currentConsumers: Participants;
 }
 
 export default function AddConsumersModal({
@@ -32,7 +32,7 @@ export default function AddConsumersModal({
         setSelectedConsumerIds(currentConsumers.map(consumer => consumer.id));
     }, [currentConsumers]);
 
-    const { data: participants = [], isLoading } = useGetEventParticipantsQuery(eventId);
+    const { data: participants = [], isLoading } = useGetParticipantsQuery(eventId);
     const [setShoppingListConsumers, { isLoading: isUpdating }] = useSetShoppingListConsumersMutation();
 
     // Фильтрация участников по поисковому запросу

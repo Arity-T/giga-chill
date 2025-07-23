@@ -8,11 +8,11 @@ import {
     UserRole,
     useGetEventQuery,
     useGetMeQuery,
-    useGetEventParticipantsQuery,
+    useGetParticipantsQuery,
     useDeleteParticipantMutation,
-    useUpdateParticipantRoleMutation
+    useSetParticipantRoleMutation
 } from '@/store/api';
-import { UserInEvent } from '@/types/api';
+import type { Participant } from '@/store/api';
 import ParticipantTable from './ParticipantTable';
 import AddParticipantModal from './AddParticipantModal';
 
@@ -31,19 +31,21 @@ export default function ParticipantsPage({ params }: EventIdPathParam) {
         isLoading: participantsLoading,
         isFetching: participantsFetching,
         error: participantsError
-    } = useGetEventParticipantsQuery(eventId);
+    } = useGetParticipantsQuery(eventId);
 
     // Мутации для работы с участниками
     const [deleteParticipant, { isLoading: isDeleting }] = useDeleteParticipantMutation();
-    const [updateParticipantRole, { isLoading: isUpdatingRole }] = useUpdateParticipantRoleMutation();
+    const [setParticipantRole, { isLoading: isUpdatingRole }] = useSetParticipantRoleMutation();
 
     // Обработчики
-    const handleRoleChange = async (participant: UserInEvent, newRole: UserRole) => {
+    const handleRoleChange = async (participant: Participant, newRole: UserRole) => {
         try {
-            await updateParticipantRole({
+            await setParticipantRole({
                 eventId,
                 participantId: participant.id,
-                role: newRole,
+                participantSetRole: {
+                    role: newRole,
+                },
             }).unwrap();
             message.success(`Роль пользователя "${participant.name}" успешно изменена!`);
         } catch (error) {
@@ -52,7 +54,7 @@ export default function ParticipantsPage({ params }: EventIdPathParam) {
         }
     };
 
-    const handleDeleteParticipant = async (participant: UserInEvent) => {
+    const handleDeleteParticipant = async (participant: Participant) => {
         try {
             await deleteParticipant({
                 eventId,

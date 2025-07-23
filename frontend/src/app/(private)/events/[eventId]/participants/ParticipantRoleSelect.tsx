@@ -1,14 +1,14 @@
 import React from 'react';
 import { Select } from 'antd';
-import { UserInEvent } from '@/types/api';
+import type { Participant } from '@/store/api';
 import { UserRole } from '@/store/api';
 import UserRoleTag from '@/components/UserRoleTag';
 
 const { Option } = Select;
 
 interface ParticipantRoleSelectProps {
-    participant: UserInEvent;
-    onRoleChange: (participant: UserInEvent, newRole: UserRole) => void;
+    participant: Participant;
+    onRoleChange: (participant: Participant, newRole: UserRole) => void;
     disabled?: boolean;
 }
 
