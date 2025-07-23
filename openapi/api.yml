@@ -346,7 +346,7 @@ paths:
     patch:
       summary: Изменить роль участника
       tags: [Participants]
-      operationId: updateParticipantRole
+      operationId: setParticipantRole
       parameters:
         - $ref: "#/components/parameters/eventId"
         - $ref: "#/components/parameters/participantId"

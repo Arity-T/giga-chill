@@ -167,9 +167,9 @@ ParticipantCreate:
 
 ParticipantSetRole:
   type: object
-  required: [user_role]
+  required: [role]
   properties:
-    user_role:
+    role:
       $ref: "#/UserRole"
 
 ShoppingItem:
