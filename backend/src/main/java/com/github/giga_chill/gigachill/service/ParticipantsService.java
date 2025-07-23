@@ -7,11 +7,10 @@ import com.github.giga_chill.gigachill.model.ParticipantBalance;
 import com.github.giga_chill.gigachill.model.ParticipantSummaryBalance;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.util.DtoEntityMapper;
+import com.github.giga_chill.gigachill.web.info.ParticipantInfo;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
-
-import com.github.giga_chill.gigachill.web.info.ParticipantInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;

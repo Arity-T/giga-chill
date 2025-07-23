@@ -4,7 +4,6 @@ import com.github.giga_chill.gigachill.exception.*;
 import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.ParticipantsService;
 import com.github.giga_chill.gigachill.service.UserService;
-import com.github.giga_chill.gigachill.util.InfoEntityMapper;
 import com.github.giga_chill.gigachill.web.info.ParticipantInfo;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +37,7 @@ public class ParticipantsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
-        return ResponseEntity.ok(
-                participantsService.getAllParticipantsByEventId(eventId));
+        return ResponseEntity.ok(participantsService.getAllParticipantsByEventId(eventId));
     }
 
     @PostMapping("/{eventId}/participants")

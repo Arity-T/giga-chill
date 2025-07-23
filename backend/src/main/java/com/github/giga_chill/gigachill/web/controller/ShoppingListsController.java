@@ -5,7 +5,6 @@ import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.ForbiddenException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.service.*;
-import com.github.giga_chill.gigachill.util.InfoEntityMapper;
 import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.ShoppingListInfo;
 import java.math.BigDecimal;
@@ -46,7 +45,8 @@ public class ShoppingListsController {
                             + eventId);
         }
 
-        return ResponseEntity.ok(shoppingListsService.getAllShoppingListsFromEvent(eventId, user.getId()));
+        return ResponseEntity.ok(
+                shoppingListsService.getAllShoppingListsFromEvent(eventId, user.getId()));
     }
 
     @PostMapping
@@ -509,5 +509,4 @@ public class ShoppingListsController {
         shoppingListsService.updateShoppingListConsumers(shoppingListId, allUsersIds);
         return ResponseEntity.noContent().build();
     }
-
 }

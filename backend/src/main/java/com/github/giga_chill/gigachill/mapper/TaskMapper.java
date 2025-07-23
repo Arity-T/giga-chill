@@ -1,19 +1,13 @@
 package com.github.giga_chill.gigachill.mapper;
 
-
-import com.github.giga_chill.gigachill.data.transfer.object.EventDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.TaskDTO;
 import com.github.giga_chill.gigachill.data.transfer.object.TaskWithShoppingListsDTO;
-import com.github.giga_chill.gigachill.util.UuidUtils;
-import com.github.giga_chill.gigachill.web.info.ResponseEventInfo;
 import com.github.giga_chill.gigachill.web.info.ResponseTaskInfo;
 import com.github.giga_chill.gigachill.web.info.ResponseTaskWithShoppingListsInfo;
+import java.util.UUID;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-
-
-import java.util.UUID;
 
 @Mapper(componentModel = "spring")
 public interface TaskMapper {
@@ -21,7 +15,8 @@ public interface TaskMapper {
     ResponseTaskInfo toResponseTaskInfo(TaskDTO dto);
 
     @Mapping(source = "taskId", target = "taskId", qualifiedByName = "uuidToString")
-    ResponseTaskWithShoppingListsInfo toResponseTaskWithShoppingListsInfo(TaskWithShoppingListsDTO dto);
+    ResponseTaskWithShoppingListsInfo toResponseTaskWithShoppingListsInfo(
+            TaskWithShoppingListsDTO dto);
 
     @Named("uuidToString")
     default String uuidToString(UUID eventId) {

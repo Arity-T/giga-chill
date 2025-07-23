@@ -7,7 +7,6 @@ import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.mapper.TaskMapper;
 import com.github.giga_chill.gigachill.mapper.UserMapper;
 import com.github.giga_chill.gigachill.model.User;
-import com.github.giga_chill.gigachill.util.DtoEntityMapper;
 import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.RequestTaskInfo;
 import com.github.giga_chill.gigachill.web.info.ResponseTaskInfo;
@@ -32,11 +31,16 @@ public class TaskService {
     private final TaskMapper taskMapper;
     private final UserMapper userMapper;
 
-
     public List<ResponseTaskInfo> getAllTasksFromEvent(UUID eventId, UUID userId) {
         return taskDAO.getAllTasksFromEvent(eventId).stream()
                 .map(taskMapper::toResponseTaskInfo)
-                .peek(item -> item.setPermissions(taskPermissions(eventId, UuidUtils.safeUUID(item.getTaskId()), userId)))
+                .peek(
+                        item ->
+                                item.setPermissions(
+                                        taskPermissions(
+                                                eventId,
+                                                UuidUtils.safeUUID(item.getTaskId()),
+                                                userId)))
                 .toList();
     }
 
@@ -50,7 +54,13 @@ public class TaskService {
                                         shoppingListsService.getShoppingListStatus(
                                                 UuidUtils.safeUUID(item.getShoppingListId()))));
         task.getShoppingLists()
-                .forEach(item -> item.setCanEdit(shoppingListsService.canEdit(eventId, UuidUtils.safeUUID(item.getShoppingListId()), userId)));
+                .forEach(
+                        item ->
+                                item.setCanEdit(
+                                        shoppingListsService.canEdit(
+                                                eventId,
+                                                UuidUtils.safeUUID(item.getShoppingListId()),
+                                                userId)));
         return task;
     }
 
@@ -91,8 +101,9 @@ public class TaskService {
                         null,
                         userMapper.toDto(user),
                         requestTaskInfo.executorId() != null
-                                ? userMapper.toDto(userService.getById(
-                                        UuidUtils.safeUUID(requestTaskInfo.executorId())))
+                                ? userMapper.toDto(
+                                        userService.getById(
+                                                UuidUtils.safeUUID(requestTaskInfo.executorId())))
                                 : null);
 
         taskDAO.createTask(eventId, task, shoppingListsIds);

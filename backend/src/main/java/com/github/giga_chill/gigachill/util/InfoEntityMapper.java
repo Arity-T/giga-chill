@@ -2,11 +2,9 @@ package com.github.giga_chill.gigachill.util;
 
 import com.github.giga_chill.gigachill.model.*;
 import com.github.giga_chill.gigachill.web.info.*;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class InfoEntityMapper {
-
 
     public static UserInfo toUserInfo(User user) {
         return new UserInfo(user.getLogin(), user.getName(), user.getId().toString());

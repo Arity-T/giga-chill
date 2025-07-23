@@ -5,13 +5,11 @@ import com.github.giga_chill.gigachill.data.access.object.TaskDAO;
 import com.github.giga_chill.gigachill.data.transfer.object.ShoppingItemDTO;
 import com.github.giga_chill.gigachill.mapper.ShoppingItemMapper;
 import com.github.giga_chill.gigachill.mapper.ShoppingListMapper;
-import com.github.giga_chill.gigachill.util.DtoEntityMapper;
-import java.math.BigDecimal;
-import java.util.*;
-
 import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.ShoppingItemInfo;
 import com.github.giga_chill.gigachill.web.info.ShoppingListInfo;
+import java.math.BigDecimal;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -30,8 +28,18 @@ public class ShoppingListsService {
     public List<ShoppingListInfo> getAllShoppingListsFromEvent(UUID eventId, UUID userId) {
         return shoppingListDAO.getAllShoppingListsFromEvent(eventId).stream()
                 .map(shoppingListMapper::toShoppingListInfo)
-                .peek(item -> item.setStatus(getShoppingListStatus(UuidUtils.safeUUID(item.getShoppingListId()))))
-                .peek(item -> item.setCanEdit(canEdit(eventId, UuidUtils.safeUUID(item.getShoppingListId()), userId)))
+                .peek(
+                        item ->
+                                item.setStatus(
+                                        getShoppingListStatus(
+                                                UuidUtils.safeUUID(item.getShoppingListId()))))
+                .peek(
+                        item ->
+                                item.setCanEdit(
+                                        canEdit(
+                                                eventId,
+                                                UuidUtils.safeUUID(item.getShoppingListId()),
+                                                userId)))
                 .toList();
     }
 
@@ -46,7 +54,11 @@ public class ShoppingListsService {
     public List<ShoppingListInfo> getShoppingListsByIds(List<UUID> shoppingListsIds) {
         return shoppingListDAO.getShoppingListsByIds(shoppingListsIds).stream()
                 .map(shoppingListMapper::toShoppingListInfo)
-                .peek(item -> item.setStatus(getShoppingListStatus(UuidUtils.safeUUID(item.getShoppingListId()))))
+                .peek(
+                        item ->
+                                item.setStatus(
+                                        getShoppingListStatus(
+                                                UuidUtils.safeUUID(item.getShoppingListId()))))
                 .toList();
     }
 
@@ -67,8 +79,7 @@ public class ShoppingListsService {
     public String addShoppingItem(
             UUID shoppingListId, String title, BigDecimal quantity, String unit) {
         var shoppingItem = new ShoppingItemDTO(UUID.randomUUID(), title, quantity, unit, false);
-        shoppingListDAO.addShoppingItem(
-                shoppingListId, shoppingItem);
+        shoppingListDAO.addShoppingItem(shoppingListId, shoppingItem);
         return shoppingItem.getShoppingItemId().toString();
     }
 
@@ -155,7 +166,7 @@ public class ShoppingListsService {
     public boolean canEdit(UUID eventId, UUID shoppingListId, UUID userId) {
 
         var isParticipant = participantsService.isParticipantRole(eventId, userId);
-        var isConsumer =  isConsumer(shoppingListId, userId);
+        var isConsumer = isConsumer(shoppingListId, userId);
         if (isParticipant && !isConsumer) {
             return false;
         }

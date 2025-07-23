@@ -131,7 +131,9 @@ public class TaskDAOImpl implements TaskDAO {
                         taskDTO.getExecutor() != null ? taskDTO.getExecutor().getId() : null,
                         taskDTO.getTitle(),
                         taskDTO.getDescription(),
-                        taskDTO.getStatus() != null ? TaskStatus.valueOf(taskDTO.getStatus()) : null,
+                        taskDTO.getStatus() != null
+                                ? TaskStatus.valueOf(taskDTO.getStatus())
+                                : null,
                         taskDTO.getDeadlineDatetime() != null
                                 ? OffsetDateTime.parse(taskDTO.getDeadlineDatetime())
                                 : null,
