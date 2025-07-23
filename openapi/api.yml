@@ -218,7 +218,7 @@ paths:
       summary: Получение токена
       description: Возвращает заранее сгенерированный токен-приглашение.
         Доступно пользователям с ролью **admin** или **owner**.
-        Если токен ещё не был сгенерирован, то в поле token возвращается null.
+        Если токен ещё не был сгенерирован, то в поле **invitation_token** возвращается **null**.
       tags: [Invitation Tokens]
       operationId: getInvitationToken
       parameters:
