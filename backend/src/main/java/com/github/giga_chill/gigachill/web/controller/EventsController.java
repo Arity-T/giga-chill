@@ -42,15 +42,7 @@ public class EventsController {
         if (userEvents.isEmpty()) {
             ResponseEntity.ok(null);
         }
-        return ResponseEntity.ok(
-                userEvents.stream()
-                        .map(
-                                event ->
-                                        InfoEntityMapper.toResponseEventInfo(
-                                                event,
-                                                participantsService.getParticipantRoleInEvent(
-                                                        event.getEventId(), user.getId())))
-                        .toList());
+        return ResponseEntity.ok(userEvents);
     }
 
     @PostMapping
@@ -78,12 +70,7 @@ public class EventsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
-        var event = eventService.getEventById(eventId);
-        return ResponseEntity.ok(
-                InfoEntityMapper.toResponseEventInfo(
-                        event,
-                        participantsService.getParticipantRoleInEvent(
-                                event.getEventId(), user.getId())));
+        return ResponseEntity.ok(eventService.getEventById(user.getId(), eventId));
     }
 
     @PatchMapping("/{eventId}")

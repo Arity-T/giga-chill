@@ -6,19 +6,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class InfoEntityMapper {
-    public static ResponseEventInfo toResponseEventInfo(Event event, String userRole) {
-        return new ResponseEventInfo(
-                event.getEventId().toString(),
-                userRole,
-                event.getTitle(),
-                event.getLocation(),
-                event.getStartDatetime(),
-                event.getEndDatetime(),
-                event.getDescription(),
-                event.getBudget(),
-                event.getIsFinalized());
-    }
-
     public static ParticipantInfo toParticipantInfo(Participant participant) {
         return new ParticipantInfo(
                 participant.getLogin(),

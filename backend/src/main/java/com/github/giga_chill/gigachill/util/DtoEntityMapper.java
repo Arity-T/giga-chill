@@ -2,7 +2,6 @@ package com.github.giga_chill.gigachill.util;
 
 import com.github.giga_chill.gigachill.data.transfer.object.*;
 import com.github.giga_chill.gigachill.model.*;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,30 +14,6 @@ public final class DtoEntityMapper {
 
     public static UserDTO toUserDto(User user) {
         return new UserDTO(user.getId(), user.getLogin(), user.getName());
-    }
-
-    public static Event toEventEntity(EventDTO eventDTO) {
-        return new Event(
-                eventDTO.eventId(),
-                eventDTO.title(),
-                eventDTO.location(),
-                eventDTO.startDatetime(),
-                eventDTO.endDatetime(),
-                eventDTO.description(),
-                eventDTO.budget() != null ? eventDTO.budget().setScale(2, RoundingMode.UP) : null,
-                eventDTO.isFinalized());
-    }
-
-    public static EventDTO toEventDto(Event event) {
-        return new EventDTO(
-                event.getEventId(),
-                event.getTitle(),
-                event.getLocation(),
-                event.getStartDatetime(),
-                event.getEndDatetime(),
-                event.getDescription(),
-                event.getBudget(),
-                event.getIsFinalized());
     }
 
     public static Participant toParticipantEntity(ParticipantDTO participantDTO) {

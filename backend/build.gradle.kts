@@ -45,6 +45,10 @@ spotless {
 
 // === Зависимости приложения и тестов ===
 dependencies {
+    // Lombok
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+
     // Mapper
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
@@ -65,10 +69,6 @@ dependencies {
     // PostgreSQL драйвер для приложения
     runtimeOnly("org.postgresql:postgresql")
 
-    // Lombok
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-
     // Тесты
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
@@ -81,6 +81,8 @@ dependencies {
     jooqGenerator("org.jooq:jooq-meta:$jooqVersion")
     jooqGenerator("org.postgresql:postgresql")
 }
+
+
 
 tasks.withType<Test> {
 	useJUnitPlatform()
