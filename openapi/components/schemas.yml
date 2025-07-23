@@ -300,6 +300,11 @@ ShoppingListSetBudget:
     budget:
       $ref: "./properties/ShoppingList.yml#/budget"
 
+TaskStatus:
+  type: string
+  enum: [open, in_progress, under_review, completed]
+  description: Статус задачи
+
 Task:
   type: object
   required:
@@ -318,7 +323,7 @@ Task:
     description:
       $ref: "./properties/Task.yml#/description"
     status:
-      $ref: "./properties/Task.yml#/status"
+      $ref: "#/TaskStatus"
     deadline_datetime:
       $ref: "./properties/Task.yml#/deadline_datetime"
     executor_comment:
@@ -376,7 +381,6 @@ TaskUpdate:
 
 TaskSetExecutor:
   type: object
-  required: [executor_id]
   properties:
     executor_id:
       description: Идентификатор исполнителя задачи

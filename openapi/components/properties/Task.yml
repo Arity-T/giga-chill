@@ -14,11 +14,6 @@ deadline_datetime:
   description: Дедлайн задачи
   example: "2025-01-01T12:00:00Z"
 
-status:
-  type: string
-  enum: [open, in_progress, under_review, completed]
-  description: Статус задачи
-
 executor_comment:
   type: string
   description: Комментарий исполнителя

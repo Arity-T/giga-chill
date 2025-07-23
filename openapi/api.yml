@@ -734,7 +734,7 @@ paths:
       description: Поле executor_id может быть null - это означает,
         что у задачи нет исполнителя. В этом случае задача переходит в статус "открыта".
       tags: [Tasks]
-      operationId: assignTask
+      operationId: setTaskExecutor
       parameters:
         - $ref: "#/components/parameters/eventId"
         - $ref: "#/components/parameters/taskId"
@@ -760,7 +760,7 @@ paths:
     put:
       summary: Указать списки покупок для задачи
       tags: [Tasks]
-      operationId: assignShoppingLists
+      operationId: setTaskShoppingLists
       parameters:
         - $ref: "#/components/parameters/eventId"
         - $ref: "#/components/parameters/taskId"
