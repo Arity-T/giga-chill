@@ -42,6 +42,17 @@ const config: ConfigFile = {
         'updateShoppingItem',
         'deleteShoppingItem',
         'setShoppingItemPurchased',
+
+        'getTasks',
+        'createTask',
+        'getTask',
+        'updateTask',
+        'deleteTask',
+        'setTaskExecutor',
+        'setTaskShoppingLists',
+        'takeTaskInWork',
+        'sendTaskForReview',
+        'reviewTask',
     ],
     flattenArg: true
 }

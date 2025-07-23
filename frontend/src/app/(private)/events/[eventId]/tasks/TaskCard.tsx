@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Tag, Typography, Tooltip, Space } from 'antd';
 import { CalendarOutlined, UserOutlined } from '@ant-design/icons';
-import { Task } from '@/types/api';
+import type { Task } from '@/store/api';
 import { getTaskStatusText, getTaskStatusColor, getTaskStatusTooltip } from '@/utils/task-status-utils';
 import { formatDate } from '@/utils/datetime-utils';
 import styles from './TaskCard.module.css';

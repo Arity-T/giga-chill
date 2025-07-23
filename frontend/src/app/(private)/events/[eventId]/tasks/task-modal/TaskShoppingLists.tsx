@@ -3,8 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { Typography, Space, Button, App, Select, Tag } from 'antd';
 import { EditOutlined, CheckOutlined, CloseOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import type { ShoppingListWithItems } from '@/store/api';
-import { Task } from '@/types/api';
+import type { ShoppingListWithItems, Task } from '@/store/api';
 import { getTaskShoppingListsOptions, shoppingListsToSelectOptions } from '@/utils/shopping-list-utils';
 import ShoppingListCard from '@/components/shopping-list-card/ShoppingListCard';
 

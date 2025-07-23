@@ -7,7 +7,7 @@ import {
     useGetTasksQuery,
     useGetShoppingListsQuery
 } from '@/store/api';
-import { TaskStatus } from '@/types/api';
+import { TaskStatus } from '@/store/api';
 import type { Event } from '@/store/api';
 
 export interface FinalizeEventButtonProps {
@@ -23,7 +23,7 @@ export function FinalizeEventButton({ event, onFinalized }: FinalizeEventButtonP
 
     const handleFinalizeEvent = () => {
         // Подсчитываем незавершенные задачи и списки
-        const incompleteTasks = tasks.filter(task => task.status !== TaskStatus.COMPLETED);
+        const incompleteTasks = tasks.filter(task => task.status !== TaskStatus.Completed);
         const incompleteShoppingLists = shoppingLists.filter(list =>
             ![ShoppingListStatus.Bought, ShoppingListStatus.PartiallyBought, ShoppingListStatus.Cancelled].includes(list.status)
         );

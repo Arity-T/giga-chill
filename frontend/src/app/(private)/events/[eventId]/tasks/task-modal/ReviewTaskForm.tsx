@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Typography, Input, Button, App, Space, Row, Col } from 'antd';
 import { MessageOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useReviewTaskMutation } from '@/store/api';
-import { User } from '@/types/api';
+import type { User } from '@/store/api';
 
 const { Title, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -12,8 +12,8 @@ const { TextArea } = Input;
 interface ReviewTaskFormProps {
     eventId: string;
     taskId: string;
-    executorComment: string;
-    executor: User | null;
+    executorComment?: string;
+    executor?: User;
     onSuccess?: () => void;
 }
 
@@ -38,7 +38,7 @@ export default function ReviewTaskForm({
             await reviewTask({
                 eventId,
                 taskId,
-                reviewData: {
+                taskReviewRequest: {
                     reviewer_comment: reviewerComment.trim(),
                     is_approved: isApproved
                 }
