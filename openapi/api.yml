@@ -17,7 +17,6 @@ tags:
   - name: Participants
   - name: Shopping Lists
   - name: Shopping List Items
-  - name: Shopping List Consumers
   - name: Tasks
   - name: Debts
 
@@ -395,7 +394,7 @@ paths:
     post:
       summary: Добавить список покупок
       tags: [Shopping Lists]
-      operationId: addShoppingList
+      operationId: createShoppingList
       parameters:
         - $ref: "#/components/parameters/eventId"
       requestBody:
@@ -463,7 +462,7 @@ paths:
     put:
       summary: Изменить бюджет списка покупок
       tags: [Shopping Lists]
-      operationId: updateShoppingListBudget
+      operationId: setShoppingListBudget
       parameters:
         - $ref: "#/components/parameters/eventId"
         - $ref: "#/components/parameters/shoppingListId"
@@ -485,11 +484,48 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundError"
 
+  /events/{eventId}/shopping-lists/{shoppingListId}/consumers:
+    put:
+      summary: Указать потребителей для списка покупок
+      description: |
+        Идемпотентное действие - список потребителей полностью заменяется.
+
+        Есть некоторый риск, что один клиент перезапишет другого. 
+        Не критично, но стоит иметь в виду. Вариант решения - ETag/If-Match.
+      tags: [Shopping Lists]
+      operationId: setShoppingListConsumers
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/shoppingListId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UUIDList"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/InvalidDataError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          description: Статус списка покупок не позволяет изменять потребителей
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /events/{eventId}/shopping-lists/{shoppingListId}/shopping-items:
     post:
       summary: Добавить элемент в список покупок
       tags: [Shopping List Items]
-      operationId: addShoppingItem
+      operationId: createShoppingItem
       parameters:
         - $ref: "#/components/parameters/eventId"
         - $ref: "#/components/parameters/shoppingListId"
@@ -560,7 +596,7 @@ paths:
     patch:
       summary: Изменить статус элемента списка покупок
       tags: [Shopping List Items]
-      operationId: updateShoppingItemPurchasedStatus
+      operationId: setShoppingItemPurchased
       parameters:
         - $ref: "#/components/parameters/eventId"
         - $ref: "#/components/parameters/shoppingListId"
@@ -582,43 +618,6 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
-
-  /events/{eventId}/shopping-lists/{shoppingListId}/consumers:
-    put:
-      summary: Указать потребителей для списка покупок
-      description: |
-        Идемпотентное действие - список потребителей полностью заменяется.
-
-        Есть некоторый риск, что один клиент перезапишет другого. 
-        Не критично, но стоит иметь в виду. Вариант решения - ETag/If-Match.
-      tags: [Shopping List Consumers]
-      operationId: setConsumers
-      parameters:
-        - $ref: "#/components/parameters/eventId"
-        - $ref: "#/components/parameters/shoppingListId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UUIDList"
-      responses:
-        "204":
-          description: No Content
-        "400":
-          $ref: "#/components/responses/InvalidDataError"
-        "401":
-          $ref: "#/components/responses/UnauthorizedError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "409":
-          description: Статус списка покупок не позволяет изменять потребителей
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
 
   /events/{eventId}/tasks:
     get:

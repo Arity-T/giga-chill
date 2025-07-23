@@ -225,6 +225,18 @@ ShoppingItemSetPurchased:
     is_purchased:
       $ref: "./properties/ShoppingItem.yml#/is_purchased"
 
+ShoppingListStatus:
+  type: string
+  enum:
+    - unassigned
+    - assigned
+    - in_progress
+    - bought
+    - partially_bought
+    - cancelled
+  description: Статус списка покупок
+  example: unassigned
+
 ShoppingListWithItems:
   type: object
   required:
@@ -247,7 +259,7 @@ ShoppingListWithItems:
     description:
       $ref: "./properties/ShoppingList.yml#/description"
     status:
-      $ref: "./properties/ShoppingList.yml#/status"
+      $ref: "#/ShoppingListStatus"
     can_edit:
       type: boolean
       description: Может ли пользователь редактировать список покупок
