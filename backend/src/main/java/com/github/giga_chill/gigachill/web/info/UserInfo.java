@@ -1,3 +1,20 @@
 package com.github.giga_chill.gigachill.web.info;
 
-public record UserInfo(String login, String name, String id) {}
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserInfo {
+    @JsonProperty("login")
+    private String login;
+
+    @JsonProperty("name")
+    private String name;
+
+    @JsonProperty("id")
+    private String id;
+}

@@ -2,21 +2,21 @@ package com.github.giga_chill.gigachill.service;
 
 import com.github.giga_chill.gigachill.data.access.object.EventDAO;
 import com.github.giga_chill.gigachill.data.transfer.object.EventDTO;
-import com.github.giga_chill.gigachill.model.Event;
+import com.github.giga_chill.gigachill.mapper.EventMapper;
 import com.github.giga_chill.gigachill.model.User;
-import com.github.giga_chill.gigachill.util.DtoEntityMapper;
+import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
+import com.github.giga_chill.gigachill.web.info.ResponseEventInfo;
 import java.math.BigDecimal;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class EventService {
 
-    private final Environment env;
+    private final EventMapper eventMapper;
     private final EventDAO eventDAO;
     private final ParticipantsService participantsService;
 
@@ -24,13 +24,23 @@ public class EventService {
         return eventDAO.isExistedAndNotDeleted(eventId);
     }
 
-    public Event getEventById(UUID eventId) {
-        return DtoEntityMapper.toEventEntity(eventDAO.getEventById(eventId));
+    public ResponseEventInfo getEventById(UUID userID, UUID eventId) {
+        var eventInfo = eventMapper.toResponseEventInfo(eventDAO.getEventById(eventId));
+        eventInfo.setUserRole(
+                participantsService.getParticipantRoleInEvent(
+                        UuidUtils.safeUUID(eventInfo.getEventId()), userID));
+
+        return eventInfo;
     }
 
-    public List<Event> getAllUserEvents(UUID userId) {
+    public List<ResponseEventInfo> getAllUserEvents(UUID userId) {
         return eventDAO.getAllUserEvents(userId).stream()
-                .map(DtoEntityMapper::toEventEntity)
+                .map(eventMapper::toResponseEventInfo)
+                .peek(
+                        item ->
+                                item.setUserRole(
+                                        participantsService.getParticipantRoleInEvent(
+                                                UuidUtils.safeUUID(item.getEventId()), userId)))
                 .toList();
     }
 
@@ -50,7 +60,7 @@ public class EventService {
 
     public String createEvent(UUID userId, RequestEventInfo requestEventInfo) {
         var event =
-                new Event(
+                new EventDTO(
                         UUID.randomUUID(),
                         requestEventInfo.title(),
                         requestEventInfo.location(),
@@ -60,7 +70,7 @@ public class EventService {
                         BigDecimal.valueOf(0),
                         null);
 
-        eventDAO.createEvent(userId, DtoEntityMapper.toEventDto(event));
+        eventDAO.createEvent(userId, event);
         return event.getEventId().toString();
     }
 

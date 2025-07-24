@@ -77,16 +77,17 @@ public class EventDAOImpl implements EventDAO {
                 .findById(eventId)
                 .ifPresent(
                         eventRecord -> {
-                            if (event.title() != null) eventRecord.setTitle(event.title());
-                            if (event.location() != null) eventRecord.setLocation(event.location());
-                            if (event.startDatetime() != null)
+                            if (event.getTitle() != null) eventRecord.setTitle(event.getTitle());
+                            if (event.getLocation() != null)
+                                eventRecord.setLocation(event.getLocation());
+                            if (event.getStartDatetime() != null)
                                 eventRecord.setStartDatetime(
-                                        OffsetDateTime.parse(event.startDatetime()));
-                            if (event.endDatetime() != null)
+                                        OffsetDateTime.parse(event.getStartDatetime()));
+                            if (event.getEndDatetime() != null)
                                 eventRecord.setEndDatetime(
-                                        OffsetDateTime.parse(event.endDatetime()));
-                            if (event.description() != null)
-                                eventRecord.setDescription(event.description());
+                                        OffsetDateTime.parse(event.getEndDatetime()));
+                            if (event.getDescription() != null)
+                                eventRecord.setDescription(event.getDescription());
                             // Обновление через dsl
                             eventRecord.update();
                         });
@@ -95,21 +96,25 @@ public class EventDAOImpl implements EventDAO {
     @Override
     public void createEvent(UUID userId, EventDTO event) {
         EventsRecord eventRecord = new EventsRecord();
-        eventRecord.setEventId(event.eventId());
-        eventRecord.setTitle(event.title());
-        eventRecord.setLocation(event.location());
+        eventRecord.setEventId(event.getEventId());
+        eventRecord.setTitle(event.getTitle());
+        eventRecord.setLocation(event.getLocation());
         eventRecord.setStartDatetime(
-                event.startDatetime() != null ? OffsetDateTime.parse(event.startDatetime()) : null);
+                event.getStartDatetime() != null
+                        ? OffsetDateTime.parse(event.getStartDatetime())
+                        : null);
         eventRecord.setEndDatetime(
-                event.endDatetime() != null ? OffsetDateTime.parse(event.endDatetime()) : null);
-        eventRecord.setDescription(event.description());
-        eventRecord.setBudget(event.budget());
+                event.getEndDatetime() != null
+                        ? OffsetDateTime.parse(event.getEndDatetime())
+                        : null);
+        eventRecord.setDescription(event.getDescription());
+        eventRecord.setBudget(event.getBudget());
         eventRepository.save(eventRecord);
 
         // Привязка пользователя к событию
         UserInEventRecord userInEventRecord = new UserInEventRecord();
         userInEventRecord.setUserId(userId);
-        userInEventRecord.setEventId(event.eventId());
+        userInEventRecord.setEventId(event.getEventId());
         userInEventRecord.setRole(EventRole.owner);
         userInEventRepository.save(userInEventRecord);
     }

@@ -1,6 +1,15 @@
 package com.github.giga_chill.gigachill.data.transfer.object;
 
 import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public record ParticipantSummaryBalanceDTO(
-        UserDTO user, BigDecimal totalBalance, ParticipantBalanceDTO userBalance) {}
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class ParticipantSummaryBalanceDTO {
+    private UserDTO user;
+    private BigDecimal totalBalance;
+    private ParticipantBalanceDTO userBalance;
+}

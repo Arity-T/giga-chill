@@ -1,13 +1,16 @@
 package com.github.giga_chill.gigachill.service;
 
 import com.github.giga_chill.gigachill.data.access.object.TaskDAO;
+import com.github.giga_chill.gigachill.data.transfer.object.TaskDTO;
 import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
-import com.github.giga_chill.gigachill.model.Task;
+import com.github.giga_chill.gigachill.mapper.TaskMapper;
+import com.github.giga_chill.gigachill.mapper.UserMapper;
 import com.github.giga_chill.gigachill.model.User;
-import com.github.giga_chill.gigachill.util.DtoEntityMapper;
 import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.RequestTaskInfo;
+import com.github.giga_chill.gigachill.web.info.ResponseTaskInfo;
+import com.github.giga_chill.gigachill.web.info.ResponseTaskWithShoppingListsInfo;
 import jakarta.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -25,21 +28,39 @@ public class TaskService {
     private final UserService userService;
     private final ParticipantsService participantsService;
     private final EventService eventService;
+    private final TaskMapper taskMapper;
+    private final UserMapper userMapper;
 
-    public List<Task> getAllTasksFromEvent(UUID eventId) {
+    public List<ResponseTaskInfo> getAllTasksFromEvent(UUID eventId, UUID userId) {
         return taskDAO.getAllTasksFromEvent(eventId).stream()
-                .map(DtoEntityMapper::toTaskEntity)
+                .map(taskMapper::toResponseTaskInfo)
+                .peek(
+                        item ->
+                                item.setPermissions(
+                                        taskPermissions(
+                                                eventId,
+                                                UuidUtils.safeUUID(item.getTaskId()),
+                                                userId)))
                 .toList();
     }
 
-    public Task getTaskById(UUID taskId) {
-        var task = DtoEntityMapper.toTaskEntity(taskDAO.getTaskById(taskId));
+    public ResponseTaskWithShoppingListsInfo getTaskById(UUID taskId, UUID eventId, UUID userId) {
+        var task = taskMapper.toResponseTaskWithShoppingListsInfo(taskDAO.getTaskById(taskId));
+        task.setPermissions(taskPermissions(eventId, taskId, userId));
         task.getShoppingLists()
                 .forEach(
                         item ->
                                 item.setStatus(
                                         shoppingListsService.getShoppingListStatus(
-                                                item.getShoppingListId())));
+                                                UuidUtils.safeUUID(item.getShoppingListId()))));
+        task.getShoppingLists()
+                .forEach(
+                        item ->
+                                item.setCanEdit(
+                                        shoppingListsService.canEdit(
+                                                eventId,
+                                                UuidUtils.safeUUID(item.getShoppingListId()),
+                                                userId)));
         return task;
     }
 
@@ -70,7 +91,7 @@ public class TaskService {
         }
 
         var task =
-                new Task(
+                new TaskDTO(
                         UUID.randomUUID(),
                         requestTaskInfo.title(),
                         requestTaskInfo.description(),
@@ -78,14 +99,14 @@ public class TaskService {
                         requestTaskInfo.deadlineDatetime(),
                         null,
                         null,
-                        user,
+                        userMapper.toUserDto(user),
                         requestTaskInfo.executorId() != null
-                                ? userService.getById(
-                                        UuidUtils.safeUUID(requestTaskInfo.executorId()))
-                                : null,
-                        List.of());
+                                ? userMapper.toUserDto(
+                                        userService.getById(
+                                                UuidUtils.safeUUID(requestTaskInfo.executorId())))
+                                : null);
 
-        taskDAO.createTask(eventId, DtoEntityMapper.toTaskDto(task), shoppingListsIds);
+        taskDAO.createTask(eventId, task, shoppingListsIds);
         return task.getTaskId().toString();
     }
 
@@ -101,7 +122,7 @@ public class TaskService {
                             + eventEndDatetime);
         }
         var task =
-                new Task(
+                new TaskDTO(
                         taskId,
                         requestTaskInfo.title(),
                         requestTaskInfo.description(),
@@ -110,9 +131,8 @@ public class TaskService {
                         null,
                         null,
                         null,
-                        null,
-                        List.of());
-        taskDAO.updateTask(taskId, DtoEntityMapper.toTaskDto(task));
+                        null);
+        taskDAO.updateTask(taskId, task);
     }
 
     public void startExecuting(UUID taskId, UUID userId) {
