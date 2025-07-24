@@ -6,125 +6,50 @@ describe('Полный пользовательский сценарий', () =>
     // });
 
     it('Подготовка: регистрация тестовых пользователей', () => {
-        // Регистрируем всех тестовых пользователей (пароль по умолчанию из команды)
-        cy.visit('/auth/register');
+        // Регистрируем всех тестовых пользователей используя команды
         cy.registerUserUI("Ксения", "xuxa");
-        cy.visit('/auth/register');
         cy.registerUserUI("Дарья", "didi");
-        cy.visit('/auth/register');
         cy.registerUserUI("Юлия", "lili");
     });
 
     it('Создание мероприятия и настройка', () => {
-        cy.visit('/auth/login');
+        // Входим в систему
         cy.loginUserUI("lili");
 
-        cy.visit('/events');
+        // Создаём мероприятие используя команду
+        cy.createEventUI({
+            title: 'Пикник',
+            location: 'Лес',
+            startDay: '18',
+            startHour: '03',
+            endDay: '23',
+            endHour: '20',
+            description: 'всем добра'
+        });
 
-        cy.contains('button', 'Создать')
-            .should('be.enabled')
-            .click();
+        // Добавляем участников используя команды
+        cy.addParticipantByLoginUI('xuxa');
+        cy.addParticipantByLoginUI('didi');
 
-        cy.get('input[placeholder="Введите название мероприятия"]')
-            .type('Пикник')
-            .should('have.value', 'Пикник');
+        // Назначаем роль администратора
+        cy.changeParticipantRoleByNameUI('Ксения', 'Администратор');
 
-        cy.get('input[placeholder="Введите адрес или место проведения"]')
-            .type('Лес')
-            .should('have.value', 'Лес');
+        // Создаём список покупок используя команды
+        cy.createShoppingListUI('Напитки');
 
-        cy.get('input[placeholder="Начало"]').click();
-        cy.get('.ant-picker-cell').contains('18').click();
+        cy.addShoppingItemUI('Напитки', {
+            name: 'Сок яблочный',
+            quantity: '3',
+            unit: 'л'
+        });
 
-        cy.get('.ant-picker-time-panel-column')
-            .first()
-            .contains('03')
-            .click();
-
-        cy.contains('ОК').click();
-
-        cy.get('input[placeholder="Окончание"]').click();
-        cy.get('.ant-picker-cell').contains('23').click();
-
-        cy.get('.ant-picker-time-panel-column')
-            .first()
-            .contains('20')
-            .click();
-
-        cy.contains('ОК').click();
-
-        cy.get('textarea[placeholder*="описание"]')
-            .type('всем добра');
-
-        cy.get('button:contains("Создать")').last().click();
-
-        cy.wait(2000);
-        cy.contains('Пикник').click();
-
-        // Добавление участников
-        cy.contains('Участники').click();
-
-        cy.contains('Добавить участника').click();
-
-        cy.get('input[placeholder="Введите логин пользователя"]')
-            .type('xuxa')
-            .should('have.value', 'xuxa');
-
-        cy.get('button:contains("Добавить участника")').last().click();
-
-        cy.contains('Добавить участника').click();
-
-        cy.get('input[placeholder="Введите логин пользователя"]')
-            .type('didi')
-            .should('have.value', 'didi');
-
-        cy.get('button:contains("Добавить участника")').last().click();
-
-        // Назначение роли администратора
-        cy.contains('tr', 'Ксения')
-            .within(() => {
-                cy.contains('Участник')
-                    .click();
-            });
-
-        cy.contains('Администратор').click();
-
-        // Создание списка покупок
-        cy.contains('Списки покупок').click();
-
-        cy.contains('Добавить список').click();
-
-        cy.get('input[placeholder="Введите название списка покупок"]')
-            .type('Напитки')
-            .should('have.value', 'Напитки');
-
-        cy.contains('button', 'Создать')
-            .should('be.enabled')
-            .click();
-
-        cy.contains('Напитки').click();
-
-        cy.contains('button', 'Добавить покупку')
-            .should('be.enabled')
-            .click();
-
-        cy.get('input[placeholder="Введите название товара"]')
-            .type('Сок яблочный')
-            .should('have.value', 'Сок яблочный');
-
-        cy.get('input[placeholder="1"]').click().clear().type('3');
-
-        cy.contains("шт").click();
-        cy.contains('.ant-select-item', 'л').click();
-
-        cy.get('button:contains("Добавить")').last().click();
-
+        // Назначение потребителей для покупки (старый код пока оставляем)
         cy.contains('1').last().click();
         cy.contains('Выбрать всех').click();
         cy.get('input[type="checkbox"]:checked').should('have.length', 4);
         cy.get('button:contains("Сохранить")').last().click();
 
-        // Создание задачи
+        // Создание задачи (пока оставляем старый код)
         cy.contains('Задачи').click();
 
         cy.contains('Создать задачу').click();
@@ -153,7 +78,7 @@ describe('Полный пользовательский сценарий', () =>
     });
 
     it('Выполнение задачи исполнителем', () => {
-        cy.visit('/auth/login');
+        // Входим под другим пользователем
         cy.loginUserUI("xuxa");
 
         cy.visit('/events');
@@ -178,7 +103,7 @@ describe('Полный пользовательский сценарий', () =>
     });
 
     it('Завершение мероприятия и проверка балансов', () => {
-        cy.visit('/auth/login');
+        // Возвращаемся под организатором мероприятия
         cy.loginUserUI("lili");
 
         cy.visit('/events');
