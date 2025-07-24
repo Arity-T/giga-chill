@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Layout, Menu, Card, Spin, Alert, Space } from 'antd';
+import { Layout, Menu, Card, Spin, Alert, Space, Flex } from 'antd';
 import {
     InfoCircleOutlined,
     TeamOutlined,
@@ -17,6 +17,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useGetEventQuery } from '@/store/api';
 import { Button, Typography } from 'antd';
 import UserRoleTag from '@/components/UserRoleTag';
+import UserDropdown from '@/components/user-dropdown';
 import { PAGES } from '@/config/pages.config';
 import { UserRole } from '@/types/api';
 
@@ -154,12 +155,15 @@ export default function EventLayout({ children, params }: EventLayoutProps) {
         <div style={{ padding: '24px' }}>
             {event && (
                 <div style={{ marginBottom: '24px' }}>
-                    <Space align="center">
-                        <Title level={2} style={{ margin: 0 }}>
-                            {event.title}
-                        </Title>
-                        <UserRoleTag role={event.user_role} />
-                    </Space>
+                    <Flex justify="space-between" align="center">
+                        <Space align="center">
+                            <Title level={2} style={{ margin: 0 }}>
+                                {event.title}
+                            </Title>
+                            <UserRoleTag role={event.user_role} />
+                        </Space>
+                        <UserDropdown />
+                    </Flex>
                 </div>
             )}
 

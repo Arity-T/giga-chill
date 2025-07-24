@@ -1,5 +1,5 @@
 export const PAGES = {
-    HOME: '/',
+    HOME: '/events',
     LOGIN: '/auth/login',
     REGISTER: '/auth/register',
     EVENTS: '/events',
