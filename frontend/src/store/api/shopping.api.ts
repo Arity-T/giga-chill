@@ -13,13 +13,15 @@ api.enhanceEndpoints({
             ],
         },
         updateShoppingList: {
-            invalidatesTags: (_result: any, _error: any, { eventId }: { eventId: string }) => [
-                { type: 'ShoppingLists', id: eventId }
+            invalidatesTags: (_result: any, _error: any, { eventId, shoppingListId }: { eventId: string; shoppingListId: string }) => [
+                { type: 'ShoppingLists', id: eventId },
+                { type: 'ShoppingListInTask' as const, id: `${eventId}-${shoppingListId}` },
             ],
         },
         deleteShoppingList: {
-            invalidatesTags: (_result: any, _error: any, { eventId }: { eventId: string }) => [
-                { type: 'ShoppingLists', id: eventId }
+            invalidatesTags: (_result: any, _error: any, { eventId, shoppingListId }: { eventId: string; shoppingListId: string }) => [
+                { type: 'ShoppingLists', id: eventId },
+                { type: 'ShoppingListInTask' as const, id: `${eventId}-${shoppingListId}` },
             ],
         },
         setShoppingListBudget: {
@@ -29,8 +31,9 @@ api.enhanceEndpoints({
             ],
         },
         setShoppingListConsumers: {
-            invalidatesTags: (_result: any, _error: any, { eventId }: { eventId: string }) => [
-                { type: 'ShoppingLists', id: eventId }
+            invalidatesTags: (_result: any, _error: any, { eventId, shoppingListId }: { eventId: string; shoppingListId: string }) => [
+                { type: 'ShoppingLists', id: eventId },
+                { type: 'ShoppingListInTask' as const, id: `${eventId}-${shoppingListId}` },
             ],
         },
         createShoppingItem: {
@@ -39,13 +42,15 @@ api.enhanceEndpoints({
             ],
         },
         updateShoppingItem: {
-            invalidatesTags: (_result: any, _error: any, { eventId }: { eventId: string }) => [
-                { type: 'ShoppingLists', id: eventId }
+            invalidatesTags: (_result: any, _error: any, { eventId, shoppingListId }: { eventId: string; shoppingListId: string }) => [
+                { type: 'ShoppingLists', id: eventId },
+                { type: 'ShoppingListInTask' as const, id: `${eventId}-${shoppingListId}` },
             ],
         },
         deleteShoppingItem: {
-            invalidatesTags: (_result: any, _error: any, { eventId }: { eventId: string }) => [
-                { type: 'ShoppingLists', id: eventId }
+            invalidatesTags: (_result: any, _error: any, { eventId, shoppingListId }: { eventId: string; shoppingListId: string }) => [
+                { type: 'ShoppingLists', id: eventId },
+                { type: 'ShoppingListInTask' as const, id: `${eventId}-${shoppingListId}` },
             ],
         },
         setShoppingItemPurchased: {
