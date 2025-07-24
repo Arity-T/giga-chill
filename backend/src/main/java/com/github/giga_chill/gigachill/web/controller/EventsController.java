@@ -8,7 +8,6 @@ import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.ParticipantsService;
 import com.github.giga_chill.gigachill.service.UserService;
-import com.github.giga_chill.gigachill.util.InfoEntityMapper;
 import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.ParticipantBalanceInfo;
 import com.github.giga_chill.gigachill.web.info.ParticipantSummaryBalanceInfo;
@@ -267,9 +266,7 @@ public class EventsController {
                             + eventId);
         }
 
-        return ResponseEntity.ok(
-                InfoEntityMapper.toParticipantBalanceInfo(
-                        participantsService.getParticipantBalance(eventId, user.getId())));
+        return ResponseEntity.ok(participantsService.getParticipantBalance(eventId, user.getId()));
     }
 
     @GetMapping("/{eventId}/balance-summary")
@@ -296,9 +293,6 @@ public class EventsController {
                             + eventId);
         }
 
-        return ResponseEntity.ok(
-                participantsService.getParticipantsSummaryBalance(eventId).stream()
-                        .map(InfoEntityMapper::toParticipantSummaryBalanceInfo)
-                        .toList());
+        return ResponseEntity.ok(participantsService.getParticipantsSummaryBalance(eventId));
     }
 }

@@ -25,7 +25,7 @@ public class EventService {
     }
 
     public ResponseEventInfo getEventById(UUID userID, UUID eventId) {
-        var eventInfo = eventMapper.toInfo(eventDAO.getEventById(eventId));
+        var eventInfo = eventMapper.toResponseEventInfo(eventDAO.getEventById(eventId));
         eventInfo.setUserRole(
                 participantsService.getParticipantRoleInEvent(
                         UuidUtils.safeUUID(eventInfo.getEventId()), userID));
@@ -35,7 +35,7 @@ public class EventService {
 
     public List<ResponseEventInfo> getAllUserEvents(UUID userId) {
         return eventDAO.getAllUserEvents(userId).stream()
-                .map(eventMapper::toInfo)
+                .map(eventMapper::toResponseEventInfo)
                 .peek(
                         item ->
                                 item.setUserRole(

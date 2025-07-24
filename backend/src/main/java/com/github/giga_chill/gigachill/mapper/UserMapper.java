@@ -10,14 +10,14 @@ import org.mapstruct.Mapping;
 public interface UserMapper {
 
     @Mapping(source = "id", target = "id", qualifiedByName = "stringToUuid")
-    UserDTO toDto(UserInfo entity);
+    UserDTO toUserDto(UserInfo info);
 
     @Mapping(source = "id", target = "id", qualifiedByName = "stringToUuid")
-    UserDTO toDto(User entity);
+    UserDTO toUserDto(User entity);
 
     @Mapping(source = "id", target = "id", qualifiedByName = "uuidToString")
-    UserInfo toInfo(UserDTO dto);
+    UserInfo toUserInfo(UserDTO dto);
 
     @Mapping(source = "id", target = "id", qualifiedByName = "stringToUuid")
-    User toEntity(UserDTO dto);
+    User toUserEntity(UserDTO dto);
 }

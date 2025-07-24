@@ -99,9 +99,9 @@ public class TaskService {
                         requestTaskInfo.deadlineDatetime(),
                         null,
                         null,
-                        userMapper.toDto(user),
+                        userMapper.toUserDto(user),
                         requestTaskInfo.executorId() != null
-                                ? userMapper.toDto(
+                                ? userMapper.toUserDto(
                                         userService.getById(
                                                 UuidUtils.safeUUID(requestTaskInfo.executorId())))
                                 : null);

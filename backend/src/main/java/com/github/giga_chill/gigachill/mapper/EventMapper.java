@@ -9,8 +9,8 @@ import org.mapstruct.Mapping;
 public interface EventMapper {
 
     @Mapping(source = "eventId", target = "eventId", qualifiedByName = "stringToUuid")
-    EventDTO toDto(ResponseEventInfo entity);
+    EventDTO toEventDto(ResponseEventInfo info);
 
     @Mapping(source = "eventId", target = "eventId", qualifiedByName = "uuidToString")
-    ResponseEventInfo toInfo(EventDTO dto);
+    ResponseEventInfo toResponseEventInfo(EventDTO dto);
 }
