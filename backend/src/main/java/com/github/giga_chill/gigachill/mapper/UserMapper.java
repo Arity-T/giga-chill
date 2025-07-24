@@ -12,12 +12,10 @@ public interface UserMapper {
     @Mapping(source = "id", target = "id", qualifiedByName = "stringToUuid")
     UserDTO toUserDto(UserInfo info);
 
-    @Mapping(source = "id", target = "id", qualifiedByName = "stringToUuid")
     UserDTO toUserDto(User entity);
 
     @Mapping(source = "id", target = "id", qualifiedByName = "uuidToString")
     UserInfo toUserInfo(UserDTO dto);
 
-    @Mapping(source = "id", target = "id", qualifiedByName = "stringToUuid")
     User toUserEntity(UserDTO dto);
 }

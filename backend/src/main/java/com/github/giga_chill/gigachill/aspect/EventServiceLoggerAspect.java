@@ -32,8 +32,8 @@ public class EventServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.getEventById(..)) "
-                    + "&& args(eventId, ..)")
-    public void getEventById(UUID eventId) {}
+                    + "&& args(userId, eventId)")
+    public void getEventById(UUID userId, UUID eventId) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.deleteEvent(..)) "
@@ -122,9 +122,9 @@ public class EventServiceLoggerAspect {
         }
     }
 
-    @Around("getEventById(eventId)")
-    public Object logGetEventById(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
-            throws Throwable {
+    @Around("getEventById(userId, eventId)")
+    public Object logGetEventById(
+            ProceedingJoinPoint proceedingJoinPoint, UUID userId, UUID eventId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(
