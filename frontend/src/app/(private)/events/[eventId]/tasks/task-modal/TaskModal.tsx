@@ -275,8 +275,7 @@ export default function TaskModal({
 
                     {/* Списки покупок */}
                     <TaskShoppingLists
-                        // shoppingLists={task.shopping_lists || []}
-                        shoppingLists={[]}
+                        shoppingLists={task.shopping_lists}
                         allShoppingLists={allShoppingLists}
                         canEdit={task.permissions.can_edit && task.status === TaskStatus.Open}
                         onUpdate={handleUpdateShoppingLists}

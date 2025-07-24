@@ -23,9 +23,9 @@ api.enhanceEndpoints({
             ],
         },
         setShoppingListBudget: {
-            invalidatesTags: (_result: any, _error: any, { eventId, taskId }: { eventId: string; taskId: string }) => [
+            invalidatesTags: (_result: any, _error: any, { eventId, shoppingListId }: { eventId: string; shoppingListId: string }) => [
                 { type: 'ShoppingLists', id: eventId },
-                { type: 'Tasks', id: `${eventId}-${taskId}` }
+                { type: 'ShoppingListInTask' as const, id: `${eventId}-${shoppingListId}` },
             ],
         },
         setShoppingListConsumers: {
