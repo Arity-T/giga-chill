@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Typography } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { ShoppingItem } from '@/types/api';
+import type { ShoppingItem } from '@/store/api';
 import ShoppingListItem from './ShoppingListItem';
 
 const { Text } = Typography;

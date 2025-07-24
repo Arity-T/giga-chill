@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import { Card, App } from 'antd';
 import { CaretRightOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { ShoppingListWithItems } from '@/types/api';
+import type { ShoppingListWithItems } from '@/store/api';
 import {
     useDeleteShoppingListMutation,
     useDeleteShoppingItemMutation,
-    useUpdateShoppingItemPurchasedStateMutation,
+    useSetShoppingItemPurchasedMutation,
     useGetShoppingListsQuery
 } from '@/store/api';
 import ShoppingListHeader from './ShoppingListHeader';
@@ -24,7 +24,6 @@ interface ShoppingListCardProps {
     canMarkAsPurchased: boolean;
     expandedListId?: string;
     onToggleExpand?: (listId: string) => void;
-    taskId?: string;
     showStatus?: boolean;
     enableBudgetInput?: boolean;
 }
@@ -36,7 +35,6 @@ export default function ShoppingListCard({
     canMarkAsPurchased,
     expandedListId,
     onToggleExpand,
-    taskId = '',
     showStatus = true,
     enableBudgetInput = false
 }: ShoppingListCardProps) {
@@ -60,7 +58,7 @@ export default function ShoppingListCard({
     // API мутации
     const [deleteShoppingList] = useDeleteShoppingListMutation();
     const [deleteShoppingItem] = useDeleteShoppingItemMutation();
-    const [updateShoppingItemPurchasedState] = useUpdateShoppingItemPurchasedStateMutation();
+    const [setShoppingItemPurchased] = useSetShoppingItemPurchasedMutation();
 
     // Для получения обновленных данных (используется в поиске списка для товара)
     const { data: shoppingLists } = useGetShoppingListsQuery(eventId);
@@ -81,12 +79,13 @@ export default function ShoppingListCard({
 
     const handleToggleItemPurchased = async (itemId: string, isPurchased: boolean) => {
         try {
-            await updateShoppingItemPurchasedState({
-                taskId: taskId,
+            await setShoppingItemPurchased({
                 eventId,
                 shoppingListId: shoppingList.shopping_list_id,
                 shoppingItemId: itemId,
-                shoppingItem: { is_purchased: isPurchased }
+                shoppingItemSetPurchased: {
+                    is_purchased: isPurchased
+                }
             }).unwrap();
 
             message.success(
@@ -234,7 +233,6 @@ export default function ShoppingListCard({
                                 showStatus={showStatus}
                                 enableBudgetInput={enableBudgetInput}
                                 eventId={eventId}
-                                taskId={taskId}
                             />
                         </div>
                     </div>

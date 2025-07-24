@@ -4,7 +4,7 @@ import { Button, App } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { useDeleteEventMutation } from '@/store/api';
-import { Event } from '@/types/api';
+import type { Event } from '@/store/api';
 import { PAGES } from '@/config/pages.config';
 
 interface DeleteEventButtonProps {

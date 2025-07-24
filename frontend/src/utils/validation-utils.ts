@@ -1,4 +1,4 @@
-import { ValidationRule } from '@/config/validation.config';
+import type { ValidationRule } from '@/config/validation.config';
 
 export const validateField = (value: string, rules: ValidationRule[]): string | undefined => {
     if (!value) {

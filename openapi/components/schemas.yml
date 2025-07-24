@@ -1,0 +1,445 @@
+UUID:
+  type: string
+  format: uuid
+  example: 123e4567-e89b-12d3-a456-426614174000
+
+UUIDList:
+  type: array
+  items:
+    $ref: "#/UUID"
+
+ErrorResponse:
+  type: object
+  required: [message]
+  properties:
+    message:
+      type: string
+      description: Сообщение об ошибке
+      example: "Something went wrong"
+
+RegisterRequest:
+  type: object
+  required: [login, password, name]
+  properties:
+    login:
+      $ref: "./properties/User.yml#/login"
+    password:
+      $ref: "./properties/User.yml#/password"
+    name:
+      $ref: "./properties/User.yml#/name"
+
+LoginRequest:
+  type: object
+  required: [login, password]
+  properties:
+    login:
+      $ref: "./properties/User.yml#/login"
+    password:
+      $ref: "./properties/User.yml#/password"
+
+UserRole:
+  type: string
+  enum: [owner, admin, participant]
+  description: Роль пользователя в мероприятии
+  example: owner
+
+User:
+  type: object
+  required: [login, name, id]
+  properties:
+    id:
+      $ref: "#/UUID"
+    login:
+      $ref: "./properties/User.yml#/login"
+    name:
+      $ref: "./properties/User.yml#/name"
+
+Event:
+  type: object
+  required:
+    - event_id
+    - user_role
+    - title
+    - location
+    - start_datetime
+    - end_datetime
+    - is_finalized
+  properties:
+    event_id:
+      $ref: "#/UUID"
+    user_role:
+      $ref: "#/UserRole"
+    title:
+      $ref: "./properties/Event.yml#/title"
+    location:
+      $ref: "./properties/Event.yml#/location"
+    start_datetime:
+      $ref: "./properties/Event.yml#/start_datetime"
+    end_datetime:
+      $ref: "./properties/Event.yml#/end_datetime"
+    description:
+      $ref: "./properties/Event.yml#/description"
+    budget:
+      $ref: "./properties/Event.yml#/budget"
+    is_finalized:
+      $ref: "./properties/Event.yml#/is_finalized"
+
+Events:
+  type: array
+  items:
+    $ref: "#/Event"
+
+EventCreate:
+  type: object
+  required:
+    - title
+    - location
+    - start_datetime
+    - end_datetime
+  properties:
+    title:
+      $ref: "./properties/Event.yml#/title"
+    location:
+      $ref: "./properties/Event.yml#/location"
+    start_datetime:
+      $ref: "./properties/Event.yml#/start_datetime"
+    end_datetime:
+      $ref: "./properties/Event.yml#/end_datetime"
+    description:
+      $ref: "./properties/Event.yml#/description"
+
+EventUpdate:
+  type: object
+  properties:
+    title:
+      $ref: "./properties/Event.yml#/title"
+    location:
+      $ref: "./properties/Event.yml#/location"
+    start_datetime:
+      $ref: "./properties/Event.yml#/start_datetime"
+    end_datetime:
+      $ref: "./properties/Event.yml#/end_datetime"
+    description:
+      $ref: "./properties/Event.yml#/description"
+
+InvitationToken:
+  type: object
+  required: [invitation_token]
+  properties:
+    invitation_token:
+      type: string
+      description: Токен-приглашение
+      example: "0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c"
+      nullable: true
+
+Participant:
+  type: object
+  required:
+    - id
+    - login
+    - name
+    - user_role
+    - balance
+  properties:
+    id:
+      $ref: "#/UUID"
+    login:
+      $ref: "./properties/User.yml#/login"
+    name:
+      $ref: "./properties/User.yml#/name"
+    user_role:
+      $ref: "#/UserRole"
+
+Participants:
+  type: array
+  items:
+    $ref: "#/Participant"
+
+ParticipantCreate:
+  type: object
+  required: [login]
+  properties:
+    login:
+      $ref: "./properties/User.yml#/login"
+
+ParticipantSetRole:
+  type: object
+  required: [role]
+  properties:
+    role:
+      $ref: "#/UserRole"
+
+ShoppingItem:
+  type: object
+  required:
+    - shopping_item_id
+    - title
+    - quantity
+    - unit
+    - is_purchased
+  properties:
+    shopping_item_id:
+      $ref: "#/UUID"
+    title:
+      $ref: "./properties/ShoppingItem.yml#/title"
+    quantity:
+      $ref: "./properties/ShoppingItem.yml#/quantity"
+    unit:
+      $ref: "./properties/ShoppingItem.yml#/unit"
+    is_purchased:
+      $ref: "./properties/ShoppingItem.yml#/is_purchased"
+
+ShoppingItems:
+  type: array
+  items:
+    $ref: "#/ShoppingItem"
+
+ShoppingItemCreate:
+  type: object
+  required: [title, quantity, unit]
+  properties:
+    title:
+      $ref: "./properties/ShoppingItem.yml#/title"
+    quantity:
+      $ref: "./properties/ShoppingItem.yml#/quantity"
+    unit:
+      $ref: "./properties/ShoppingItem.yml#/unit"
+
+ShoppingItemUpdate:
+  type: object
+  properties:
+    title:
+      $ref: "./properties/ShoppingItem.yml#/title"
+    quantity:
+      $ref: "./properties/ShoppingItem.yml#/quantity"
+    unit:
+      $ref: "./properties/ShoppingItem.yml#/unit"
+
+ShoppingItemSetPurchased:
+  type: object
+  required: [is_purchased]
+  properties:
+    is_purchased:
+      $ref: "./properties/ShoppingItem.yml#/is_purchased"
+
+ShoppingListStatus:
+  type: string
+  enum:
+    - unassigned
+    - assigned
+    - in_progress
+    - bought
+    - partially_bought
+    - cancelled
+  description: Статус списка покупок
+  example: unassigned
+
+ShoppingListWithItems:
+  type: object
+  required:
+    - shopping_list_id
+    - task_id
+    - title
+    - description
+    - status
+    - can_edit
+    - budget
+    - shopping_items
+    - consumers
+  properties:
+    shopping_list_id:
+      $ref: "#/UUID"
+    task_id:
+      $ref: "#/UUID"
+    title:
+      $ref: "./properties/ShoppingList.yml#/title"
+    description:
+      $ref: "./properties/ShoppingList.yml#/description"
+    status:
+      $ref: "#/ShoppingListStatus"
+    can_edit:
+      type: boolean
+      description: Может ли пользователь редактировать список покупок
+      example: true
+    budget:
+      $ref: "./properties/ShoppingList.yml#/budget"
+    shopping_items:
+      $ref: "#/ShoppingItems"
+    consumers:
+      $ref: "#/Participants"
+
+ShoppingListsWithItems:
+  type: array
+  items:
+    $ref: "#/ShoppingListWithItems"
+
+ShoppingListCreate:
+  type: object
+  required: [title]
+  properties:
+    title:
+      $ref: "./properties/ShoppingList.yml#/title"
+    description:
+      $ref: "./properties/ShoppingList.yml#/description"
+
+ShoppingListUpdate:
+  type: object
+  properties:
+    title:
+      $ref: "./properties/ShoppingList.yml#/title"
+    description:
+      $ref: "./properties/ShoppingList.yml#/description"
+
+ShoppingListSetBudget:
+  type: object
+  required: [budget]
+  properties:
+    budget:
+      $ref: "./properties/ShoppingList.yml#/budget"
+
+TaskStatus:
+  type: string
+  enum: [open, in_progress, under_review, completed]
+  description: Статус задачи
+
+Task:
+  type: object
+  required:
+    - task_id
+    - title
+    - description
+    - status
+    - deadline_datetime
+    - permissions
+    - author
+  properties:
+    task_id:
+      $ref: "#/UUID"
+    title:
+      $ref: "./properties/Task.yml#/title"
+    description:
+      $ref: "./properties/Task.yml#/description"
+    status:
+      $ref: "#/TaskStatus"
+    deadline_datetime:
+      $ref: "./properties/Task.yml#/deadline_datetime"
+    executor_comment:
+      $ref: "./properties/Task.yml#/executor_comment"
+    reviewer_comment:
+      $ref: "./properties/Task.yml#/reviewer_comment"
+    permissions:
+      $ref: "./properties/Task.yml#/permissions"
+    author:
+      $ref: "#/User"
+    executor:
+      $ref: "#/User"
+
+Tasks:
+  type: array
+  items:
+    $ref: "#/Task"
+
+TaskWithShoppingLists:
+  allOf:
+    - $ref: "#/Task"
+    - type: object
+      required: [shopping_lists]
+      properties:
+        shopping_lists:
+          $ref: "#/ShoppingListsWithItems"
+
+TaskCreate:
+  type: object
+  required:
+    - title
+    - deadline_datetime
+  properties:
+    title:
+      $ref: "./properties/Task.yml#/title"
+    description:
+      $ref: "./properties/Task.yml#/description"
+    deadline_datetime:
+      $ref: "./properties/Task.yml#/deadline_datetime"
+    executor_id:
+      description: Идентификатор исполнителя задачи
+      $ref: "#/UUID"
+    shopping_lists_ids:
+      $ref: "#/UUIDList"
+
+TaskUpdate:
+  type: object
+  properties:
+    title:
+      $ref: "./properties/Task.yml#/title"
+    description:
+      $ref: "./properties/Task.yml#/description"
+    deadline_datetime:
+      $ref: "./properties/Task.yml#/deadline_datetime"
+
+TaskSetExecutor:
+  type: object
+  required: [executor_id]
+  properties:
+    executor_id:
+      allOf:
+        - $ref: "#/UUID"
+      nullable: true
+
+TaskSendForReviewRequest:
+  type: object
+  required: [executor_comment]
+  properties:
+    executor_comment:
+      $ref: "./properties/Task.yml#/executor_comment"
+
+TaskReviewRequest:
+  type: object
+  required: [reviewer_comment, is_approved]
+  properties:
+    reviewer_comment:
+      $ref: "./properties/Task.yml#/reviewer_comment"
+    is_approved:
+      type: boolean
+      description: Признак того, что задача одобрена
+
+UserBalance:
+  type: object
+  required: [my_debts, debts_to_me]
+  properties:
+    my_debts:
+      type: array
+      items:
+        $ref: "#/Debt"
+    debts_to_me:
+      type: array
+      items:
+        $ref: "#/Debt"
+
+Debt:
+  type: object
+  required: [user, amount]
+  properties:
+    user:
+      $ref: "#/User"
+    amount:
+      type: number
+      description: Сумма долга
+      example: 1000
+
+ParticipantBalanceSummary:
+  type: object
+  required: [user, total_balance, user_balance]
+  properties:
+    user:
+      $ref: "#/User"
+    total_balance:
+      type: number
+      description: Сумма долгов пользователя в мероприятии (может быть отрицательной)
+      example: 200
+    user_balance:
+      $ref: "#/UserBalance"
+
+EventBalanceSummary:
+  type: array
+  items:
+    $ref: "#/ParticipantBalanceSummary"

@@ -1,15 +1,17 @@
 import React from 'react';
 import { Table, Space, Tag } from 'antd';
-import { UserRole, UserInEvent, Event, User } from '@/types/api';
+import type { Participant, Participants } from '@/store/api';
+import { UserRole } from '@/store/api';
+import type { User, Event } from '@/store/api';
 import ParticipantRoleSelect from './ParticipantRoleSelect';
 import ParticipantActions from './ParticipantActions';
 
 interface ParticipantTableProps {
-    participants: UserInEvent[];
+    participants: Participants;
     event: Event;
     currentUser: User;
-    onRoleChange: (participant: UserInEvent, newRole: UserRole) => Promise<void>;
-    onDeleteParticipant: (participant: UserInEvent) => Promise<void>;
+    onRoleChange: (participant: Participant, newRole: UserRole) => Promise<void>;
+    onDeleteParticipant: (participant: Participant) => Promise<void>;
 }
 
 export default function ParticipantTable({
@@ -20,15 +22,15 @@ export default function ParticipantTable({
     onDeleteParticipant
 }: ParticipantTableProps) {
     const currentUserRole = event.user_role;
-    const isOwner = currentUserRole === UserRole.OWNER;
-    const isAdmin = currentUserRole === UserRole.ADMIN;
+    const isOwner = currentUserRole === UserRole.Owner;
+    const isAdmin = currentUserRole === UserRole.Admin;
 
     const columns = [
         {
             title: 'Имя',
             dataIndex: 'name',
             key: 'name',
-            render: (text: string, record: UserInEvent) => (
+            render: (text: string, record: Participant) => (
                 <Space>
                     <span>{text}</span>
                     {record.login && (
@@ -43,9 +45,9 @@ export default function ParticipantTable({
             title: 'Роль',
             dataIndex: 'user_role',
             key: 'user_role',
-            render: (_: unknown, record: UserInEvent) => {
+            render: (_: unknown, record: Participant) => {
                 const isCurrentUser = record.id === currentUser.id;
-                const canChangeRole = isOwner && record.user_role !== UserRole.OWNER && !isCurrentUser;
+                const canChangeRole = isOwner && record.user_role !== UserRole.Owner && !isCurrentUser;
 
                 return (
                     <ParticipantRoleSelect
@@ -60,12 +62,12 @@ export default function ParticipantTable({
             title: 'Действия',
             key: 'actions',
             width: 100,
-            render: (_: unknown, record: UserInEvent) => {
+            render: (_: unknown, record: Participant) => {
                 const isCurrentUser = record.id === currentUser.id;
                 const canDelete =
                     !isCurrentUser && (
-                        (isOwner && record.user_role !== UserRole.OWNER) ||
-                        (isAdmin && record.user_role === UserRole.PARTICIPANT)
+                        (isOwner && record.user_role !== UserRole.Owner) ||
+                        (isAdmin && record.user_role === UserRole.Participant)
                     );
 
                 return (

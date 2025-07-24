@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { Modal, Form, Input, DatePicker, Select, App } from 'antd';
-import { TaskRequest, User, ShoppingListWithItems } from '@/types/api';
+import type { User, ShoppingListWithItems, TaskCreate } from '@/store/api';
 import { useCreateTaskMutation, useGetEventQuery } from '@/store/api';
 import { getAvailableShoppingLists } from '@/utils/shopping-list-utils';
 import dayjs from 'dayjs';
@@ -39,7 +39,7 @@ export default function CreateTaskModal({ open, onCancel, participants, shopping
         try {
             const values = await form.validateFields();
 
-            const taskData: TaskRequest = {
+            const taskCreate: TaskCreate = {
                 title: values.title,
                 description: values.description || '',
                 deadline_datetime: values.deadline_datetime.toISOString(),
@@ -47,7 +47,7 @@ export default function CreateTaskModal({ open, onCancel, participants, shopping
                 shopping_lists_ids: values.shopping_lists_ids || [],
             };
 
-            await createTask({ eventId, task: taskData }).unwrap();
+            await createTask({ eventId, taskCreate }).unwrap();
             message.success('Задача создана');
             form.resetFields();
             onCancel();

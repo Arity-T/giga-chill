@@ -1,0 +1,39 @@
+eventId:
+  name: eventId
+  in: path
+  required: true
+  description: Идентификатор мероприятия
+  schema:
+    $ref: "./schemas.yml#/UUID"
+
+participantId:
+  name: participantId
+  in: path
+  required: true
+  description: Идентификатор участника
+  schema:
+    $ref: "./schemas.yml#/UUID"
+
+shoppingListId:
+  name: shoppingListId
+  in: path
+  required: true
+  description: Идентификатор списка покупок
+  schema:
+    $ref: "./schemas.yml#/UUID"
+
+shoppingItemId:
+  name: shoppingItemId
+  in: path
+  required: true
+  description: Идентификатор элемента списка покупок
+  schema:
+    $ref: "./schemas.yml#/UUID"
+
+taskId:
+  name: taskId
+  in: path
+  required: true
+  description: Идентификатор задачи
+  schema:
+    $ref: "./schemas.yml#/UUID"

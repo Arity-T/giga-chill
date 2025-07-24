@@ -3,15 +3,15 @@
 import React, { useState } from 'react';
 import { Typography, Select, App, Space, Button } from 'antd';
 import { UserOutlined, EditOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
-import { User } from '@/types/api';
+import type { User } from '@/store/api';
 
 const { Title } = Typography;
 
 interface TaskExecutorProps {
-    executor: User | null;
+    executor?: User;
     canEdit: boolean;
     participants: User[];
-    onUpdate: (executor: User | null) => Promise<void>;
+    onUpdate: (executor?: User) => Promise<void>;
 }
 
 export default function TaskExecutor({ executor, canEdit, participants, onUpdate }: TaskExecutorProps) {
@@ -50,7 +50,7 @@ export default function TaskExecutor({ executor, canEdit, participants, onUpdate
 
         setIsUpdating(true);
         try {
-            const selectedExecutor = value ? participants.find(p => p.id === value) || null : null;
+            const selectedExecutor = value ? participants.find(p => p.id === value) || undefined : undefined;
             await onUpdate(selectedExecutor);
             setIsEditing(false);
         } catch (error) {

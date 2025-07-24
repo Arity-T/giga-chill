@@ -1,0 +1,27 @@
+InvalidDataError:
+  description: Невалидные данные в теле запроса
+  content:
+    application/json:
+      schema:
+        $ref: "./schemas.yml#/ErrorResponse"
+
+UnauthorizedError:
+  description: Токен отсутствует, истёк или некорректен
+  content:
+    application/json:
+      schema:
+        $ref: "./schemas.yml#/ErrorResponse"
+
+ForbiddenError:
+  description: У пользователя недостаточно прав для выполнения операции
+  content:
+    application/json:
+      schema:
+        $ref: "./schemas.yml#/ErrorResponse"
+
+NotFoundError:
+  description: Один или несколько задействованных ресурсов не найдены
+  content:
+    application/json:
+      schema:
+        $ref: "./schemas.yml#/ErrorResponse"

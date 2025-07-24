@@ -1,13 +1,14 @@
 import React from 'react';
 import { Select } from 'antd';
-import { UserRole, UserInEvent } from '@/types/api';
+import type { Participant } from '@/store/api';
+import { UserRole } from '@/store/api';
 import UserRoleTag from '@/components/UserRoleTag';
 
 const { Option } = Select;
 
 interface ParticipantRoleSelectProps {
-    participant: UserInEvent;
-    onRoleChange: (participant: UserInEvent, newRole: UserRole) => void;
+    participant: Participant;
+    onRoleChange: (participant: Participant, newRole: UserRole) => void;
     disabled?: boolean;
 }
 
@@ -48,11 +49,11 @@ export default function ParticipantRoleSelect({
                 }
             }}
         >
-            <Option value={UserRole.ADMIN} style={{ padding: '6px 12px' }}>
-                <UserRoleTag role={UserRole.ADMIN} tooltip="" />
+            <Option value={UserRole.Admin} style={{ padding: '6px 12px' }}>
+                <UserRoleTag role={UserRole.Admin} tooltip="" />
             </Option>
-            <Option value={UserRole.PARTICIPANT} style={{ padding: '6px 12px' }}>
-                <UserRoleTag role={UserRole.PARTICIPANT} tooltip="" />
+            <Option value={UserRole.Participant} style={{ padding: '6px 12px' }}>
+                <UserRoleTag role={UserRole.Participant} tooltip="" />
             </Option>
         </Select>
     );

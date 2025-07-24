@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { useEffect } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { PAGES } from '@/config/pages.config';
 import { useGetMeQuery } from '@/store/api';

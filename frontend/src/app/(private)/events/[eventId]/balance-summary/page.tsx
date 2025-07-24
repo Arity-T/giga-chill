@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import { Typography, Alert, Table, Tag, Spin, List, Badge, Divider } from 'antd';
 import { CalculatorOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
-import { EventIdPathParam } from '@/types/path-params';
-import { useGetEventQuery, useGetBalanceSummaryQuery } from '@/store/api';
-import { UserRole, EventBalanceSummary } from '@/types/api';
+import type { EventIdPathParam } from '@/types/path-params';
+import { UserRole, useGetEventQuery, useGetBalanceSummaryQuery } from '@/store/api';
+import type { ParticipantBalanceSummary } from '@/store/api';
 import { FinalizeEventButton } from '@/components/finalize-event-button';
 import type { ColumnsType } from 'antd/es/table';
 
@@ -38,7 +38,7 @@ export default function BalanceSummaryPage({ params }: EventIdPathParam) {
         );
     }
 
-    const isOwner = event.user_role === UserRole.OWNER;
+    const isOwner = event.user_role === UserRole.Owner;
 
     // Если мероприятие не завершено
     if (!event.is_finalized) {
@@ -116,7 +116,7 @@ export default function BalanceSummaryPage({ params }: EventIdPathParam) {
     }
 
     // Колонки для основной таблицы
-    const columns: ColumnsType<EventBalanceSummary> = [
+    const columns: ColumnsType<ParticipantBalanceSummary> = [
         {
             title: 'Участник',
             dataIndex: 'user',
@@ -175,7 +175,7 @@ export default function BalanceSummaryPage({ params }: EventIdPathParam) {
     ];
 
     // Компонент для раскрываемого содержимого
-    const expandedRowRender = (record: EventBalanceSummary) => {
+    const expandedRowRender = (record: ParticipantBalanceSummary) => {
         const { user_balance } = record;
 
         return (

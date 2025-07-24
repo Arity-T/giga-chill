@@ -33,7 +33,7 @@ export default function SendForReviewForm({
             await sendForReview({
                 eventId,
                 taskId,
-                reviewData: { executor_comment: comment.trim() }
+                taskSendForReviewRequest: { executor_comment: comment.trim() }
             }).unwrap();
 
             message.success('Задача отправлена на проверку');

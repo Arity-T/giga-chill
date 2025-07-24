@@ -3,9 +3,9 @@
 import React from 'react';
 import { Typography, Alert, Card, List, Statistic, Row, Col, Spin, Badge } from 'antd';
 import { DollarOutlined, ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
-import { EventIdPathParam } from '@/types/path-params';
+import type { EventIdPathParam } from '@/types/path-params';
 import { useGetEventQuery, useGetMyBalanceQuery } from '@/store/api';
-import { UserRole } from '@/types/api';
+import { UserRole } from '@/store/api';
 import { FinalizeEventButton } from '@/components/finalize-event-button';
 
 const { Title, Text } = Typography;
@@ -36,7 +36,7 @@ export default function BalancePage({ params }: EventIdPathParam) {
         );
     }
 
-    const isOwner = event.user_role === UserRole.OWNER;
+    const isOwner = event.user_role === UserRole.Owner;
 
     // Если мероприятие не завершено
     if (!event.is_finalized) {

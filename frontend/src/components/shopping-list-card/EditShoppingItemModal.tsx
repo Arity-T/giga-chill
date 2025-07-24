@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, InputNumber, Button, App, Select } from 'antd';
 import { useUpdateShoppingItemMutation } from '@/store/api';
-import type { ShoppingItemRequest, ShoppingItem } from '@/types/api';
+import type { ShoppingItemUpdate, ShoppingItem } from '@/store/api';
 
 interface EditShoppingItemModalProps {
     open: boolean;
@@ -59,7 +59,7 @@ export default function EditShoppingItemModal({
         if (!item) return;
 
         try {
-            const shoppingItemData: ShoppingItemRequest = {
+            const shoppingItemData: ShoppingItemUpdate = {
                 title: values.title,
                 quantity: values.quantity,
                 unit: values.unit,
@@ -69,7 +69,7 @@ export default function EditShoppingItemModal({
                 eventId,
                 shoppingListId,
                 shoppingItemId: item.shopping_item_id,
-                shoppingItem: shoppingItemData
+                shoppingItemUpdate: shoppingItemData
             }).unwrap();
 
             message.success('Товар успешно обновлен!');
