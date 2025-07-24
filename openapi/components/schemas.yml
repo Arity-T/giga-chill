@@ -149,10 +149,6 @@ Participant:
       $ref: "./properties/User.yml#/name"
     user_role:
       $ref: "#/UserRole"
-    balance:
-      type: number
-      description: Баланс пользователя в мероприятии (сумма долгов)
-      example: 200
 
 Participants:
   type: array
