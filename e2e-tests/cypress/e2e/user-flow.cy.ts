@@ -89,12 +89,15 @@ describe('Полный пользовательский сценарий', () =>
         cy.contains('Купить напитки').click();
         cy.contains('Взять в работу').click();
 
-        cy.contains('Напитки').click();
-        cy.contains('Сок яблочный');
-        cy.get('input[type="checkbox"]').click();
+        cy.get('.ant-card').contains('Напитки').parents('.ant-card').as('drinksCard');
+        cy.get('@drinksCard').click();
 
-        cy.get('input[placeholder="Бюджет"]').type('46');
-        cy.get('button').eq(7).click();
+        cy.get('@drinksCard').within(() => {
+            cy.contains('Сок яблочный');
+            cy.get('input[type="checkbox"]').click();
+            cy.get('input[placeholder="Бюджет"]').type('46');
+            cy.get('.anticon-check').click();
+        });
 
         cy.get('textarea[placeholder*="Опишите выполненную работу, результаты и другие важные детали..."]')
             .type('купила');
