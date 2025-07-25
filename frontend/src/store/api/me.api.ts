@@ -1,6 +1,6 @@
-import { api } from './api'
+import { codegenApi } from './codegenApi'
 
-api.enhanceEndpoints({
+codegenApi.enhanceEndpoints({
     endpoints: {
         getMe: {
             providesTags: ['Me'],

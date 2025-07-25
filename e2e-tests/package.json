@@ -1,0 +1,19 @@
+{
+  "name": "e2e-tests",
+  "version": "1.0.0",
+  "description": "End-to-end тесты для Giga Chill приложения",
+  "private": true,
+  "scripts": {
+    "test": "cypress run --reporter spec",
+    "test:open": "cypress open",
+    "test:headed": "cypress run --reporter spec --headed",
+    "test:specific": "cypress run --spec"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "cypress": "^14.5.2",
+    "typescript": "^5"
+  },
+  "keywords": ["e2e", "cypress", "testing"],
+  "author": "Tishenko Dev Team"
+} 

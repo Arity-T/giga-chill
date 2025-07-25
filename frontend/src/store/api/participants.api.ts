@@ -1,6 +1,6 @@
-import { api } from './api'
+import { codegenApi } from './codegenApi'
 
-api.enhanceEndpoints({
+codegenApi.enhanceEndpoints({
     endpoints: {
         getParticipants: {
             providesTags: (_result: any, _error: any, eventId: string) => [
@@ -12,7 +12,7 @@ api.enhanceEndpoints({
                 { type: 'Participants', id: eventId }
             ],
         },
-        updateParticipantRole: {
+        setParticipantRole: {
             invalidatesTags: (_result: any, _error: any, { eventId }: { eventId: string }) => [
                 { type: 'Participants', id: eventId }
             ],

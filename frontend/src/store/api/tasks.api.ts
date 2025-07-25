@@ -1,7 +1,7 @@
-import { api } from './api'
+import { codegenApi } from './codegenApi'
 import type { TaskWithShoppingLists, ShoppingListWithItems } from './codegenApi'
 
-api.enhanceEndpoints({
+codegenApi.enhanceEndpoints({
     endpoints: {
         getTasks: {
             providesTags: (_result: any, _error: any, eventId: string) => [
@@ -15,7 +15,7 @@ api.enhanceEndpoints({
             ],
         },
         getTask: {
-            providesTags: (result: TaskWithShoppingLists, _error: any, { eventId, taskId }: { eventId: string; taskId: string }) => [
+            providesTags: (result: TaskWithShoppingLists | undefined, _error: any, { eventId, taskId }: { eventId: string; taskId: string }) => [
                 { type: 'Tasks', id: `${eventId}-${taskId}` },
                 ...(result?.shopping_lists ?? []).map((shoppingList: ShoppingListWithItems) => ({
                     type: 'ShoppingListInTask' as const,
