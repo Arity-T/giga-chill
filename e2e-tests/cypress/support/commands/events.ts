@@ -1,14 +1,13 @@
 /// <reference types="cypress" />
-
-import { PAGES } from '../config/pages.config';
-import type { CreateEventData } from '../types';
-
 /**
  * Команды для работы с мероприятиями
  */
 
+import { PAGES } from '../config/pages.config';
+
+
 // Custom command для создания мероприятия
-Cypress.Commands.add('createEventUI', (eventData: CreateEventData) => {
+Cypress.Commands.add('createEventUI', (eventData) => {
     // Переходим на страницу мероприятий, если ещё не там
     cy.url().then((url) => {
         if (!url.includes(PAGES.EVENTS)) {

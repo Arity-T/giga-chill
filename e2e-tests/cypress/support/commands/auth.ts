@@ -1,13 +1,13 @@
 /// <reference types="cypress" />
-
-import { PAGES } from '../config/pages.config';
-
 /**
  * Команды для аутентификации пользователей
  */
 
+import { PAGES } from '../config/pages.config';
+
+
 // Custom command для регистрации пользователя
-Cypress.Commands.add('registerUserUI', (name: string, username: string, password: string = '12345678') => {
+Cypress.Commands.add('registerUserUI', (name, username, password = '12345678') => {
     // Переходим на страницу регистрации, если ещё не там
     cy.url().then((url) => {
         if (!url.includes(PAGES.REGISTER)) {
@@ -47,7 +47,7 @@ Cypress.Commands.add('registerUserUI', (name: string, username: string, password
 });
 
 // Custom command для логина пользователя
-Cypress.Commands.add('loginUserUI', (username: string, password: string = '12345678') => {
+Cypress.Commands.add('loginUserUI', (username, password = '12345678') => {
     // Переходим на страницу логина, если ещё не там
     cy.url().then((url) => {
         if (!url.includes(PAGES.LOGIN)) {

@@ -1,13 +1,10 @@
 /// <reference types="cypress" />
-
-import type { ShoppingItemData } from '../types';
-
 /**
  * Команды для работы со списками покупок
  */
 
 // Custom command для создания списка покупок
-Cypress.Commands.add('createShoppingListUI', (listName: string) => {
+Cypress.Commands.add('createShoppingListUI', (listName) => {
     // Убедимся, что мы на странице мероприятия и переходим на вкладку списков покупок
     cy.contains('Списки покупок').click({ force: true });
 
@@ -29,7 +26,7 @@ Cypress.Commands.add('createShoppingListUI', (listName: string) => {
 });
 
 // Custom command для добавления элемента в список покупок
-Cypress.Commands.add('addShoppingItemUI', (listName: string, itemData: ShoppingItemData) => {
+Cypress.Commands.add('addShoppingItemUI', (listName, itemData) => {
     // Убедимся, что мы на вкладке списков покупок
     cy.contains('Списки покупок').click({ force: true });
 
