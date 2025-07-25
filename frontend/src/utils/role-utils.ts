@@ -1,10 +1,10 @@
-import { UserRole } from "@/types/api";
+import { UserRole } from "@/store/api";
 
 export const getRoleColor = (role: string) => {
     switch (role) {
-        case UserRole.OWNER:
+        case UserRole.Owner:
             return 'green';
-        case UserRole.ADMIN:
+        case UserRole.Admin:
             return 'blue';
         default:
             return 'default';
@@ -13,11 +13,11 @@ export const getRoleColor = (role: string) => {
 
 export const getRoleText = (role: string) => {
     switch (role) {
-        case UserRole.OWNER:
+        case UserRole.Owner:
             return 'Организатор';
-        case UserRole.PARTICIPANT:
+        case UserRole.Participant:
             return 'Участник';
-        case UserRole.ADMIN:
+        case UserRole.Admin:
             return 'Администратор';
         default:
             return role;

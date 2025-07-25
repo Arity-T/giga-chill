@@ -1,10 +1,11 @@
-import { ShoppingListWithItems, ShoppingListStatus } from '@/types/api';
+import type { ShoppingListWithItems } from '@/store/api';
+import { ShoppingListStatus } from '@/store/api';
 
 /**
  * Получает списки покупок доступные для выбора (со статусом UNASSIGNED)
  */
 export function getAvailableShoppingLists(allLists: ShoppingListWithItems[]): ShoppingListWithItems[] {
-    return allLists.filter(list => list.status === ShoppingListStatus.UNASSIGNED);
+    return allLists.filter(list => list.status === ShoppingListStatus.Unassigned);
 }
 
 /**

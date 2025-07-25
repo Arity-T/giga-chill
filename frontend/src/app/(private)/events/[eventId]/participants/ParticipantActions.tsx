@@ -1,12 +1,13 @@
 import React from 'react';
 import { Button, App } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
-import { UserInEvent, Event } from '@/types/api';
+import type { Participant } from '@/store/api';
+import type { Event } from '@/store/api';
 
 interface ParticipantActionsProps {
-    participant: UserInEvent;
+    participant: Participant;
     event: Event;
-    onDeleteParticipant: (participant: UserInEvent) => Promise<void>;
+    onDeleteParticipant: (participant: Participant) => Promise<void>;
     canDelete: boolean;
 }
 

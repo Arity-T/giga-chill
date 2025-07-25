@@ -3,7 +3,7 @@
 import React from 'react';
 import { Modal, Form, Input, DatePicker, Button, App } from 'antd';
 import { useCreateEventMutation } from '@/store/api';
-import type { CreateEventRequest } from '@/types/api';
+import type { EventCreate } from '@/store/api';
 import dayjs from 'dayjs';
 
 const { TextArea } = Input;
@@ -28,12 +28,12 @@ export default function CreateEventModal({ open, onCancel }: CreateEventModalPro
 
     const handleSubmit = async (values: CreateEventFormData) => {
         try {
-            const createEventData: CreateEventRequest = {
+            const createEventData: EventCreate = {
                 title: values.title,
                 location: values.location,
                 start_datetime: values.dateRange[0].toISOString(),
                 end_datetime: values.dateRange[1].toISOString(),
-                description: values.description || '',
+                description: values.description,
             };
 
             await createEvent(createEventData).unwrap();

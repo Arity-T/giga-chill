@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "npm run codegen",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "codegen": "npx @rtk-query/codegen-openapi codegen.ts"
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.2",
@@ -20,9 +22,11 @@
     "react-redux": "^9.2.0"
   },
   "devDependencies": {
+    "@rtk-query/codegen-openapi": "^2.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "esbuild-runner": "^2.2.2",
     "typescript": "^5"
   }
 }

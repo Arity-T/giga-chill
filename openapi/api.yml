@@ -11,14 +11,12 @@ security:
   - CookieAuth: []
 
 tags:
-  - name: Auth
   - name: Me
   - name: Events
-  - name: Invite Links
+  - name: Invitation Tokens
   - name: Participants
   - name: Shopping Lists
   - name: Shopping List Items
-  - name: Shopping List Consumers
   - name: Tasks
   - name: Debts
 
@@ -27,15 +25,15 @@ paths:
     post:
       summary: Аутентификация пользователя
       description: Возвращает JWT токен при успешной аутентификации.
-      tags: [Auth]
-      operationId: loginUser
+      tags: [Me]
+      operationId: login
       security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserLoginPassword"
+              $ref: "#/components/schemas/LoginRequest"
       responses:
         "204":
           description: JWT отправлен в Set-Cookie (HttpOnly). Тело пустое.
@@ -49,15 +47,15 @@ paths:
   /auth/register:
     post:
       summary: Регистрация нового пользователя
-      tags: [Auth]
-      operationId: registerUser
+      tags: [Me]
+      operationId: register
       security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserRegister"
+              $ref: "#/components/schemas/RegisterRequest"
       responses:
         "204":
           description: Пользователь создан. JWT-токен отправлен в Set-Cookie (HttpOnly). Тело пустое.
@@ -74,8 +72,8 @@ paths:
     post:
       summary: Выход из системы
       description: Удаляет JWT токен из cookie.
-      tags: [Auth]
-      operationId: logoutUser
+      tags: [Me]
+      operationId: logout
       responses:
         "204":
           description: Пользователь успешно вышел из системы. JWT токен удалён из cookie.
@@ -125,7 +123,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Event"
+              $ref: "#/components/schemas/EventCreate"
       responses:
         "204":
           description: No Content
@@ -169,7 +167,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Event"
+              $ref: "#/components/schemas/EventUpdate"
       responses:
         "204":
           description: No Content
@@ -202,8 +200,10 @@ paths:
     post:
       summary: Создать новый токен
       description: Токен генерирует пользователь со статусом **owner**.
-      tags: [Invite Links]
-      operationId: createEventInvitationToken
+      tags: [Invitation Tokens]
+      operationId: createInvitationToken
+      parameters:
+        - $ref: "#/components/parameters/eventId"
       responses:
         "204":
           description: No Content
@@ -218,9 +218,11 @@ paths:
       summary: Получение токена
       description: Возвращает заранее сгенерированный токен-приглашение.
         Доступно пользователям с ролью **admin** или **owner**.
-        Если токен ещё не был сгенерирован, то в поле token возвращается null.
-      tags: [Invite Links]
-      operationId: getEventInvitationToken
+        Если токен ещё не был сгенерирован, то в поле **invitation_token** возвращается **null**.
+      tags: [Invitation Tokens]
+      operationId: getInvitationToken
+      parameters:
+        - $ref: "#/components/parameters/eventId"
       responses:
         "200":
           description: OK
@@ -239,7 +241,7 @@ paths:
     post:
       summary: Присоединиться к мероприятию по токену
       description: Пользователь становится участником мероприятия.
-      tags: [Invite Links]
+      tags: [Invitation Tokens]
       operationId: joinByInvitationToken
       requestBody:
         required: true
@@ -254,9 +256,10 @@ paths:
             application/json:
               schema:
                 type: object
+                required: [event_id]
                 properties:
                   event_id:
-                    $ref: "#/components/schemas/ReadOnlyUUID"
+                    $ref: "#/components/schemas/UUID"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "404":
@@ -281,7 +284,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UsersInEvent"
+                $ref: "#/components/schemas/Participants"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
@@ -301,7 +304,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserLogin"
+              $ref: "#/components/schemas/ParticipantCreate"
       responses:
         "204":
           description: No Content
@@ -342,7 +345,7 @@ paths:
     patch:
       summary: Изменить роль участника
       tags: [Participants]
-      operationId: updateParticipantRole
+      operationId: setParticipantRole
       parameters:
         - $ref: "#/components/parameters/eventId"
         - $ref: "#/components/parameters/participantId"
@@ -351,7 +354,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserRole"
+              $ref: "#/components/schemas/ParticipantSetRole"
       responses:
         "204":
           description: No Content
@@ -391,7 +394,7 @@ paths:
     post:
       summary: Добавить список покупок
       tags: [Shopping Lists]
-      operationId: addShoppingList
+      operationId: createShoppingList
       parameters:
         - $ref: "#/components/parameters/eventId"
       requestBody:
@@ -399,7 +402,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateShoppingListRequest"
+              $ref: "#/components/schemas/ShoppingListCreate"
       responses:
         "204":
           description: No Content
@@ -425,7 +428,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ShoppingListWithItems"
+              $ref: "#/components/schemas/ShoppingListUpdate"
       responses:
         "204":
           description: No Content
@@ -459,7 +462,7 @@ paths:
     put:
       summary: Изменить бюджет списка покупок
       tags: [Shopping Lists]
-      operationId: updateShoppingListBudget
+      operationId: setShoppingListBudget
       parameters:
         - $ref: "#/components/parameters/eventId"
         - $ref: "#/components/parameters/shoppingListId"
@@ -468,7 +471,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ShoppingListBudget"
+              $ref: "#/components/schemas/ShoppingListSetBudget"
       responses:
         "204":
           description: No Content
@@ -481,11 +484,16 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundError"
 
-  /events/{eventId}/shopping-lists/{shoppingListId}/shopping-items:
-    post:
-      summary: Добавить элемент в список покупок
-      tags: [Shopping List Items]
-      operationId: addShoppingItem
+  /events/{eventId}/shopping-lists/{shoppingListId}/consumers:
+    put:
+      summary: Указать потребителей для списка покупок
+      description: |
+        Идемпотентное действие - список потребителей полностью заменяется.
+
+        Есть некоторый риск, что один клиент перезапишет другого. 
+        Не критично, но стоит иметь в виду. Вариант решения - ETag/If-Match.
+      tags: [Shopping Lists]
+      operationId: setShoppingListConsumers
       parameters:
         - $ref: "#/components/parameters/eventId"
         - $ref: "#/components/parameters/shoppingListId"
@@ -494,7 +502,39 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ShoppingItem"
+              $ref: "#/components/schemas/UUIDList"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/InvalidDataError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          description: Статус списка покупок не позволяет изменять потребителей
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /events/{eventId}/shopping-lists/{shoppingListId}/shopping-items:
+    post:
+      summary: Добавить элемент в список покупок
+      tags: [Shopping List Items]
+      operationId: createShoppingItem
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/shoppingListId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShoppingItemCreate"
       responses:
         "204":
           description: No Content
@@ -521,7 +561,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ShoppingItem"
+              $ref: "#/components/schemas/ShoppingItemUpdate"
       responses:
         "204":
           description: No Content
@@ -556,7 +596,7 @@ paths:
     patch:
       summary: Изменить статус элемента списка покупок
       tags: [Shopping List Items]
-      operationId: updateShoppingItemPurchasedStatus
+      operationId: setShoppingItemPurchased
       parameters:
         - $ref: "#/components/parameters/eventId"
         - $ref: "#/components/parameters/shoppingListId"
@@ -566,7 +606,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ShoppingItemPurchasedState"
+              $ref: "#/components/schemas/ShoppingItemSetPurchased"
       responses:
         "204":
           description: No Content
@@ -578,43 +618,6 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
-
-  /events/{eventId}/shopping-lists/{shoppingListId}/consumers:
-    put:
-      summary: Указать потребителей для списка покупок
-      description: |
-        Идемпотентное действие - список потребителей полностью заменяется.
-
-        Есть некоторый риск, что один клиент перезапишет другого. 
-        Не критично, но стоит иметь в виду. Вариант решения - ETag/If-Match.
-      tags: [Shopping List Consumers]
-      operationId: setConsumers
-      parameters:
-        - $ref: "#/components/parameters/eventId"
-        - $ref: "#/components/parameters/shoppingListId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UUIDList"
-      responses:
-        "204":
-          description: No Content
-        "400":
-          $ref: "#/components/responses/InvalidDataError"
-        "401":
-          $ref: "#/components/responses/UnauthorizedError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "409":
-          description: Статус списка покупок не позволяет изменять потребителей
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
 
   /events/{eventId}/tasks:
     get:
@@ -648,7 +651,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TaskCreateRequest"
+              $ref: "#/components/schemas/TaskCreate"
       responses:
         "204":
           description: No Content
@@ -695,7 +698,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TaskPatchRequest"
+              $ref: "#/components/schemas/TaskUpdate"
       responses:
         "204":
           description: No Content
@@ -731,7 +734,7 @@ paths:
       description: Поле executor_id может быть null - это означает,
         что у задачи нет исполнителя. В этом случае задача переходит в статус "открыта".
       tags: [Tasks]
-      operationId: assignTask
+      operationId: setTaskExecutor
       parameters:
         - $ref: "#/components/parameters/eventId"
         - $ref: "#/components/parameters/taskId"
@@ -740,7 +743,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TaskExecutorId"
+              $ref: "#/components/schemas/TaskSetExecutor"
       responses:
         "204":
           description: No Content
@@ -757,7 +760,7 @@ paths:
     put:
       summary: Указать списки покупок для задачи
       tags: [Tasks]
-      operationId: assignShoppingLists
+      operationId: setTaskShoppingLists
       parameters:
         - $ref: "#/components/parameters/eventId"
         - $ref: "#/components/parameters/taskId"
@@ -884,7 +887,7 @@ paths:
     get:
       summary: Получить сводку по балансу мероприятия
       tags: [Debts]
-      operationId: getEventBalanceSummary
+      operationId: getBalanceSummary
       parameters:
         - $ref: "#/components/parameters/eventId"
       responses:
@@ -903,71 +906,10 @@ paths:
 
 components:
   responses:
-    InvalidDataError:
-      description: Невалидные данные в теле запроса
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-    UnauthorizedError:
-      description: Токен отсутствует, истёк или некорректен
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-    ForbiddenError:
-      description: У пользователя недостаточно прав для выполнения операции
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-    NotFoundError:
-      description: Один или несколько задействованных ресурсов не найдены
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
+    $ref: "./components/responses.yml"
 
   parameters:
-    eventId:
-      name: eventId
-      in: path
-      required: true
-      description: Идентификатор мероприятия
-      schema:
-        $ref: "#/components/schemas/UUID"
-
-    participantId:
-      name: participantId
-      in: path
-      required: true
-      description: Идентификатор участника
-      schema:
-        $ref: "#/components/schemas/UUID"
-
-    shoppingListId:
-      name: shoppingListId
-      in: path
-      required: true
-      description: Идентификатор списка покупок
-      schema:
-        $ref: "#/components/schemas/UUID"
-
-    shoppingItemId:
-      name: shoppingItemId
-      in: path
-      required: true
-      description: Идентификатор элемента списка покупок
-      schema:
-        $ref: "#/components/schemas/UUID"
-
-    taskId:
-      name: taskId
-      in: path
-      required: true
-      description: Идентификатор задачи
-      schema:
-        $ref: "#/components/schemas/UUID"
+    $ref: "./components/parameters.yml"
 
   securitySchemes:
     CookieAuth:
@@ -976,437 +918,4 @@ components:
       name: token
 
   schemas:
-    UUID:
-      type: string
-      format: uuid
-      example: 123e4567-e89b-12d3-a456-426614174000
-
-    ReadOnlyUUID:
-      allOf:
-        - $ref: "#/components/schemas/UUID"
-        - readOnly: true
-
-    UUIDList:
-      type: array
-      items:
-        $ref: "#/components/schemas/UUID"
-
-    ErrorResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          description: Сообщение об ошибке
-          example: "Something went wrong"
-      required: [message]
-
-    UserLogin:
-      type: object
-      properties:
-        login:
-          type: string
-          description: Логин пользователя
-          example: user123
-
-    UserPassword:
-      type: object
-      properties:
-        password:
-          type: string
-          description: Пароль пользователя
-          example: mysecurepassword
-
-    UserName:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Имя пользователя
-          example: Иван Иванов
-
-    UserLoginPassword:
-      allOf:
-        - $ref: "#/components/schemas/UserLogin"
-        - $ref: "#/components/schemas/UserPassword"
-
-    UserRegister:
-      allOf:
-        - $ref: "#/components/schemas/UserLogin"
-        - $ref: "#/components/schemas/UserPassword"
-        - $ref: "#/components/schemas/UserName"
-
-    UserId:
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/UUID"
-
-    User:
-      allOf:
-        - $ref: "#/components/schemas/UserLogin"
-        - $ref: "#/components/schemas/UserName"
-        - $ref: "#/components/schemas/UserId"
-
-    RoleEnum:
-      type: string
-      enum: [owner, admin, participant]
-      description: Роль пользователя в мероприятии
-      example: owner
-
-    UserRole:
-      type: object
-      properties:
-        role:
-          $ref: "#/components/schemas/RoleEnum"
-
-    UserInEvent:
-      allOf:
-        - $ref: "#/components/schemas/User"
-        - type: object
-          properties:
-            user_role:
-              $ref: "#/components/schemas/RoleEnum"
-            balance:
-              type: number
-              description: Баланс пользователя в мероприятии (сумма долгов)
-              example: 200
-
-    UsersInEvent:
-      type: array
-      items:
-        $ref: "#/components/schemas/UserInEvent"
-
-    Event:
-      type: object
-      properties:
-        event_id:
-          $ref: "#/components/schemas/ReadOnlyUUID"
-        user_role:
-          readOnly: true
-          allOf:
-            - $ref: "#/components/schemas/RoleEnum"
-        title:
-          type: string
-          description: Название мероприятия
-          example: "Встреча с друзьями"
-        location:
-          type: string
-          description: Место мероприятия
-          example: Политехническая улица, 29 лит П
-        start_datetime:
-          type: string
-          format: date-time
-          description: Дата и время начала мероприятия
-          example: "2025-01-01T10:00:00Z"
-        end_datetime:
-          type: string
-          format: date-time
-          description: Дата и время окончания мероприятия
-          example: "2025-01-01T12:00:00Z"
-        description:
-          type: string
-          description: Описание мероприятия
-          example: "Встреча с друзьями в кафе"
-        budget:
-          readOnly: true
-          type: number
-          description: Бюджет мероприятия
-          example: 10000
-        is_finalized:
-          readOnly: true
-          type: boolean
-          description: Флаг, который показывает завершено ли мероприятие или нет.
-          example: false
-
-    InvitationToken:
-      type: object
-      properties:
-        invitation_token:
-          type: string
-          description: Токен-приглашение
-          example: "0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c"
-
-    Events:
-      type: array
-      items:
-        $ref: "#/components/schemas/Event"
-
-    ShoppingItem:
-      type: object
-      properties:
-        shopping_item_id:
-          $ref: "#/components/schemas/ReadOnlyUUID"
-        title:
-          type: string
-          description: Название элемента списка покупок
-          example: "Яблоки"
-        quantity:
-          type: number
-          description: Количество элемента списка покупок
-          example: 10
-        unit:
-          type: string
-          description: Единицы измерения
-          example: "шт"
-        is_purchased:
-          readOnly: true
-          type: boolean
-          description: Признак того, что элемент списка покупок куплен
-          example: false
-
-    ShoppingItems:
-      type: array
-      items:
-        $ref: "#/components/schemas/ShoppingItem"
-
-    ShoppingItemPurchasedState:
-      type: object
-      properties:
-        is_purchased:
-          type: boolean
-          description: Признак того, что элемент списка покупок куплен
-          example: false
-
-    CreateShoppingListRequest:
-      type: object
-      properties:
-        title:
-          type: string
-          description: Название списка покупок
-          example: "Купить фрукты"
-        description:
-          type: string
-          description: Описание списка покупок
-          example: "Купить фрукты для вечеринки"
-
-    ShoppingListBudget:
-      type: object
-      properties:
-        budget:
-          type: number
-          description: Бюджет списка покупок
-          example: 1000
-
-    ShoppingListWithItems:
-      type: object
-      properties:
-        shopping_list_id:
-          $ref: "#/components/schemas/ReadOnlyUUID"
-        task_id:
-          $ref: "#/components/schemas/ReadOnlyUUID"
-        title:
-          type: string
-          description: Название задачи
-          example: "Купить фрукты"
-        description:
-          type: string
-          description: Описание списка покупок
-          example: "Купить фрукты для вечеринки"
-        status:
-          readOnly: true
-          type: string
-          enum:
-            [
-              unassigned,
-              assigned,
-              in_progress,
-              bought,
-              partially_bought,
-              cancelled,
-            ]
-          description: Статус списка покупок
-          example: unassigned
-        can_edit:
-          readOnly: true
-          type: boolean
-          description: Может ли пользователь редактировать список покупок
-          example: true
-        budget:
-          readOnly: true
-          type: number
-          description: Реальная стоимость списка покупок
-          example: 499.99
-        shopping_items:
-          readOnly: true
-          type: array
-          items:
-            $ref: "#/components/schemas/ShoppingItem"
-        consumers:
-          readOnly: true
-          type: array
-          items:
-            $ref: "#/components/schemas/UserInEvent"
-
-    ShoppingListsWithItems:
-      type: array
-      items:
-        $ref: "#/components/schemas/ShoppingListWithItems"
-
-    TaskExecutorId:
-      type: object
-      properties:
-        executor_id:
-          description: Идентификатор исполнителя задачи
-          $ref: "#/components/schemas/UUID"
-
-    TaskCreateRequest:
-      type: object
-      properties:
-        title:
-          type: string
-          description: Название задачи
-          example: "Купить фрукты"
-        description:
-          type: string
-          description: Описание задачи
-          example: "Купить фрукты для вечеринки"
-        deadline_datetime:
-          type: string
-          format: date-time
-          description: Дедлайн задачи
-          example: "2025-01-01T12:00:00Z"
-        executor_id:
-          $ref: "#/components/schemas/UUID"
-        shopping_lists_ids:
-          type: array
-          items:
-            $ref: "#/components/schemas/UUID"
-
-    TaskPatchRequest:
-      type: object
-      properties:
-        title:
-          type: string
-          description: Название задачи
-          example: "Купить фрукты"
-        description:
-          type: string
-          description: Описание задачи
-          example: "Купить фрукты для вечеринки"
-        deadline_datetime:
-          type: string
-          format: date-time
-          description: Дедлайн задачи
-          example: "2025-01-01T12:00:00Z"
-
-    Task:
-      type: object
-      properties:
-        task_id:
-          $ref: "#/components/schemas/ReadOnlyUUID"
-        title:
-          type: string
-          description: Название задачи
-          example: "Купить фрукты"
-        description:
-          type: string
-          description: Описание задачи
-          example: "Купить фрукты для вечеринки"
-        status:
-          type: string
-          enum: [open, in_progress, under_review, completed]
-          description: Статус задачи
-        deadline_datetime:
-          type: string
-          format: date-time
-          description: Дедлайн задачи
-          example: "2025-01-01T12:00:00Z"
-        executor_comment:
-          type: string
-          description: Комментарий исполнителя
-          example: "Задача выполнена"
-        reviewer_comment:
-          type: string
-          description: Комментарий проверяющего
-          example: "Подтверждаю выполнение задачи"
-        permissions:
-          type: object
-          properties:
-            can_edit:
-              type: boolean
-              description: Может ли пользователь редактировать задачу
-              example: true
-            can_take_in_work:
-              type: boolean
-              description: Может ли пользователь взять задачу в работу
-              example: true
-            can_review:
-              type: boolean
-              description: Может ли пользователь подтвердить или отклонить задачу
-              example: true
-        author:
-          allOf:
-            - $ref: "#/components/schemas/User"
-        executor:
-          allOf:
-            - $ref: "#/components/schemas/User"
-
-    TaskWithShoppingLists:
-      allOf:
-        - $ref: "#/components/schemas/Task"
-        - type: object
-          properties:
-            shopping_lists:
-              type: array
-              items:
-                $ref: "#/components/schemas/ShoppingListsWithItems"
-
-    Tasks:
-      type: array
-      items:
-        $ref: "#/components/schemas/Task"
-
-    TaskSendForReviewRequest:
-      type: object
-      properties:
-        executor_comment:
-          type: string
-          description: Комментарий исполнителя
-          example: "Задача выполнена"
-
-    TaskReviewRequest:
-      type: object
-      properties:
-        reviewer_comment:
-          type: string
-          description: Комментарий проверяющего
-          example: "Подтверждаю выполнение задачи"
-        is_approved:
-          type: boolean
-          description: Признак того, что задача одобрена
-
-    UserBalance:
-      type: object
-      properties:
-        my_debts:
-          type: array
-          items:
-            $ref: "#/components/schemas/Debt"
-        debts_to_me:
-          type: array
-          items:
-            $ref: "#/components/schemas/Debt"
-
-    Debt:
-      type: object
-      properties:
-        user:
-          $ref: "#/components/schemas/User"
-        amount:
-          type: number
-          description: Сумма долга
-          example: 1000
-
-    EventBalanceSummary:
-      type: array
-      items:
-        type: object
-        properties:
-          user:
-            $ref: "#/components/schemas/User"
-          total_balance:
-            type: number
-            description: Сумма долгов пользователя в мероприятии (может быть отрицательной)
-            example: 200
-          user_balance:
-            $ref: "#/components/schemas/UserBalance"
+    $ref: "./components/schemas.yml"

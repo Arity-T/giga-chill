@@ -5,7 +5,7 @@ import { Typography, Descriptions, Divider } from 'antd';
 import { CalendarOutlined, EnvironmentOutlined, DollarOutlined } from '@ant-design/icons';
 import { useGetEventQuery } from '@/store/api';
 import { formatDateTime } from '@/utils/datetime-utils';
-import { EventIdPathParam } from '@/types/path-params';
+import type { EventIdPathParam } from '@/types/path-params';
 
 const { Title, Paragraph, Text } = Typography;
 
