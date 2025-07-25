@@ -1,16 +1,10 @@
+// https://docs.cypress.io/app/tooling/typescript-support?utm_source=chatgpt.com#Configure-tsconfigjson
 {
   "compilerOptions": {
     "target": "es5",
     "lib": ["es5", "dom"],
-    "types": ["cypress", "node"],
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "sourceMap": true,
+    "types": ["cypress", "node"]
   },
-  "include": [
-    "**/*.ts"
-  ]
-} 
+  "include": ["**/*.ts"]
+}
