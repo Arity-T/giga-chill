@@ -18,19 +18,19 @@ Cypress.Commands.add('registerUserUI', (name: string, username: string, password
     cy.get('#register_name')
         .should('be.visible')
         .and('have.value', '')
-        .type(name, { delay: 100 })
+        .type(name)
         .should('have.value', name);
 
     cy.get('#register_login')
-        .type(username, { delay: 100 })
+        .type(username)
         .should('have.value', username);
 
     cy.get('#register_password')
-        .type(password, { delay: 100 })
+        .type(password)
         .should('have.value', password);
 
     cy.get('#register_password2')
-        .type(password, { delay: 100 })
+        .type(password)
         .should('have.value', password);
 
     cy.contains('button', 'Зарегистрироваться')
@@ -38,7 +38,12 @@ Cypress.Commands.add('registerUserUI', (name: string, username: string, password
         .click();
 
     // Проверяем успешную регистрацию (переход на главную)
-    cy.url().should('include', PAGES.EVENTS);
+    cy.url().should('include', PAGES.HOME);
+
+    // Проверяем наличие элемента с именем пользователя
+    cy.get('.ant-dropdown-trigger')
+        .should('be.visible')
+        .and('contain', `@${username}`);
 });
 
 // Custom command для логина пользователя
@@ -50,12 +55,12 @@ Cypress.Commands.add('loginUserUI', (username: string, password: string = '12345
         }
     });
 
-    cy.get('input[type="text"]')
-        .type(username, { delay: 100 })
+    cy.get('#login_login')
+        .type(username)
         .should('have.value', username);
 
-    cy.get('input[type="password"]')
-        .type(password, { delay: 100 })
+    cy.get('#login_password')
+        .type(password)
         .should('have.value', password);
 
     cy.contains('button', 'Войти')
@@ -63,10 +68,10 @@ Cypress.Commands.add('loginUserUI', (username: string, password: string = '12345
         .click();
 
     // Проверяем успешный логин
-    cy.url().should('include', PAGES.EVENTS);
+    cy.url().should('include', PAGES.HOME);
 
     // Проверяем наличие элемента с именем пользователя
-    cy.get('.ant-dropdown-trigger', { timeout: 10000 })
+    cy.get('.ant-dropdown-trigger')
         .should('be.visible')
         .and('contain', `@${username}`);
 }); 
