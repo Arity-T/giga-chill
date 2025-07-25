@@ -8,43 +8,44 @@ import type { ParticipantRole } from '../types';
 
 // Custom command для добавления участника по логину
 Cypress.Commands.add('addParticipantByLoginUI', (username: string) => {
-    // Убедимся, что мы на странице мероприятия и переходим на вкладку участников
-    cy.contains('Участники').click({ force: true });
+    // Переходим на вкладку участников
+    cy.contains('.ant-menu-item a', 'Участники').click({ force: true });
 
     // Ждём загрузки и нажимаем кнопку добавления участника
-    cy.contains('Добавить участника').click();
+    cy.contains('Добавить участника').should('be.visible').click();
 
-    // Вводим логин пользователя
-    cy.get('input[placeholder="Введите логин пользователя"]')
-        .type(username)
-        .should('have.value', username);
+    // В появившемся модальном окне вводим логин пользователя и нажимаем кнопку добавления
+    cy.contains('.ant-modal-content', 'Добавить участника')
+        .within(() => {
+            cy.get('input[placeholder="Введите логин пользователя"]')
+                .type(username)
+                .should('have.value', username);
 
-    // Подтверждаем добавление
-    cy.get('button:contains("Добавить участника")').last().click();
+            // Подтверждаем добавление
+            cy.contains('button', 'Добавить участника').should('be.visible').click();
+        });
 
     // Ждём завершения операции
-    cy.wait(1000);
+    cy.contains('tr', username).should('exist');
 });
 
 // Custom command для изменения роли участника по имени
 Cypress.Commands.add('changeParticipantRoleByNameUI', (participantName: string, newRole: ParticipantRole) => {
-    // Убедимся, что мы на вкладке участников
-    cy.contains('Участники').click({ force: true });
+    // Открываем вкладку «Участники»
+    cy.contains('.ant-menu-item a', 'Участники').click({ force: true });
 
-    // Ждём загрузки списка участников
-    cy.wait(1000);
+    // Находим строку и сохраняем её в алиас
+    cy.contains('tr', participantName).as('participantRow');
 
-    // Находим строку с участником и кликаем на текущую роль
-    cy.contains('tr', participantName)
-        .within(() => {
-            // Ищем любую текущую роль (может быть как Участник, так и Администратор)
-            cy.get('td').contains(/^(Участник|Администратор)$/)
-                .click();
-        });
+    // Кликаем на текущую роль в этой строке
+    cy.get('@participantRow')
+        .contains(/^(Участник|Администратор)$/)
+        .should('be.visible')
+        .click();
 
     // Выбираем новую роль
-    cy.contains('.ant-select-item', newRole).click();
+    cy.get('.ant-select-item').contains(newRole).should('be.visible').click();
 
-    // Ждём завершения операции
-    cy.wait(1000);
-}); 
+    // Проверяем, что роль поменялась
+    cy.get('@participantRow').contains(newRole).should('exist');
+});
