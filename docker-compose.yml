@@ -50,6 +50,41 @@ services:
       - gigachill-network
     volumes:
       - backend-build:/app/build
+      - ./backend/logs:/app/logs
+
+  elasticsearch:
+    image: elasticsearch:9.0.4
+    container_name: gigachill-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - gigachill-network
+  logstash:
+    image: logstash:9.0.4
+    container_name: gigachill-logstash
+    volumes:
+      - ./backend/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./backend/logs:/logs
+    depends_on:
+      - elasticsearch
+      - backend
+    networks:
+      - gigachill-network
+
+  kibana:
+    image: kibana:9.0.4
+    container_name: gigachill-kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - gigachill-network
 
   frontend:
     build:
