@@ -1,20 +1,11 @@
 /// <reference types="cypress" />
 
 import { PAGES } from '../config/pages.config';
+import type { CreateEventData } from '../types';
 
 /**
  * Команды для работы с мероприятиями
  */
-
-interface CreateEventData {
-    title: string;
-    location: string;
-    startDay: string;
-    startHour: string;
-    endDay: string;
-    endHour: string;
-    description?: string;
-}
 
 // Custom command для создания мероприятия
 Cypress.Commands.add('createEventUI', (eventData: CreateEventData) => {

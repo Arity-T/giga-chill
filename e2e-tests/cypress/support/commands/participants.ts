@@ -1,5 +1,7 @@
 /// <reference types="cypress" />
 
+import type { ParticipantRole } from '../types';
+
 /**
  * Команды для работы с участниками мероприятий
  */
@@ -25,7 +27,7 @@ Cypress.Commands.add('addParticipantByLoginUI', (username: string) => {
 });
 
 // Custom command для изменения роли участника по имени
-Cypress.Commands.add('changeParticipantRoleByNameUI', (participantName: string, newRole: 'Участник' | 'Администратор') => {
+Cypress.Commands.add('changeParticipantRoleByNameUI', (participantName: string, newRole: ParticipantRole) => {
     // Убедимся, что мы на вкладке участников
     cy.contains('Участники').click({ force: true });
 

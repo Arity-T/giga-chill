@@ -1,14 +1,10 @@
 /// <reference types="cypress" />
 
+import type { ShoppingItemData } from '../types';
+
 /**
  * Команды для работы со списками покупок
  */
-
-interface ShoppingItemData {
-    name: string;
-    quantity: string;
-    unit: string;
-}
 
 // Custom command для создания списка покупок
 Cypress.Commands.add('createShoppingListUI', (listName: string) => {

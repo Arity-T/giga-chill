@@ -1,5 +1,7 @@
 /// <reference types="cypress" />
 
+import type { CreateEventData, ShoppingItemData, ParticipantRole } from '../types';
+
 /**
  * Главный файл импорта всех custom commands
  * Организованы по доменам API
@@ -20,27 +22,15 @@ declare global {
             loginUserUI(username: string, password?: string): Chainable<void>;
 
             // Events commands
-            createEventUI(eventData: {
-                title: string;
-                location: string;
-                startDay: string;
-                startHour: string;
-                endDay: string;
-                endHour: string;
-                description?: string;
-            }): Chainable<void>;
+            createEventUI(eventData: CreateEventData): Chainable<void>;
 
             // Participants commands
             addParticipantByLoginUI(username: string): Chainable<void>;
-            changeParticipantRoleByNameUI(participantName: string, newRole: 'Участник' | 'Администратор'): Chainable<void>;
+            changeParticipantRoleByNameUI(participantName: string, newRole: ParticipantRole): Chainable<void>;
 
             // Shopping Lists commands
             createShoppingListUI(listName: string): Chainable<void>;
-            addShoppingItemUI(listName: string, itemData: {
-                name: string;
-                quantity: string;
-                unit: string;
-            }): Chainable<void>;
+            addShoppingItemUI(listName: string, itemData: ShoppingItemData): Chainable<void>;
         }
     }
 }
