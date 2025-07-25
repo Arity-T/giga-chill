@@ -75,3 +75,29 @@ curl -i -X POST http://localhost:3000/auth/login -H "Content-Type: application/j
 curl -X GET http://localhost:3000/me -b cookies.txt
 ```
 Отправляет токен из куки. Возвращает информацию о текущем пользователе. Если куки нет или токен истёк — будет 401 ошибка.
+
+## Логирование
+
+Проект использует связку **Logback + Logstash + Elasticsearch + Kibana** для сбора и анализа логов.
+
+Все логи приложения пишутся в `logs/app-log.json` в формате JSON, затем передаются в Logstash, который парсит их и отправляет в Elasticsearch.
+
+---
+
+### Конфигурация
+
+- `src/main/resources/logback-spring.xml` - настройка Logback, формат логов, путь до файла.
+- `logstash/logstash.conf` - настройка Logstash: откуда читать логи и как отправлять в Elasticsearch.
+- `docker-compose.yml` - сервисы `logstash`, `elasticsearch` и `kibana`.
+
+---
+
+### Добавление логов в kibana
+
+1. После запуска контейнеров переходим в kibana по адресу `http://localhost:5601/`. 
+
+2. В сайдбаре слева переходим по пути `Management/Stack Management/Kibana/Data Views`.
+
+3. Жмём `Create data view` и создаём новое представление с маской `spring-logs-*`. В поле `Timestamp field` указываем `@timestamp`. Сохраняем
+
+4. Теперь в сайдбаре можем перейти в `Analytics/Discover`, выбрать наш Data view и просматривать JSON-логи с фильтрацией, поиском и таймфреймом.
