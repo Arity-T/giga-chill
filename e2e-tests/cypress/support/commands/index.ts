@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import type { CreateEventData, ShoppingItemData, ParticipantRole } from '../types';
+import type { CreateEventData, ShoppingItemData, ParticipantRole, CreateTaskData, ParticipantStatus } from '../types';
 
 /**
  * Главный файл импорта всех custom commands
@@ -8,16 +8,18 @@ import type { CreateEventData, ShoppingItemData, ParticipantRole } from '../type
  */
 
 // Импортируем команды по категориям
-import './auth';
+import './me';
 import './events';
 import './participants';
 import './shopping-lists';
+import './tasks';
+import './debts';
 
 // Типы для TypeScript
 declare global {
     namespace Cypress {
         interface Chainable {
-            // Auth commands
+            // Me commands
             registerUserUI(name: string, username: string, password?: string): Chainable<void>;
             loginUserUI(username: string, password?: string): Chainable<void>;
 
@@ -31,6 +33,19 @@ declare global {
             // Shopping Lists commands
             createShoppingListUI(listName: string): Chainable<void>;
             addShoppingItemUI(listName: string, itemData: ShoppingItemData): Chainable<void>;
+            assignShoppingListConsumers(listName: string, selectAll?: boolean): Chainable<void>;
+            markShoppingItemAsPurchasedUI(listName: string, itemName: string): Chainable<void>;
+            setShoppingListBudgetUI(listName: string, budget: string): Chainable<void>;
+
+            // Tasks commands
+            createTaskUI(taskData: CreateTaskData): Chainable<void>;
+            takeTaskInProgressUI(taskName: string): Chainable<void>;
+            submitTaskForReviewUI(reportText: string): Chainable<void>;
+            confirmTaskCompletionUI(budget: string, comment: string): Chainable<void>;
+
+            // Debts commands
+            finishEventUI(): Chainable<void>;
+            checkParticipantBalanceUI(participantLogin: string, expectedBalance: string, expectedStatus: ParticipantStatus): Chainable<void>;
         }
     }
 }

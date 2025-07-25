@@ -43,38 +43,16 @@ describe('Полный пользовательский сценарий', () =>
             unit: 'л'
         });
 
-        // Назначение потребителей для покупки (старый код пока оставляем)
-        cy.contains('1').last().click();
-        cy.contains('Выбрать всех').click();
-        cy.get('input[type="checkbox"]:checked').should('have.length', 4);
-        cy.get('button:contains("Сохранить")').last().click();
+        // Назначение потребителей для покупки
+        cy.assignShoppingListConsumers('Напитки');
 
-        // Создание задачи (пока оставляем старый код)
-        cy.contains('Задачи').click();
-
-        cy.contains('Создать задачу').click();
-
-        cy.get('input[placeholder="Введите название задачи"]')
-            .type('Купить напитки')
-            .should('have.value', 'Купить напитки');
-
-        cy.get('input[placeholder="Выберите дату и время"]').click();
-
-        cy.get('.ant-picker-time-panel-column')
-            .first()
-            .contains('03')
-            .click();
-
-        cy.contains('ОК').click();
-
-        cy.contains("Выберите исполнителя (необязательно)").click({ force: true });
-        cy.contains("Ксения (@xuxa)").click();
-
-        cy.contains("Выберите списки покупок (необязательно)").click({ force: true });
-        cy.contains("Напитки").click();
-        cy.contains("Напитки").click();
-
-        cy.get('button:contains("Создать")').last().click();
+        // Создание задачи
+        cy.createTaskUI({
+            name: 'Купить напитки',
+            hour: '03',
+            assigneeName: 'Ксения (@xuxa)',
+            shoppingLists: ['Напитки']
+        });
     });
 
     it('Выполнение задачи исполнителем', () => {
@@ -85,24 +63,17 @@ describe('Полный пользовательский сценарий', () =>
         cy.wait(4000);
         cy.contains('Пикник').click();
 
-        cy.contains('Задачи').click();
-        cy.contains('Купить напитки').click();
-        cy.contains('Взять в работу').click();
+        // Берём задачу в работу
+        cy.takeTaskInProgressUI('Купить напитки');
 
-        cy.get('.ant-card').contains('Напитки').parents('.ant-card').as('drinksCard');
-        cy.get('@drinksCard').click();
+        // Отмечаем покупку как выполненную
+        cy.markShoppingItemAsPurchasedUI('Напитки', 'Сок яблочный');
 
-        cy.get('@drinksCard').within(() => {
-            cy.contains('Сок яблочный');
-            cy.get('input[type="checkbox"]').click();
-            cy.get('input[placeholder="Бюджет"]').type('46');
-            cy.get('.anticon-check').click();
-        });
+        // Устанавливаем бюджет для списка покупок
+        cy.setShoppingListBudgetUI('Напитки', '46');
 
-        cy.get('textarea[placeholder*="Опишите выполненную работу, результаты и другие важные детали..."]')
-            .type('купила');
-
-        cy.contains('button', 'На проверку').click();
+        // Отправляем задачу на проверку
+        cy.submitTaskForReviewUI('купила');
     });
 
     it('Завершение мероприятия и проверка балансов', () => {
@@ -116,41 +87,15 @@ describe('Полный пользовательский сценарий', () =>
         cy.contains('Задачи').click();
         cy.contains('Купить напитки').click();
 
-        cy.get('input[value="46.00"]').click().clear().type("100");
-        cy.get('button').eq(7).click();
+        // Подтверждаем выполнение задачи
+        cy.confirmTaskCompletionUI('100', 'молодец');
 
-        cy.get('textarea[placeholder*="Добавьте комментарий к проверке..."]')
-            .type('молодец');
-
-        cy.contains('button', 'Подтвердить выполнение').click();
-
-        cy.get('button').eq(3).click();
-
-        cy.contains('Общие расчёты').click();
-        cy.wait(4000);
-        cy.contains('Завершить мероприятие').click();
-        cy.contains('Да, завершить мероприятие').click();
+        // Завершаем мероприятие
+        cy.finishEventUI();
 
         // Проверка балансов
-        cy.contains('td', 'Юлия (@lili)')
-            .parent()
-            .within(() => {
-                cy.get('td').eq(2).should('contain', '-33,33');
-                cy.get('td').eq(3).should('contain', 'Должник');
-            });
-
-        cy.contains('td', 'Ксения (@xuxa)')
-            .parent()
-            .within(() => {
-                cy.get('td').eq(2).should('contain', '66,66');
-                cy.get('td').eq(3).should('contain', 'Кредитор');
-            });
-
-        cy.contains('td', 'Дарья (@didi)')
-            .parent()
-            .within(() => {
-                cy.get('td').eq(2).should('contain', '-33,33');
-                cy.get('td').eq(3).should('contain', 'Должник');
-            });
+        cy.checkParticipantBalanceUI('Юлия (@lili)', '-33,33', 'Должник');
+        cy.checkParticipantBalanceUI('Ксения (@xuxa)', '66,66', 'Кредитор');
+        cy.checkParticipantBalanceUI('Дарья (@didi)', '-33,33', 'Должник');
     });
 }); 

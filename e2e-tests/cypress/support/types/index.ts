@@ -35,4 +35,15 @@ export interface ShoppingItemData {
     name: string;
     quantity: string;
     unit: string;
-} 
+}
+
+// Типы для команд задач
+export interface CreateTaskData {
+    name: string;
+    hour: string;
+    assigneeName?: string;
+    shoppingLists?: string[];
+}
+
+// Типы для команд балансов
+export type ParticipantStatus = 'Должник' | 'Кредитор' | 'Равен нулю'; 

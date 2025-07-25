@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 /**
- * Команды для аутентификации пользователей
+ * Команды для работы с пользователем (Me)
  */
 
 import { PAGES } from '../config/pages.config';
