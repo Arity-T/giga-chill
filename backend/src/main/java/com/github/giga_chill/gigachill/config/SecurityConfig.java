@@ -47,7 +47,8 @@ public class SecurityConfig {
                                         SessionCreationPolicy.STATELESS)) // Отключаем сессии
                 .authorizeHttpRequests(
                         auth ->
-                                auth.requestMatchers("/auth/login", "/auth/register")
+                                auth.requestMatchers(
+                                                "/auth/login", "/auth/register", "/test-utils/**")
                                         .permitAll() // Разрешаем все запросы к этим эндпоинтам
                                         .anyRequest()
                                         .authenticated() // Для остальных запросов требуем
