@@ -4,7 +4,7 @@
     <appender name="LOGSTASH-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/app-log.json</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/app-log.%d{yyyy-MM-dd}.json</fileNamePattern>
+            <fileNamePattern>logs/app-log.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
