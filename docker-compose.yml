@@ -16,8 +16,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    networks:
-      - gigachill-network
 
   builder:
     build:
@@ -30,8 +28,6 @@ services:
     env_file:
       - .env
     command: ["./build.sh"]
-    networks:
-      - gigachill-network
     volumes:
       - backend-build:/app/build
 
@@ -46,8 +42,6 @@ services:
       - .env
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
-    networks:
-      - gigachill-network
     volumes:
       - backend-build:/app/build
       - ./backend/logs:/app/logs
@@ -104,5 +98,6 @@ volumes:
   backend-build:
 
 networks:
-  gigachill-network:
-    driver: bridge 
+  default:
+    name: gigachill-network
+    external: false
