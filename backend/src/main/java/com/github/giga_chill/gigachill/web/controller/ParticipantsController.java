@@ -53,12 +53,18 @@ public class ParticipantsController {
             throw new BadRequestException("Invalid request body: " + body);
         }
         var userToAdd = userService.getByLogin(participantLogin);
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Event validator
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -66,6 +72,8 @@ public class ParticipantsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
+
+        //Participant validator
         if (!participantsService.isOwnerRole(eventId, user.getId())
                 && !participantsService.isAdminRole(eventId, user.getId())) {
             throw new ForbiddenException(
@@ -77,6 +85,8 @@ public class ParticipantsController {
         if (userToAdd == null) {
             throw new NotFoundException("User with login '" + participantLogin + "' not found");
         }
+
+        //Participant validator
         if (participantsService.isParticipant(eventId, userToAdd.getId())) {
             throw new ConflictException(
                     "User with login '"
@@ -96,16 +106,22 @@ public class ParticipantsController {
             @PathVariable UUID eventId,
             @PathVariable UUID participantId) {
         var user = userService.userAuthentication(authentication);
+
+        //Participant validator
         if (user.getId().equals(participantId)) {
             throw new BadRequestException(
                     "User with id " + participantId + " cannot delete themselves");
         }
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+        //Event validator
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -113,6 +129,7 @@ public class ParticipantsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
+        //Participant validator
         if (!participantsService.isOwnerRole(eventId, user.getId())
                 && !participantsService.isAdminRole(eventId, user.getId())) {
             throw new ForbiddenException(
@@ -121,6 +138,8 @@ public class ParticipantsController {
                             + " does not have permission to remove participants from event with id "
                             + eventId);
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, participantId)) {
             throw new NotFoundException(
                     "Participant with id " + participantId + " not found in event " + eventId);
@@ -141,12 +160,16 @@ public class ParticipantsController {
         if (newRole == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+        //Event validator
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -154,6 +177,8 @@ public class ParticipantsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
+
+        //Participant validator
         if (!participantsService.isOwnerRole(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -161,10 +186,14 @@ public class ParticipantsController {
                             + " does not have permission to change participant roles in event with id "
                             + eventId);
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, participantId)) {
             throw new NotFoundException(
                     "Participant with id " + participantId + " not found in event " + eventId);
         }
+
+        //Participant validator
         if (participantsService.isOwnerRole(eventId, participantId)) {
             throw new ConflictException(
                     "The role: owner of the user with id: "

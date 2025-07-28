@@ -34,9 +34,12 @@ public class ShoppingListsController {
     public ResponseEntity<List<ShoppingListInfo>> getShoppingList(
             Authentication authentication, @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -62,12 +65,18 @@ public class ShoppingListsController {
         if (title == null || description == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Event validator
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -90,15 +99,23 @@ public class ShoppingListsController {
         var user = userService.userAuthentication(authentication);
         var title = (String) body.get("title");
         var description = (String) body.get("description");
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Event validator
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
+
+        //Shopping list validator
         if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -106,6 +123,8 @@ public class ShoppingListsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
+
+        //Participant validator
         if (participantsService.isParticipantRole(eventId, user.getId())
                 && !shoppingListsService.isConsumer(shoppingListId, user.getId())) {
             throw new ForbiddenException(
@@ -114,6 +133,8 @@ public class ShoppingListsController {
                             + " is not a consumer of shopping list with id "
                             + shoppingListId);
         }
+
+        //Shopping list validator
         var shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned"))
                 && !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
@@ -136,15 +157,23 @@ public class ShoppingListsController {
             @PathVariable UUID shoppingListId) {
 
         var user = userService.userAuthentication(authentication);
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Event validator
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
+
+        //Shopping list validator
         if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -152,6 +181,8 @@ public class ShoppingListsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
+
+        //Participant validator
         if (participantsService.isParticipantRole(eventId, user.getId())
                 && !shoppingListsService.isConsumer(shoppingListId, user.getId())) {
             throw new ForbiddenException(
@@ -161,6 +192,8 @@ public class ShoppingListsController {
                             + shoppingListId);
         }
         var shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
+
+        //Shopping list validator
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned"))
                 && !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
             throw new ConflictException(
@@ -191,15 +224,23 @@ public class ShoppingListsController {
         if (title == null || quantity == null || unit == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Event validator
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
+
+        //Shopping list validator
         if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -207,6 +248,8 @@ public class ShoppingListsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
+
+        //Participant validator
         if (participantsService.isParticipantRole(eventId, user.getId())
                 && !shoppingListsService.isConsumer(shoppingListId, user.getId())) {
             throw new ForbiddenException(
@@ -215,6 +258,8 @@ public class ShoppingListsController {
                             + " is not a consumer of shopping list with id "
                             + shoppingListId);
         }
+
+        //Shopping list validator
         var shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned"))
                 && !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
@@ -243,18 +288,28 @@ public class ShoppingListsController {
                         ? new BigDecimal(String.valueOf((Number) body.get("quantity")))
                         : null;
         var unit = (String) body.get("unit");
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Event validator
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
+
+        //Shopping list validator
         if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
+
+        //Shopping list validator
         if (!shoppingListsService.isShoppingItemExisted(shoppingItemId)) {
             throw new NotFoundException("Shopping item with id " + shoppingItemId + " not found");
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -262,6 +317,8 @@ public class ShoppingListsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
+
+        //Participant validator
         if (participantsService.isParticipantRole(eventId, user.getId())
                 && !shoppingListsService.isConsumer(shoppingListId, user.getId())) {
             throw new ForbiddenException(
@@ -270,6 +327,8 @@ public class ShoppingListsController {
                             + " is not a consumer of shopping list with id "
                             + shoppingListId);
         }
+
+        //Shopping list validator
         var shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned"))
                 && !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
@@ -299,15 +358,23 @@ public class ShoppingListsController {
         if (budget == null || budget.compareTo(new BigDecimal(0)) < 0) {
             throw new BadRequestException("Invalid request body: " + body);
         }
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Event validator
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
+
+        //Shopping list validator
         if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -315,6 +382,8 @@ public class ShoppingListsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
+
+        //Shopping list validator
         var taskId = shoppingListsService.getTaskIdForShoppingList(shoppingListId);
         var executorId = taskService.getExecutorId(taskId);
         if (executorId == null) {
@@ -324,6 +393,8 @@ public class ShoppingListsController {
                             + " does not"
                             + " have \"in progress\", \"bought\" or \"partially_bought\" status");
         }
+
+        //Task validator
         var taskStatus = taskService.getTaskStatus(taskId);
         if (!((taskStatus.equals(env.getProperty("task_status.in_progress"))
                         && executorId.equals(user.getId()))
@@ -350,18 +421,28 @@ public class ShoppingListsController {
             @PathVariable UUID shoppingListId,
             @PathVariable UUID shoppingItemId) {
         var user = userService.userAuthentication(authentication);
+
+        //Shopping list validator
         if (!shoppingListsService.isShoppingItemExisted(shoppingItemId)) {
             throw new NotFoundException("Shopping item with id " + shoppingItemId + " not found");
         }
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Event validator
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
+
+        //Shopping list validator
         if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -369,6 +450,8 @@ public class ShoppingListsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
+
+        //Participant validator
         if (participantsService.isParticipantRole(eventId, user.getId())
                 && !shoppingListsService.isConsumer(shoppingListId, user.getId())) {
             throw new ForbiddenException(
@@ -377,6 +460,8 @@ public class ShoppingListsController {
                             + " is not a consumer of shopping list with id "
                             + shoppingListId);
         }
+
+        //Shopping list validator
         String shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned"))
                 && !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
@@ -403,18 +488,28 @@ public class ShoppingListsController {
         if (isPurchased == null) {
             throw new BadRequestException("Invalid request body: " + body);
         }
+
+        //Shopping list validator
         if (!shoppingListsService.isShoppingItemExisted(shoppingItemId)) {
             throw new NotFoundException("Shopping item with id " + shoppingItemId + " not found");
         }
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Event validator
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
+
+        //Shopping list validator
         if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -422,6 +517,8 @@ public class ShoppingListsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
+
+        //Shopping list validator
         var shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.in_progress"))) {
             throw new ConflictException(
@@ -430,6 +527,8 @@ public class ShoppingListsController {
                             + " does not"
                             + " have in progress status");
         }
+
+        //Task validator
         var taskId = shoppingListsService.getTaskIdForShoppingList(shoppingListId);
         if (taskId == null) {
             throw new ConflictException(
@@ -437,6 +536,9 @@ public class ShoppingListsController {
                             + shoppingListId
                             + " is not is not attached to the task");
         }
+
+
+        //Shopping list validator
         var executorId = taskService.getExecutorId(taskId);
         var taskStatus = taskService.getTaskStatus(taskId);
         if (executorId == null
@@ -467,15 +569,23 @@ public class ShoppingListsController {
         if (body == null || body.isEmpty()) {
             throw new BadRequestException("Invalid request body: " + body);
         }
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Event validator
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
+
+        //Shopping list validator
         if (!shoppingListsService.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id " + shoppingListId + " not found");
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -483,6 +593,8 @@ public class ShoppingListsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
+
+        //Participant validator
         if (participantsService.isParticipantRole(eventId, user.getId())
                 && !shoppingListsService.isConsumer(shoppingListId, user.getId())) {
             throw new ForbiddenException(
@@ -491,6 +603,8 @@ public class ShoppingListsController {
                             + " is not a consumer of shopping list with id "
                             + shoppingListId);
         }
+
+        //Shopping list validator
         String shoppingListStatus = shoppingListsService.getShoppingListStatus(shoppingListId);
         if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned"))
                 && !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
@@ -502,6 +616,8 @@ public class ShoppingListsController {
         }
 
         List<UUID> allUsersIds = body.stream().map(UuidUtils::safeUUID).toList();
+
+        //User validator
         if (!userService.allUsersExistByIds(allUsersIds)) {
             throw new NotFoundException("The list contains a user that is not in the database");
         }

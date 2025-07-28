@@ -59,9 +59,13 @@ public class EventsController {
     public ResponseEntity<ResponseEventInfo> getEventById(
             Authentication authentication, @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -79,12 +83,18 @@ public class EventsController {
             Authentication authentication,
             @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Event validator
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -92,6 +102,8 @@ public class EventsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
+
+        //Participant Validator
         if (!participantsService.isOwnerRole(eventId, user.getId())
                 && !participantsService.isAdminRole(eventId, user.getId())) {
             throw new ForbiddenException(
@@ -109,12 +121,18 @@ public class EventsController {
     public ResponseEntity<Void> deleteEventById(
             Authentication authentication, @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Event validator
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
+
+        //Participant Validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -122,6 +140,8 @@ public class EventsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
+
+        //Participant validator
         if (!participantsService.isOwnerRole(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -139,12 +159,18 @@ public class EventsController {
     public ResponseEntity<Void> postEventLink(
             Authentication authentication, @PathVariable UUID eventId) {
         User user = userService.userAuthentication(authentication);
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Event validator
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -152,6 +178,8 @@ public class EventsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
+
+        //Participant validator
         if (!participantsService.isOwnerRole(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -169,9 +197,13 @@ public class EventsController {
     public ResponseEntity<Map<String, String>> getEventLink(
             Authentication authentication, @PathVariable UUID eventId) {
         User user = userService.userAuthentication(authentication);
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -179,6 +211,8 @@ public class EventsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
+
+        //participant validator
         if (!participantsService.isOwnerRole(eventId, user.getId())
                 && !participantsService.isAdminRole(eventId, user.getId())) {
             throw new ForbiddenException(
@@ -205,9 +239,13 @@ public class EventsController {
         if (eventId == null) {
             throw new NotFoundException("Link with hash " + rawToken + " not found");
         }
+
+        //Event validator
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
+
+        //Participant validator
         if (participantsService.isParticipant(eventId, user.getId())) {
             throw new ConflictException(
                     "User with id "
@@ -225,12 +263,18 @@ public class EventsController {
     public ResponseEntity<Void> postFinalizeEvent(
             Authentication authentication, @PathVariable UUID eventId) {
         User user = userService.userAuthentication(authentication);
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Event validator
         if (eventService.isFinalized(eventId)) {
             throw new ConflictException("Event with id " + eventId + " was finalized");
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -238,6 +282,8 @@ public class EventsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
+
+        //Participant validator
         if (!participantsService.isOwnerRole(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -255,9 +301,13 @@ public class EventsController {
     public ResponseEntity<ParticipantBalanceInfo> getParticipantBalance(
             Authentication authentication, @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -274,9 +324,13 @@ public class EventsController {
     public ResponseEntity<List<ParticipantSummaryBalanceInfo>> getParticipantsSummaryBalance(
             Authentication authentication, @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
+
+        //Event validator
         if (!eventService.isExistedAndNotDeleted(eventId)) {
             throw new NotFoundException("Event with id " + eventId + " not found");
         }
+
+        //Participant validator
         if (!participantsService.isParticipant(eventId, user.getId())) {
             throw new ForbiddenException(
                     "User with id "
@@ -284,6 +338,8 @@ public class EventsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
+
+        //Participant validator
         if (!participantsService.isOwnerRole(eventId, user.getId())
                 && !participantsService.isAdminRole(eventId, user.getId())) {
             throw new ForbiddenException(
