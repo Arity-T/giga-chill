@@ -96,6 +96,12 @@ services:
 volumes:
   postgres-data:
   backend-build:
+  certs:
+  esdata01:
+  kibanadata:
+  metricbeatdata01:
+  filebeatdata01:
+  logstashdata01:
 
 networks:
   default:
