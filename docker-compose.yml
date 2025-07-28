@@ -207,19 +207,27 @@ services:
      - ELASTIC_HOSTS=https://es01:9200
      - KIBANA_HOSTS=http://kibana:5601
      - LOGSTASH_HOSTS=http://logstash01:5044
+  
+  filebeat01:
     depends_on:
-      - elasticsearch
-      - backend
-    networks:
-      - gigachill-network
-
-  kibana:
-    image: kibana:9.0.4
-    container_name: gigachill-kibana
-    ports:
-      - "5601:5601"
+      es01:
+        condition: service_healthy
+    image: docker.elastic.co/beats/filebeat:${STACK_VERSION}
+    user: "1000:0"
+    command: sh -c "chmod 644 /usr/share/filebeat/filebeat.yml && filebeat -e"
+    volumes:
+      - certs:/usr/share/filebeat/certs
+      - filebeatdata01:/usr/share/filebeat/data
+      - ./backend/logs:/usr/share/filebeat/logs:ro
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTIC_USER=elastic
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - KIBANA_HOSTS=http://kibana:5601
+      - LOGSTASH_HOSTS=http://logstash01:5044
+
     depends_on:
       - elasticsearch
     networks:
