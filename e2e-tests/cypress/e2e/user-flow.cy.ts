@@ -1,9 +1,9 @@
 describe('Полный пользовательский сценарий', () => {
-    // beforeEach(() => {
-    //     cy.clearAllCookies();
-    //     cy.clearAllLocalStorage();
-    //     cy.clearAllSessionStorage();
-    // });
+    before(() => {
+        // Очищаем базу данных перед началом сценария
+        cy.request('POST', 'http://localhost:3000/test-utils/cleanup');
+    });
+
 
     it('Подготовка: регистрация тестовых пользователей', () => {
         // Регистрируем всех тестовых пользователей используя команды
