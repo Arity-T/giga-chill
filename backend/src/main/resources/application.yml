@@ -1,4 +1,5 @@
 spring:
+  profiles: ${BACKEND_PROFILE}
   application:
     name: gigachill
   datasource:
