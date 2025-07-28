@@ -1,6 +1,5 @@
 package com.github.giga_chill.gigachill.web.controller;
 
-
 import com.github.giga_chill.gigachill.service.TestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
@@ -18,7 +17,7 @@ public class TestController {
     private final TestService testService;
 
     @PostMapping("/cleanup")
-    ResponseEntity<Void> cleanDB( Authentication authentication){
+    ResponseEntity<Void> cleanDB(Authentication authentication) {
         testService.cleanBD();
         return ResponseEntity.noContent().build();
     }
