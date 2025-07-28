@@ -150,13 +150,39 @@ services:
      interval: 10s
      timeout: 10s
      retries: 120
+
+  kibana:
+    depends_on:
+      es01:
+          condition: service_healthy
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+    labels:
+      co.elastic.logs/module: kibana
+    volumes:
+     - certs:/usr/share/kibana/config/certs
+     - kibanadata:/usr/share/kibana/data
     ports:
-      - "9200:9200"
-    networks:
-      - gigachill-network
-  logstash:
-    image: logstash:9.0.4
-    container_name: gigachill-logstash
+      - "${KIBANA_PORT}:5601"
+    environment:
+      - SERVERNAME=kibana
+      - ELASTICSEARCH_HOSTS=https://es01:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
+      - XPACK_SECURITY_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+      - XPACK_REPORTING_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+      - ELASTICSEARCH_SERVICE_TOKEN_FILE=/tokens/kibana.token
+    mem_limit: ${KB_MEM_LIMIT}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
     volumes:
       - ./backend/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
       - ./backend/logs:/logs
