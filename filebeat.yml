@@ -1,0 +1,20 @@
+filebeat.inputs:
+- type: filestream
+  id: default-filestream
+  paths:
+    - /logs/*.log
+  fields:
+    type: "backend-log"
+
+processors:
+- add_docker_metadata: ~
+
+
+setup.kibana:
+  host: ${KIBANA_HOSTS}
+  username: ${ELASTIC_USER}
+  password: ${ELASTIC_PASSWORD}
+
+
+output.logstash:
+  hosts: ${LOGSTASH_HOSTS}
