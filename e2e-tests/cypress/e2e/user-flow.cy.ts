@@ -1,7 +1,7 @@
 describe('Полный пользовательский сценарий', () => {
     before(() => {
         // Очищаем базу данных перед началом сценария
-        cy.request('POST', 'http://localhost:3000/test-utils/cleanup');
+        cy.cleanupDatabase();
     });
 
 

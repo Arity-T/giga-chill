@@ -19,6 +19,8 @@ npm install
 
 ## Запуск тестов
 
+Перед запуском тестов можно задать переменные окружения `FRONTEND_URL` (по умолчанию `http://localhost:3001`) и `BACKEND_URL` (по умолчанию `http://localhost:3000`).
+
 ### Все тесты (автоматический режим)
 ```bash
 npm test
@@ -44,7 +46,7 @@ npm run test:headed
 0. Перед запуском тестового сценария очищаем базу данных. Для этого на бэке выделен специальный эндпоинт `/test-utils/cleanup`.
    ```ts
    before(() => {
-        cy.request('POST', 'http://localhost:3000/test-utils/cleanup');
+        cy.cleanupDatabase();
     });
    ```
 1. При использовании `contains` первым параметром указываем селектор.

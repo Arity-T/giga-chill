@@ -14,6 +14,7 @@ import './participants';
 import './shopping-lists';
 import './tasks';
 import './debts';
+import './utils';
 
 // Типы для TypeScript
 declare global {
@@ -46,6 +47,9 @@ declare global {
             // Debts commands
             finishEventUI(): Chainable<void>;
             checkParticipantBalanceUI(participantLogin: string, expectedBalance: string, expectedStatus: ParticipantStatus): Chainable<void>;
+
+            // Utils commands
+            cleanupDatabase(): Chainable<void>;
         }
     }
 }
