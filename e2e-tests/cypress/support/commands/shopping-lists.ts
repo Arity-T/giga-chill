@@ -4,78 +4,124 @@
  */
 
 // Custom command для создания списка покупок
-Cypress.Commands.add('createShoppingListUI', (listName) => {
-    // Убедимся, что мы на странице мероприятия и переходим на вкладку списков покупок
-    cy.contains('Списки покупок').click({ force: true });
+Cypress.Commands.add('createShoppingListUI', (listName, description) => {
+    // Переходим на вкладку списков покупок
+    cy.url().then((url) => {
+        // TODO: переделать на использование конфига
+        if (!url.includes("/shopping")) {
+            cy.contains('.ant-menu-item a', 'Списки покупок').click();
+        }
+    });
 
-    // Ждём загрузки и нажимаем кнопку добавления списка
-    cy.contains('Добавить список').click();
+    // Нажимаем кнопку добавления списка
+    cy.contains('button', 'Добавить список').should('be.visible').click();
 
-    // Вводим название списка покупок
-    cy.get('input[placeholder="Введите название списка покупок"]')
-        .type(listName)
-        .should('have.value', listName);
+    // Внутри модального окна
+    cy.contains('.ant-modal-content', 'Создать список покупок').should('be.visible')
+        .within(() => {
+            // Вводим название списка покупок
+            cy.get('input[placeholder="Введите название списка покупок"]')
+                .type(listName)
+                .should('have.value', listName);
 
-    // Создаём список
-    cy.contains('button', 'Создать')
-        .should('be.enabled')
-        .click();
+            // Заполняем описание, если передано
+            if (description) {
+                cy.get('textarea[placeholder*="описание"]')
+                    .type(description);
+            }
 
-    // Ждём завершения операции
-    cy.wait(1000);
+            // Создаём список
+            cy.contains('button', 'Создать').click();
+        });
+
+    // Проверяем, что список создан
+    cy.contains('.ant-card', listName).should('be.visible');
 });
 
 // Custom command для добавления элемента в список покупок
 Cypress.Commands.add('addShoppingItemUI', (listName, itemData) => {
-    // Убедимся, что мы на вкладке списков покупок
-    cy.contains('Списки покупок').click({ force: true });
+    // Переходим на вкладку списков покупок
+    cy.url().then((url) => {
+        // TODO: переделать на использование конфига
+        if (!url.includes("/shopping")) {
+            cy.contains('.ant-menu-item a', 'Списки покупок').click();
+        }
+    });
 
-    // Ждём загрузки и открываем нужный список
-    cy.wait(1000);
-    cy.contains(listName).click();
+    // Ждём загрузки и находим нужный список
+    cy.contains('.ant-card', listName).should('be.visible').as('shoppingListCard')
 
-    // Ждём загрузки страницы списка и нажимаем кнопку добавления покупки
-    cy.get('button').contains('Добавить покупку').click();
+    // Если список закрыт, открываем его
+    cy.get('@shoppingListCard')
+        .invoke('outerHeight')
+        .then((height) => {
+            if (height <= 80) {
+                cy.get('@shoppingListCard').click();
+            }
+        });
 
-    // Заполняем название товара
-    cy.get('input[placeholder="Введите название товара"]')
-        .type(itemData.name)
-        .should('have.value', itemData.name);
+    // Нажимаем кнопку добавления покупки
+    cy.get('@shoppingListCard').contains('button', 'Добавить покупку').should('be.visible').click();
 
-    // Заполняем количество
-    cy.get('input[placeholder="1"]').click().clear().type(itemData.quantity);
+    // В появившемся модальном окне создаём покупку
+    cy.contains('.ant-modal-content', 'Добавить покупку').should('be.visible').as('addShoppingItemModal');
 
-    // Выбираем единицу измерения
-    cy.get('.ant-select-selector').contains("шт").click();
-    cy.contains('.ant-select-item', itemData.unit).click();
+    cy.get('@addShoppingItemModal').within(() => {
+        // Заполняем название товара
+        cy.get('input[placeholder="Введите название товара"]')
+            .type(itemData.name)
+            .should('have.value', itemData.name);
+
+        // Заполняем количество
+        cy.get('input[placeholder="1"]').clear().type(itemData.quantity);
+
+        // Открываем выпадающий список с единицами измерения
+        cy.get('.ant-select-selector').contains("шт").click();
+    });
+
+    // Выбираем нужную единицу измерения
+    cy.contains('.ant-select-item', itemData.unit).should('be.visible').click();
 
     // Добавляем товар
-    cy.get('button:contains("Добавить")').last().click();
+    cy.get('@addShoppingItemModal').contains('button', 'Добавить').should('be.visible').click();
 
-    // Ждём завершения операции
-    cy.wait(1000);
+    // Проверяем, что покупка добавлена
+    cy.get('@shoppingListCard').contains(itemData.name).should('be.visible');
 });
 
 // Custom command для назначения потребителей на список покупок
 Cypress.Commands.add('assignShoppingListConsumers', (listName, selectAll = true) => {
     // Находим список и кликаем на иконку назначения потребителей
     cy.contains('.ant-card-body', listName).within(() => {
-        cy.get('.anticon-user-add').last().click();
+        cy.get('.anticon-user-add').last().as('assignConsumersIcon');
+        cy.get('@assignConsumersIcon').click();
     });
 
-    cy.contains('.ant-modal-content', 'Выбрать потребителей')
+    cy.contains('.ant-modal-content', 'Выбрать потребителей').should('be.visible')
         .within(() => {
+            // TODO: реализовать выбор потребителей по спику имён или логинов
             if (selectAll) {
                 // Выбираем всех потребителей
                 cy.contains('Выбрать всех').click();
 
-                // Проверяем, что все чекбоксы выбраны
-                cy.get('input[type="checkbox"]:checked').should('have.length', 4);
+                // Сохраняем ожидаемое количество потребителей
+                cy.get('ul.ant-list-items > li.ant-list-item')
+                    .its('length')
+                    .as('expectedConsumerCount');
             }
 
             // Сохраняем выбор
             cy.contains('button', 'Сохранить').click();
         });
+
+    // Проверяем, что количество потребителей соответствует ожидаемому
+    cy.get('@expectedConsumerCount').then((count) => {
+        cy.get('@assignConsumersIcon')
+            .parent()
+            .contains('span', `${count}`)
+            .should('be.visible');
+    });
+
 });
 
 // Custom command для отметки товара как купленного

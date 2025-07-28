@@ -32,7 +32,7 @@ declare global {
             changeParticipantRoleByNameUI(participantName: string, newRole: ParticipantRole): Chainable<void>;
 
             // Shopping Lists commands
-            createShoppingListUI(listName: string): Chainable<void>;
+            createShoppingListUI(listName: string, description?: string): Chainable<void>;
             addShoppingItemUI(listName: string, itemData: ShoppingItemData): Chainable<void>;
             assignShoppingListConsumers(listName: string, selectAll?: boolean): Chainable<void>;
             markShoppingItemAsPurchasedUI(listName: string, itemName: string): Chainable<void>;

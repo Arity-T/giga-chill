@@ -6,47 +6,85 @@
 // Custom command для создания задачи
 Cypress.Commands.add('createTaskUI', (taskData) => {
     // Переходим на вкладку задач
-    cy.contains('Задачи').click();
+    cy.url().then((url) => {
+        // TODO: переделать на использование конфига
+        if (!url.includes("/tasks")) {
+            cy.contains('.ant-menu-item a', 'Задачи').click();
+        }
+    });
 
     // Нажимаем кнопку создания задачи
-    cy.contains('Создать задачу').click();
+    cy.contains('button', 'Создать задачу').should('be.visible').click();
 
-    // Заполняем название задачи
-    cy.get('input[placeholder="Введите название задачи"]')
-        .type(taskData.name)
-        .should('have.value', taskData.name);
+    // Находим модальное окно
+    cy.contains('.ant-modal-content', 'Создать задачу').should('be.visible')
+        .as('createTaskModal');
+
+    // Сохраняем заголовок, чтобы потом кликать по нему для закрытия выпадающих списокв
+    cy.get('@createTaskModal').contains('Создать задачу').as('createTaskModalTitle');
+
+    // Внутри модального окна заполняем форму создания задачи
+    cy.get('@createTaskModal').within(() => {
+        // Заполняем название задачи
+        cy.get('input[placeholder="Введите название задачи"]')
+            .type(taskData.name)
+            .should('have.value', taskData.name);
+
+        // Заполняем описание задачи, если передано
+        if (taskData.description) {
+            cy.get('textarea[placeholder*="описание"]')
+                .type(taskData.description);
+        }
+    });
 
     // Выбираем дату и время выполнения
-    cy.get('input[placeholder="Выберите дату и время"]').click();
-
-    cy.get('.ant-picker-time-panel-column')
-        .first()
-        .contains(taskData.hour)
+    cy.get('@createTaskModal').find('input[placeholder="Выберите дату и время"]')
         .click();
 
-    cy.contains('ОК').click();
+    // TODO: добавить выбор даты и вынести работу с календарём в отдельную команду
+    cy.get('.ant-picker-datetime-panel-container').should('be.visible').within(() => {
+        cy.get('.ant-picker-time-panel-column')
+            .first()
+            .contains(taskData.hour)
+            .click();
+        cy.contains('ОК').click();
+    });
 
     // Выбираем исполнителя, если указан
     if (taskData.assigneeName) {
-        cy.contains("Выберите исполнителя (необязательно)").click({ force: true });
-        cy.contains(taskData.assigneeName).click();
+        cy.get('@createTaskModal').contains("Выберите исполнителя")
+            .parent()
+            .should('be.visible')
+            .click();
+
+        cy.contains('.ant-select-item', taskData.assigneeName).should('be.visible')
+            .click();
+
+        // Закрываем выпадающий список
+        cy.get('@createTaskModalTitle').click();
     }
 
     // Выбираем списки покупок, если указаны
     if (taskData.shoppingLists && taskData.shoppingLists.length > 0) {
-        cy.contains("Выберите списки покупок (необязательно)").click({ force: true });
+        cy.get('@createTaskModal').contains("Выберите списки покупок")
+            .parent()
+            .should('be.visible')
+            .click();
+
         taskData.shoppingLists.forEach(listName => {
-            cy.contains(listName).click();
+            cy.contains('.ant-select-item', listName).should('be.visible')
+                .click();
         });
+
         // Закрываем выпадающий список
-        cy.contains(taskData.shoppingLists[0]).click();
+        cy.get('@createTaskModalTitle').click();
     }
 
     // Создаём задачу
-    cy.get('button:contains("Создать")').last().click();
+    cy.get('@createTaskModal').contains('button', 'Создать').should('be.visible').click();
 
     // Проверяем, что задача создалась
-    cy.contains(taskData.name).should('exist');
+    cy.contains('.ant-card', taskData.name).should('exist');
 });
 
 // Custom command для взятия задачи в работу
