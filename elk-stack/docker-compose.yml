@@ -220,7 +220,7 @@ services:
       - "9600:9600" # для Metricbeat
     environment:
       - STACK_VERSION=${STACK_VERSION}
-      - xpack.monitoring.enabled=true
+      - xpack.monitoring.enabled=false
       - ELASTIC_USER=elastic
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - ELASTIC_HOSTS=https://es01:9200
