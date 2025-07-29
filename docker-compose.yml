@@ -192,7 +192,14 @@ services:
         condition: service_healthy
     image: docker.elastic.co/beats/metricbeat:${STACK_VERSION}
     user: "1000:0"
-    command: sh -c "chmod 644 /usr/share/metricbeat/metricbeat.yml && metricbeat -e"
+    entrypoint: /bin/sh -c
+    command: >
+      "
+        # сперва загружаем дашборды (отключаем проверку прав)
+        metricbeat --strict.perms=false setup --dashboards &&
+        # потом запускаем сам Beat
+        exec metricbeat --strict.perms=false
+      "
     volumes:
      - certs:/usr/share/metricbeat/certs
      - metricbeatdata01:/usr/share/metricbeat/data
@@ -244,7 +251,7 @@ services:
       - "${LOGSTASH_PORT}:5044"
     environment:
       - STACK_VERSION=${STACK_VERSION}
-      - xpack.monitoring.enabled=false
+      - xpack.monitoring.enabled=true
       - ELASTIC_USER=elastic
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - ELASTIC_HOSTS=https://es01:9200

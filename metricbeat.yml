@@ -1,3 +1,10 @@
+setup.kibana:
+  host: "${KIBANA_HOSTS}"
+  username: "${ELASTIC_USER}"
+  password: "${ELASTIC_PASSWORD}"
+
+setup.dashboards.enabled: true
+
 metricbeat.config.modules:
  path: ${path.config}/modules.d/*.yml
  reload.enabled: false
@@ -19,7 +26,7 @@ metricbeat.modules:
 - module: logstash
   xpack.enabled: true
   period: 10s
-  hosts: ${LOGSTASH_HOSTS}
+  hosts: ["${LOGSTASH_HOSTS}"]
 
 
 - module: kibana
