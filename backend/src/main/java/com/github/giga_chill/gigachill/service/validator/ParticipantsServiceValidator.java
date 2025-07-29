@@ -70,19 +70,19 @@ public class ParticipantsServiceValidator {
         }
     }
 
-    private boolean isOwnerRole(UUID eventId, UUID participantId) {
+    public boolean isOwnerRole(UUID eventId, UUID participantId) {
         return participantDAO
                 .getParticipantRoleInEvent(eventId, participantId)
                 .equals(env.getProperty("roles.owner"));
     }
 
-    private boolean isAdminRole(UUID eventId, UUID participantId) {
+    public boolean isAdminRole(UUID eventId, UUID participantId) {
         return participantDAO
                 .getParticipantRoleInEvent(eventId, participantId)
                 .equals(env.getProperty("roles.admin"));
     }
 
-    private boolean isParticipantRole(UUID eventId, UUID participantId) {
+    public boolean isParticipantRole(UUID eventId, UUID participantId) {
         return participantDAO
                 .getParticipantRoleInEvent(eventId, participantId)
                 .equals(env.getProperty("roles.participant"));
