@@ -1,3 +1,6 @@
+filebeat.config.modules:
+  enabled: false
+
 filebeat.inputs:
 - type: filestream
   id: default-filestream
@@ -8,7 +11,6 @@ filebeat.inputs:
 
 processors:
 - add_docker_metadata: ~
-
 
 setup.kibana:
   host: ${KIBANA_HOSTS}
