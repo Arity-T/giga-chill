@@ -14,6 +14,7 @@ import './participants';
 import './shopping-lists';
 import './tasks';
 import './debts';
+import './utils';
 
 // Типы для TypeScript
 declare global {
@@ -31,7 +32,7 @@ declare global {
             changeParticipantRoleByNameUI(participantName: string, newRole: ParticipantRole): Chainable<void>;
 
             // Shopping Lists commands
-            createShoppingListUI(listName: string): Chainable<void>;
+            createShoppingListUI(listName: string, description?: string): Chainable<void>;
             addShoppingItemUI(listName: string, itemData: ShoppingItemData): Chainable<void>;
             assignShoppingListConsumers(listName: string, selectAll?: boolean): Chainable<void>;
             markShoppingItemAsPurchasedUI(listName: string, itemName: string): Chainable<void>;
@@ -40,12 +41,16 @@ declare global {
             // Tasks commands
             createTaskUI(taskData: CreateTaskData): Chainable<void>;
             takeTaskInProgressUI(taskName: string): Chainable<void>;
-            submitTaskForReviewUI(reportText: string): Chainable<void>;
-            confirmTaskCompletionUI(budget: string, comment: string): Chainable<void>;
+            submitTaskForReviewUI(executorComment: string): Chainable<void>;
+            completeTaskUI(reviwerComment: string, isApproved: boolean): Chainable<void>;
 
             // Debts commands
             finishEventUI(): Chainable<void>;
             checkParticipantBalanceUI(participantLogin: string, expectedBalance: string, expectedStatus: ParticipantStatus): Chainable<void>;
+
+            // Utils commands
+            cleanupDatabase(): Chainable<void>;
+            closeModal(): Chainable<void>;
         }
     }
 }

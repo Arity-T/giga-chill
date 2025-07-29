@@ -34,12 +34,13 @@ export type ParticipantRole = 'Участник' | 'Администратор';
 export interface ShoppingItemData {
     name: string;
     quantity: string;
-    unit: string;
+    unit: "шт" | "кг" | "г" | "л" | "мл";
 }
 
 // Типы для команд задач
 export interface CreateTaskData {
     name: string;
+    description?: string;
     hour: string;
     assigneeName?: string;
     shoppingLists?: string[];
