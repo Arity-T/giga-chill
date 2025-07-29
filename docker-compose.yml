@@ -221,11 +221,11 @@ services:
         condition: service_healthy
     image: docker.elastic.co/beats/filebeat:${STACK_VERSION}
     user: "1000:0"
-    command: sh -c "chmod 644 /usr/share/filebeat/filebeat.yml && filebeat -e"
+    command: ["--strict.perms=false"]
     volumes:
       - certs:/usr/share/filebeat/certs
       - filebeatdata01:/usr/share/filebeat/data
-      - ./backend/logs:/usr/share/filebeat/logs:ro
+      - ./backend/logs:/usr/share/filebeat/logs
       - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
