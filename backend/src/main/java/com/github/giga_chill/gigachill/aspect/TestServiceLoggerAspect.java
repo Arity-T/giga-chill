@@ -16,14 +16,14 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Profile("test")
 public class TestServiceLoggerAspect {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataAccessLoggerAspect.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestServiceLoggerAspect.class);
     private final LoggerColorConfig loggerColorConfig;
 
     // Покрываем оба пакета: repository и impl
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.TestService.cleanBD(..))")
     public void cleanBD() {}
 
-    @Around("cleanBD()")
+    @Around("cleanBD(..)")
     public Object logCleanBD(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
