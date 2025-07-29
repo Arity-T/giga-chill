@@ -90,40 +90,60 @@ Cypress.Commands.add('createTaskUI', (taskData) => {
 // Custom command для взятия задачи в работу
 Cypress.Commands.add('takeTaskInProgressUI', (taskName) => {
     // Переходим на вкладку задач
-    cy.contains('Задачи').click();
+    cy.url().then((url) => {
+        // TODO: переделать на использование конфига
+        if (!url.includes("/tasks")) {
+            cy.contains('.ant-menu-item a', 'Задачи').click();
+        }
+    });
 
     // Открываем задачу
-    cy.contains(taskName).click();
+    cy.contains('.ant-card', taskName).should('be.visible').click();
 
-    // Берём в работу
-    cy.contains('Взять в работу').click();
+    // В открывшемся модальном окне
+    cy.contains('.ant-modal-content', taskName).should('be.visible').within(() => {
+        // Берём в работу
+        cy.contains('button', 'Взять в работу').should('be.visible').click();
 
-    // Проверяем, что задача взята в работу
-    cy.contains('На проверку').should('exist');
+        // Проверяем, что задача взята в работу
+        cy.contains('.ant-tag', 'В работе').should('exist');
+        cy.contains('button', 'На проверку').should('exist');
+    });
 });
 
+// TODO: привести к одному формату с takeTaskInProgressUI, добавить проверку, 
+// открыта ли модалка с задачей, открыта ли страница задач, etc
+// либо убрать эти проверки из takeTaskInProgressUI тоже
 // Custom command для отправки задачи на проверку
-Cypress.Commands.add('submitTaskForReviewUI', (reportText) => {
-    // Заполняем отчёт о выполнении
-    cy.get('textarea[placeholder*="Опишите выполненную работу, результаты и другие важные детали..."]')
-        .type(reportText);
+Cypress.Commands.add('submitTaskForReviewUI', (executorComment) => {
+    // Внутри модального окна с задачей
+    cy.get('.ant-modal-content').should('be.visible').within(() => {
+        // Заполняем отчёт о выполнении
+        cy.get('textarea[placeholder*="Опишите выполненную работу"]')
+            .type(executorComment);
 
-    // Отправляем на проверку
-    cy.contains('button', 'На проверку').click();
+        // Отправляем на проверку
+        cy.contains('button', 'На проверку').click();
+
+        // Проверяем, что задача перешла в статус "На проверке"
+        cy.contains('.ant-tag', 'На проверке').should('exist');
+    });
 });
 
 // Custom command для подтверждения выполнения задачи
-Cypress.Commands.add('confirmTaskCompletionUI', (budget, comment) => {
-    // Редактируем бюджет, если указан
-    if (budget) {
-        cy.get('input[value*=".00"]').click().clear().type(budget);
-        cy.get('button').eq(7).click();
-    }
+Cypress.Commands.add('completeTaskUI', (reviwerComment, isApproved) => {
+    // Внутри модального окна с задачей
+    cy.get('.ant-modal-content').should('be.visible').within(() => {
+        // Добавляем комментарий к проверке
+        cy.get('textarea[placeholder*="Добавьте комментарий к проверке..."]')
+            .type(reviwerComment);
 
-    // Добавляем комментарий к проверке
-    cy.get('textarea[placeholder*="Добавьте комментарий к проверке..."]')
-        .type(comment);
+        // Подтверждаем выполнение, если указано
+        if (isApproved) {
+            cy.contains('button', 'Подтвердить выполнение').click();
+        } else {
+            cy.contains('button', 'Отправить назад в работу').click();
+        }
+    });
 
-    // Подтверждаем выполнение
-    cy.contains('button', 'Подтвердить выполнение').click();
 }); 

@@ -57,7 +57,7 @@ describe('Полный пользовательский сценарий', { tes
         cy.createTaskUI({
             name: 'Купить напитки',
             hour: '03',
-            assigneeName: 'Ксения (@xuxa)',
+            assigneeName: 'Ксения',
             shoppingLists: ['Напитки']
         });
     });
@@ -66,9 +66,8 @@ describe('Полный пользовательский сценарий', { tes
         // Входим под другим пользователем
         cy.loginUserUI("xuxa");
 
-        cy.visit('/events');
-        cy.wait(4000);
-        cy.contains('Пикник').click();
+        // Переходим на страницу мероприятия
+        cy.contains('.ant-card', 'Пикник').should('be.visible').click();
 
         // Берём задачу в работу
         cy.takeTaskInProgressUI('Купить напитки');
@@ -83,26 +82,36 @@ describe('Полный пользовательский сценарий', { tes
         cy.submitTaskForReviewUI('купила');
     });
 
-    it('Завершение мероприятия и проверка балансов', () => {
+    it('Проверка выполнения задачи ревьюером', () => {
         // Возвращаемся под организатором мероприятия
         cy.loginUserUI("lili");
 
-        cy.visit('/events');
-        cy.wait(4000);
-        cy.contains('Пикник').click();
+        // Переходим на страницу мероприятия
+        cy.contains('.ant-card', 'Пикник').should('be.visible').click();
 
-        cy.contains('Задачи').click();
-        cy.contains('Купить напитки').click();
+        // Переходим на страницу задач
+        cy.contains('.ant-menu-item a', 'Задачи').click();
+
+        // Открываем задачу
+        cy.contains('.ant-card', 'Купить напитки').should('be.visible').click();
+
+        // Можем изменить бюджет списка покупок
+        cy.setShoppingListBudgetUI('Напитки', '100');
 
         // Подтверждаем выполнение задачи
-        cy.confirmTaskCompletionUI('100', 'молодец');
+        cy.completeTaskUI('молодец', true);
 
+        // Закрываем модальное окно с задачей
+        cy.closeModal();
+    });
+
+    it('Завершение мероприятия и проверка балансов', () => {
         // Завершаем мероприятие
         cy.finishEventUI();
 
         // Проверка балансов
-        cy.checkParticipantBalanceUI('Юлия (@lili)', '-33,33', 'Должник');
-        cy.checkParticipantBalanceUI('Ксения (@xuxa)', '66,66', 'Кредитор');
-        cy.checkParticipantBalanceUI('Дарья (@didi)', '-33,33', 'Должник');
+        cy.checkParticipantBalanceUI('lili', '-33,33', 'Должник');
+        cy.checkParticipantBalanceUI('xuxa', '66,66', 'Кредитор');
+        cy.checkParticipantBalanceUI('didi', '-33,33', 'Должник');
     });
 }); 

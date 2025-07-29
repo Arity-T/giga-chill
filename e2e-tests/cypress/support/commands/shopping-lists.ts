@@ -127,27 +127,43 @@ Cypress.Commands.add('assignShoppingListConsumers', (listName, selectAll = true)
 // Custom command для отметки товара как купленного
 Cypress.Commands.add('markShoppingItemAsPurchasedUI', (listName, itemName) => {
     // Находим карточку списка и кликаем на неё
-    cy.get('.ant-card').contains(listName).closest('.ant-card').as('listCard');
-    cy.get('@listCard').click();
+    cy.contains('.ant-card', listName).as('shoppingListCard');
 
-    // Работаем внутри карточки списка
-    cy.get('@listCard').within(() => {
-        // Проверяем, что товар есть в списке
-        cy.get('.ant-card').contains(itemName).closest('.ant-card').within(() => {
-            // Отмечаем товар как купленный
-            cy.get('input[type="checkbox"]').click();
+    // Если список закрыт, открываем его
+    cy.get('@shoppingListCard')
+        .invoke('outerHeight')
+        .then((height) => {
+            if (height <= 80) {
+                cy.get('@shoppingListCard').click();
+            }
         });
-    });
+
+    // Находим товар в списке
+    cy.get('@shoppingListCard').contains('.ant-card', itemName).should('be.visible')
+        .within(() => {
+            // Отмечаем товар как купленный и проверяем, что он действительно отмечен
+            cy.get('input[type="checkbox"]').click().should('be.checked');
+        });
 });
 
 // Custom command для установки бюджета списка покупок
 Cypress.Commands.add('setShoppingListBudgetUI', (listName, budget) => {
     // Работаем внутри карточки списка
-    cy.get('.ant-card').contains(listName).closest('.ant-card').within(() => {
+    cy.contains('.ant-card', listName).should('be.visible').within(() => {
         // Указываем бюджет
-        cy.get('input[placeholder="Бюджет"]').type(budget);
+        cy.get('input[placeholder="Бюджет"]').clear().type(budget);
 
-        // Подтверждаем
-        cy.get('.anticon-check').click();
+        // Сохраняем
+        cy.get('.anticon-check').should('be.visible').click();
+
+        // Проверяем, что бюджет сохранился
+        // Икнока для сохранения должна исчезнуть
+        cy.get('.anticon-check').should('not.exist');
+
+        // Проверяем, что бюджет отображается
+        // при этом может добавиться десятичная часть, поэтому проверяем по вхождению
+        cy.get('input[placeholder="Бюджет"]')
+            .invoke('val')
+            .should('contain', budget);
     });
 }); 

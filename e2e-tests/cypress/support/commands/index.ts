@@ -41,8 +41,8 @@ declare global {
             // Tasks commands
             createTaskUI(taskData: CreateTaskData): Chainable<void>;
             takeTaskInProgressUI(taskName: string): Chainable<void>;
-            submitTaskForReviewUI(reportText: string): Chainable<void>;
-            confirmTaskCompletionUI(budget: string, comment: string): Chainable<void>;
+            submitTaskForReviewUI(executorComment: string): Chainable<void>;
+            completeTaskUI(reviwerComment: string, isApproved: boolean): Chainable<void>;
 
             // Debts commands
             finishEventUI(): Chainable<void>;
@@ -50,6 +50,7 @@ declare global {
 
             // Utils commands
             cleanupDatabase(): Chainable<void>;
+            closeModal(): Chainable<void>;
         }
     }
 }
