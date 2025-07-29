@@ -213,7 +213,7 @@ services:
      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
      - ELASTIC_HOSTS=https://es01:9200
      - KIBANA_HOSTS=http://kibana:5601
-     - LOGSTASH_HOSTS=http://logstash01:5044
+     - LOGSTASH_HOSTS=${METRICBEAT_LOGSTASH_HOSTS}
   
   filebeat01:
     depends_on:
@@ -233,7 +233,7 @@ services:
       - ELASTIC_USER=elastic
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - KIBANA_HOSTS=http://kibana:5601
-      - LOGSTASH_HOSTS=http://logstash01:5044
+      - LOGSTASH_HOSTS=${FILEBEAT_LOGSTASH_HOSTS}
 
   logstash01:
     depends_on:
@@ -248,7 +248,8 @@ services:
       - logstashdata01:/usr/share/logstash/data
       - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
     ports:
-      - "${LOGSTASH_PORT}:5044"
+      - "${LOGSTASH_PORT}:5044" # для Filebeat
+      - "9600:9600" # для Metricbeat
     environment:
       - STACK_VERSION=${STACK_VERSION}
       - xpack.monitoring.enabled=true
