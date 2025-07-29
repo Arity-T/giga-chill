@@ -50,5 +50,5 @@ echo "Приложение собрано успешно!"
 
 # Сохраняем JAR для последующего копирования
 mkdir -p /app/build/libs
-rm build/libs/*plain.jar
+rm -f build/libs/*plain.jar
 mv build/libs/gigachill-*.jar /app/build/libs/app.jar

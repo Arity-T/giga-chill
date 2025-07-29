@@ -2,7 +2,7 @@ filebeat.inputs:
 - type: filestream
   id: default-filestream
   paths:
-    - /logs/*.log
+    - /usr/share/filebeat/logs/*.log
   fields:
     type: "backend-log"
 

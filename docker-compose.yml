@@ -248,7 +248,7 @@ services:
       - ELASTIC_USER=elastic
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - ELASTIC_HOSTS=https://es01:9200
-      - ELASTICSEARCH_SSL_CERTIFICATE_AUTHORITIES=/usr/share/logstash/certs
+      - ELASTICSEARCH_SSL_CERTIFICATE_AUTHORITIES=/usr/share/logstash/certs/ca/ca.crt
 
   frontend:
     build:
