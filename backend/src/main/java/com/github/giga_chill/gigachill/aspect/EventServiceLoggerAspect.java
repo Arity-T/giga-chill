@@ -37,13 +37,13 @@ public class EventServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.deleteEvent(..)) "
-                    + "&& args(eventId)")
+                    + "&& args(eventId, ..)")
     public void deleteEvent(UUID eventId) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.updateEvent(..)) "
-                    + "&& args(eventId, requestEventInfo)")
-    public void updateEvent(UUID eventId, RequestEventInfo requestEventInfo) {}
+                    + "&& args(eventId, ..)")
+    public void updateEvent(UUID eventId) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.isExisted(..)) "
@@ -52,12 +52,12 @@ public class EventServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.createInviteLink(..)) "
-                    + "&& args(eventId)")
+                    + "&& args(eventId, ..)")
     public void createInviteLink(UUID eventId) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.getInviteLink(..)) "
-                    + "&& args(eventId)")
+                    + "&& args(eventId, ..)")
     public void getInviteLink(UUID eventId) {}
 
     @Pointcut(
@@ -67,8 +67,8 @@ public class EventServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.joinByLink(..)) "
-                    + "&& args(eventId, user)")
-    public void joinByLink(UUID eventId, User user) {}
+                    + "&& args(user, ..)")
+    public void joinByLink(User user) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.getEndDatetime(..)) "
@@ -77,7 +77,7 @@ public class EventServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.finalizeEvent(..)) "
-                    + "&& args(eventId)")
+                    + "&& args(eventId, ..)")
     public void finalizeEvent(UUID eventId) {}
 
     @Pointcut(
@@ -139,7 +139,7 @@ public class EventServiceLoggerAspect {
         }
     }
 
-    @Around("deleteEvent(eventId)")
+    @Around("deleteEvent(eventId, ..)")
     public Object logDeleteEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
         try {
@@ -156,11 +156,8 @@ public class EventServiceLoggerAspect {
         }
     }
 
-    @Around("updateEvent(eventId, requestEventInfo)")
-    public Object logUpdateEvent(
-            ProceedingJoinPoint proceedingJoinPoint,
-            UUID eventId,
-            RequestEventInfo requestEventInfo)
+    @Around("updateEvent(eventId, ..)")
+    public Object logUpdateEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -201,7 +198,7 @@ public class EventServiceLoggerAspect {
         }
     }
 
-    @Around("createInviteLink(eventId)")
+    @Around("createInviteLink(eventId, ..)")
     public Object logCreateInviteLink(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
         try {
@@ -219,7 +216,7 @@ public class EventServiceLoggerAspect {
         }
     }
 
-    @Around("getInviteLink(eventId)")
+    @Around("getInviteLink(eventId, ..)")
     public Object logGetInviteLink(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
         try {
@@ -263,8 +260,8 @@ public class EventServiceLoggerAspect {
         }
     }
 
-    @Around("joinByLink(eventId, user)")
-    public Object logJoinByLink(ProceedingJoinPoint proceedingJoinPoint, UUID eventId, User user)
+    @Around("joinByLink(user, ..)")
+    public Object logJoinByLink(ProceedingJoinPoint proceedingJoinPoint, User user)
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -274,7 +271,7 @@ public class EventServiceLoggerAspect {
                             + "User with id: {} joined event with id: {} via a link"
                             + loggerColorConfig.getRESET_COLOR(),
                     user.getId(),
-                    eventId);
+                    (UUID) result);
             return result;
         } catch (Throwable ex) {
             throw ex;
@@ -299,7 +296,7 @@ public class EventServiceLoggerAspect {
         }
     }
 
-    @Around("finalizeEvent(eventId)")
+    @Around("finalizeEvent(eventId, ..)")
     public Object logFinalizeEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
         try {
