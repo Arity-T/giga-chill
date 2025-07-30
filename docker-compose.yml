@@ -16,6 +16,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks: [app-net]
 
   builder:
     build:
@@ -30,6 +31,7 @@ services:
     command: ["./build.sh"]
     volumes:
       - backend-build:/app/build
+    networks: [app-net]
 
   backend:
     build:
@@ -45,6 +47,8 @@ services:
     volumes:
       - backend-build:/app/build
       - app-logs:/app/logs
+    networks: [app-net]
+
   frontend:
     build:
       context: ./frontend
@@ -57,6 +61,7 @@ services:
       - PORT=${FRONTEND_PORT}
     depends_on:
       - backend
+    networks: [app-net]
 
 volumes:
   postgres-data:
@@ -65,5 +70,5 @@ volumes:
     name: shared-app-logs
   
 networks:
-  default:
+  app-net:
     name: gigachill-network
