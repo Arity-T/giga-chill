@@ -53,7 +53,7 @@
 2. Создайте внешнюю сеть для связи контейнеров:
 
     ```sh
-    docker network create app-net
+    docker network create gigachill-network
     ```
 
 3. Перейдите в папку `elk-stack/` и запустите стек:
