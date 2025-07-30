@@ -76,7 +76,7 @@ public class ShoppingListService {
 
         var title = (String) body.get("title");
         var description = (String) body.get("description");
-        if (title == null || description == null) {
+        if (Objects.isNull(title) || Objects.isNull(description)) {
             throw new BadRequestException("Invalid request body: " + body);
         }
 
@@ -125,11 +125,11 @@ public class ShoppingListService {
             UUID shoppingListId, UUID eventId, UUID userId, Map<String, Object> body) {
         var title = (String) body.get("title");
         var quantity =
-                body.get("quantity") != null
+                !Objects.isNull(body.get("quantity"))
                         ? new BigDecimal(String.valueOf((Number) body.get("quantity")))
                         : null;
         var unit = (String) body.get("unit");
-        if (title == null || quantity == null || unit == null) {
+        if (Objects.isNull(title) || Objects.isNull(quantity) || Objects.isNull(unit)) {
             throw new BadRequestException("Invalid request body: " + body);
         }
 
@@ -156,7 +156,7 @@ public class ShoppingListService {
 
         var title = (String) body.get("title");
         var quantity =
-                body.get("quantity") != null
+                !Objects.isNull(body.get("quantity"))
                         ? new BigDecimal(String.valueOf((Number) body.get("quantity")))
                         : null;
         var unit = (String) body.get("unit");
@@ -198,7 +198,7 @@ public class ShoppingListService {
             Map<String, Object> body) {
 
         var status = (Boolean) body.get("is_purchased");
-        if (status == null) {
+        if (Objects.isNull(status)) {
             throw new BadRequestException("Invalid request body: " + body);
         }
 
@@ -227,7 +227,7 @@ public class ShoppingListService {
 
     public void updateShoppingListConsumers(
             UUID shoppingListId, UUID eventId, UUID userId, List<String> body) {
-        if (body == null || body.isEmpty()) {
+        if (Objects.isNull(body) || body.isEmpty()) {
             throw new BadRequestException("Invalid request body: " + body);
         }
 
@@ -250,9 +250,8 @@ public class ShoppingListService {
     }
 
     public String getShoppingListStatus(UUID shoppingListId) {
-        // TODO: Подумать про cancelled
         var taskId = getTaskIdForShoppingList(shoppingListId);
-        if (taskId == null) {
+        if (Objects.isNull(taskId)) {
             return env.getProperty("shopping_list_status.unassigned");
         }
         var taskStatus = taskDAO.getTaskStatus(taskId);
@@ -284,10 +283,10 @@ public class ShoppingListService {
     public BigDecimal setBudget(
             UUID shoppingListId, UUID eventId, UUID userId, Map<String, Object> body) {
         var budget =
-                body.get("budget") != null
+                !Objects.isNull(body.get("budget"))
                         ? new BigDecimal(String.valueOf((Number) body.get("budget")))
                         : null;
-        if (budget == null || budget.compareTo(new BigDecimal(0)) < 0) {
+        if (Objects.isNull(budget) || budget.compareTo(new BigDecimal(0)) < 0) {
             throw new BadRequestException("Invalid request body: " + body);
         }
 

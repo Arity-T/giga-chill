@@ -5,6 +5,7 @@ import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.ForbiddenException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -42,7 +43,7 @@ public class ShoppingListServiceValidator {
     }
 
     public void checkProgressOrBoughtOrPartiallyBoughtStatus(UUID shoppingListId, UUID executorId) {
-        if (executorId == null) {
+        if (Objects.isNull(executorId)) {
             throw new ConflictException(
                     "Shopping list with id: "
                             + shoppingListId
@@ -67,7 +68,7 @@ public class ShoppingListServiceValidator {
             UUID shoppingListId,
             UUID executorId,
             String taskStatus) {
-        if (executorId == null
+        if (Objects.isNull(executorId)
                 || !(executorId.equals(participantId)
                                 && taskStatus.equals(env.getProperty("task_status.in_progress"))
                         || !(participantsServiceValidator.isParticipantRole(eventId, participantId)
@@ -97,7 +98,7 @@ public class ShoppingListServiceValidator {
     }
 
     public void checkConnectionWithTask(UUID shoppingListId, UUID taskId) {
-        if (taskId == null) {
+        if (Objects.isNull(taskId)) {
             throw new ConflictException(
                     "Shopping list with id: "
                             + shoppingListId

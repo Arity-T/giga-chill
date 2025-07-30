@@ -78,14 +78,14 @@ public class TaskService {
 
     public String createTask(UUID eventId, User user, RequestTaskInfo requestTaskInfo) {
         var executorId =
-                requestTaskInfo.executorId() != null
+                !Objects.isNull(requestTaskInfo.executorId())
                         ? UuidUtils.safeUUID(requestTaskInfo.executorId())
                         : null;
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsFinalized(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, user.getId());
-        if (executorId != null) {
+        if (!Objects.isNull(executorId)) {
             userServiceValidator.checkIsExisted(executorId);
             participantsServiceValidator.checkIsParticipant(eventId, executorId);
         }
@@ -194,7 +194,7 @@ public class TaskService {
             throw new BadRequestException("Invalid request body: " + body);
         }
         UUID executorId =
-                body.get("executor_id") != null
+                !Objects.isNull(body.get("executor_id"))
                         ? UuidUtils.safeUUID((String) body.get("executor_id"))
                         : null;
 
@@ -203,7 +203,7 @@ public class TaskService {
         taskServiceValidator.checkIsExisted(eventId, taskId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         participantsServiceValidator.checkIsAuthorOrAdminOrOwner(eventId, userId, taskId);
-        if (executorId != null) {
+        if (!Objects.isNull(executorId)) {
             userServiceValidator.checkIsExisted(executorId);
             participantsServiceValidator.checkIsParticipant(eventId, executorId);
         }
@@ -214,7 +214,7 @@ public class TaskService {
 
     public void updateShoppingLists(UUID taskId, UUID eventId, UUID userId, List<String> body) {
         var shoppingListsIds =
-                body != null ? body.stream().map(UuidUtils::safeUUID).toList() : null;
+                !Objects.isNull(body) ? body.stream().map(UuidUtils::safeUUID).toList() : null;
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsFinalized(eventId);
@@ -222,7 +222,7 @@ public class TaskService {
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         taskServiceValidator.checkNotCompletedStatus(taskId, getTaskStatus(taskId));
         participantsServiceValidator.checkIsAuthorOrAdminOrOwner(eventId, userId, taskId);
-        if (shoppingListsIds != null) {
+        if (!Objects.isNull(shoppingListsIds)) {
             shoppingListsServiceValidator.checkAreExisted(shoppingListsIds);
             shoppingListsServiceValidator.checkOpportunityToBindShoppingListsToTask(
                     shoppingListsIds);
@@ -235,7 +235,7 @@ public class TaskService {
             UUID taskId, UUID eventId, UUID userId, Map<String, String> body) {
 
         var executorComment = body.get("executor_comment");
-        if (executorComment == null) {
+        if (Objects.isNull(executorComment)) {
             throw new BadRequestException("Invalid request body: " + body);
         }
 
@@ -255,7 +255,7 @@ public class TaskService {
 
         var reviewerComment = (String) body.get("reviewer_comment");
         var isApproved = (Boolean) body.get("is_approved");
-        if (reviewerComment == null || isApproved == null) {
+        if (Objects.isNull(reviewerComment) || Objects.isNull(isApproved)) {
             throw new BadRequestException("Invalid request body: " + body);
         }
 
@@ -282,7 +282,7 @@ public class TaskService {
             canEdit = false;
         }
         if (getTaskStatus(taskId).equals(env.getProperty("task_status.open"))
-                && (executorId == null || executorId.equals(userId))) {
+                && (Objects.isNull(executorId) || executorId.equals(userId))) {
             canTakeItToWork = true;
         }
         if (getTaskStatus(taskId).equals(env.getProperty("task_status.under_review"))

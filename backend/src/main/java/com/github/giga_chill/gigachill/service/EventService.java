@@ -123,11 +123,11 @@ public class EventService {
 
     public UUID joinByLink(User user, Map<String, Object> body) {
         var rawToken = (String) body.get("invitation_token");
-        if (rawToken == null) {
+        if (Objects.isNull(rawToken)) {
             throw new BadRequestException("Invalid request body: " + body);
         }
         var eventId = getEventByLinkUuid(UuidUtils.safeUUID(rawToken));
-        if (eventId == null) {
+        if (Objects.isNull(eventId)) {
             throw new NotFoundException("Link with hash " + rawToken + " not found");
         }
         eventServiceValidator.checkIsFinalized(eventId);

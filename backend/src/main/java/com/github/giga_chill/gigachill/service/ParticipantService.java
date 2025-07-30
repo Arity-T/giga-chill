@@ -16,6 +16,7 @@ import com.github.giga_chill.gigachill.web.info.ParticipantSummaryBalanceInfo;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -57,12 +58,12 @@ public class ParticipantService {
         participantsServiceValidator.checkAdminOrOwnerRole(eventId, participantId);
 
         var participantLogin = (String) body.get("login");
-        if (participantLogin == null) {
+        if (Objects.isNull(participantLogin)) {
             throw new BadRequestException("Invalid request body: " + body);
         }
         var userToAdd = userService.getByLogin(participantLogin);
 
-        if (userToAdd == null) {
+        if (Objects.isNull(userToAdd)) {
             throw new NotFoundException("User with login '" + participantLogin + "' not found");
         }
 
@@ -109,7 +110,7 @@ public class ParticipantService {
             UUID eventId, UUID userId, UUID participantId, Map<String, Object> body) {
 
         var newRole = (String) body.get("role");
-        if (newRole == null) {
+        if (Objects.isNull(newRole)) {
             throw new BadRequestException("Invalid request body: " + body);
         }
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
@@ -128,17 +129,17 @@ public class ParticipantService {
 
     public boolean isOwnerRole(UUID eventId, UUID participantId) {
         return getParticipantRoleInEvent(eventId, participantId)
-                .equals(env.getProperty("roles.owner").toString());
+                .equals(env.getProperty("roles.owner"));
     }
 
     public boolean isAdminRole(UUID eventId, UUID participantId) {
         return getParticipantRoleInEvent(eventId, participantId)
-                .equals(env.getProperty("roles.admin").toString());
+                .equals(env.getProperty("roles.admin"));
     }
 
     public boolean isParticipantRole(UUID eventId, UUID participantId) {
         return getParticipantRoleInEvent(eventId, participantId)
-                .equals(env.getProperty("roles.participant").toString());
+                .equals(env.getProperty("roles.participant"));
     }
 
     public ParticipantBalanceInfo getParticipantBalance(UUID eventId, UUID participantId) {
