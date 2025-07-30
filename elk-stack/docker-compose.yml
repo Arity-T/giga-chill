@@ -10,6 +10,7 @@ volumes:
 
 networks:
   app-net:
+    name: gigachill-network
     external: true
 
 services:
@@ -141,7 +142,6 @@ services:
       - XPACK_SECURITY_ENCRYPTIONKEY=${ENCRYPTION_KEY}
       - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPTION_KEY}
       - XPACK_REPORTING_ENCRYPTIONKEY=${ENCRYPTION_KEY}
-      - ELASTICSEARCH_SERVICE_TOKEN_FILE=/tokens/kibana.token
     mem_limit: ${KB_MEM_LIMIT}
     healthcheck:
       test:
