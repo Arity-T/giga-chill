@@ -16,9 +16,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Aspect
 @RequiredArgsConstructor
-public class ShoppingListsServiceLoggerAspect {
+public class ShoppingListServiceLoggerAspect {
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(ShoppingListsServiceLoggerAspect.class);
+            LoggerFactory.getLogger(ShoppingListServiceLoggerAspect.class);
     private final LoggerColorConfig loggerColorConfig;
 
     @Pointcut(
