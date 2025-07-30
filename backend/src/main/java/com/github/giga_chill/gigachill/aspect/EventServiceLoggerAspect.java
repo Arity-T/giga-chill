@@ -45,10 +45,6 @@ public class EventServiceLoggerAspect {
                     + "&& args(eventId, ..)")
     public void updateEvent(UUID eventId) {}
 
-    @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.EventService.isExisted(..)) "
-                    + "&& args(eventId)")
-    public void isExisted(UUID eventId) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.createInviteLink(..)) "
@@ -80,10 +76,6 @@ public class EventServiceLoggerAspect {
                     + "&& args(eventId, ..)")
     public void finalizeEvent(UUID eventId) {}
 
-    @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.EventService.isFinalized(..)) "
-                    + "&& args(eventId)")
-    public void isFinalized(UUID eventId) {}
 
     @Around("createEvent(userId, requestEventInfo)")
     public Object logCreateEvent(
@@ -173,30 +165,6 @@ public class EventServiceLoggerAspect {
         }
     }
 
-    @Around("isExisted(eventId)")
-    public Object logIsExisted(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
-            throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            if ((Boolean) result) {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Event with id: {} exists"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        eventId);
-            } else {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + "Event with id: {} does not exist"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        eventId);
-            }
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
-    }
 
     @Around("createInviteLink(eventId, ..)")
     public Object logCreateInviteLink(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
@@ -307,32 +275,6 @@ public class EventServiceLoggerAspect {
                             + "Event with id: {} was finalized"
                             + loggerColorConfig.getRESET_COLOR(),
                     eventId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
-    }
-
-    @Around("isFinalized(eventId)")
-    public Object logIsFinalized(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
-            throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            if ((Boolean) result) {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Event with id: {} has status finalized"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        eventId);
-            } else {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Event with id: {} has status not finalized"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        eventId);
-            }
             return result;
         } catch (Throwable ex) {
             throw ex;

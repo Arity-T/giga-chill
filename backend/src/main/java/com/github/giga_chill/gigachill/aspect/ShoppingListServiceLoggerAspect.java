@@ -22,96 +22,96 @@ public class ShoppingListServiceLoggerAspect {
     private final LoggerColorConfig loggerColorConfig;
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.getAllShoppingListsFromEvent(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.getAllShoppingListsFromEvent(..)) "
                     + "&& args(eventId, ..)")
     public void getAllShoppingListsFromEvent(UUID eventId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.getShoppingListById(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.getShoppingListById(..)) "
                     + "&& args(shoppingListId)")
     public void getShoppingListById(UUID shoppingListId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.createShoppingList(..))")
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.createShoppingList(..))")
     public void createShoppingList() {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.updateShoppingList(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.updateShoppingList(..)) "
                     + "&& args(eventId, userId, shoppingListId, ..)")
     public void updateShoppingList(UUID eventId, UUID userId, UUID shoppingListId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.deleteShoppingList(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.deleteShoppingList(..)) "
                     + "&& args(shoppingListId, ..)")
     public void deleteShoppingList(UUID shoppingListId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.addShoppingItem(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.addShoppingItem(..)) "
                     + "&& args(shoppingListId, ..)")
     public void addShoppingItem(UUID shoppingListId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.updateShoppingItem(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.updateShoppingItem(..)) "
                     + "&& args(shoppingItemId, ..)")
     public void updateShoppingItem(UUID shoppingItemId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.deleteShoppingItemFromShoppingList(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.deleteShoppingItemFromShoppingList(..)) "
                     + "&& args(shoppingListId, shoppingItemId, ..)")
     public void deleteShoppingItemFromShoppingList(UUID shoppingListId, UUID shoppingItemId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.updateShoppingItemStatus(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.updateShoppingItemStatus(..)) "
                     + "&& args(shoppingItemId, ..)")
     public void updateShoppingItemStatus(UUID shoppingItemId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.getShoppingItemById(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.getShoppingItemById(..)) "
                     + "&& args(shoppingItemId)")
     public void getShoppingItemById(UUID shoppingItemId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.updateShoppingListConsumers(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.updateShoppingListConsumers(..)) "
                     + "&& args(shoppingListId, ..)")
     public void updateShoppingListConsumers(UUID shoppingListId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.getShoppingListStatus(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.getShoppingListStatus(..)) "
                     + "&& args(shoppingListId)")
     public void getShoppingListStatus(UUID shoppingListId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.isExisted(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.isExisted(..)) "
                     + "&& args(shoppingListId)")
     public void isExisted(UUID shoppingListId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.isConsumer(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.isConsumer(..)) "
                     + "&& args(shoppingListId, consumerId)")
     public void isConsumer(UUID shoppingListId, UUID consumerId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.isShoppingItemExisted(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.isShoppingItemExisted(..)) "
                     + "&& args(shoppingItemId)")
     public void isShoppingItemExisted(UUID shoppingItemId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.getShoppingListsByIds(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.getShoppingListsByIds(..)) "
                     + "&& args(shoppingListsIds)")
     public void getShoppingListsByIds(List<UUID> shoppingListsIds) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.areExisted(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.areExisted(..)) "
                     + "&& args(shoppingListsIds)")
     public void areExisted(List<UUID> shoppingListsIds) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.canBindShoppingListsToTask(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.canBindShoppingListsToTask(..)) "
                     + "&& args(shoppingListsIds, ..)")
     public void canBindShoppingListsToTask(List<UUID> shoppingListsIds) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.setBudget(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ShoppingListService.setBudget(..)) "
                     + "&& args(shoppingListId, ..)")
     public void setBudget(UUID shoppingListId) {}
 

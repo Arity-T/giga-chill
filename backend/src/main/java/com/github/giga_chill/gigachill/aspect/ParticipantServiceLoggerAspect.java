@@ -21,48 +21,48 @@ public class ParticipantServiceLoggerAspect {
     private final LoggerColorConfig loggerColorConfig;
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.getAllParticipantsByEventId(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.getAllParticipantsByEventId(..)) "
                     + "&& args(eventId, ..)")
     public void getAllParticipantsByEventId(UUID eventId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.addParticipantToEvent(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.addParticipantToEvent(..)) "
                     + "&& args(eventId, ..)")
     public void addParticipantToEvent(UUID eventId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.deleteParticipant(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.deleteParticipant(..)) "
                     + "&& args(eventId, participantId, ..)")
     public void deleteParticipant(UUID eventId, UUID participantId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.isParticipant(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.isParticipant(..)) "
                     + "&& args(eventId, userId)")
     public void isParticipant(UUID eventId, UUID userId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.updateParticipantRole(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.updateParticipantRole(..)) "
                     + "&& args(eventId, userId, participantId, body)")
     public void updateParticipantRole(
             UUID eventId, UUID userId, UUID participantId, Map<String, Object> body) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.getParticipantRoleInEvent(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.getParticipantRoleInEvent(..)) "
                     + "&& args(eventId, participantId)")
     public void getParticipantRoleInEvent(UUID eventId, UUID participantId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.getParticipantById(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.getParticipantById(..)) "
                     + "&& args(eventId, participantId)")
     public void getParticipantById(UUID eventId, UUID participantId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.getParticipantBalance(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.getParticipantBalance(..)) "
                     + "&& args(eventId, participantId)")
     public void getParticipantBalance(UUID eventId, UUID participantId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.getParticipantsSummaryBalance(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.getParticipantsSummaryBalance(..)) "
                     + "&& args(eventId)")
     public void getParticipantsSummaryBalance(UUID eventId) {}
 
