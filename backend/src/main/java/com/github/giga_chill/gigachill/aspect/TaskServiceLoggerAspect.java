@@ -65,10 +65,6 @@ public class TaskServiceLoggerAspect {
                     + "&& args(eventID, taskId)")
     public void isExisted(UUID eventID, UUID taskId) {}
 
-    @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.TaskService.canExecute(..)) "
-                    + "&& args(taskId, userId)")
-    public void canExecute(UUID taskId, UUID userId) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.getExecutorId(..)) "
@@ -275,33 +271,6 @@ public class TaskServiceLoggerAspect {
         }
     }
 
-    @Around("canExecute(taskId, userId)")
-    public Object logCanExecute(ProceedingJoinPoint proceedingJoinPoint, UUID taskId, UUID userId)
-            throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            if ((Boolean) result) {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "User with id: {} can execute task with id: {}"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        userId,
-                        taskId);
-            } else {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "User with id: {} can not execute task with id: {}"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        userId,
-                        taskId);
-            }
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
-    }
 
     @Around("getExecutorId(taskId)")
     public Object logGetExecutorId(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
