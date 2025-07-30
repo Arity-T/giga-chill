@@ -83,8 +83,6 @@ services:
     image: elastic/elasticsearch:${STACK_VERSION}
     labels:
       co.elastic.logs/module: elasticsearch
-    ports:
-      - "${ES_PORT}:9200"
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
       - esdata01:/usr/share/elasticsearch/data
@@ -133,7 +131,7 @@ services:
      - certs:/usr/share/kibana/config/certs
      - kibanadata:/usr/share/kibana/data
     ports:
-      - "${KIBANA_PORT}:5601"
+      - "${KIBANA_HOST_PORT}:5601"
     environment:
       - SERVERNAME=kibana
       - ELASTICSEARCH_HOSTS=https://es01:9200
@@ -223,9 +221,6 @@ services:
       - certs:/usr/share/logstash/certs
       - logstashdata01:/usr/share/logstash/data
       - ./logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
-    ports:
-      - "${LOGSTASH_PORT}:5044" # для Filebeat
-      - "9600:9600" # для Metricbeat
     environment:
       - STACK_VERSION=${STACK_VERSION}
       - xpack.monitoring.enabled=false

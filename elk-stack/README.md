@@ -25,18 +25,18 @@
     docker compose up -d --build
     ```
   
-2. Перейдите в Kibana: `http://localhost:5601`. Пользователь `elastic`, пароль - в переменной `KIBANA_PASSWORD`.
+2. Перейдите в Kibana: `http://localhost:5601` (порт указывается в переменной `KIBANA_HOST_PORT`). Пользователь `elastic`, пароль - в переменной `KIBANA_PASSWORD`.
 
 3. В левом меню откройте:
   `Management -> Stack Management -> Kibana -> Data Views`.
 
-4. Нажмите **Create data view**, введите:
+1. Нажмите **Create data view**, введите:
    - **Name:** `backend-logs`
    - **Index pattern:** `backend-logs-*`
    - **Timestamp field:** `@timestamp`
    - Сохраните.
 
-5. Перейдите в **Analytics -> Discover**, выберите созданное Data View и начинайте просмотр логов.
+2. Перейдите в **Analytics -> Discover**, выберите созданное Data View и начинайте просмотр логов.
 
 Кроме  того, в разделе **Analytics -> Dashboards** доступен набор стандартных дашбордов от metricbeat.
 
