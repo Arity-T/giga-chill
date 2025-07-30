@@ -50,5 +50,6 @@ echo "Приложение собрано успешно!"
 
 # Сохраняем JAR для последующего копирования
 mkdir -p /app/build/libs
+# bootJar создаёт обычный jar, по мимо fatJar, если его не удалить, то под маску подойдут два файла
 rm -f build/libs/*plain.jar
 mv build/libs/gigachill-*.jar /app/build/libs/app.jar
