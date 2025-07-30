@@ -60,7 +60,7 @@ public class TaskServiceValidator {
     }
 
     public void checkUnderReviewStatus(UUID taskId, String taskStatus) {
-        if (taskStatus.equals(env.getProperty("task_status.under_review"))) {
+        if (!taskStatus.equals(env.getProperty("task_status.under_review"))) {
             throw new ConflictException("Task with id: " + taskId + " is not \"under review\"");
         }
     }
