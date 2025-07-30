@@ -15,9 +15,13 @@ COPY openapi/ ./openapi/
 # Copy other frontend files
 COPY frontend/ ./frontend/
 
-# Generate code from API schema and build frontend
+# Generate code from API schema
 WORKDIR /app/frontend
 RUN npm run codegen
+
+# Build frontend
+ARG NEXT_PUBLIC_API_BASE_URL
+ARG NEXT_PUBLIC_BASE_URL
 RUN npm run build
 
 # 2. Production image

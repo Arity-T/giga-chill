@@ -54,8 +54,14 @@ $env:PORT=3001; npm run start
 
 ## Docker
 
-Запускайте docker build из корневой директории проекта, фронтенду нужно видеть [схему API](../openapi/api.yml) для кодогенерации.
+Запускайте docker build из корневой директории проекта, фронтенду нужно видеть 
+[схему API](../openapi/api.yml) для кодогенерации. Также при сборке 
+нужно указать два аргумента `NEXT_PUBLIC_API_BASE_URL` и `NEXT_PUBLIC_BASE_URL`:
 
 ```bash
-docker build -f frontend/Dockerfile .
+# Сборка образа
+docker build -f frontend/Dockerfile -t giga-chill-frontend --build-arg NEXT_PUBLIC_API_BASE_URL=http://localhost:8081 --build-arg NEXT_PUBLIC_BASE_URL=http://localhost:3000 .
+
+# Запуск контейнера
+docker run -p 3000:3000 giga-chill-frontend
 ```

@@ -58,8 +58,9 @@ services:
       # поэтому сборка должна запускаться из корневой директории проекта
       context: .
       dockerfile: frontend/Dockerfile
-    env_file:
-      - frontend/.env
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+        NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL}
     ports:
       - "${FRONTEND_PORT}:${FRONTEND_PORT}"
     environment:
