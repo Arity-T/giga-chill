@@ -1,6 +1,7 @@
 package com.github.giga_chill.gigachill.aspect;
 
 import com.github.giga_chill.gigachill.config.LoggerColorConfig;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -486,7 +487,7 @@ public class ShoppingListsServiceLoggerAspect {
                             + "Shopping list with id: {} received a new budget {}"
                             + loggerColorConfig.getRESET_COLOR(),
                     shoppingListId,
-                    (String) result);
+                    (BigDecimal) result);
             return result;
         } catch (Throwable ex) {
             throw ex;

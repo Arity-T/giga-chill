@@ -87,13 +87,13 @@ public class TaskServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.setExecutorComment(..)) "
-                    + "&& args(taskId, body)")
-    public void setExecutorComment(UUID taskId, Map<String, Object> body) {}
+                    + "&& args(taskId, ..)")
+    public void setExecutorComment(UUID taskId) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.setReviewerComment(..)) "
-                    + "&& args(taskId, ..)")
-    public void setReviewerComment(UUID taskId) {}
+                    + "&& args(taskId, body, ..)")
+    public void setReviewerComment(UUID taskId, Map<String, Object> body) {}
 
     @Around("getAllTasksFromEvent(eventId)")
     public Object logGetAllTasksFromEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
