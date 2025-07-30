@@ -54,7 +54,10 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      # Фронтенд должен видеть схему API для кодогенерации,
+      # поэтому сборка должна запускаться из корневой директории проекта
+      context: .
+      dockerfile: frontend/Dockerfile
     env_file:
       - frontend/.env
     ports:
