@@ -1,7 +1,5 @@
 package com.github.giga_chill.gigachill.web.controller;
 
-import com.github.giga_chill.gigachill.exception.*;
-import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.ParticipantService;
 import com.github.giga_chill.gigachill.service.UserService;
 import com.github.giga_chill.gigachill.web.info.ParticipantInfo;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ParticipantController {
 
-    private final EventService eventService;
     private final UserService userService;
     private final ParticipantService participantsService;
 

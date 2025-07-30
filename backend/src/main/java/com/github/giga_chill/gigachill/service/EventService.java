@@ -7,7 +7,7 @@ import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.mapper.EventMapper;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.validator.EventServiceValidator;
-import com.github.giga_chill.gigachill.service.validator.ParticipantsServiceValidator;
+import com.github.giga_chill.gigachill.service.validator.ParticipantServiceValidator;
 import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
 import com.github.giga_chill.gigachill.web.info.ResponseEventInfo;
@@ -24,7 +24,7 @@ public class EventService {
     private final EventDAO eventDAO;
     private final ParticipantService participantsService;
     private final EventServiceValidator eventServiceValidator;
-    private final ParticipantsServiceValidator participantsServiceValidator;
+    private final ParticipantServiceValidator participantsServiceValidator;
 
     public ResponseEventInfo getEventById(UUID userId, UUID eventId) {
 

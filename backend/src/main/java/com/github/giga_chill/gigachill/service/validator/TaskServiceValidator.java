@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TaskServiceValidator {
     private final TaskDAO taskDAO;
-    private final ParticipantsServiceValidator participantsServiceValidator;
+    private final ParticipantServiceValidator participantsServiceValidator;
     private final Environment env;
 
     public void checkIsExisted(UUID eventId, UUID taskId) {

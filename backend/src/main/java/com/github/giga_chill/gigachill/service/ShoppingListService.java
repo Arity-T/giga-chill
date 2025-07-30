@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ShoppingListsService {
+public class ShoppingListService {
 
     private final ShoppingListMapper shoppingListMapper;
     private final ShoppingItemMapper shoppingItemMapper;
@@ -26,9 +26,9 @@ public class ShoppingListsService {
     private final ShoppingListDAO shoppingListDAO;
     private final TaskDAO taskDAO;
     private final ParticipantService participantsService;
-    private final ShoppingListsServiceValidator shoppingListsServiceValidator;
+    private final ShoppingListServiceValidator shoppingListsServiceValidator;
     private final EventServiceValidator eventServiceValidator;
-    private final ParticipantsServiceValidator participantsServiceValidator;
+    private final ParticipantServiceValidator participantsServiceValidator;
     private final UserServiceValidator userServiceValidator;
 
     public List<ShoppingListInfo> getAllShoppingListsFromEvent(UUID eventId, UUID userId) {
@@ -277,24 +277,8 @@ public class ShoppingListsService {
         return shoppingListDAO.isExisted(shoppingListId);
     }
 
-    public boolean areExisted(List<UUID> shoppingListsIds) {
-        return shoppingListDAO.areExisted(shoppingListsIds);
-    }
-
     public boolean isConsumer(UUID shoppingListId, UUID consumerId) {
         return shoppingListDAO.isConsumer(shoppingListId, consumerId);
-    }
-
-    public boolean isShoppingItemExisted(UUID shoppingItemId) {
-        return shoppingListDAO.isShoppingItemExisted(shoppingItemId);
-    }
-
-    public boolean canBindShoppingListsToTask(List<UUID> shoppingListsIds) {
-        return shoppingListDAO.canBindShoppingListsToTask(shoppingListsIds);
-    }
-
-    public boolean canBindShoppingListsToTask(List<UUID> shoppingListsIds, UUID taskId) {
-        return shoppingListDAO.canBindShoppingListsToTaskById(shoppingListsIds, taskId);
     }
 
     public BigDecimal setBudget(

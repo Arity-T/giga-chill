@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ParticipantsServiceValidator {
+public class ParticipantServiceValidator {
     private final ParticipantDAO participantDAO;
     private final ShoppingListDAO shoppingListDAO;
     private final TaskDAO taskDAO;

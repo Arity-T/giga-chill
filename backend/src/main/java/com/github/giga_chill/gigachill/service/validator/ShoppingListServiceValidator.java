@@ -4,6 +4,7 @@ import com.github.giga_chill.gigachill.data.access.object.ShoppingListDAO;
 import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.ForbiddenException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -11,10 +12,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ShoppingListsServiceValidator {
+public class ShoppingListServiceValidator {
 
     private final ShoppingListDAO shoppingListDAO;
-    private final ParticipantsServiceValidator participantsServiceValidator;
+    private final ParticipantServiceValidator participantsServiceValidator;
     private final Environment env;
 
     public void checkIsExisted(UUID shoppingListId) {
@@ -101,6 +102,20 @@ public class ShoppingListsServiceValidator {
                     "Shopping list with id: "
                             + shoppingListId
                             + " is not is not attached to the task");
+        }
+    }
+
+    public void checkAreExisted(List<UUID> shoppingListsIds) {
+        if (!shoppingListDAO.areExisted(shoppingListsIds)) {
+            throw new NotFoundException(
+                    "One or more of the resources involved were not found: " + shoppingListsIds);
+        }
+    }
+
+    public void checkOpportunityToBindShoppingListsToTask(List<UUID> shoppingListsIds) {
+        if (!shoppingListDAO.canBindShoppingListsToTask(shoppingListsIds)) {
+            throw new ConflictException(
+                    "One or more lists are already linked to the task: " + shoppingListsIds);
         }
     }
 }

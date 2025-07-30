@@ -24,15 +24,15 @@ public class TaskService {
 
     private final Environment env;
     private final TaskDAO taskDAO;
-    private final ShoppingListsService shoppingListsService;
+    private final ShoppingListService shoppingListsService;
     private final UserService userService;
     private final ParticipantService participantsService;
     private final EventService eventService;
     private final TaskMapper taskMapper;
     private final UserMapper userMapper;
     private final EventServiceValidator eventServiceValidator;
-    private final ParticipantsServiceValidator participantsServiceValidator;
-    private final ShoppingListsServiceValidator shoppingListsServiceValidator;
+    private final ParticipantServiceValidator participantsServiceValidator;
+    private final ShoppingListServiceValidator shoppingListsServiceValidator;
     private final TaskServiceValidator taskServiceValidator;
     private final UserServiceValidator userServiceValidator;
 
@@ -182,10 +182,6 @@ public class TaskService {
 
     public boolean isExisted(UUID eventId, UUID taskId) {
         return taskDAO.isExisted(eventId, taskId);
-    }
-
-    public boolean canExecute(UUID taskId, UUID userId) {
-        return taskDAO.canExecute(taskId, userId);
     }
 
     public UUID getExecutorId(UUID taskId) {

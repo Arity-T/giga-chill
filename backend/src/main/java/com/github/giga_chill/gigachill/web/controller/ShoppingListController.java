@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -14,14 +13,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("events/{eventId}/shopping-lists")
 @RequiredArgsConstructor
-public class ShoppingListsController {
-
-    private final Environment env;
-    private final EventService eventService;
+public class ShoppingListController {
     private final UserService userService;
-    private final ParticipantService participantsService;
-    private final ShoppingListsService shoppingListsService;
-    private final TaskService taskService;
+    private final ShoppingListService shoppingListsService;
 
     @GetMapping
     // ACCESS: owner, admin, participant

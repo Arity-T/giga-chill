@@ -9,7 +9,7 @@ import com.github.giga_chill.gigachill.mapper.ParticipantMapper;
 import com.github.giga_chill.gigachill.mapper.ParticipantSummaryBalanceMapper;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.validator.EventServiceValidator;
-import com.github.giga_chill.gigachill.service.validator.ParticipantsServiceValidator;
+import com.github.giga_chill.gigachill.service.validator.ParticipantServiceValidator;
 import com.github.giga_chill.gigachill.web.info.ParticipantBalanceInfo;
 import com.github.giga_chill.gigachill.web.info.ParticipantInfo;
 import com.github.giga_chill.gigachill.web.info.ParticipantSummaryBalanceInfo;
@@ -31,7 +31,7 @@ public class ParticipantService {
     private final Environment env;
     private final ParticipantDAO participantDAO;
     private final EventServiceValidator eventServiceValidator;
-    private final ParticipantsServiceValidator participantsServiceValidator;
+    private final ParticipantServiceValidator participantsServiceValidator;
     private final UserService userService;
 
     public List<ParticipantInfo> getAllParticipantsByEventId(UUID eventId, UUID participantId) {
@@ -105,11 +105,6 @@ public class ParticipantService {
         participantDAO.deleteParticipant(eventId, participantId);
     }
 
-    // Delete
-    public boolean isParticipant(UUID eventId, UUID userId) {
-        return participantDAO.isParticipant(eventId, userId);
-    }
-
     public void updateParticipantRole(
             UUID eventId, UUID userId, UUID participantId, Map<String, Object> body) {
 
@@ -131,19 +126,16 @@ public class ParticipantService {
         return participantDAO.getParticipantRoleInEvent(eventId, participantId);
     }
 
-    // Delete
     public boolean isOwnerRole(UUID eventId, UUID participantId) {
         return getParticipantRoleInEvent(eventId, participantId)
                 .equals(env.getProperty("roles.owner").toString());
     }
 
-    // Delete
     public boolean isAdminRole(UUID eventId, UUID participantId) {
         return getParticipantRoleInEvent(eventId, participantId)
                 .equals(env.getProperty("roles.admin").toString());
     }
 
-    // Delete
     public boolean isParticipantRole(UUID eventId, UUID participantId) {
         return getParticipantRoleInEvent(eventId, participantId)
                 .equals(env.getProperty("roles.participant").toString());
