@@ -65,8 +65,6 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=${FRONTEND_PORT}
-    depends_on:
-      - backend
     networks: 
       - gigachill-network
 
