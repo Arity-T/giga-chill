@@ -8,7 +8,6 @@ import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.ParticipantsService;
 import com.github.giga_chill.gigachill.service.UserService;
-import com.github.giga_chill.gigachill.util.InfoEntityMapper;
 import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.ParticipantBalanceInfo;
 import com.github.giga_chill.gigachill.web.info.ParticipantSummaryBalanceInfo;
@@ -42,15 +41,7 @@ public class EventsController {
         if (userEvents.isEmpty()) {
             ResponseEntity.ok(null);
         }
-        return ResponseEntity.ok(
-                userEvents.stream()
-                        .map(
-                                event ->
-                                        InfoEntityMapper.toResponseEventInfo(
-                                                event,
-                                                participantsService.getParticipantRoleInEvent(
-                                                        event.getEventId(), user.getId())))
-                        .toList());
+        return ResponseEntity.ok(userEvents);
     }
 
     @PostMapping
@@ -78,12 +69,7 @@ public class EventsController {
                             + " is not a participant of event with id "
                             + eventId);
         }
-        var event = eventService.getEventById(eventId);
-        return ResponseEntity.ok(
-                InfoEntityMapper.toResponseEventInfo(
-                        event,
-                        participantsService.getParticipantRoleInEvent(
-                                event.getEventId(), user.getId())));
+        return ResponseEntity.ok(eventService.getEventById(user.getId(), eventId));
     }
 
     @PatchMapping("/{eventId}")
@@ -280,9 +266,7 @@ public class EventsController {
                             + eventId);
         }
 
-        return ResponseEntity.ok(
-                InfoEntityMapper.toParticipantBalanceInfo(
-                        participantsService.getParticipantBalance(eventId, user.getId())));
+        return ResponseEntity.ok(participantsService.getParticipantBalance(eventId, user.getId()));
     }
 
     @GetMapping("/{eventId}/balance-summary")
@@ -309,9 +293,6 @@ public class EventsController {
                             + eventId);
         }
 
-        return ResponseEntity.ok(
-                participantsService.getParticipantsSummaryBalance(eventId).stream()
-                        .map(InfoEntityMapper::toParticipantSummaryBalanceInfo)
-                        .toList());
+        return ResponseEntity.ok(participantsService.getParticipantsSummaryBalance(eventId));
     }
 }
