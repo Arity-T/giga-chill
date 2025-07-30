@@ -73,10 +73,34 @@ public class ShoppingListsServiceValidator {
                                 && taskStatus.equals(env.getProperty("task_status.under_review"))
                                 && executorId.equals(participantId)))) {
             throw new ForbiddenException(
-                    "User with id "
+                    "User with id: "
                             + participantId
-                            + " can not change shopping item status in shopping list wih id "
+                            + " can not change shopping item status in shopping list wih id: "
                             + shoppingListId);
+        }
+    }
+
+    public void checkOpportunityToChangeBudget(
+            UUID eventId, UUID shoppingListId, UUID userId, UUID executorId, String taskStatus) {
+        if (!((taskStatus.equals(env.getProperty("task_status.in_progress"))
+                        && executorId.equals(userId))
+                || (taskStatus.equals(env.getProperty("task_status.under_review"))
+                        && !participantsServiceValidator.isParticipantRole(eventId, userId)
+                        && !executorId.equals(userId)))) {
+            throw new ConflictException(
+                    "User with id: "
+                            + userId
+                            + " cannot change budget of shopping list with id: "
+                            + shoppingListId);
+        }
+    }
+
+    public void checkConnectionWithTask(UUID shoppingListId, UUID taskId) {
+        if (taskId == null) {
+            throw new ConflictException(
+                    "Shopping list with id: "
+                            + shoppingListId
+                            + " is not is not attached to the task");
         }
     }
 }

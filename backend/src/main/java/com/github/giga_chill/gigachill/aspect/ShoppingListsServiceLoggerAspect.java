@@ -1,7 +1,6 @@
 package com.github.giga_chill.gigachill.aspect;
 
 import com.github.giga_chill.gigachill.config.LoggerColorConfig;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -37,12 +36,12 @@ public class ShoppingListsServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.updateShoppingList(..)) "
-                    + "&& args(shoppingListId, ..)")
-    public void updateShoppingList(UUID shoppingListId) {}
+                    + "&& args(eventId, userId, shoppingListId, ..)")
+    public void updateShoppingList(UUID eventId, UUID userId, UUID shoppingListId) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.deleteShoppingList(..)) "
-                    + "&& args(shoppingListId)")
+                    + "&& args(shoppingListId, ..)")
     public void deleteShoppingList(UUID shoppingListId) {}
 
     @Pointcut(
@@ -57,13 +56,13 @@ public class ShoppingListsServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.deleteShoppingItemFromShoppingList(..)) "
-                    + "&& args(shoppingListId, shoppingItemId)")
+                    + "&& args(shoppingListId, shoppingItemId, ..)")
     public void deleteShoppingItemFromShoppingList(UUID shoppingListId, UUID shoppingItemId) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.updateShoppingItemStatus(..)) "
-                    + "&& args(shoppingItemId, status)")
-    public void updateShoppingItemStatus(UUID shoppingItemId, boolean status) {}
+                    + "&& args(shoppingItemId, ..)")
+    public void updateShoppingItemStatus(UUID shoppingItemId) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.getShoppingItemById(..)) "
@@ -112,8 +111,8 @@ public class ShoppingListsServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.setBudget(..)) "
-                    + "&& args(shoppingListId, budget)")
-    public void setBudget(UUID shoppingListId, BigDecimal budget) {}
+                    + "&& args(shoppingListId, ..)")
+    public void setBudget(UUID shoppingListId) {}
 
     @Around("getAllShoppingListsFromEvent(eventId)")
     public Object logGetAllShoppingListsFromEvent(
@@ -165,9 +164,10 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("updateShoppingList(shoppingListId)")
+    @Around("updateShoppingList(eventId, userId, shoppingListId, ..)")
     public Object logUpdateShoppingList(
-            ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId) throws Throwable {
+            ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UUID userId, UUID shoppingListId)
+            throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(
@@ -182,7 +182,7 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("deleteShoppingList(shoppingListId)")
+    @Around("deleteShoppingList(shoppingListId, ..)")
     public Object logDeleteShoppingList(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId) throws Throwable {
         try {
@@ -199,7 +199,7 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("addShoppingItem(shoppingListId)")
+    @Around("addShoppingItem(shoppingListId, ..)")
     public Object logAddShoppingItem(ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId)
             throws Throwable {
         try {
@@ -217,7 +217,7 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("updateShoppingItem(shoppingItemId)")
+    @Around("updateShoppingItem(shoppingItemId, ..)")
     public Object logUpdateShoppingItem(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingItemId) throws Throwable {
         try {
@@ -234,7 +234,7 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("deleteShoppingItemFromShoppingList(shoppingListId, shoppingItemId)")
+    @Around("deleteShoppingItemFromShoppingList(shoppingListId, shoppingItemId, ..)")
     public Object logDeleteShoppingItemFromShoppingList(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId, UUID shoppingItemId)
             throws Throwable {
@@ -253,10 +253,9 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("updateShoppingItemStatus(shoppingItemId, status)")
+    @Around("updateShoppingItemStatus(shoppingItemId, ..)")
     public Object logUpdateShoppingItemStatus(
-            ProceedingJoinPoint proceedingJoinPoint, UUID shoppingItemId, boolean status)
-            throws Throwable {
+            ProceedingJoinPoint proceedingJoinPoint, UUID shoppingItemId) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(
@@ -265,7 +264,7 @@ public class ShoppingListsServiceLoggerAspect {
                             + "Shopping item with id: {} was bought: {}"
                             + loggerColorConfig.getRESET_COLOR(),
                     shoppingItemId,
-                    status);
+                    (Boolean) result);
             return result;
         } catch (Throwable ex) {
             throw ex;
@@ -289,7 +288,7 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("updateShoppingListConsumers(shoppingListId)")
+    @Around("updateShoppingListConsumers(shoppingListId, ..)")
     public Object logUpdateShoppingListConsumers(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId) throws Throwable {
         try {
@@ -476,9 +475,8 @@ public class ShoppingListsServiceLoggerAspect {
         }
     }
 
-    @Around("setBudget(shoppingListId, budget)")
-    public Object logSetBudget(
-            ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId, BigDecimal budget)
+    @Around("setBudget(shoppingListId, ..)")
+    public Object logSetBudget(ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId)
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -488,7 +486,7 @@ public class ShoppingListsServiceLoggerAspect {
                             + "Shopping list with id: {} received a new budget {}"
                             + loggerColorConfig.getRESET_COLOR(),
                     shoppingListId,
-                    budget);
+                    (String) result);
             return result;
         } catch (Throwable ex) {
             throw ex;
