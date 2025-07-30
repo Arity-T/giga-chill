@@ -30,13 +30,13 @@
 3. В левом меню откройте:
   `Management -> Stack Management -> Kibana -> Data Views`.
 
-1. Нажмите **Create data view**, введите:
+4. Нажмите **Create data view**, введите:
    - **Name:** `backend-logs`
    - **Index pattern:** `backend-logs-*`
    - **Timestamp field:** `@timestamp`
    - Сохраните.
 
-2. Перейдите в **Analytics -> Discover**, выберите созданное Data View и начинайте просмотр логов.
+5. Перейдите в **Analytics -> Discover**, выберите созданное Data View и начинайте просмотр логов.
 
 Кроме  того, в разделе **Analytics -> Dashboards** доступен набор стандартных дашбордов от metricbeat.
 
