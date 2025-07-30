@@ -1,6 +1,7 @@
 package com.github.giga_chill.gigachill.aspect;
 
 import com.github.giga_chill.gigachill.config.LoggerColorConfig;
+import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -41,8 +42,9 @@ public class ParticipantServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.updateParticipantRole(..)) "
-                    + "&& args(eventId, userId, participantId, role)")
-    public void updateParticipantRole(UUID eventId, UUID userId, UUID participantId, String role) {}
+                    + "&& args(eventId, userId, participantId, body)")
+    public void updateParticipantRole(
+            UUID eventId, UUID userId, UUID participantId, Map<String, Object> body) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.getParticipantRoleInEvent(..)) "
@@ -164,16 +166,17 @@ public class ParticipantServiceLoggerAspect {
         }
     }
 
-    @Around("updateParticipantRole(eventId, userId, participantId, role)")
+    @Around("updateParticipantRole(eventId, userId, participantId, body)")
     public Object logUpdateParticipantRole(
             ProceedingJoinPoint proceedingJoinPoint,
             UUID eventId,
             UUID userId,
             UUID participantId,
-            String role)
+            Map<String, Object> body)
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
+            var role = (String) body.get("role");
             LOGGER.info(
                     loggerColorConfig.getPATCH_COLOR()
                             + loggerColorConfig.getPATCH_LABEL()
