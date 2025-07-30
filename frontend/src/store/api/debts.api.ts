@@ -1,6 +1,6 @@
-import { api } from './api'
+import { codegenApi } from './codegenApi'
 
-api.enhanceEndpoints({
+codegenApi.enhanceEndpoints({
     endpoints: {
         finalizeEvent: {
             invalidatesTags: (_result: any, _error: any, eventId: string) => [
