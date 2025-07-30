@@ -3,8 +3,9 @@ package com.github.giga_chill.gigachill.service.validator;
 import com.github.giga_chill.gigachill.data.access.object.ParticipantDAO;
 import com.github.giga_chill.gigachill.data.access.object.ShoppingListDAO;
 import com.github.giga_chill.gigachill.data.access.object.TaskDAO;
+import com.github.giga_chill.gigachill.exception.BadRequestException;
+import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.ForbiddenException;
-import com.github.giga_chill.gigachill.model.User;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -18,12 +19,22 @@ public class ParticipantsServiceValidator {
     private final TaskDAO taskDAO;
     private final Environment env;
 
-    public void checkIsParticipant(UUID eventId, User user) {
-        if (!participantDAO.isParticipant(eventId, user.getId())) {
+    public void checkIsParticipant(UUID eventId, UUID userId) {
+        if (!participantDAO.isParticipant(eventId, userId)) {
             throw new ForbiddenException(
                     "User with id: "
-                            + user.getId()
+                            + userId
                             + " is not a participant of event with id: "
+                            + eventId);
+        }
+    }
+
+    public void checkIsAlreadyParticipant(UUID eventId, UUID userId) {
+        if (participantDAO.isParticipant(eventId, userId)) {
+            throw new ConflictException(
+                    "User with id "
+                            + userId
+                            + " is already participant of event with id "
                             + eventId);
         }
     }
@@ -48,6 +59,15 @@ public class ParticipantsServiceValidator {
         }
     }
 
+    public void checkReplaceRole(UUID eventId, UUID participantId) {
+        if (isOwnerRole(eventId, participantId)) {
+            throw new ConflictException(
+                    "The role: owner of the user with id: "
+                            + participantId
+                            + " cannot be replaced");
+        }
+    }
+
     public void checkIsConsumerOrAdminOrOwner(
             UUID eventId, UUID participantId, UUID shoppingListId) {
         if (isParticipantRole(eventId, participantId)
@@ -67,6 +87,13 @@ public class ParticipantsServiceValidator {
                             + participantId
                             + " is not Admin/Owner or a author of task with id: "
                             + taskId);
+        }
+    }
+
+    public void checkIsSamePerson(UUID userId, UUID participantId) {
+        if (userId.equals(participantId)) {
+            throw new BadRequestException(
+                    "User with id: " + participantId + " perform this action on themselves");
         }
     }
 
