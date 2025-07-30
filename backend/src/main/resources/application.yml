@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: ${BACKEND_PROFILE}
   application:
     name: gigachill
   datasource:
@@ -33,3 +35,6 @@ task_status:
   in_progress: in_progress
   under_review: under_review
   completed: completed
+
+
+
