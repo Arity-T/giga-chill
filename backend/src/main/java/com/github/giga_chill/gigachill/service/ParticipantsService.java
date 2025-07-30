@@ -1,11 +1,14 @@
 package com.github.giga_chill.gigachill.service;
 
 import com.github.giga_chill.gigachill.data.access.object.ParticipantDAO;
-import com.github.giga_chill.gigachill.model.Participant;
-import com.github.giga_chill.gigachill.model.ParticipantBalance;
-import com.github.giga_chill.gigachill.model.ParticipantSummaryBalance;
+import com.github.giga_chill.gigachill.data.transfer.object.ParticipantDTO;
+import com.github.giga_chill.gigachill.mapper.ParticipantBalanceMapper;
+import com.github.giga_chill.gigachill.mapper.ParticipantMapper;
+import com.github.giga_chill.gigachill.mapper.ParticipantSummaryBalanceMapper;
 import com.github.giga_chill.gigachill.model.User;
-import com.github.giga_chill.gigachill.util.DtoEntityMapper;
+import com.github.giga_chill.gigachill.web.info.ParticipantBalanceInfo;
+import com.github.giga_chill.gigachill.web.info.ParticipantInfo;
+import com.github.giga_chill.gigachill.web.info.ParticipantSummaryBalanceInfo;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -16,31 +19,34 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ParticipantsService {
+
+    private final ParticipantBalanceMapper participantBalanceMapper;
+    private final ParticipantSummaryBalanceMapper participantSummaryBalanceMapper;
+    private final ParticipantMapper participantMapper;
     private final Environment env;
     private final ParticipantDAO participantDAO;
 
-    public List<Participant> getAllParticipantsByEventId(UUID eventId) {
+    public List<ParticipantInfo> getAllParticipantsByEventId(UUID eventId) {
         return participantDAO.getAllParticipantsByEventId(eventId).stream()
-                .map(DtoEntityMapper::toParticipantEntity)
+                .map(participantMapper::toParticipantInfo)
                 .toList();
     }
 
-    public Participant getParticipantById(UUID eventId, UUID participantId) {
-        return DtoEntityMapper.toParticipantEntity(
+    public ParticipantInfo getParticipantById(UUID eventId, UUID participantId) {
+        return participantMapper.toParticipantInfo(
                 participantDAO.getParticipantById(eventId, participantId));
     }
 
     public void addParticipantToEvent(UUID eventId, User user) {
         var participant =
-                new Participant(
+                new ParticipantDTO(
                         user.getId(),
                         user.getLogin(),
                         user.getName(),
                         env.getProperty("roles.participant").toString(),
                         BigDecimal.valueOf(0));
 
-        participantDAO.addParticipantToEvent(
-                eventId, DtoEntityMapper.toParticipantDto(participant));
+        participantDAO.addParticipantToEvent(eventId, participant);
     }
 
     public void deleteParticipant(UUID eventId, UUID participantId) {
@@ -74,14 +80,14 @@ public class ParticipantsService {
                 .equals(env.getProperty("roles.participant").toString());
     }
 
-    public ParticipantBalance getParticipantBalance(UUID eventId, UUID participantId) {
-        return DtoEntityMapper.toParticipantBalanceEntity(
+    public ParticipantBalanceInfo getParticipantBalance(UUID eventId, UUID participantId) {
+        return participantBalanceMapper.toParticipantBalanceInfo(
                 participantDAO.getParticipantBalance(eventId, participantId));
     }
 
-    public List<ParticipantSummaryBalance> getParticipantsSummaryBalance(UUID eventId) {
+    public List<ParticipantSummaryBalanceInfo> getParticipantsSummaryBalance(UUID eventId) {
         return participantDAO.getSummaryParticipantBalance(eventId).stream()
-                .map(DtoEntityMapper::toParticipantSummaryBalance)
+                .map(participantSummaryBalanceMapper::toParticipantSummaryBalanceInfo)
                 .toList();
     }
 }

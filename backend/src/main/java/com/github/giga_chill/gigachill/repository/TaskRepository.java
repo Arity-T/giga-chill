@@ -39,30 +39,30 @@ public class TaskRepository {
     public void updateFromDTO(UUID taskId, TaskDTO dto) {
         Map<Field<?>, Object> updates = new HashMap<>();
 
-        if (dto.author() != null) {
-            updates.put(Tasks.TASKS.AUTHOR_ID, dto.author().id());
+        if (dto.getAuthor() != null) {
+            updates.put(Tasks.TASKS.AUTHOR_ID, dto.getAuthor().getId());
         }
-        if (dto.executor() != null) {
-            updates.put(Tasks.TASKS.EXECUTOR_ID, dto.executor().id());
+        if (dto.getExecutor() != null) {
+            updates.put(Tasks.TASKS.EXECUTOR_ID, dto.getExecutor().getId());
         }
-        if (dto.title() != null) {
-            updates.put(Tasks.TASKS.TITLE, dto.title());
+        if (dto.getTitle() != null) {
+            updates.put(Tasks.TASKS.TITLE, dto.getTitle());
         }
-        if (dto.description() != null) {
-            updates.put(Tasks.TASKS.DESCRIPTION, dto.description());
+        if (dto.getDescription() != null) {
+            updates.put(Tasks.TASKS.DESCRIPTION, dto.getDescription());
         }
-        if (dto.status() != null) {
-            updates.put(Tasks.TASKS.STATUS, TaskStatus.valueOf(dto.status()));
+        if (dto.getStatus() != null) {
+            updates.put(Tasks.TASKS.STATUS, TaskStatus.valueOf(dto.getStatus()));
         }
-        if (dto.deadlineDatetime() != null) {
+        if (dto.getDeadlineDatetime() != null) {
             updates.put(
-                    Tasks.TASKS.DEADLINE_DATETIME, OffsetDateTime.parse(dto.deadlineDatetime()));
+                    Tasks.TASKS.DEADLINE_DATETIME, OffsetDateTime.parse(dto.getDeadlineDatetime()));
         }
-        if (dto.executorComment() != null) {
-            updates.put(Tasks.TASKS.EXECUTOR_COMMENT, dto.executorComment());
+        if (dto.getExecutorComment() != null) {
+            updates.put(Tasks.TASKS.EXECUTOR_COMMENT, dto.getExecutorComment());
         }
-        if (dto.reviewerComment() != null) {
-            updates.put(Tasks.TASKS.REVIEWER_COMMENT, dto.reviewerComment());
+        if (dto.getReviewerComment() != null) {
+            updates.put(Tasks.TASKS.REVIEWER_COMMENT, dto.getReviewerComment());
         }
 
         if (!updates.isEmpty()) {
