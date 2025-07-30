@@ -25,7 +25,7 @@
     docker compose up -d --build
     ```
   
-2. Перейдите в Kibana: `http://localhost:5601`. 
+2. Перейдите в Kibana: `http://localhost:5601`. Пользователь `elastic`, пароль - в переменной `KIBANA_PASSWORD`.
 
 3. В левом меню откройте:
   `Management -> Stack Management -> Kibana -> Data Views`.
@@ -50,7 +50,13 @@
     docker volume create shared-app-logs
     ```
 
-2. Перейдите в папку `elk-stack/` и запустите стек:
+2. Создайте внешнюю сеть для связи контейнеров:
+
+    ```sh
+    docker network create app-net
+    ```
+
+3. Перейдите в папку `elk-stack/` и запустите стек:
   
     ```sh
     docker compose up -d --build
