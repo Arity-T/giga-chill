@@ -3,10 +3,10 @@
 import React from 'react';
 import { Modal, Tabs, Form, Input, Button, Alert, Typography, Space, App, Spin } from 'antd';
 import { UserAddOutlined, LinkOutlined, UserOutlined, CopyOutlined, ReloadOutlined } from '@ant-design/icons';
-import { useAddParticipantMutation, useGetEventInvitationTokenQuery, useCreateEventInvitationTokenMutation } from '@/store/api';
+import { useAddParticipantMutation, useGetInvitationTokenQuery, useCreateInvitationTokenMutation } from '@/store/api';
 import { APP_CONFIG } from '@/config/app.config';
 import { PAGES } from '@/config/pages.config';
-import { UserRole } from '@/types/api';
+import { UserRole } from '@/store/api';
 
 export interface AddParticipantModalProps {
     visible: boolean;
@@ -23,16 +23,18 @@ export default function AddParticipantModal({ visible, onCancel, eventId, onSucc
     const { message } = App.useApp();
 
     // Хуки для работы с токенами приглашений
-    const { data: tokenData, isLoading: isTokenLoading, refetch: refetchToken } = useGetEventInvitationTokenQuery(eventId, {
+    const { data: tokenData, isLoading: isTokenLoading, refetch: refetchToken } = useGetInvitationTokenQuery(eventId, {
         skip: !visible,
     });
-    const [createToken, { isLoading: isCreatingToken }] = useCreateEventInvitationTokenMutation();
+    const [createToken, { isLoading: isCreatingToken }] = useCreateInvitationTokenMutation();
 
     const handleSubmit = async (values: { login: string }) => {
         try {
             await addParticipant({
                 eventId,
-                login: values.login,
+                participantCreate: {
+                    login: values.login,
+                },
             }).unwrap();
             onSuccess();
             onCancel();
@@ -72,7 +74,7 @@ export default function AddParticipantModal({ visible, onCancel, eventId, onSucc
         }
     };
 
-    const isOwner = userRole === UserRole.OWNER;
+    const isOwner = userRole === UserRole.Owner;
 
     const tabItems = [
         {

@@ -1,0 +1,45 @@
+title:
+  type: string
+  description: Название задачи
+  example: "Купить фрукты"
+
+description:
+  type: string
+  description: Описание задачи
+  example: "Купить фрукты для вечеринки"
+
+deadline_datetime:
+  type: string
+  format: date-time
+  description: Дедлайн задачи
+  example: "2025-01-01T12:00:00Z"
+
+executor_comment:
+  type: string
+  description: Комментарий исполнителя
+  example: "Задача выполнена"
+
+reviewer_comment:
+  type: string
+  description: Комментарий проверяющего
+  example: "Подтверждаю выполнение задачи"
+
+permissions:
+  type: object
+  required:
+    - can_edit
+    - can_take_in_work
+    - can_review
+  properties:
+    can_edit:
+      type: boolean
+      description: Может ли пользователь редактировать задачу
+      example: true
+    can_take_in_work:
+      type: boolean
+      description: Может ли пользователь взять задачу в работу
+      example: true
+    can_review:
+      type: boolean
+      description: Может ли пользователь подтвердить или отклонить задачу
+      example: true

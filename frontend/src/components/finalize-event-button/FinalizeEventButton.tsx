@@ -2,11 +2,13 @@ import React from 'react';
 import { Button, App } from 'antd';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import {
+    ShoppingListStatus,
     useFinalizeEventMutation,
     useGetTasksQuery,
     useGetShoppingListsQuery
 } from '@/store/api';
-import { TaskStatus, ShoppingListStatus, Event } from '@/types/api';
+import { TaskStatus } from '@/store/api';
+import type { Event } from '@/store/api';
 
 export interface FinalizeEventButtonProps {
     event: Event;
@@ -21,9 +23,9 @@ export function FinalizeEventButton({ event, onFinalized }: FinalizeEventButtonP
 
     const handleFinalizeEvent = () => {
         // Подсчитываем незавершенные задачи и списки
-        const incompleteTasks = tasks.filter(task => task.status !== TaskStatus.COMPLETED);
+        const incompleteTasks = tasks.filter(task => task.status !== TaskStatus.Completed);
         const incompleteShoppingLists = shoppingLists.filter(list =>
-            ![ShoppingListStatus.BOUGHT, ShoppingListStatus.PARTIALLY_BOUGHT, ShoppingListStatus.CANCELLED].includes(list.status)
+            ![ShoppingListStatus.Bought, ShoppingListStatus.PartiallyBought, ShoppingListStatus.Cancelled].includes(list.status)
         );
 
         const incompleteTasksCount = incompleteTasks.length;

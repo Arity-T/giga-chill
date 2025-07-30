@@ -1,0 +1,14 @@
+login:
+  type: string
+  description: Логин пользователя
+  example: user123
+
+password:
+  type: string
+  description: Пароль пользователя
+  example: mysecurepassword
+
+name:
+  type: string
+  description: Имя пользователя
+  example: Иван Иванов

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Card, Spin, Typography, Button, Space, App } from 'antd';
 import { TeamOutlined, CheckCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useJoinByInvitationTokenMutation } from '@/store/api';
-import { InvitationTokenPathParam } from '@/types/path-params';
+import type { InvitationTokenPathParam } from '@/types/path-params';
 import { PAGES } from '@/config/pages.config';
 
 const { Title, Text } = Typography;
@@ -34,7 +34,7 @@ export default function JoinByInvitationPage({ params }: InvitationTokenPathPara
             hasJoined.current = true;
 
             try {
-                const result = await joinByInvitationToken(invitationToken).unwrap();
+                const result = await joinByInvitationToken({ invitation_token: invitationToken }).unwrap();
 
                 setEventId(result.event_id);
                 setJoinStatus('success');
@@ -75,7 +75,7 @@ export default function JoinByInvitationPage({ params }: InvitationTokenPathPara
         hasJoined.current = false;
 
         try {
-            const result = await joinByInvitationToken(invitationToken).unwrap();
+            const result = await joinByInvitationToken({ invitation_token: invitationToken }).unwrap();
 
             setEventId(result.event_id);
             setJoinStatus('success');

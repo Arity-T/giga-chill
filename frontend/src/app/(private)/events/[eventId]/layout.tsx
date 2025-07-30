@@ -19,7 +19,7 @@ import { Button, Typography } from 'antd';
 import UserRoleTag from '@/components/UserRoleTag';
 import UserDropdown from '@/components/user-dropdown';
 import { PAGES } from '@/config/pages.config';
-import { UserRole } from '@/types/api';
+import { UserRole } from '@/store/api';
 
 const { Sider, Content } = Layout;
 const { Title } = Typography;
@@ -117,11 +117,11 @@ export default function EventLayout({ children, params }: EventLayoutProps) {
     // Собираем меню в зависимости от роли
     let menuItems = [...baseMenuItems];
 
-    if (event?.user_role === UserRole.ADMIN || event?.user_role === UserRole.OWNER) {
+    if (event?.user_role === UserRole.Admin || event?.user_role === UserRole.Owner) {
         menuItems = [...menuItems, ...adminMenuItems];
     }
 
-    if (event?.user_role === UserRole.OWNER) {
+    if (event?.user_role === UserRole.Owner) {
         menuItems = [...menuItems, ...ownerMenuItems];
     }
 

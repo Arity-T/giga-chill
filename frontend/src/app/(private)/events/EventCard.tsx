@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { formatDateTime } from "@/utils/datetime-utils";
 import { PAGES } from "@/config/pages.config";
 import UserRoleTag from '@/components/UserRoleTag';
-import type { Event } from '@/types/api';
+import type { Event } from '@/store/api';
 
 const { Text } = Typography;
 

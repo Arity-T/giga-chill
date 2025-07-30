@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { Modal, Form, Input, InputNumber, Button, App, Select } from 'antd';
-import { useAddShoppingItemMutation } from '@/store/api';
-import type { ShoppingItemRequest } from '@/types/api';
+import { useCreateShoppingItemMutation } from '@/store/api';
+import type { ShoppingItemCreate } from '@/store/api';
 
 interface AddShoppingItemModalProps {
     open: boolean;
@@ -33,22 +33,22 @@ export default function AddShoppingItemModal({
     shoppingListId
 }: AddShoppingItemModalProps) {
     const [form] = Form.useForm<AddShoppingItemFormData>();
-    const [addShoppingItem, { isLoading }] = useAddShoppingItemMutation();
+    const [createShoppingItem, { isLoading }] = useCreateShoppingItemMutation();
     const { message } = App.useApp();
     const [units, setUnits] = React.useState(popularUnits);
 
     const handleSubmit = async (values: AddShoppingItemFormData) => {
         try {
-            const shoppingItemData: ShoppingItemRequest = {
+            const shoppingItemData: ShoppingItemCreate = {
                 title: values.title,
                 quantity: values.quantity,
                 unit: values.unit,
             };
 
-            await addShoppingItem({
+            await createShoppingItem({
                 eventId,
                 shoppingListId,
-                shoppingItem: shoppingItemData
+                shoppingItemCreate: shoppingItemData
             }).unwrap();
 
             message.success('Товар успешно добавлен!');

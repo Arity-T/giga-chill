@@ -1,38 +1,23 @@
-import { api } from './api'
-import type { UserBalance, EventBalanceSummary } from '@/types/api'
+import { codegenApi } from './codegenApi'
 
-export const debtsApi = api.injectEndpoints({
-    endpoints: (builder) => ({
-        finalizeEvent: builder.mutation<void, string>({
-            query: (eventId) => ({
-                url: `/events/${eventId}/finalize`,
-                method: 'POST',
-            }),
-            invalidatesTags: (_result, _error, eventId) => [
+codegenApi.enhanceEndpoints({
+    endpoints: {
+        finalizeEvent: {
+            invalidatesTags: (_result: any, _error: any, eventId: string) => [
                 { type: 'Events', id: eventId },
-                { type: 'EventParticipants', id: eventId },
+                { type: 'Participants', id: eventId },
                 { type: 'Debts', id: eventId },
             ],
-        }),
-
-        getMyBalance: builder.query<UserBalance, string>({
-            query: (eventId) => `/events/${eventId}/my-balance`,
-            providesTags: (_result, _error, eventId) => [
+        },
+        getMyBalance: {
+            providesTags: (_result: any, _error: any, eventId: string) => [
                 { type: 'Debts', id: eventId }
             ],
-        }),
-
-        getBalanceSummary: builder.query<EventBalanceSummary[], string>({
-            query: (eventId) => `/events/${eventId}/balance-summary`,
-            providesTags: (_result, _error, eventId) => [
+        },
+        getBalanceSummary: {
+            providesTags: (_result: any, _error: any, eventId: string) => [
                 { type: 'Debts', id: eventId }
             ],
-        }),
-    }),
+        },
+    },
 })
-
-export const {
-    useFinalizeEventMutation,
-    useGetMyBalanceQuery,
-    useGetBalanceSummaryQuery,
-} = debtsApi

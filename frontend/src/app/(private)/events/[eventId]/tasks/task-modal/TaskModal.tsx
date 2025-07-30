@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { Modal, Typography, Tag, Tooltip, Row, Col, App, Space, Spin, Button, Popconfirm } from 'antd';
 import { EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { User, TaskRequest, TaskStatus } from '@/types/api';
-import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useAssignTaskMutation, useAssignShoppingListsMutation, useGetShoppingListsQuery, useTakeTaskInWorkMutation, useGetMeQuery, useGetEventQuery } from '@/store/api';
+import type { User, TaskUpdate } from '@/store/api';
+import { TaskStatus, useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useSetTaskExecutorMutation, useSetTaskShoppingListsMutation, useGetShoppingListsQuery, useTakeTaskInWorkMutation, useGetMeQuery, useGetEventQuery } from '@/store/api';
 import { getTaskStatusText, getTaskStatusColor, getTaskStatusTooltip } from '@/utils/task-status-utils';
 import TaskDescription from './TaskDescription';
 import TaskExecutor from './TaskExecutor';
@@ -50,15 +50,15 @@ export default function TaskModal({
 
     const [updateTask, { isLoading: isUpdating }] = useUpdateTaskMutation();
     const [deleteTask, { isLoading: isDeleting }] = useDeleteTaskMutation();
-    const [assignTask, { isLoading: isAssigning }] = useAssignTaskMutation();
-    const [assignShoppingLists, { isLoading: isAssigningLists }] = useAssignShoppingListsMutation();
+    const [setTaskExecutor, { isLoading: isAssigning }] = useSetTaskExecutorMutation();
+    const [setTaskShoppingLists, { isLoading: isAssigningLists }] = useSetTaskShoppingListsMutation();
     const [takeTaskInWork, { isLoading: isTakingInWork }] = useTakeTaskInWorkMutation();
 
     // Получаем все списки покупок для события
     const { data: allShoppingLists = [] } = useGetShoppingListsQuery(eventId);
 
     // Проверяем, является ли текущий пользователь исполнителем задачи в статусе in_progress
-    const isExecutorInProgress = task?.status === TaskStatus.IN_PROGRESS &&
+    const isExecutorInProgress = task?.status === TaskStatus.InProgress &&
         currentUser?.id === task?.executor?.id;
 
     const handleToggleExpand = (listId: string) => {
@@ -78,26 +78,24 @@ export default function TaskModal({
         }
 
         try {
-            const updates: Partial<TaskRequest> = {
+            const updates: TaskUpdate = {
                 [field]: value,
                 title: task.title,
                 description: task.description,
                 deadline_datetime: task.deadline_datetime,
-                executor_id: task.executor?.id || null,
-                shopping_lists_ids: task.shopping_lists?.map(list => list.shopping_list_id) || []
             };
 
             // Обновляем конкретное поле
             if (field === 'deadline_datetime') {
                 updates.deadline_datetime = value;
             } else {
-                updates[field as keyof TaskRequest] = value;
+                updates[field as keyof TaskUpdate] = value;
             }
 
             await updateTask({
                 eventId,
                 taskId: task.task_id,
-                task: updates as TaskRequest
+                taskUpdate: updates
             }).unwrap();
 
             message.success('Задача обновлена');
@@ -146,7 +144,7 @@ export default function TaskModal({
         await handleUpdate('description', description);
     };
 
-    const handleUpdateExecutor = async (executor: User | null) => {
+    const handleUpdateExecutor = async (executor?: User) => {
         if (!task?.permissions.can_edit) {
             message.warning('У вас нет прав для редактирования этой задачи');
             return;
@@ -160,10 +158,10 @@ export default function TaskModal({
         }
 
         try {
-            await assignTask({
+            await setTaskExecutor({
                 eventId,
                 taskId: task.task_id,
-                executorData: { executor_id: newExecutorId }
+                taskSetExecutor: { executor_id: newExecutorId }
             }).unwrap();
 
             message.success('Исполнитель обновлен');
@@ -183,10 +181,10 @@ export default function TaskModal({
         }
 
         try {
-            await assignShoppingLists({
+            await setTaskShoppingLists({
                 eventId,
                 taskId: task.task_id,
-                shoppingListIds
+                uuidList: shoppingListIds
             }).unwrap();
 
             message.success('Списки покупок обновлены');
@@ -277,9 +275,9 @@ export default function TaskModal({
 
                     {/* Списки покупок */}
                     <TaskShoppingLists
-                        shoppingLists={task.shopping_lists || []}
+                        shoppingLists={task.shopping_lists}
                         allShoppingLists={allShoppingLists}
-                        canEdit={task.permissions.can_edit && task.status === TaskStatus.OPEN}
+                        canEdit={task.permissions.can_edit && task.status === TaskStatus.Open}
                         onUpdate={handleUpdateShoppingLists}
                         showAsCards={isExecutorInProgress || task.permissions.can_review}
                         eventId={eventId}

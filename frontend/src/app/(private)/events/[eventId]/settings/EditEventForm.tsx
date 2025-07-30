@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { Input, DatePicker, App } from 'antd';
 import { useUpdateEventMutation } from '@/store/api';
-import { Event, UpdateEventRequest } from '@/types/api';
+import type { EventUpdate } from '@/store/api';
+import type { Event } from '@/store/api';
 import dayjs, { Dayjs } from 'dayjs';
 import EditableField from './editable-field/EditableField';
 
@@ -33,7 +34,7 @@ export default function EditEventForm({ event }: EditEventFormProps) {
     const [values, setValues] = useState<FormValues>({
         title: event.title,
         location: event.location,
-        description: event.description,
+        description: event.description || '',
         dateRange: [dayjs(event.start_datetime), dayjs(event.end_datetime)],
     });
 
@@ -68,14 +69,14 @@ export default function EditEventForm({ event }: EditEventFormProps) {
         const resetValues: Record<FieldKey, () => void> = {
             title: () => setValues(prev => ({ ...prev, title: event.title })),
             location: () => setValues(prev => ({ ...prev, location: event.location })),
-            description: () => setValues(prev => ({ ...prev, description: event.description })),
+            description: () => setValues(prev => ({ ...prev, description: event.description || '' })),
             dateRange: () => setValues(prev => ({ ...prev, dateRange: [dayjs(event.start_datetime), dayjs(event.end_datetime)] })),
         };
 
         resetValues[field]();
     };
 
-    const validateAndGetUpdateData = (field: FieldKey): UpdateEventRequest | null => {
+    const validateAndGetUpdateData = (field: FieldKey): EventUpdate | null => {
         switch (field) {
             case 'title':
                 if (!values.title || values.title.length < 3) {
@@ -116,7 +117,7 @@ export default function EditEventForm({ event }: EditEventFormProps) {
             const updateData = validateAndGetUpdateData(field);
             if (!updateData) return;
 
-            await updateEvent({ eventId: event.event_id, event: updateData }).unwrap();
+            await updateEvent({ eventId: event.event_id, eventUpdate: updateData }).unwrap();
             message.success('Поле успешно обновлено');
         } catch (error) {
             message.error('Ошибка при обновлении поля');

@@ -3,8 +3,8 @@
 import React from 'react';
 import { Typography, Space, Alert } from 'antd';
 import { useGetEventQuery } from '@/store/api';
-import { EventIdPathParam } from '@/types/path-params';
-import { UserRole } from '@/types/api';
+import type { EventIdPathParam } from '@/types/path-params';
+import { UserRole } from '@/store/api';
 import DeleteEventButton from './DeleteEventButton';
 import EditEventForm from './EditEventForm';
 import SettingsSection from './SettingsSection';
@@ -24,7 +24,7 @@ export default function EventSettingsPage({ params }: EventIdPathParam) {
     }
 
     // Проверяем, является ли пользователь владельцем мероприятия
-    if (event.user_role !== UserRole.OWNER) {
+    if (event.user_role !== UserRole.Owner) {
         return (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}>
                 <Title level={2} style={{ margin: 0 }}>

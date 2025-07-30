@@ -1,5 +1,5 @@
 import { Card, Typography } from 'antd';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import styles from './AuthWrapper.module.css';
 
 const { Title } = Typography;
