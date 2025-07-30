@@ -3,7 +3,6 @@ package com.github.giga_chill.gigachill.service;
 import com.github.giga_chill.gigachill.data.access.object.TaskDAO;
 import com.github.giga_chill.gigachill.data.transfer.object.TaskDTO;
 import com.github.giga_chill.gigachill.exception.BadRequestException;
-import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.mapper.TaskMapper;
 import com.github.giga_chill.gigachill.mapper.UserMapper;
 import com.github.giga_chill.gigachill.model.User;
@@ -125,17 +124,10 @@ public class TaskService {
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         taskServiceValidator.checkNotCompletedStatus(taskId, getTaskStatus(taskId));
         participantsServiceValidator.checkIsAuthorOrAdminOrOwner(eventId, userId, taskId);
-
         var eventEndDatetime = OffsetDateTime.parse(eventService.getEndDatetime(eventId));
         var taskDeadline = OffsetDateTime.parse(requestTaskInfo.deadlineDatetime());
+        taskServiceValidator.checkTaskDeadline(eventEndDatetime, taskDeadline);
 
-        if (eventEndDatetime.isBefore(taskDeadline)) {
-            throw new ConflictException(
-                    "You cannot specify task due date: "
-                            + taskDeadline
-                            + " that is later than the end of the event: "
-                            + eventEndDatetime);
-        }
         var task =
                 new TaskDTO(
                         taskId,
