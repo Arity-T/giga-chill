@@ -3,6 +3,7 @@ package com.github.giga_chill.gigachill.service.validator;
 import com.github.giga_chill.gigachill.data.access.object.TaskDAO;
 import com.github.giga_chill.gigachill.exception.ConflictException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,7 @@ public class TaskServiceValidator {
     }
 
     public void checkOpportunityToSentTaskToReview(UUID taskId, UUID userId) {
-        if (!taskDAO.getExecutorId(taskId).equals(userId)) {
+        if (!Objects.equals(taskDAO.getExecutorId(taskId), userId)) {
             throw new ConflictException(
                     "User with id: "
                             + userId
@@ -70,6 +71,16 @@ public class TaskServiceValidator {
                 || participantsServiceValidator.isParticipantRole(eventId, userId)) {
             throw new ConflictException(
                     "User with id: " + userId + " cannot approve " + "task with id: " + taskId);
+        }
+    }
+
+    public void checkTaskDeadline(OffsetDateTime eventEndDatetime, OffsetDateTime taskDeadline) {
+        if (eventEndDatetime.isBefore(taskDeadline)) {
+            throw new ConflictException(
+                    "You cannot specify task due date: "
+                            + taskDeadline
+                            + " that is later than the end of the event: "
+                            + eventEndDatetime);
         }
     }
 }
