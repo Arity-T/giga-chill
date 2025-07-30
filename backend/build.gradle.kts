@@ -45,6 +45,10 @@ spotless {
 
 // === Зависимости приложения и тестов ===
 dependencies {
+    // Lombok
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+
     // Spring Boot
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -60,10 +64,6 @@ dependencies {
 
     // PostgreSQL драйвер для приложения
     runtimeOnly("org.postgresql:postgresql")
-
-    // Lombok
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
 
     // Logging
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
