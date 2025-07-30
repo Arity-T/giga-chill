@@ -1,0 +1,36 @@
+title:
+  type: string
+  description: Название мероприятия
+  example: "Встреча с друзьями"
+
+location:
+  type: string
+  description: Место мероприятия
+  example: Политехническая улица, 29 лит П
+
+start_datetime:
+  type: string
+  format: date-time
+  description: Дата и время начала мероприятия
+  example: "2025-01-01T10:00:00Z"
+
+end_datetime:
+  type: string
+  format: date-time
+  description: Дата и время окончания мероприятия
+  example: "2025-01-01T12:00:00Z"
+
+description:
+  type: string
+  description: Описание мероприятия
+  example: "Встреча с друзьями в кафе"
+
+budget:
+  type: number
+  description: Бюджет мероприятия
+  example: 10000
+
+is_finalized:
+  type: boolean
+  description: Флаг, который показывает завершено ли мероприятие или нет.
+  example: false

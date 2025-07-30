@@ -23,7 +23,7 @@ public class ShoppingListsServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.ShoppingListsService.getAllShoppingListsFromEvent(..)) "
-                    + "&& args(eventId)")
+                    + "&& args(eventId, ..)")
     public void getAllShoppingListsFromEvent(UUID eventId) {}
 
     @Pointcut(

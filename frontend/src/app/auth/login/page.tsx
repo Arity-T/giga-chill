@@ -4,6 +4,7 @@ import { Form, Input, Button, App } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import AuthWrapper from '@/components/auth-wrapper/AuthWrapper';
 import { useLoginMutation } from '@/store/api';
+import type { LoginProps } from '@/store/api';
 import { PAGES } from '@/config/pages.config';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -17,7 +18,7 @@ export default function LoginForm() {
   const searchParams = useSearchParams();
   const [login, { isLoading: loginLoading }] = useLoginMutation();
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: LoginProps) => {
     try {
       await login(values).unwrap();
       handleSuccessfulAuth(searchParams, router);

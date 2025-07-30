@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Checkbox, Typography, Space, Button } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { ShoppingItem } from '@/types/api';
+import type { ShoppingItem } from '@/store/api';
 
 const { Text } = Typography;
 

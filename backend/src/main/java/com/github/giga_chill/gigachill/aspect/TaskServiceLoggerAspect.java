@@ -21,12 +21,12 @@ public class TaskServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.getAllTasksFromEvent(..)) "
-                    + "&& args(eventId)")
+                    + "&& args(eventId, ..)")
     public void getAllTasksFromEvent(UUID eventId) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.getTaskById(..)) "
-                    + "&& args(taskId)")
+                    + "&& args(taskId, ..)")
     public void getTaskById(UUID taskId) {}
 
     @Pointcut(

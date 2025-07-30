@@ -49,6 +49,10 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
 
+    // Mapper
+    implementation("org.mapstruct:mapstruct:1.5.5.Final")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+
     // Spring Boot
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -80,6 +84,8 @@ dependencies {
     jooqGenerator("org.jooq:jooq-meta:$jooqVersion")
     jooqGenerator("org.postgresql:postgresql")
 }
+
+
 
 tasks.withType<Test> {
 	useJUnitPlatform()

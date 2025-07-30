@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Space, Typography, Tag, Tooltip, InputNumber, App } from 'antd';
-import { ShoppingListStatus, ShoppingListWithItems } from '@/types/api';
+import type { ShoppingListWithItems } from '@/store/api';
 import { getStatusColor, getStatusText, getStatusTooltip } from '@/utils/shopping-status-utils';
-import { useSetShoppingListBudgetMutation } from '@/store/api';
+import { ShoppingListStatus, useSetShoppingListBudgetMutation } from '@/store/api';
 import InlineEditControls from '@/components/inline-edit-controls';
 import ConsumerButton from './ConsumerButton';
 import ActionButtons from './ActionButtons';
@@ -21,7 +21,6 @@ interface ShoppingListHeaderProps {
     showStatus?: boolean;
     enableBudgetInput?: boolean;
     eventId?: string;
-    taskId: string;
 }
 
 export default function ShoppingListHeader({
@@ -35,8 +34,7 @@ export default function ShoppingListHeader({
     canEdit,
     showStatus = true,
     enableBudgetInput = false,
-    eventId,
-    taskId
+    eventId
 }: ShoppingListHeaderProps) {
     const { message } = App.useApp();
     const [budgetValue, setBudgetValue] = useState<number | null>(shoppingList.budget);
@@ -54,10 +52,11 @@ export default function ShoppingListHeader({
 
         try {
             await setBudget({
-                taskId,
                 eventId,
                 shoppingListId: shoppingList.shopping_list_id,
-                budget: budgetValue
+                shoppingListSetBudget: {
+                    budget: budgetValue
+                }
             }).unwrap();
             message.success('Бюджет обновлен');
         } catch (error) {
@@ -70,8 +69,8 @@ export default function ShoppingListHeader({
     };
 
     const showBudget = (budgetValue !== null
-        && (shoppingList.status === ShoppingListStatus.PARTIALLY_BOUGHT ||
-            shoppingList.status === ShoppingListStatus.BOUGHT));
+        && (shoppingList.status === ShoppingListStatus.PartiallyBought ||
+            shoppingList.status === ShoppingListStatus.Bought));
 
     return (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>

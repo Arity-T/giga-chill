@@ -3,15 +3,16 @@
 import React, { useState } from 'react';
 import { Typography, Alert, Spin, App, Button, Flex } from 'antd';
 import { TeamOutlined, UserAddOutlined } from '@ant-design/icons';
-import { EventIdPathParam } from '@/types/path-params';
+import type { EventIdPathParam } from '@/types/path-params';
 import {
+    UserRole,
     useGetEventQuery,
     useGetMeQuery,
-    useGetEventParticipantsQuery,
+    useGetParticipantsQuery,
     useDeleteParticipantMutation,
-    useUpdateParticipantRoleMutation
+    useSetParticipantRoleMutation
 } from '@/store/api';
-import { UserRole, UserInEvent } from '@/types/api';
+import type { Participant } from '@/store/api';
 import ParticipantTable from './ParticipantTable';
 import AddParticipantModal from './AddParticipantModal';
 
@@ -30,19 +31,21 @@ export default function ParticipantsPage({ params }: EventIdPathParam) {
         isLoading: participantsLoading,
         isFetching: participantsFetching,
         error: participantsError
-    } = useGetEventParticipantsQuery(eventId);
+    } = useGetParticipantsQuery(eventId);
 
     // Мутации для работы с участниками
     const [deleteParticipant, { isLoading: isDeleting }] = useDeleteParticipantMutation();
-    const [updateParticipantRole, { isLoading: isUpdatingRole }] = useUpdateParticipantRoleMutation();
+    const [setParticipantRole, { isLoading: isUpdatingRole }] = useSetParticipantRoleMutation();
 
     // Обработчики
-    const handleRoleChange = async (participant: UserInEvent, newRole: UserRole) => {
+    const handleRoleChange = async (participant: Participant, newRole: UserRole) => {
         try {
-            await updateParticipantRole({
+            await setParticipantRole({
                 eventId,
                 participantId: participant.id,
-                role: newRole,
+                participantSetRole: {
+                    role: newRole,
+                },
             }).unwrap();
             message.success(`Роль пользователя "${participant.name}" успешно изменена!`);
         } catch (error) {
@@ -51,7 +54,7 @@ export default function ParticipantsPage({ params }: EventIdPathParam) {
         }
     };
 
-    const handleDeleteParticipant = async (participant: UserInEvent) => {
+    const handleDeleteParticipant = async (participant: Participant) => {
         try {
             await deleteParticipant({
                 eventId,
@@ -69,7 +72,7 @@ export default function ParticipantsPage({ params }: EventIdPathParam) {
     };
 
     // Проверяем, может ли пользователь добавлять участников (owner или admin)
-    const canAddParticipants = event?.user_role === UserRole.OWNER || event?.user_role === UserRole.ADMIN;
+    const canAddParticipants = event?.user_role === UserRole.Owner || event?.user_role === UserRole.Admin;
 
     // Показываем спиннер пока загружаются данные или идет обновление/удаление
     const isLoadingOrFetching = eventLoading || userLoading || participantsLoading || participantsFetching || isUpdatingRole || isDeleting;

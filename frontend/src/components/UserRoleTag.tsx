@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tag, Tooltip } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import { UserRole } from '@/types/api';
+import { UserRole } from '@/store/api';
 import { getRoleColor, getRoleText } from '@/utils/role-utils';
 
 interface UserRoleTagProps {
