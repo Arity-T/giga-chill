@@ -69,6 +69,9 @@ dependencies {
     // PostgreSQL драйвер для приложения
     runtimeOnly("org.postgresql:postgresql")
 
+    // Logging
+    implementation("net.logstash.logback:logstash-logback-encoder:8.1")
+
     // Тесты
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
