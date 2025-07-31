@@ -77,7 +77,11 @@ Cypress.Commands.add('loginUserUI', (username, password = '12345678') => {
 }); 
 
 
-
+Cypress.Commands.add('logoutUserUI', (username) => {
+    cy.contains('button', username).should('be.visible').click();
+    cy.get('.ant-dropdown-menu-item').should('be.visible').click();
+    cy.url().should('include', '/auth');
+})
 
 
 /**
@@ -96,13 +100,7 @@ Cypress.Commands.add('loginUserAPI', (username, password = '12345678') => {
     },
     failOnStatusCode: false // Не завершать тест при ошибках
   }).then((response) => {
-    // Проверяем, что сервер вернул ответ
-    expect(response).to.not.be.null;
-
-    // Проверяем успешный статус ответа
-    if (response.status !== 204) {
-      throw new Error(`Login failed. Status: ${response.status}`);
-    }
+    expect(response.status).to.eq(204);
   });
 });
 

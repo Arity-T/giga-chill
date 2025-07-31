@@ -91,13 +91,10 @@ Cypress.Commands.add('createEventUI', (eventData) => {
  * @param authToken - токен авторизации (опционально, если нужен другой пользователь)
  */
 
-Cypress.Commands.add('createEventAPI', (eventData, authToken = null) =>{
-    const headers = authToken ? { Authorization: `Bearer ${authToken}`} : {};
-
+Cypress.Commands.add('createEventAPI', (eventData) =>{
     cy.request({
         method: 'POST',
         url:`${Cypress.env('apiUrl')}/events`,
-        headers,
         body:{
             title: eventData.title,
             location: eventData.location,
@@ -112,7 +109,6 @@ Cypress.Commands.add('createEventAPI', (eventData, authToken = null) =>{
         cy.request({
             method: 'GET',
             url: `${Cypress.env('apiUrl')}/events`,
-            headers
         }).then((getResponse) => {
             // cy.log('Список мероприятий:', JSON.stringify(getResponse.body));
             expect(getResponse.status).to.eq(200);
@@ -125,11 +121,11 @@ Cypress.Commands.add('createEventAPI', (eventData, authToken = null) =>{
             // cy.log('Мероприятие', JSON.stringify(createdEvent));
             // cy.log('Мероприятие', JSON.stringify(createdEvent.event_id));
             if (!createdEvent) {
-                throw new Error('Мероприятие не найдено после создания');
+                expect(createdEvent, 'Мероприятие не найдено после создания').to.exist;
             }
 
-            // Переход на страницу мероприятия
-            cy.visit(`/events/${createdEvent.event_id}`);
+            // ID мероприятия
+            return createdEvent.event_id;
         });
     });
 });
@@ -138,7 +134,10 @@ Cypress.Commands.add('createEventAPI', (eventData, authToken = null) =>{
  * Вспомогательная функция для форматирования даты
  */
 function formatEventDate(day: string, hour: string): string {
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth() + 1;
-    return `${currentYear}-${currentMonth.toString().padStart(2, '0')}-${day.padStart(2, '0')}T${hour.padStart(2, '0')}:00:00Z`;
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth(); 
+
+  const date = new Date(year, month, Number(day), Number(hour), 0, 0);
+  return date.toISOString();
 }

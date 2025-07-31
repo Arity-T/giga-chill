@@ -1,26 +1,29 @@
-import { link } from "fs";
-
-describe('Полный пользовательский сценарий', { testIsolation: false }, () => {
+describe('Добавление участников по ссылке', { testIsolation: false }, () => {
     it('Создание мероприятия', () => {
         // Входим в систему
         cy.loginUserAPI('lili')
 
         // Создаём мероприятие используя команду
         cy.createEventAPI({
-            title: 'Пикник другой',
+            title: 'Пикник другой25',
             location: 'Лес',
             startDay: '20',
-            startHour: '03',
+            startHour: '06',
             endDay: '30',
             endHour: '20',
             description: 'всем добра!!!!'
+        }).then((eventId) => {
+            // Переход на страницу мероприятия
+            cy.visit(`/events/${eventId}`);
         });
-        
-        // заходим на страничку с мероприятиями
-        // cy.visit('/events')
     });
 
     it('Добавление участников', () => {
-        cy.addParticipantByLink('lili', 'xuxa');
+        cy.getInvitationLinkUI().then((inviteUrl)=>{
+            cy.log('Повторное использование ссылки:', inviteUrl);
+            cy.logoutUserUI('lili');
+            cy.loginUserUI('xuxa');
+            cy.visit(inviteUrl);
+        });
     });
 });
