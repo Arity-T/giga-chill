@@ -17,6 +17,17 @@
 | `logstash/logstash.conf` | Настройка Logstash: откуда читать логи и как отправлять в Elasticsearch. |
 | `elk-stack/docker-compose.yml` | Поднимает сервисы `elasticsearch`, `kibana`, `logstash`, `filebeat`, `metricbeat`. |
 
+## Переменные окружения
+
+Перед запуском проекта убедитесь, что вы задали все необходимые переменные окружения в файле `.env`.
+
+Для удобства используйте шаблон `.env.example`:
+```sh
+cp .env.example .env
+```
+
+> Без корректно заданных переменных запуск ELK-стека и аутентификация в Kibana могут завершиться ошибкой.
+
 ## Настройка Kibana
 
 1. Запустите ELK-стек:
@@ -30,13 +41,13 @@
 3. В левом меню откройте:
   `Management -> Stack Management -> Kibana -> Data Views`.
 
-1. Нажмите **Create data view**, введите:
+4. Нажмите **Create data view**, введите:
    - **Name:** `backend-logs`
    - **Index pattern:** `backend-logs-*`
    - **Timestamp field:** `@timestamp`
    - Сохраните.
 
-2. Перейдите в **Analytics -> Discover**, выберите созданное Data View и начинайте просмотр логов.
+5. Перейдите в **Analytics -> Discover**, выберите созданное Data View и начинайте просмотр логов.
 
 Кроме  того, в разделе **Analytics -> Dashboards** доступен набор стандартных дашбордов от metricbeat.
 
