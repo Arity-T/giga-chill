@@ -75,3 +75,35 @@ Cypress.Commands.add('loginUserUI', (username, password = '12345678') => {
         .should('be.visible')
         .and('contain', `@${username}`);
 }); 
+
+
+
+
+
+/**
+ * Команда для входа пользователя через API
+ * @param username - логин пользователя
+ * @param password - пароль (по умолчанию '12345678')
+ */
+Cypress.Commands.add('loginUserAPI', (username, password = '12345678') => {
+  // Отправляем POST-запрос на эндпоинт входа
+  cy.request({
+    method: 'POST',
+    url: `${Cypress.env('apiUrl')}/auth/login`, // Путь к эндпоинту аутентификации
+    body: {
+      login: username,
+      password: password
+    },
+    failOnStatusCode: false // Не завершать тест при ошибках
+  }).then((response) => {
+    // Проверяем, что сервер вернул ответ
+    expect(response).to.not.be.null;
+
+    // Проверяем успешный статус ответа
+    if (response.status !== 204) {
+      throw new Error(`Login failed. Status: ${response.status}`);
+    }
+  });
+});
+
+

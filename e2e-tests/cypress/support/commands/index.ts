@@ -23,9 +23,11 @@ declare global {
             // Me commands
             registerUserUI(name: string, username: string, password?: string): Chainable<void>;
             loginUserUI(username: string, password?: string): Chainable<void>;
+            loginUserAPI(username: string, password?: string): Chainable<void>;
 
             // Events commands
             createEventUI(eventData: CreateEventData): Chainable<void>;
+            createEventAPI(eventData: CreateEventAPIData, authToken?: string | null): Chainable<void>;
 
             // Participants commands
             addParticipantByLoginUI(username: string): Chainable<void>;
@@ -50,9 +52,31 @@ declare global {
 
             // Utils commands
             cleanupDatabase(): Chainable<void>;
-            closeModal(): Chainable<void>;
+            closeModal(): Chainable<void>;  
+            
+
+            // Add a participant via link
+            addParticipantByLink(adminLogin:string, participantLogin:string);
+            joinEventByInvite(inviteLink: string, username: string, password?: string): Chainable<void>;
         }
     }
 }
+
+// Добавляем новые типы
+interface CreateEventAPIData {
+    title: string;
+    location: string;
+    description?: string;
+    startDay: string; // например "15"
+    startHour: string; // например "10"
+    endDay: string;
+    endHour: string;
+}
+
+// interface EventResponse {
+//     id: string;
+//     title: string;
+// }
+
 
 export { }; 
