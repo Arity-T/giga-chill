@@ -17,7 +17,18 @@ export default defineConfig({
         requestTimeout: 5000,
         responseTimeout: 5000,
         setupNodeEvents(on, config) {
-            // implement node event listeners here
+            // https://github.com/archfz/cypress-terminal-report?tab=readme-ov-file#options
+            const options = {
+                printLogsToConsole: 'onFail',
+                printLogsToFile: 'always',
+                outputRoot: config.projectRoot + '/cypress/logs/',
+                outputTarget: {
+                    'cypress-logs.txt': 'txt',
+                    'cypress-logs.json': 'json',
+                    'cypress-logs.html': 'html',
+                }
+            };
+            require('cypress-terminal-report/src/installLogsPrinter')(on, options)
         },
     },
 }) 

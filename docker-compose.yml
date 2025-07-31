@@ -16,7 +16,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    networks:
+    networks: 
       - gigachill-network
 
   builder:
@@ -30,10 +30,10 @@ services:
     env_file:
       - .env
     command: ["./build.sh"]
-    networks:
-      - gigachill-network
     volumes:
       - backend-build:/app/build
+    networks: 
+      - gigachill-network
 
   backend:
     build:
@@ -46,28 +46,35 @@ services:
       - .env
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
-    networks:
-      - gigachill-network
     volumes:
       - backend-build:/app/build
+      - gigachill-logs:/app/logs
+    networks: 
+      - gigachill-network
 
   frontend:
     build:
-      context: ./frontend
-    env_file:
-      - frontend/.env
+      # Фронтенд должен видеть схему API для кодогенерации,
+      # поэтому сборка должна запускаться из корневой директории проекта
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+        NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL}
     ports:
       - "${FRONTEND_PORT}:${FRONTEND_PORT}"
     environment:
       - NODE_ENV=production
       - PORT=${FRONTEND_PORT}
-    depends_on:
-      - backend
+    networks: 
+      - gigachill-network
 
 volumes:
   postgres-data:
   backend-build:
-
+  gigachill-logs:
+    name: gigachill-logs
+  
 networks:
   gigachill-network:
-    driver: bridge 
+    name: gigachill-network
