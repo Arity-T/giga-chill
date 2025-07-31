@@ -48,6 +48,17 @@ npm run test:open
 npm run test:headed
 ```
 
+## Запуск тестов в Docker
+
+Фронтенд и бэкенд поднимаются отдельно. Их адреса указываются в `.env` файле (см. [.env.example](.env.example)).
+
+```bash
+docker compose run --rm --build e2e-tests
+```
+
+Логи, скриншоты и видео сохраняются в директориях `cypress/logs`, 
+`cypress/screenshots` и `cypress/videos` соответственно.
+
 ## Рекомендации по написанию тестов
 
 0. Перед запуском тестового сценария очищаем базу данных. Для этого на бэке выделен специальный эндпоинт `/test-utils/cleanup`.

@@ -3,11 +3,10 @@ services:
     image: giga-chill-tests
     build:
       context: .
-    environment:
-      - FRONTEND_URL=http://host.docker.internal:3000
-      - BACKEND_URL=http://host.docker.internal:8081
+    env_file:
+      - .env
     volumes:
       - ./cypress/screenshots:/tests/cypress/screenshots
       - ./cypress/videos:/tests/cypress/videos
       - ./cypress/logs:/tests/cypress/logs
-    restart: "no"
+    network_mode: host
