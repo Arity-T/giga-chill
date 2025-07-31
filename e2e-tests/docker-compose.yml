@@ -1,0 +1,12 @@
+services:
+  e2e-tests:
+    image: giga-chill-tests
+    build:
+      context: .
+    environment:
+      - FRONTEND_URL=http://host.docker.internal:3000
+      - BACKEND_URL=http://host.docker.internal:8081
+    volumes:
+      - ./cypress/screenshots:/tests/cypress/screenshots
+      - ./cypress/videos:/tests/cypress/videos
+    restart: "no"
