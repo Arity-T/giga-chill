@@ -1,0 +1,12 @@
+services:
+  e2e-tests:
+    image: giga-chill-tests
+    build:
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - ./cypress/screenshots:/tests/cypress/screenshots
+      - ./cypress/videos:/tests/cypress/videos
+      - ./cypress/logs:/tests/cypress/logs
+    network_mode: host
