@@ -19,8 +19,8 @@ services:
 
   builder:
     build:
-      context: .
-      dockerfile: backend/Dockerfile.builder
+      context: backend
+      dockerfile: Dockerfile.builder
     image: gigachill-builder
     depends_on:
       postgres:
