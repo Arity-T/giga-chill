@@ -50,7 +50,8 @@ Cypress.Commands.add('registerUserUI', (name, username, password = '12345678') =
 Cypress.Commands.add('registerUserAPI', registerRequest => {
     cy.request({
         method: 'POST',
-        url: `${Cypress.env('apiUrl')}/auth/register`,
+        // url: `${Cypress.env('apiUrl')}/auth/register`,
+        url: `${Cypress.env('apiUrl')}${PAGES.REGISTER}`,
         body: registerRequest,
         failOnStatusCode: false
     }).then((response) => {
@@ -92,7 +93,8 @@ Cypress.Commands.add('loginUserUI', (username, password = '12345678') => {
 Cypress.Commands.add('logoutUserUI', (username) => {
     cy.contains('button', username).should('be.visible').click();
     cy.get('.ant-dropdown-menu-item').should('be.visible').click();
-    cy.url().should('include', '/auth');
+    // cy.url().should('include', '/auth');
+    cy.url().should('include', PAGES.LOGIN);
 })
 
 
@@ -103,7 +105,8 @@ Cypress.Commands.add('loginUserAPI', loginRequest => {
     // Отправляем POST-запрос на эндпоинт входа
     cy.request({
         method: 'POST',
-        url: `${Cypress.env('apiUrl')}/auth/login`, // Путь к эндпоинту аутентификации
+        //url: `${Cypress.env('apiUrl')}/auth/login`, // Путь к эндпоинту аутентификации
+        url: `${Cypress.env('apiUrl')}${PAGES.LOGIN}`,
         body: loginRequest,
         failOnStatusCode: false // Не завершать тест при ошибках
     }).then((response) => {

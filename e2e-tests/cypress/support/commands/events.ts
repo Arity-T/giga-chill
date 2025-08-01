@@ -94,7 +94,7 @@ Cypress.Commands.add('createEventUI', (eventData) => {
 Cypress.Commands.add('createEventAPI', (eventData) => {
     cy.request({
         method: 'POST',
-        url: `${Cypress.env('apiUrl')}/events`,
+        url: `${Cypress.env('apiUrl')}${PAGES.HOME}`,
         body: eventData
     }).then((response) => {
         expect(response.status).to.eq(204);// Проверка, что запрос прошёл успешно
@@ -102,7 +102,7 @@ Cypress.Commands.add('createEventAPI', (eventData) => {
         // Получить список всех мероприятий пользователя
         cy.request({
             method: 'GET',
-            url: `${Cypress.env('apiUrl')}/events`,
+            url: `${Cypress.env('apiUrl')}${PAGES.HOME}`,
         }).then((getResponse) => {
             // cy.log('Список мероприятий:', JSON.stringify(getResponse.body));
             expect(getResponse.status).to.eq(200);

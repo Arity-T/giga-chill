@@ -1,3 +1,5 @@
+import { PAGES } from "../support/config/pages.config";
+
 describe('Добавление участников по ссылке', () => {
     // Подготавливаем состояние приложения для тестов
     beforeEach(() => {
@@ -45,7 +47,8 @@ describe('Добавление участников по ссылке', () => {
 
         // Открываем страницу мероприятия
         cy.get('@eventId').then((eventId) => {
-            cy.visit(`/events/${eventId}`);
+            //cy.visit(`/events/${eventId}`);
+            cy.visit(PAGES.EVENT_DETAILS(`${eventId}`));
         });
 
         // Сохраняем ссылку-приглашение в алиас inviteUrl
@@ -68,7 +71,7 @@ describe('Добавление участников по ссылке', () => {
 
         // Проверяем, что мы на странице мероприятия
         cy.get('@eventId').then((eventId) => {
-            cy.url().should('include', `/events/${eventId}`);
+            cy.url().should('include', PAGES.EVENT_DETAILS(`${eventId}`));
         });
 
         // Проверяем, что на странице есть название мероприятия
