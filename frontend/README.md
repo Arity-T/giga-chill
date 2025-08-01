@@ -1,56 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Это проект [Next.js](https://nextjs.org), созданный с помощью [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+## Начало работы
 
-### Environment Variables
+### Переменные окружения
 
-Before running the project, set up your environment variables:
+Перед запуском проекта настройте переменные окружения:
 
-1. Copy the example environment file:
+1. Скопируйте файл с примером переменных окружения:
    ```bash
    cp .env.example .env.local
    ```
 
-2. Update the variables in `.env.local` as needed:
-   - `NEXT_PUBLIC_API_BASE_URL` - URL of the backend API (default: http://localhost:3000)
+2. Обновите переменные в `.env.local` по необходимости:
+   - `NEXT_PUBLIC_API_BASE_URL` - URL бэкенд API
+
+### Установка зависимостей и генерация кода
+
+```bash
+npm install
+npm run codegen
+```
 
 ### Development Server
 
-First, run the development server:
+Сначала запустите сервер разработки:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте [http://localhost:3000](http://localhost:3000) в браузере, чтобы увидеть результат.
 
-To run on a different port (powershell):
+Для запуска на другом порту (powershell):
 
-```bash
+```powershell
 $env:PORT=3001; npm run dev
 ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Сборка
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Если не нужно изменять код, а, например, лишь запустить e2e тесты:
 
-## Learn More
+```bash
+npm run build
+npm run start
+```
 
-To learn more about Next.js, take a look at the following resources:
+Для запуска на другом порту (powershell):
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```powershell
+$env:PORT=3001; npm run start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Docker
 
-## Deploy on Vercel
+Запускайте docker build из корневой директории проекта, фронтенду нужно видеть 
+[схему API](../openapi/api.yml) для кодогенерации. Также при сборке 
+нужно указать два аргумента `NEXT_PUBLIC_API_BASE_URL` и `NEXT_PUBLIC_BASE_URL`:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+# Сборка образа
+docker build -f frontend/Dockerfile -t giga-chill-frontend --build-arg NEXT_PUBLIC_API_BASE_URL=http://localhost:8081 --build-arg NEXT_PUBLIC_BASE_URL=http://localhost:3000 .
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Запуск контейнера
+docker run -p 3000:3000 giga-chill-frontend
+```
