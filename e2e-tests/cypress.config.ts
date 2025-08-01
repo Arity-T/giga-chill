@@ -2,9 +2,9 @@ import { defineConfig } from 'cypress'
 
 export default defineConfig({
     e2e: {
-        baseUrl: process.env.FRONTEND_URL ?? 'http://localhost:3001',
+        baseUrl: process.env.FRONTEND_URL ?? 'http://localhost:3000',
         env: {
-            apiUrl: process.env.BACKEND_URL ?? 'http://localhost:3000',
+            apiUrl: process.env.BACKEND_URL ?? 'http://localhost:8081',
         },
         watchForFileChanges: false,
         specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',

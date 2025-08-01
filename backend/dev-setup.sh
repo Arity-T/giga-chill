@@ -42,14 +42,14 @@ while getopts "mgbSh" opt; do
 done
 
 # === Загрузка переменных из .env ===
-if [ ! -f ../.env ]; then
+if [ ! -f .env ]; then
     echo "Ошибка: Файл .env не найден"
     echo "Убедитесь, что вы запускаете скрипт из папки backend/"
     exit 1
 fi
 
 set -o allexport
-source ../.env
+source .env
 set +o allexport
 
 echo "Using DB: $DB_HOST:$DB_PORT/$DB_NAME as $DB_USER"
