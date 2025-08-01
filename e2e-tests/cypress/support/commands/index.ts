@@ -1,7 +1,13 @@
 /// <reference types="cypress" />
 
-import type { CreateEventData, ShoppingItemData, ParticipantRole, CreateTaskData, ParticipantStatus} from '../types/indexUI';
-import type { CreateEventAPIData } from '../types/indexAPI';
+import type {
+    CreateEventData,
+    ShoppingItemData,
+    ParticipantRole,
+    CreateTaskData,
+    ParticipantStatus,
+    CreateEventAPIData
+} from '../types';
 
 /**
  * Главный файл импорта всех custom commands
@@ -54,8 +60,8 @@ declare global {
 
             // Utils commands
             cleanupDatabase(): Chainable<void>;
-            closeModal(): Chainable<void>;  
-            
+            closeModal(): Chainable<void>;
+
             // Participants commands: join By Invitation
             getInvitationLinkUI(): Chainable<string>;
         }
