@@ -7,10 +7,8 @@ describe('Добавление участников по ссылке', { testIs
         cy.createEventAPI({
             title: 'Пикник другой25',
             location: 'Лес',
-            startDay: '20',
-            startHour: '06',
-            endDay: '30',
-            endHour: '20',
+            start_datetime: '2025-08-20T06:00:00Z',
+            end_datetime: '2025-08-30T20:00:00Z',
             description: 'всем добра!!!!'
         }).then((eventId) => {
             // Переход на страницу мероприятия
@@ -19,7 +17,7 @@ describe('Добавление участников по ссылке', { testIs
     });
 
     it('Добавление участников', () => {
-        cy.getInvitationLinkUI().then((inviteUrl)=>{
+        cy.getInvitationLinkUI().then((inviteUrl) => {
             cy.log('Повторное использование ссылки:', inviteUrl);
             cy.logoutUserUI('lili');
             cy.loginUserUI('xuxa');

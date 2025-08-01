@@ -78,7 +78,7 @@ Cypress.Commands.add('createEventUI', (eventData) => {
 
     // Ждём создания и переходим на страницу мероприятия
     cy.contains('.ant-card', eventData.title).should('be.visible').click();
-}); 
+});
 
 
 
@@ -91,20 +91,14 @@ Cypress.Commands.add('createEventUI', (eventData) => {
  * @param authToken - токен авторизации (опционально, если нужен другой пользователь)
  */
 
-Cypress.Commands.add('createEventAPI', (eventData) =>{
+Cypress.Commands.add('createEventAPI', (eventData) => {
     cy.request({
         method: 'POST',
-        url:`${Cypress.env('apiUrl')}/events`,
-        body:{
-            title: eventData.title,
-            location: eventData.location,
-            description: eventData.description || '',
-            start_datetime: formatEventDate(eventData.startDay, eventData.startHour),
-            end_datetime: formatEventDate(eventData.endDay, eventData.endHour)
-        }
+        url: `${Cypress.env('apiUrl')}/events`,
+        body: eventData
     }).then((response) => {
         expect(response.status).to.eq(204);// Проверка, что запрос прошёл успешно
-    
+
         // Получить список всех мероприятий пользователя
         cy.request({
             method: 'GET',
@@ -129,15 +123,3 @@ Cypress.Commands.add('createEventAPI', (eventData) =>{
         });
     });
 });
-
-/**
- * Вспомогательная функция для форматирования даты
- */
-function formatEventDate(day: string, hour: string): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth(); 
-
-  const date = new Date(year, month, Number(day), Number(hour), 0, 0);
-  return date.toISOString();
-}

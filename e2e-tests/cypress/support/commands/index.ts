@@ -6,7 +6,7 @@ import type {
     ParticipantRole,
     CreateTaskData,
     ParticipantStatus,
-    CreateEventAPIData
+    EventCreateAPI
 } from '../types';
 
 /**
@@ -35,7 +35,7 @@ declare global {
 
             // Events commands
             createEventUI(eventData: CreateEventData): Chainable<void>;
-            createEventAPI(eventData: CreateEventAPIData): Chainable<string>;
+            createEventAPI(eventData: EventCreateAPI): Chainable<string>;
 
             // Participants commands
             addParticipantByLoginUI(username: string): Chainable<void>;

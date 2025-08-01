@@ -5,13 +5,10 @@
 // frontend/src/store/api/codegenApi.ts
 // Чтобы файлик появился, надо предварительно выполнить npm run codegen
 
-// Типы для создания мероприятия
-export interface CreateEventAPIData {
+export type EventCreateAPI = {
     title: string;
     location: string;
+    start_datetime: string;
+    end_datetime: string;
     description?: string;
-    startDay: string; // например "15"
-    startHour: string; // например "10"
-    endDay: string;
-    endHour: string;
-}
+};
