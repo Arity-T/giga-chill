@@ -1,7 +1,7 @@
 package com.github.giga_chill.gigachill.aspect;
 
 import com.github.giga_chill.gigachill.config.LoggerColorConfig;
-import com.github.giga_chill.gigachill.model.User;
+import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -15,57 +15,58 @@ import org.springframework.stereotype.Component;
 @Component
 @Aspect
 @RequiredArgsConstructor
-public class ParticipantsServiceLoggerAspect {
+public class ParticipantServiceLoggerAspect {
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(ParticipantsServiceLoggerAspect.class);
+            LoggerFactory.getLogger(ParticipantServiceLoggerAspect.class);
     private final LoggerColorConfig loggerColorConfig;
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.getAllParticipantsByEventId(..)) "
-                    + "&& args(eventId)")
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.getAllParticipantsByEventId(..)) "
+                    + "&& args(eventId, ..)")
     public void getAllParticipantsByEventId(UUID eventId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.addParticipantToEvent(..)) "
-                    + "&& args(eventId, user)")
-    public void addParticipantToEvent(UUID eventId, User user) {}
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.addParticipantToEvent(..)) "
+                    + "&& args(eventId, ..)")
+    public void addParticipantToEvent(UUID eventId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.deleteParticipant(..)) "
-                    + "&& args(eventId, participantId)")
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.deleteParticipant(..)) "
+                    + "&& args(eventId, participantId, ..)")
     public void deleteParticipant(UUID eventId, UUID participantId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.isParticipant(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.isParticipant(..)) "
                     + "&& args(eventId, userId)")
     public void isParticipant(UUID eventId, UUID userId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.updateParticipantRole(..)) "
-                    + "&& args(eventId, participantId, role)")
-    public void updateParticipantRole(UUID eventId, UUID participantId, String role) {}
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.updateParticipantRole(..)) "
+                    + "&& args(eventId, userId, participantId, body)")
+    public void updateParticipantRole(
+            UUID eventId, UUID userId, UUID participantId, Map<String, Object> body) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.getParticipantRoleInEvent(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.getParticipantRoleInEvent(..)) "
                     + "&& args(eventId, participantId)")
     public void getParticipantRoleInEvent(UUID eventId, UUID participantId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.getParticipantById(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.getParticipantById(..)) "
                     + "&& args(eventId, participantId)")
     public void getParticipantById(UUID eventId, UUID participantId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.getParticipantBalance(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.getParticipantBalance(..)) "
                     + "&& args(eventId, participantId)")
     public void getParticipantBalance(UUID eventId, UUID participantId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantsService.getParticipantsSummaryBalance(..)) "
+            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.getParticipantsSummaryBalance(..)) "
                     + "&& args(eventId)")
     public void getParticipantsSummaryBalance(UUID eventId) {}
 
-    @Around("getAllParticipantsByEventId(eventId)")
+    @Around("getAllParticipantsByEventId(eventId, ..)")
     public Object logGetAllParticipantsByEventId(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId) throws Throwable {
         try {
@@ -101,9 +102,9 @@ public class ParticipantsServiceLoggerAspect {
         }
     }
 
-    @Around("addParticipantToEvent(eventId, user)")
-    public Object logAddParticipantToEvent(
-            ProceedingJoinPoint proceedingJoinPoint, UUID eventId, User user) throws Throwable {
+    @Around("addParticipantToEvent(eventId, ..)")
+    public Object logAddParticipantToEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
+            throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
             LOGGER.info(
@@ -111,7 +112,7 @@ public class ParticipantsServiceLoggerAspect {
                             + loggerColorConfig.getPOST_LABEL()
                             + "User with id: {} was added to event with id: {}"
                             + loggerColorConfig.getRESET_COLOR(),
-                    user.getId(),
+                    (UUID) result,
                     eventId);
             return result;
         } catch (Throwable ex) {
@@ -119,7 +120,7 @@ public class ParticipantsServiceLoggerAspect {
         }
     }
 
-    @Around("deleteParticipant(eventId, participantId)")
+    @Around("deleteParticipant(eventId, participantId, ..)")
     public Object logDeleteParticipant(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UUID participantId)
             throws Throwable {
@@ -165,12 +166,17 @@ public class ParticipantsServiceLoggerAspect {
         }
     }
 
-    @Around("updateParticipantRole(eventId, participantId, role)")
+    @Around("updateParticipantRole(eventId, userId, participantId, body)")
     public Object logUpdateParticipantRole(
-            ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UUID participantId, String role)
+            ProceedingJoinPoint proceedingJoinPoint,
+            UUID eventId,
+            UUID userId,
+            UUID participantId,
+            Map<String, Object> body)
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
+            var role = (String) body.get("role");
             LOGGER.info(
                     loggerColorConfig.getPATCH_COLOR()
                             + loggerColorConfig.getPATCH_LABEL()
