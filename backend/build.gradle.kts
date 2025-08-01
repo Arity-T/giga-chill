@@ -1,9 +1,13 @@
+import org.jooq.meta.jaxb.Logging
+
 plugins {
 	java
 	id("org.springframework.boot") version "3.5.3"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("nu.studer.jooq") version "10.1"
     id("com.diffplug.spotless") version "6.19.0"
+    id("org.openapi.generator") version "7.14.0"
+
 }
 
 group = "com.github.giga-chill"
@@ -43,8 +47,32 @@ spotless {
     }
 }
 
+// === Парниснг .env ===
+val envFile = rootProject.file(".env")
+val envMap: Map<String, String> = if (envFile.exists()) {
+    envFile.readLines()
+        // убираем пустые и комментарии
+        .filter { it.isNotBlank() && !it.trimStart().startsWith("#") }
+        // разбиваем на пару key=value (лимит=2, чтобы значение могло содержать "=")
+        .mapNotNull { line ->
+            val parts = line.split("=", limit = 2)
+            if (parts.size == 2) parts[0].trim() to parts[1].trim() else null
+        }
+        .toMap()
+} else {
+    emptyMap()
+}
+
+// === API генератор конфигурация ===
+val specMainPath: String = envMap["OPEN_API_TEST_SPECIFICATION"]
+    ?: "../openapi/api.yml"
+
 // === Зависимости приложения и тестов ===
 dependencies {
+
+    //Swagger API
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.9")
+    compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     // Lombok
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
@@ -85,6 +113,25 @@ dependencies {
     jooqGenerator("org.postgresql:postgresql")
 }
 
+openApiGenerate {
+    validateSpec.set(false)
+    generatorName.set("spring")
+    inputSpec.set(specMainPath)
+    outputDir.set("$buildDir/generated/api")
+    apiPackage.set("com.github.giga_chill.gigachill.web.api")
+    modelPackage.set("com.github.giga_chill.gigachill.web.api.model")
+    invokerPackage.set("com.github.giga_chill.gigachill.web.api.invoker")
+    configOptions.set(
+        mapOf(
+            "useJakartaEe" to "true",
+            "interfaceOnly" to "true",
+            "skipDefaultInterface" to "true",
+            "dateLibrary" to "java8",
+            "useBeanValidation" to "false",
+            "sourceFolder" to ""
+        )
+    )
+}
 
 
 tasks.withType<Test> {
@@ -100,6 +147,9 @@ val dbPassword = System.getenv("DB_PASSWORD")
 val jdbcUrl = "jdbc:postgresql://$dbHost:$dbPort/$dbName"
 
 sourceSets["main"].java.srcDir("build/generated-sources/jooq")
+sourceSets["main"].java.srcDir("build/generated/api")
+
+
 
 // === jOOQ codegen конфигурация ===
 jooq {
@@ -108,7 +158,7 @@ jooq {
             generateSchemaSourceOnCompilation.set(false) // чтобы не генерировать на каждой сборке (можно true)
 
             jooqConfiguration.apply {
-                logging = org.jooq.meta.jaxb.Logging.WARN
+                logging = Logging.WARN
 
                 jdbc.apply {
                     driver = "org.postgresql.Driver"
