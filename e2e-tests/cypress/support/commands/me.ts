@@ -4,6 +4,7 @@
  */
 
 import { PAGES } from '../config/pages.config';
+import { LoginRequestAPI } from '../types';
 
 
 // Custom command для регистрации пользователя
@@ -74,7 +75,7 @@ Cypress.Commands.add('loginUserUI', (username, password = '12345678') => {
     cy.get('.ant-dropdown-trigger')
         .should('be.visible')
         .and('contain', `@${username}`);
-}); 
+});
 
 
 Cypress.Commands.add('logoutUserUI', (username) => {
@@ -86,22 +87,17 @@ Cypress.Commands.add('logoutUserUI', (username) => {
 
 /**
  * Команда для входа пользователя через API
- * @param username - логин пользователя
- * @param password - пароль (по умолчанию '12345678')
  */
-Cypress.Commands.add('loginUserAPI', (username, password = '12345678') => {
-  // Отправляем POST-запрос на эндпоинт входа
-  cy.request({
-    method: 'POST',
-    url: `${Cypress.env('apiUrl')}/auth/login`, // Путь к эндпоинту аутентификации
-    body: {
-      login: username,
-      password: password
-    },
-    failOnStatusCode: false // Не завершать тест при ошибках
-  }).then((response) => {
-    expect(response.status).to.eq(204);
-  });
+Cypress.Commands.add('loginUserAPI', loginRequest => {
+    // Отправляем POST-запрос на эндпоинт входа
+    cy.request({
+        method: 'POST',
+        url: `${Cypress.env('apiUrl')}/auth/login`, // Путь к эндпоинту аутентификации
+        body: loginRequest,
+        failOnStatusCode: false // Не завершать тест при ошибках
+    }).then((response) => {
+        expect(response.status).to.eq(204);
+    });
 });
 
 

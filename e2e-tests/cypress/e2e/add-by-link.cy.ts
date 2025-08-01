@@ -1,7 +1,10 @@
 describe('Добавление участников по ссылке', { testIsolation: false }, () => {
     it('Создание мероприятия', () => {
         // Входим в систему
-        cy.loginUserAPI('lili')
+        cy.loginUserAPI({
+            login: 'lili',
+            password: '12345678'
+        })
 
         // Создаём мероприятие используя команду
         cy.createEventAPI({

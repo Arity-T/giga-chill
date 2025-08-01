@@ -6,7 +6,8 @@ import type {
     ParticipantRole,
     CreateTaskData,
     ParticipantStatus,
-    EventCreateAPI
+    EventCreateAPI,
+    LoginRequestAPI
 } from '../types';
 
 /**
@@ -30,7 +31,7 @@ declare global {
             // Me commands
             registerUserUI(name: string, username: string, password?: string): Chainable<void>;
             loginUserUI(username: string, password?: string): Chainable<void>;
-            loginUserAPI(username: string, password?: string): Chainable<void>;
+            loginUserAPI(loginRequest: LoginRequestAPI): Chainable<void>;
             logoutUserUI(username: string): Chainable<void>;
 
             // Events commands

@@ -12,3 +12,9 @@ export type EventCreateAPI = {
     end_datetime: string;
     description?: string;
 };
+
+export type LoginRequestAPI = {
+    login: string;
+    /** Пароль пользователя */
+    password: string;
+};
