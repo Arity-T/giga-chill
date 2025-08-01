@@ -1,23 +1,20 @@
 package com.github.giga_chill.gigachill.web.controller;
 
 import com.github.giga_chill.gigachill.service.TestService;
+import com.github.giga_chill.gigachill.web.api.TestUtilsApi;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("test-utils")
 @RequiredArgsConstructor
 @Profile("test")
-public class TestController {
+public class TestController implements TestUtilsApi {
     private final TestService testService;
 
-    @PostMapping("/cleanup")
-    ResponseEntity<Void> cleanDB(Authentication authentication) {
+    @Override
+    public ResponseEntity<Void> testUtilsCleanupPost() {
         testService.cleanBD();
         return ResponseEntity.noContent().build();
     }
