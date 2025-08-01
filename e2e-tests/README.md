@@ -7,14 +7,8 @@
 ## Предварительные требования
 
 - Node.js v16+
-- Запущенный фронтенд на `http://localhost:3001`:
-   ```powershell
-   cd frontend
-   # Все страницы обязательно должны быть скомпилированы перед запуском тестов
-   npm run build
-   $env:PORT=3001; npm run start
-   ```
-- Запущенный бэкенд на `http://localhost:3000` с включённым тестовым профилем 
+- Запущенный фронтенд на `http://localhost:3000`. Все страницы должны быть скомпилированы перед запуском тестов, используйте `npm run build`, либо запуск через с помощью Docker.
+- Запущенный бэкенд на `http://localhost:8081` с включённым тестовым профилем 
    (см. `BACKEND_PROFILE` в [.env.example](../.env.example)).
 
 ## Установка зависимостей
@@ -26,16 +20,16 @@ npm install
 
 ## Запуск тестов
 
-Перед запуском тестов можно задать переменные окружения `FRONTEND_URL` (по умолчанию `http://localhost:3001`) и `BACKEND_URL` (по умолчанию `http://localhost:3000`).
+Перед запуском тестов можно задать переменные окружения `FRONTEND_URL` (по умолчанию `http://localhost:3000`) и `BACKEND_URL` (по умолчанию `http://localhost:8081`).
 
 ### Все тесты (автоматический режим)
 ```bash
 npm test
 ```
 
-Или с заданными переменными окружения в PowerShell:
+Или с заданными переменными окружения в PowerShell (если нужно указать нестандартные адреса):
 ```powershell
-$env:FRONTEND_URL="http://localhost:3000"; $env:BACKEND_URL="http://localhost:8081"; npm test
+$env:FRONTEND_URL="http://localhost:5000"; $env:BACKEND_URL="http://localhost:5001"; npm test
 ```
 
 ### Отдельные тесты
@@ -55,7 +49,7 @@ npm run test:headed
 
 ## Запуск тестов в Docker
 
-Фронтенд и бэкенд поднимаются отдельно. Их адреса указываются в `.env` файле (см. [.env.example](.env.example)).
+Фронтенд и бэкенд поднимаются отдельно. Их адреса указываются в `.env` файле (см. [`.env.example`](.env.example)).
 
 ```bash
 docker compose run --rm --build e2e-tests
