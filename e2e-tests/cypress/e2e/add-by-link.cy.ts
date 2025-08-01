@@ -48,19 +48,21 @@ describe('Добавление участников по ссылке', () => {
             cy.visit(`/events/${eventId}`);
         });
 
-        // Получаем ссылку-приглашение
-        cy.getInvitationLinkUI().then((inviteUrl) => {
-            // Очищаем состояние браузера
-            cy.clearLocalStorage();
-            cy.clearCookies();
+        // Сохраняем ссылку-приглашение в алиас inviteUrl
+        cy.getInvitationLinkUI();
 
-            // Логинимся как участник
-            cy.loginUserAPI({
-                login: 'xuxa',
-                password: '12345678'
-            });
+        // Очищаем состояние браузера
+        cy.clearLocalStorage();
+        cy.clearCookies();
 
-            // Переходим по ссылке-приглашению
+        // Логинимся как участник
+        cy.loginUserAPI({
+            login: 'xuxa',
+            password: '12345678'
+        });
+
+        // Переходим по ссылке-приглашению
+        cy.get<string>('@inviteUrl').then((inviteUrl) => {
             cy.visit(inviteUrl);
         });
 

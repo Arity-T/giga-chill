@@ -66,7 +66,7 @@ declare global {
             closeModal(): Chainable<void>;
 
             // Participants commands: join By Invitation
-            getInvitationLinkUI(): Chainable<string>;
+            getInvitationLinkUI(): Chainable<void>;
         }
     }
 }

@@ -64,8 +64,8 @@ Cypress.Commands.add('changeParticipantRoleByNameUI', (participantName, newRole)
 
 
 
-
-Cypress.Commands.add('getInvitationLinkUI', ()=>{
+// Команда сохраняет ссылку-приглашение в алиас inviteUrl
+Cypress.Commands.add('getInvitationLinkUI', () => {
     // Переходим на вкладку участников
     cy.url().then((url) => {
         // TODO: переделать на использование конфига
@@ -75,22 +75,21 @@ Cypress.Commands.add('getInvitationLinkUI', ()=>{
     });
 
     // Нажимаем на кнопку для добавления участника
-    return cy.contains('button', 'Добавить участника').should('be.visible').click().then(()=>{
-        // В появившемся модальном окне выбираем добавление по ссылке-приглашению
-        return cy.contains('.ant-modal-content', 'Добавить участника').should('be.visible')
+    cy.contains('button', 'Добавить участника').should('be.visible').click();
+
+    // В появившемся модальном окне
+    cy.contains('.ant-modal-content', 'Добавить участника').should('be.visible')
         .within(() => {
+            // Выбираем вкладку "По ссылке-приглашению"
             cy.contains('.ant-tabs-tab', 'По ссылке-приглашению').should('be.visible').click();
-        });
-    }).then(()=>{
-        // копируем ссылку-приглашение и осуществляем вход
-        return cy.get('span.ant-typography code')
-        .invoke('text')
-        .then((inviteUrl) => {
-            cy.log('Ссылка:', inviteUrl);
+
+            // Сохраняем ссылку-приглашение
+            cy.get('span.ant-typography code').invoke('text')
+                .as('inviteUrl');
+
+            // Закрываем модальное окно
             cy.get('.ant-modal-close').click();
-            return cy.wrap(inviteUrl);
         });
-    })
 });
 
 
