@@ -7,6 +7,7 @@ import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.repository.UserRepository;
 import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -108,8 +109,8 @@ public class UserService {
     }
 
     public void validateLogin(String login) {
-        if (login == null || !LOGIN_PATTERN.matcher(login).matches()) {
-            if (login == null || login.length() < 4) {
+        if (Objects.isNull(login) || !LOGIN_PATTERN.matcher(login).matches()) {
+            if (Objects.isNull(login) || login.length() < 4) {
                 throw new BadRequestException("Login must be at least 4 characters long");
             }
             throw new BadRequestException("Login can only contain Latin letters and digits");
@@ -117,8 +118,8 @@ public class UserService {
     }
 
     public void validatePassword(String password) {
-        if (password == null || !PASSWORD_PATTERN.matcher(password).matches()) {
-            if (password == null || password.length() < 8) {
+        if (Objects.isNull(password) || !PASSWORD_PATTERN.matcher(password).matches()) {
+            if (Objects.isNull(password) || password.length() < 8) {
                 throw new BadRequestException("Password must be at least 8 characters long");
             }
             throw new BadRequestException(

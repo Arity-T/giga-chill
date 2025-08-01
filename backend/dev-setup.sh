@@ -6,7 +6,7 @@ show_help() {
     echo ""
     echo "Опции:"
     echo "  -m    Выполнить миграции базы данных"
-    echo "  -g    Сгенерировать классы Jooq"
+    echo "  -g    Сгенерировать классы Jooq, а также классы для OpenAPI"
     echo "  -b    Собрать приложение"
     echo "  -S    Не запускать приложение (только выполнить указанные операции)"
     echo "  -h    Показать эту справку"
@@ -25,7 +25,7 @@ show_help() {
 
 # === Инициализация флагов ===
 run_migrations=false
-generate_jooq=false
+generate_jooq_and_open_api=false
 build_app=false
 skip_startup=false
 
@@ -78,14 +78,15 @@ if [ "$run_migrations" = true ]; then
 fi
 
 # === Генерация Jooq ===
-if [ "$generate_jooq" = true ]; then
-    echo "=== Генерация классов Jooq ==="
+if [ "$generate_jooq_and_open_api" = true ]; then
+    echo "=== Генерация классов Jooq и OpenAPI==="
     ./gradlew clean generateJooq
+    ./gradlew openApiGenerate
     if [ $? -ne 0 ]; then
-        echo "Ошибка при генерации Jooq"
+        echo "Ошибка при генерации Jooq или OpenAPI"
         exit 1
     fi
-    echo "Классы Jooq сгенерированы успешно!"
+    echo "Классы Jooq и OpenAPI сгенерированы успешно!"
 fi
 
 # === Сборка приложения ===
