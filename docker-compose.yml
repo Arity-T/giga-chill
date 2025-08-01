@@ -32,7 +32,6 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - KEEP_DATABASE=${KEEP_DATABASE}
-    command: ["./build.sh"]
     volumes:
       - backend-build:/app/build
     networks: 

@@ -10,3 +10,5 @@ WORKDIR /app
 COPY backend/ .
 
 RUN chmod +x ./build.sh
+
+CMD ["./build.sh"]
