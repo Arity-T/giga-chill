@@ -33,6 +33,11 @@ npm install
 npm test
 ```
 
+Или с заданными переменными окружения в PowerShell:
+```powershell
+$env:FRONTEND_URL="http://localhost:3000"; $env:BACKEND_URL="http://localhost:8081"; npm test
+```
+
 ### Отдельные тесты
 ```bash
 npm run test:specific "cypress/e2e/user-flow.cy.ts"    # Полный сценарий
@@ -58,6 +63,10 @@ docker compose run --rm --build e2e-tests
 
 Логи, скриншоты и видео сохраняются в директориях `cypress/logs`, 
 `cypress/screenshots` и `cypress/videos` соответственно.
+
+> Тесты запускаются с `network_mode: host`, который на Windows 
+> поддерживается ограниченно. Например, если бэкенд или фронтенд будут 
+> запущены не через Docker, то тесты не смогут к ним подключиться.
 
 ## Рекомендации по написанию тестов
 
