@@ -38,9 +38,8 @@ services:
       - gigachill-network
 
   backend:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile.backend
+    image: eclipse-temurin:21-jre-jammy
+    command: ["java", "-jar", "/app/build/libs/app.jar"]
     depends_on:
       builder:
         condition: service_completed_successfully
