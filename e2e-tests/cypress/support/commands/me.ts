@@ -47,6 +47,17 @@ Cypress.Commands.add('registerUserUI', (name, username, password = '12345678') =
         .and('contain', `@${username}`);
 });
 
+Cypress.Commands.add('registerUserAPI', registerRequest => {
+    cy.request({
+        method: 'POST',
+        url: `${Cypress.env('apiUrl')}/auth/register`,
+        body: registerRequest,
+        failOnStatusCode: false
+    }).then((response) => {
+        expect(response.status).to.eq(204);
+    });
+});
+
 // Custom command для логина пользователя
 Cypress.Commands.add('loginUserUI', (username, password = '12345678') => {
     // Переходим на страницу логина, если ещё не там

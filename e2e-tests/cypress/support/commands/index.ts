@@ -7,7 +7,8 @@ import type {
     CreateTaskData,
     ParticipantStatus,
     EventCreateAPI,
-    LoginRequestAPI
+    LoginRequestAPI,
+    RegisterRequestAPI
 } from '../types';
 
 /**
@@ -30,6 +31,7 @@ declare global {
         interface Chainable {
             // Me commands
             registerUserUI(name: string, username: string, password?: string): Chainable<void>;
+            registerUserAPI(registerRequest: RegisterRequestAPI): Chainable<void>;
             loginUserUI(username: string, password?: string): Chainable<void>;
             loginUserAPI(loginRequest: LoginRequestAPI): Chainable<void>;
             logoutUserUI(username: string): Chainable<void>;

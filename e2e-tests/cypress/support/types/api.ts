@@ -18,3 +18,9 @@ export type LoginRequestAPI = {
     /** Пароль пользователя */
     password: string;
 };
+
+export type RegisterRequestAPI = {
+    login: string;
+    password: string;
+    name: string;
+};
