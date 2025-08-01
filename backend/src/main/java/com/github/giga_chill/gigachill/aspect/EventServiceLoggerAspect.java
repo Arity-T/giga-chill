@@ -45,7 +45,6 @@ public class EventServiceLoggerAspect {
                     + "&& args(eventId, ..)")
     public void updateEvent(UUID eventId) {}
 
-
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.createInviteLink(..)) "
                     + "&& args(eventId, ..)")
@@ -75,7 +74,6 @@ public class EventServiceLoggerAspect {
             "execution(public * com.github.giga_chill.gigachill.service.EventService.finalizeEvent(..)) "
                     + "&& args(eventId, ..)")
     public void finalizeEvent(UUID eventId) {}
-
 
     @Around("createEvent(userId, requestEventInfo)")
     public Object logCreateEvent(
@@ -164,7 +162,6 @@ public class EventServiceLoggerAspect {
             throw ex;
         }
     }
-
 
     @Around("createInviteLink(eventId, ..)")
     public Object logCreateInviteLink(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)

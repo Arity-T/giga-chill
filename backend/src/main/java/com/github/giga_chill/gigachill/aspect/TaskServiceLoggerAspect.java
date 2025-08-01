@@ -65,7 +65,6 @@ public class TaskServiceLoggerAspect {
                     + "&& args(eventID, taskId)")
     public void isExisted(UUID eventID, UUID taskId) {}
 
-
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.getExecutorId(..)) "
                     + "&& args(taskId)")
@@ -270,7 +269,6 @@ public class TaskServiceLoggerAspect {
             throw ex;
         }
     }
-
 
     @Around("getExecutorId(taskId)")
     public Object logGetExecutorId(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
