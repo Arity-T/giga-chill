@@ -2,9 +2,7 @@
 *
 
 # Кроме необходимых для сборки
-!cypress/e2e/**
-!cypress/support/**
-!cypress.config.ts
-!package-lock.json
-!package.json
-!tsconfig.json
+!src/**
+!build.sh
+!build.gradle.kts
+!settings.gradle.kts
