@@ -67,6 +67,7 @@ declare global {
 
             // Participants commands: join By Invitation
             getInvitationLinkUI(): Chainable<void>;
+            getNewInvitationLinkUI(): Chainable<void>;
         }
     }
 }

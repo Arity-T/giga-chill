@@ -93,3 +93,42 @@ Cypress.Commands.add('getInvitationLinkUI', () => {
 });
 
 
+// Команда сохраняет заново сгенерированную ссылку-приглашение в алиас inviteNewUrl
+Cypress.Commands.add('getNewInvitationLinkUI', () => {
+    cy.url().then((url) => {
+        if (!url.includes("/participants")) {
+            cy.contains('.ant-menu-item a', 'Участники').click();
+        }
+    });
+
+    // Нажимаем на кнопку для добавления участника
+    cy.contains('button', 'Добавить участника').should('be.visible').click();
+
+    // В появившемся модальном окне
+    cy.contains('.ant-modal-content', 'Добавить участника').should('be.visible')
+        .within(() => {
+            // Выбираем вкладку "По ссылке-приглашению"
+            cy.contains('.ant-tabs-tab', 'По ссылке-приглашению').should('be.visible').click();
+
+            // Получаем старую ссылку
+            cy.get('span.ant-typography code').invoke('text')
+                .then((inviteOldUrl) => {
+                    cy.log('Старая ссылка:' + inviteOldUrl);
+                    cy.wrap(inviteOldUrl).as('inviteOldUrl');
+
+                    // Кликаем для генерации новой ссылки
+                    cy.contains('button', 'Создать новую ссылку').should('be.visible').click();
+
+                    // Ожидаем, пока новая ссылка станет отличной от старой
+                    cy.get('span.ant-typography code')
+                        .should('not.have.text', inviteOldUrl).invoke('text')
+                        .then((inviteNewUrl) => {
+                            cy.log('Новая ссылка: ' + inviteNewUrl);
+                            cy.wrap(inviteNewUrl).as('inviteNewUrl');
+                        });
+
+                    // Закрываем модальное окно
+                    cy.get('.ant-modal-close').click();
+                });
+        });
+});
