@@ -1,6 +1,15 @@
 /// <reference types="cypress" />
 
-import type { CreateEventData, ShoppingItemData, ParticipantRole, CreateTaskData, ParticipantStatus } from '../types';
+import type {
+    CreateEventData,
+    ShoppingItemData,
+    ParticipantRole,
+    CreateTaskData,
+    ParticipantStatus,
+    EventCreateAPI,
+    LoginRequestAPI,
+    RegisterRequestAPI
+} from '../types';
 
 /**
  * Главный файл импорта всех custom commands
@@ -22,10 +31,14 @@ declare global {
         interface Chainable {
             // Me commands
             registerUserUI(name: string, username: string, password?: string): Chainable<void>;
+            registerUserAPI(registerRequest: RegisterRequestAPI): Chainable<void>;
             loginUserUI(username: string, password?: string): Chainable<void>;
+            loginUserAPI(loginRequest: LoginRequestAPI): Chainable<void>;
+            logoutUserUI(username: string): Chainable<void>;
 
             // Events commands
             createEventUI(eventData: CreateEventData): Chainable<void>;
+            createEventAPI(eventData: EventCreateAPI): Chainable<string>;
 
             // Participants commands
             addParticipantByLoginUI(username: string): Chainable<void>;
@@ -51,6 +64,10 @@ declare global {
             // Utils commands
             cleanupDatabase(): Chainable<void>;
             closeModal(): Chainable<void>;
+
+            // Participants commands: join By Invitation
+            getInvitationLinkUI(): Chainable<void>;
+            getNewInvitationLinkUI(): Chainable<void>;
         }
     }
 }
