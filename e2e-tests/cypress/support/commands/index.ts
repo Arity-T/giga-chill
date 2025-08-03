@@ -34,7 +34,6 @@ declare global {
             registerUserAPI(registerRequest: RegisterRequestAPI): Chainable<void>;
             loginUserUI(username: string, password?: string): Chainable<void>;
             loginUserAPI(loginRequest: LoginRequestAPI): Chainable<void>;
-            logoutUserUI(username: string): Chainable<void>;
 
             // Events commands
             createEventUI(eventData: CreateEventData): Chainable<void>;
@@ -66,8 +65,7 @@ declare global {
             closeModal(): Chainable<void>;
 
             // Participants commands: join By Invitation
-            getInvitationLinkUI(): Chainable<void>;
-            getNewInvitationLinkUI(): Chainable<void>;
+            openInviteByLinkModal(): Chainable<void>;
         }
     }
 }

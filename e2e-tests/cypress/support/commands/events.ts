@@ -104,7 +104,6 @@ Cypress.Commands.add('createEventAPI', (eventData) => {
             method: 'GET',
             url: `${Cypress.env('apiUrl')}${PAGES.HOME}`,
         }).then((getResponse) => {
-            // cy.log('Список мероприятий:', JSON.stringify(getResponse.body));
             expect(getResponse.status).to.eq(200);
 
             // Найти только что созданное мероприятие
@@ -112,8 +111,6 @@ Cypress.Commands.add('createEventAPI', (eventData) => {
                 event.title === eventData.title
             );
 
-            // cy.log('Мероприятие', JSON.stringify(createdEvent));
-            // cy.log('Мероприятие', JSON.stringify(createdEvent.event_id));
             if (!createdEvent) {
                 expect(createdEvent, 'Мероприятие не найдено после создания').to.exist;
             }
