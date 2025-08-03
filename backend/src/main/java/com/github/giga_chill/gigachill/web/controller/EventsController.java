@@ -1,14 +1,9 @@
 package com.github.giga_chill.gigachill.web.controller;
 
-import com.github.giga_chill.gigachill.exception.BadRequestException;
-import com.github.giga_chill.gigachill.exception.ConflictException;
-import com.github.giga_chill.gigachill.exception.ForbiddenException;
-import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
-import com.github.giga_chill.gigachill.service.ParticipantsService;
+import com.github.giga_chill.gigachill.service.ParticipantService;
 import com.github.giga_chill.gigachill.service.UserService;
-import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.ParticipantBalanceInfo;
 import com.github.giga_chill.gigachill.web.info.ParticipantSummaryBalanceInfo;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
@@ -29,26 +24,21 @@ public class EventsController {
 
     private final EventService eventService;
     private final UserService userService;
-    private final ParticipantsService participantsService;
+    private final ParticipantService participantsService;
 
     @GetMapping
     // ACCESS: ALL
     public ResponseEntity<List<ResponseEventInfo>> getEvents(Authentication authentication) {
         var user = userService.userAuthentication(authentication);
-
         var userEvents = eventService.getAllUserEvents(user.getId());
 
-        if (userEvents.isEmpty()) {
-            ResponseEntity.ok(null);
-        }
-        return ResponseEntity.ok(userEvents);
+        return ResponseEntity.ok(userEvents.isEmpty() ? null : userEvents);
     }
 
     @PostMapping
     // ACCESS: ALL
     public ResponseEntity<Void> postEvents(
             @RequestBody RequestEventInfo requestEventInfo, Authentication authentication) {
-
         var user = userService.userAuthentication(authentication);
         eventService.createEvent(user.getId(), requestEventInfo);
         return ResponseEntity.noContent().build();
@@ -59,16 +49,7 @@ public class EventsController {
     public ResponseEntity<ResponseEventInfo> getEventById(
             Authentication authentication, @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExistedAndNotDeleted(eventId)) {
-            throw new NotFoundException("Event with id " + eventId + " not found");
-        }
-        if (!participantsService.isParticipant(eventId, user.getId())) {
-            throw new ForbiddenException(
-                    "User with id "
-                            + user.getId()
-                            + " is not a participant of event with id "
-                            + eventId);
-        }
+
         return ResponseEntity.ok(eventService.getEventById(user.getId(), eventId));
     }
 
@@ -79,28 +60,8 @@ public class EventsController {
             Authentication authentication,
             @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExistedAndNotDeleted(eventId)) {
-            throw new NotFoundException("Event with id " + eventId + " not found");
-        }
-        if (eventService.isFinalized(eventId)) {
-            throw new ConflictException("Event with id " + eventId + " was finalized");
-        }
-        if (!participantsService.isParticipant(eventId, user.getId())) {
-            throw new ForbiddenException(
-                    "User with id "
-                            + user.getId()
-                            + " is not a participant of event with id "
-                            + eventId);
-        }
-        if (!participantsService.isOwnerRole(eventId, user.getId())
-                && !participantsService.isAdminRole(eventId, user.getId())) {
-            throw new ForbiddenException(
-                    "User with id "
-                            + user.getId()
-                            + " does not have permission to patch event with id "
-                            + eventId);
-        }
-        eventService.updateEvent(eventId, requestEventInfo);
+
+        eventService.updateEvent(eventId, user.getId(), requestEventInfo);
         return ResponseEntity.noContent().build();
     }
 
@@ -109,28 +70,8 @@ public class EventsController {
     public ResponseEntity<Void> deleteEventById(
             Authentication authentication, @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExistedAndNotDeleted(eventId)) {
-            throw new NotFoundException("Event with id " + eventId + " not found");
-        }
-        if (eventService.isFinalized(eventId)) {
-            throw new ConflictException("Event with id " + eventId + " was finalized");
-        }
-        if (!participantsService.isParticipant(eventId, user.getId())) {
-            throw new ForbiddenException(
-                    "User with id "
-                            + user.getId()
-                            + " is not a participant of event with id "
-                            + eventId);
-        }
-        if (!participantsService.isOwnerRole(eventId, user.getId())) {
-            throw new ForbiddenException(
-                    "User with id "
-                            + user.getId()
-                            + " does not have permission to delete event with id "
-                            + eventId);
-        }
-        eventService.deleteEvent(eventId);
 
+        eventService.deleteEvent(eventId, user.getId());
         return ResponseEntity.noContent().build();
     }
 
@@ -139,28 +80,8 @@ public class EventsController {
     public ResponseEntity<Void> postEventLink(
             Authentication authentication, @PathVariable UUID eventId) {
         User user = userService.userAuthentication(authentication);
-        if (!eventService.isExistedAndNotDeleted(eventId)) {
-            throw new NotFoundException("Event with id " + eventId + " not found");
-        }
-        if (eventService.isFinalized(eventId)) {
-            throw new ConflictException("Event with id " + eventId + " was finalized");
-        }
-        if (!participantsService.isParticipant(eventId, user.getId())) {
-            throw new ForbiddenException(
-                    "User with id "
-                            + user.getId()
-                            + " is not a participant of event with id "
-                            + eventId);
-        }
-        if (!participantsService.isOwnerRole(eventId, user.getId())) {
-            throw new ForbiddenException(
-                    "User with id "
-                            + user.getId()
-                            + " does not have permission to delete event with id "
-                            + eventId);
-        }
 
-        eventService.createInviteLink(eventId);
+        eventService.createInviteLink(eventId, user.getId());
         return ResponseEntity.noContent().build();
     }
 
@@ -169,26 +90,8 @@ public class EventsController {
     public ResponseEntity<Map<String, String>> getEventLink(
             Authentication authentication, @PathVariable UUID eventId) {
         User user = userService.userAuthentication(authentication);
-        if (!eventService.isExistedAndNotDeleted(eventId)) {
-            throw new NotFoundException("Event with id " + eventId + " not found");
-        }
-        if (!participantsService.isParticipant(eventId, user.getId())) {
-            throw new ForbiddenException(
-                    "User with id "
-                            + user.getId()
-                            + " is not a participant of event with id "
-                            + eventId);
-        }
-        if (!participantsService.isOwnerRole(eventId, user.getId())
-                && !participantsService.isAdminRole(eventId, user.getId())) {
-            throw new ForbiddenException(
-                    "User with id "
-                            + user.getId()
-                            + " does not have permission to delete event with id "
-                            + eventId);
-        }
 
-        var eventLink = eventService.getInviteLink(eventId);
+        var eventLink = eventService.getInviteLink(eventId, user.getId());
         return ResponseEntity.ok(Collections.singletonMap("invitation_token", eventLink));
     }
 
@@ -197,26 +100,8 @@ public class EventsController {
     public ResponseEntity<Map<String, String>> postJoinByLink(
             Authentication authentication, @RequestBody Map<String, Object> body) {
         User user = userService.userAuthentication(authentication);
-        var rawToken = (String) body.get("invitation_token");
-        if (rawToken == null) {
-            throw new BadRequestException("Invalid request body: " + body);
-        }
-        var eventId = eventService.getEventByLinkUuid(UuidUtils.safeUUID(rawToken));
-        if (eventId == null) {
-            throw new NotFoundException("Link with hash " + rawToken + " not found");
-        }
-        if (eventService.isFinalized(eventId)) {
-            throw new ConflictException("Event with id " + eventId + " was finalized");
-        }
-        if (participantsService.isParticipant(eventId, user.getId())) {
-            throw new ConflictException(
-                    "User with id "
-                            + user.getId()
-                            + " is already participant of event with id "
-                            + eventId);
-        }
 
-        eventService.joinByLink(eventId, user);
+        var eventId = eventService.joinByLink(user, body);
         return ResponseEntity.ok(Collections.singletonMap("event_id", eventId.toString()));
     }
 
@@ -225,28 +110,8 @@ public class EventsController {
     public ResponseEntity<Void> postFinalizeEvent(
             Authentication authentication, @PathVariable UUID eventId) {
         User user = userService.userAuthentication(authentication);
-        if (!eventService.isExistedAndNotDeleted(eventId)) {
-            throw new NotFoundException("Event with id " + eventId + " not found");
-        }
-        if (eventService.isFinalized(eventId)) {
-            throw new ConflictException("Event with id " + eventId + " was finalized");
-        }
-        if (!participantsService.isParticipant(eventId, user.getId())) {
-            throw new ForbiddenException(
-                    "User with id "
-                            + user.getId()
-                            + " is not a participant of event with id "
-                            + eventId);
-        }
-        if (!participantsService.isOwnerRole(eventId, user.getId())) {
-            throw new ForbiddenException(
-                    "User with id "
-                            + user.getId()
-                            + " does not have permission to delete event with id "
-                            + eventId);
-        }
 
-        eventService.finalizeEvent(eventId);
+        eventService.finalizeEvent(eventId, user.getId());
         return ResponseEntity.noContent().build();
     }
 
@@ -255,17 +120,6 @@ public class EventsController {
     public ResponseEntity<ParticipantBalanceInfo> getParticipantBalance(
             Authentication authentication, @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExistedAndNotDeleted(eventId)) {
-            throw new NotFoundException("Event with id " + eventId + " not found");
-        }
-        if (!participantsService.isParticipant(eventId, user.getId())) {
-            throw new ForbiddenException(
-                    "User with id "
-                            + user.getId()
-                            + " is not a participant of event with id "
-                            + eventId);
-        }
-
         return ResponseEntity.ok(participantsService.getParticipantBalance(eventId, user.getId()));
     }
 
@@ -274,25 +128,8 @@ public class EventsController {
     public ResponseEntity<List<ParticipantSummaryBalanceInfo>> getParticipantsSummaryBalance(
             Authentication authentication, @PathVariable UUID eventId) {
         var user = userService.userAuthentication(authentication);
-        if (!eventService.isExistedAndNotDeleted(eventId)) {
-            throw new NotFoundException("Event with id " + eventId + " not found");
-        }
-        if (!participantsService.isParticipant(eventId, user.getId())) {
-            throw new ForbiddenException(
-                    "User with id "
-                            + user.getId()
-                            + " is not a participant of event with id "
-                            + eventId);
-        }
-        if (!participantsService.isOwnerRole(eventId, user.getId())
-                && !participantsService.isAdminRole(eventId, user.getId())) {
-            throw new ForbiddenException(
-                    "User with id "
-                            + user.getId()
-                            + " does not have permission to view summary balance in event with id "
-                            + eventId);
-        }
 
-        return ResponseEntity.ok(participantsService.getParticipantsSummaryBalance(eventId));
+        return ResponseEntity.ok(
+                participantsService.getParticipantsSummaryBalance(eventId, user.getId()));
     }
 }
