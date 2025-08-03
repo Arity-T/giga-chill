@@ -2,7 +2,7 @@ import { PAGES } from "../support/config/pages.config";
 
 describe('Добавление участников по новой сгенерированной ссылке', () => {
     // Подготавливаем состояние приложения для тестов
-    beforeEach(() => {
+    before(() => {
         // Очищаем базу данных
         cy.cleanupDatabase();
 
@@ -22,7 +22,9 @@ describe('Добавление участников по новой сгенер
             password: '12345678',
             name: 'Даша'
         })
+    });
 
+    beforeEach(() => {
         // Создаём мероприятие из под пользователя lili
         cy.loginUserAPI({
             login: 'lili',
