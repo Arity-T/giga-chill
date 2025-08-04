@@ -80,11 +80,6 @@ Cypress.Commands.add('createEventUI', (eventData) => {
     cy.contains('.ant-card', eventData.title).should('be.visible').click();
 });
 
-
-
-
-
-
 /**
  * Создает мероприятие через API
  * @param eventData - данные для создания мероприятия
