@@ -1,58 +1,6 @@
-Это проект [Next.js](https://nextjs.org), созданный с помощью [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Фронтенд для Gigachill
 
-## Начало работы
-
-### Переменные окружения
-
-Перед запуском проекта настройте переменные окружения:
-
-1. Скопируйте файл с примером переменных окружения:
-   ```bash
-   cp .env.example .env.local
-   ```
-
-2. Обновите переменные в `.env.local` по необходимости:
-   - `NEXT_PUBLIC_API_BASE_URL` - URL бэкенд API
-
-### Установка зависимостей и генерация кода
-
-```bash
-npm install
-npm run codegen
-```
-
-### Development Server
-
-Сначала запустите сервер разработки:
-
-```bash
-npm run dev
-```
-
-Откройте [http://localhost:3000](http://localhost:3000) в браузере, чтобы увидеть результат.
-
-Для запуска на другом порту (powershell):
-
-```powershell
-$env:PORT=3001; npm run dev
-```
-
-### Сборка
-
-Если не нужно изменять код, а, например, лишь запустить e2e тесты:
-
-```bash
-npm run build
-npm run start
-```
-
-Для запуска на другом порту (powershell):
-
-```powershell
-$env:PORT=3001; npm run start
-```
-
-## Docker
+## Сборка и запуск в Docker
 
 Запускайте docker build из корневой директории проекта, фронтенду нужно видеть 
 [схему API](../openapi/api.yml) для кодогенерации. Также при сборке 
@@ -64,4 +12,45 @@ docker build -f frontend/Dockerfile -t giga-chill-frontend --build-arg NEXT_PUBL
 
 # Запуск контейнера
 docker run -p 3000:3000 giga-chill-frontend
+```
+
+## Сборка и запуск (без Docker)
+
+На компьютере должен быть установлен [Node.js](https://nodejs.org).
+
+Создаём `.env.local` (см. [`.env.example`](.env.example)):
+```bash
+cp .env.example .env.local
+```
+
+Устанавливаем зависимости и генерируем код API клиента (для кодогенерации используется [спецификация OpenAPI](../openapi/api.yml)):
+```bash
+npm run codegen
+npm install
+```
+
+Запуск сервера разработки:
+
+```bash
+# По умолчанию запускается на localhost:3000
+npm run dev
+```
+
+Для запуска на другом порту (_powershell_):
+
+```powershell
+$env:PORT=3001; npm run dev
+```
+
+Если не нужно изменять код, а, например, запустить e2e тесты, то лучше сразу собрать приложение целиком. Работать будет значительно быстрее:
+
+```bash
+npm run build
+npm run start
+```
+
+Для запуска на другом порту (powershell):
+
+```powershell
+$env:PORT=3001; npm run start
 ```

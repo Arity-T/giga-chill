@@ -18,7 +18,7 @@ public interface DebtMapper {
     DebtInfo toDebtInfo(Map.Entry<UserDTO, BigDecimal> entry);
 
     default List<DebtInfo> toDebtInfoList(List<Map<UserDTO, BigDecimal>> maps) {
-        if (maps == null) {
+        if (Objects.isNull(maps)) {
             return null;
         }
         return maps.stream()

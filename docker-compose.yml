@@ -7,8 +7,6 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
-    ports:
-      - "${DB_HOST_PORT}:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -21,31 +19,42 @@ services:
 
   builder:
     build:
-      context: .
-      dockerfile: backend/Dockerfile.builder
+      context: backend
+      dockerfile: Dockerfile.builder
     image: gigachill-builder
     depends_on:
       postgres:
         condition: service_healthy
-    env_file:
-      - .env
-    command: ["./build.sh"]
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - KEEP_DATABASE=${KEEP_DATABASE}
     volumes:
       - backend-build:/app/build
     networks: 
       - gigachill-network
 
   backend:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile.backend
+    image: eclipse-temurin:21-jre-jammy
+    command: ["java", "-jar", "/app/build/libs/app.jar"]
     depends_on:
       builder:
         condition: service_completed_successfully
-    env_file:
-      - .env
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - SERVER_PORT=8081
+      - JWT_EXPIRATION=1d
+      - BACKEND_PROFILE=${BACKEND_PROFILE}
+      - FRONTEND_ORIGIN=${FRONTEND_ORIGIN}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
     ports:
-      - "${SERVER_PORT}:${SERVER_PORT}"
+      - "${BACKEND_HOST_PORT}:8081"
     volumes:
       - backend-build:/app/build
       - gigachill-logs:/app/logs
@@ -62,10 +71,10 @@ services:
         NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
         NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL}
     ports:
-      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+      - "${FRONTEND_HOST_PORT}:3000"
     environment:
       - NODE_ENV=production
-      - PORT=${FRONTEND_PORT}
+      - PORT=3000
     networks: 
       - gigachill-network
 

@@ -7,6 +7,8 @@ RUN microdnf update -y && \
     microdnf clean all
 
 WORKDIR /app
-COPY backend/ .
+COPY . .
 
 RUN chmod +x ./build.sh
+
+CMD ["./build.sh"]
