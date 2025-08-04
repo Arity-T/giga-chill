@@ -74,7 +74,7 @@ describe('Добавление участников по новой сгенер
         });
 
         // Переходим по ссылке-приглашению
-        cy.get<string>('@inviteLink').then((inviteUrl) => {
+        cy.get('@inviteLink').then((inviteUrl) => {
             cy.log('Текущая ссылка: ' + `${inviteUrl}`);
             cy.visit(`${inviteUrl}`);
         });
@@ -120,7 +120,7 @@ describe('Добавление участников по новой сгенер
         });
 
         // Переходим по ссылке-приглашению
-        cy.get<string>('@inviteLink').then((inviteUrl) => {
+        cy.get('@inviteLink').then((inviteUrl) => {
             cy.log('Текущая ссылка: ' + `${inviteUrl}`);
             cy.visit(`${inviteUrl}`);
         });
