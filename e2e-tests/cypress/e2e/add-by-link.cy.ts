@@ -1,8 +1,8 @@
 import { PAGES } from "../support/config/pages.config";
 
-describe('Добавление участников по ссылке', () => {
+describe('Добавление участников по новой сгенерированной ссылке', () => {
     // Подготавливаем состояние приложения для тестов
-    beforeEach(() => {
+    before(() => {
         // Очищаем базу данных
         cy.cleanupDatabase();
 
@@ -17,7 +17,14 @@ describe('Добавление участников по ссылке', () => {
             password: '12345678',
             name: 'Ксюша'
         })
+        cy.registerUserAPI({
+            login: 'didi',
+            password: '12345678',
+            name: 'Даша'
+        })
+    });
 
+    beforeEach(() => {
         // Создаём мероприятие из под пользователя lili
         cy.loginUserAPI({
             login: 'lili',
@@ -47,12 +54,11 @@ describe('Добавление участников по ссылке', () => {
 
         // Открываем страницу мероприятия
         cy.get('@eventId').then((eventId) => {
-            //cy.visit(`/events/${eventId}`);
             cy.visit(PAGES.EVENT_DETAILS(`${eventId}`));
         });
 
-        // Сохраняем ссылку-приглашение в алиас inviteUrl
-        cy.getInvitationLinkUI();
+        // Открываем модалку и получаем элементы
+        cy.openInviteByLinkModal();
 
         // Очищаем состояние браузера
         cy.clearLocalStorage();
@@ -65,8 +71,54 @@ describe('Добавление участников по ссылке', () => {
         });
 
         // Переходим по ссылке-приглашению
-        cy.get<string>('@inviteUrl').then((inviteUrl) => {
-            cy.visit(inviteUrl);
+        cy.get<string>('@inviteLink').then((inviteUrl) => {
+            cy.log('Текущая ссылка: ' + `${inviteUrl}`);
+            cy.visit(`${inviteUrl}`);
+        });
+
+        // Проверяем, что мы на странице мероприятия
+        cy.get('@eventId').then((eventId) => {
+            cy.url().should('include', PAGES.EVENT_DETAILS(`${eventId}`));
+        });
+
+        // Проверяем, что на странице есть название мероприятия
+        cy.contains('Пикник').should('exist');
+    });
+
+
+
+    it('Добавление участника по новой сгенерированной ссылке', () => {
+        // Логинимся как организатор
+        cy.loginUserAPI({
+            login: 'lili',
+            password: '12345678'
+        });
+
+        // Открываем страницу мероприятия
+        cy.get('@eventId').then((eventId) => {
+            cy.visit(PAGES.EVENT_DETAILS(`${eventId}`));
+        });
+
+        // Открываем модалку и получаем элементы
+        cy.openInviteByLinkModal();
+
+        // Кликаем по кнопке пересоздания ссылки
+        cy.get('@inviteRegenerateBtn').click();
+
+        // Очищаем состояние браузера
+        cy.clearLocalStorage();
+        cy.clearCookies();
+
+        // Логинимся как участник
+        cy.loginUserAPI({
+            login: 'didi',
+            password: '12345678'
+        });
+
+        // Переходим по ссылке-приглашению
+        cy.get<string>('@inviteLink').then((inviteUrl) => {
+            cy.log('Текущая ссылка: ' + `${inviteUrl}`);
+            cy.visit(`${inviteUrl}`);
         });
 
         // Проверяем, что мы на странице мероприятия
