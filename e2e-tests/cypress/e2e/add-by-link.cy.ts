@@ -57,8 +57,11 @@ describe('Добавление участников по новой сгенер
             cy.visit(PAGES.EVENT_DETAILS(`${eventId}`));
         });
 
-        // Открываем модалку и получаем элементы
-        cy.openInviteByLinkModal();
+        // Открываем модалку и получаем ссылку-приглашение
+        cy.openAddParticipantModal()
+            .switchToInviteByLinkTab()
+            .getInvitationLink()
+            .as('inviteLink');
 
         // Очищаем состояние браузера
         cy.clearLocalStorage();
@@ -99,11 +102,12 @@ describe('Добавление участников по новой сгенер
             cy.visit(PAGES.EVENT_DETAILS(`${eventId}`));
         });
 
-        // Открываем модалку и получаем элементы
-        cy.openInviteByLinkModal();
-
-        // Кликаем по кнопке пересоздания ссылки
-        cy.get('@inviteRegenerateBtn').click();
+        // Открываем модалку, регенерируем ссылку и получаем новую ссылку-приглашение
+        cy.openAddParticipantModal()
+            .switchToInviteByLinkTab()
+            .regenerateInvitationLink()
+            .getInvitationLink()
+            .as('inviteLink');
 
         // Очищаем состояние браузера
         cy.clearLocalStorage();

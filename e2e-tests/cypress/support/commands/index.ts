@@ -42,6 +42,10 @@ declare global {
             // Participants commands
             addParticipantByLoginUI(username: string): Chainable<void>;
             changeParticipantRoleByNameUI(participantName: string, newRole: ParticipantRole): Chainable<void>;
+            openAddParticipantModal(): Chainable<JQuery<HTMLElement>>;
+            switchToInviteByLinkTab(): Chainable<JQuery<HTMLElement>>;
+            getInvitationLink(): Chainable<string>;
+            regenerateInvitationLink(): Chainable<JQuery<HTMLElement>>;
 
             // Shopping Lists commands
             createShoppingListUI(listName: string, description?: string): Chainable<void>;
@@ -63,9 +67,6 @@ declare global {
             // Utils commands
             cleanupDatabase(): Chainable<void>;
             closeModal(): Chainable<void>;
-
-            // Participants commands: join By Invitation
-            openInviteByLinkModal(): Chainable<void>;
         }
     }
 }

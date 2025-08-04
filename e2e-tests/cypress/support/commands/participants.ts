@@ -66,9 +66,7 @@ Cypress.Commands.add('changeParticipantRoleByNameUI', (participantName, newRole)
 });
 
 
-
-// Custom command для открытия модального окна и получения ссылки-приглашения
-Cypress.Commands.add('openInviteByLinkModal', () => {
+Cypress.Commands.add('openAddParticipantModal', () => {
     cy.url().then((url) => {
         if (!url.includes("/participants")) {
             cy.contains('.ant-menu-item a', 'Участники').click();
@@ -79,19 +77,38 @@ Cypress.Commands.add('openInviteByLinkModal', () => {
     cy.contains('button', 'Добавить участника').should('be.visible').click();
 
     // Внутри модального окна "Добавить участника"
-    cy.contains('.ant-modal-content', 'Добавить участника').should('be.visible')
+    return cy.contains('.ant-modal-content', 'Добавить участника').should('be.visible');
+});
+
+
+Cypress.Commands.add('switchToInviteByLinkTab', { prevSubject: 'element' }, (modalContent) => {
+    // Внутри модального окна "Добавить участника"
+    cy.wrap(modalContent)
         .within(() => {
             // Переключаемся на вкладку "По ссылке-приглашению"
             cy.contains('.ant-tabs-tab', 'По ссылке-приглашению').should('be.visible').click();
+        });
 
-            // Находим кнопку "Создать новую ссылку" и сохраняем в алиас
+    return cy.wrap(modalContent);
+});
+
+
+Cypress.Commands.add('getInvitationLink', { prevSubject: 'element' }, (modalContent) => {
+    // Внутри модального окна "Добавить участника"
+    return cy.wrap(modalContent).find('span.ant-typography code')
+        .invoke('text');
+});
+
+
+Cypress.Commands.add('regenerateInvitationLink', { prevSubject: 'element' }, (modalContent) => {
+    // Внутри модального окна "Добавить участника"
+    cy.wrap(modalContent)
+        .within(() => {
+            // Находим кнопку "Создать новую ссылку", сохраняем в алиас и кликаем
             cy.contains('button', 'Создать новую ссылку')
                 .should('be.visible')
-                .as('inviteRegenerateBtn');
-
-            // Находим элемент с текстом ссылки и сохраняем в алиас
-            cy.get('span.ant-typography code')
-                .invoke('text')
-                .as('inviteLink');
+                .click();
         });
+
+    return cy.wrap(modalContent);
 });
