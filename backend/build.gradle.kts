@@ -1,5 +1,4 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
-import org.jooq.meta.jaxb.Logging
 
 plugins {
 	java
@@ -8,7 +7,6 @@ plugins {
 	id("nu.studer.jooq") version "10.1"
     id("com.diffplug.spotless") version "6.19.0"
     id("org.openapi.generator") version "7.14.0"
-
 }
 
 group = "com.github.giga-chill"
@@ -30,6 +28,7 @@ configurations {
 repositories {
 	mavenCentral()
 }
+
 
 val jooqVersion = "3.20.5"
 
@@ -94,22 +93,19 @@ dependencies {
     jooqGenerator("org.postgresql:postgresql")
 }
 
-// === Пути для файлов генерации API ===
-val specMainPath = System.getenv("OPEN_API_MAIN_SPECIFICATION")
-val specTestPath = System.getenv("OPEN_API_TEST_SPECIFICATION")
-
 // === Задача для генерации основного API ===
 val generateMainApi by tasks.registering(GenerateTask::class) {
     group = "openapi"
     description = "Генерация кода по основному API"
+    val specMainPath = System.getenv("OPEN_API_MAIN_SPECIFICATION")
 
     validateSpec.set(false)
     generatorName.set("spring")
     inputSpec.set(specMainPath)
-    outputDir.set("$buildDir/generated/api")
-    apiPackage.set("com.github.giga_chill.gigachill.web.api")
-    modelPackage.set("com.github.giga_chill.gigachill.web.api.model")
-    invokerPackage.set("com.github.giga_chill.gigachill.web.api.invoker")
+    outputDir.set("$buildDir/generated/api/main")
+    apiPackage.set("com.github.giga_chill.gigachill.web.api.main")
+    modelPackage.set("com.github.giga_chill.gigachill.web.api.main.model")
+    invokerPackage.set("com.github.giga_chill.gigachill.web.api.main.invoker")
     configOptions.set(
         mapOf(
             "useJakartaEe" to "true",
@@ -126,14 +122,16 @@ val generateMainApi by tasks.registering(GenerateTask::class) {
 val generateTestApi by tasks.registering(GenerateTask::class) {
     group = "openapi"
     description = "Генерация кода по API для тестов"
+    val specTestPath = System.getenv("OPEN_API_TEST_SPECIFICATION")
+
 
     validateSpec.set(false)
     generatorName.set("spring")
     inputSpec.set(specTestPath)
-    outputDir.set("$buildDir/generated/api")
-    apiPackage.set("com.github.giga_chill.gigachill.web.api")
-    modelPackage.set("com.github.giga_chill.gigachill.web.api.model")
-    invokerPackage.set("com.github.giga_chill.gigachill.web.api.invoker")
+    outputDir.set("$buildDir/generated/api/test")
+    apiPackage.set("com.github.giga_chill.gigachill.web.api.test")
+    modelPackage.set("com.github.giga_chill.gigachill.web.api.test.model")
+    invokerPackage.set("com.github.giga_chill.gigachill.web.api.test.invoker")
     configOptions.set(
         mapOf(
             "useJakartaEe" to "true",
@@ -149,7 +147,7 @@ val generateTestApi by tasks.registering(GenerateTask::class) {
 val generateAllApis by tasks.registering {
     group = "openapi"
     description = "Сгенерировать все API сразу"
-    dependsOn(generateMainApi, generateTestApi)
+    dependsOn(generateTestApi)
 }
 
 
@@ -165,6 +163,9 @@ val dbPassword = System.getenv("DB_PASSWORD")
 
 val jdbcUrl = "jdbc:postgresql://$dbHost:$dbPort/$dbName"
 
+sourceSets["main"].java.srcDir("build/generated-sources/jooq")
+sourceSets["main"].java.srcDir("build/generated/api")
+
 // === jOOQ codegen конфигурация ===
 jooq {
     configurations {
@@ -172,7 +173,7 @@ jooq {
             generateSchemaSourceOnCompilation.set(false) // чтобы не генерировать на каждой сборке (можно true)
 
             jooqConfiguration.apply {
-                logging = Logging.WARN
+                logging = org.jooq.meta.jaxb.Logging.WARN
 
                 jdbc.apply {
                     driver = "org.postgresql.Driver"
@@ -210,7 +211,6 @@ jooq {
     }
 }
 
-sourceSets["main"].java.srcDir("build/generated-sources/jooq")
-sourceSets["main"].java.srcDir("build/generated/api")
+
 
 

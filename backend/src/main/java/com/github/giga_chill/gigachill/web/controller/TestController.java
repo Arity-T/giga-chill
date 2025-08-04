@@ -1,7 +1,7 @@
 package com.github.giga_chill.gigachill.web.controller;
 
 import com.github.giga_chill.gigachill.service.TestService;
-import com.github.giga_chill.gigachill.web.api.TestUtilsApi;
+import com.github.giga_chill.gigachill.web.api.test.TestUtilsApi;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
