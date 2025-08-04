@@ -24,3 +24,5 @@ export type RegisterRequestAPI = {
     password: string;
     name: string;
 };
+
+export type ParticipantRoleAPI = 'admin' | 'participant';

@@ -90,13 +90,6 @@ Cypress.Commands.add('loginUserUI', (username, password = '12345678') => {
 });
 
 
-Cypress.Commands.add('logoutUserUI', (username) => {
-    cy.contains('button', username).should('be.visible').click();
-    cy.get('.ant-dropdown-menu-item').should('be.visible').click();
-    // cy.url().should('include', '/auth');
-    cy.url().should('include', PAGES.LOGIN);
-})
-
 
 /**
  * Команда для входа пользователя через API

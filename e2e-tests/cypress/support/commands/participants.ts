@@ -1,4 +1,7 @@
 /// <reference types="cypress" />
+
+import { PAGES } from "../config/pages.config";
+
 /**
  * Команды для работы с участниками мероприятий
  */
@@ -64,71 +67,92 @@ Cypress.Commands.add('changeParticipantRoleByNameUI', (participantName, newRole)
 
 
 
-// Команда сохраняет ссылку-приглашение в алиас inviteUrl
-Cypress.Commands.add('getInvitationLinkUI', () => {
-    // Переходим на вкладку участников
+// Custom command для открытия модального окна и получения ссылки-приглашения
+Cypress.Commands.add('openInviteByLinkModal', () => {
     cy.url().then((url) => {
-        // TODO: переделать на использование конфига
         if (!url.includes("/participants")) {
             cy.contains('.ant-menu-item a', 'Участники').click();
         }
     });
 
-    // Нажимаем на кнопку для добавления участника
-    cy.contains('button', 'Добавить участника').should('be.visible').click();
 
-    // В появившемся модальном окне
-    cy.contains('.ant-modal-content', 'Добавить участника').should('be.visible')
-        .within(() => {
-            // Выбираем вкладку "По ссылке-приглашению"
-            cy.contains('.ant-tabs-tab', 'По ссылке-приглашению').should('be.visible').click();
+    cy.get('.ant-space-item').then(($items) => {
+        const hasAccess = $items.toArray().some(el =>
+            el.textContent.includes('Организатор')
+        );
 
-            // Сохраняем ссылку-приглашение
-            cy.get('span.ant-typography code').invoke('text')
-                .as('inviteUrl');
+        // Кликаем по кнопке "Добавить участника"
+        cy.contains('button', 'Добавить участника').should('be.visible').click();
 
-            // Закрываем модальное окно
-            cy.get('.ant-modal-close').click();
-        });
+        // Внутри модального окна "Добавить участника"
+        cy.contains('.ant-modal-content', 'Добавить участника').should('be.visible')
+            .within(() => {
+                // Переключаемся на вкладку "По ссылке-приглашению"
+                cy.contains('.ant-tabs-tab', 'По ссылке-приглашению').should('be.visible').click();
+
+                if (hasAccess) {
+                    // Находим кнопку "Создать новую ссылку" и сохраняем в алиас
+                    cy.contains('button', 'Создать новую ссылку')
+                        .should('be.visible')
+                        .as('inviteRegenerateBtn');
+                } else {
+                    cy.contains('button', 'Создать новую ссылку').should('not.exist');
+                    cy.log('Не ялвяется организатором');
+                }
+                // Находим элемент с текстом ссылки и сохраняем в алиас
+                cy.get('span.ant-typography code')
+                    .invoke('text')
+                    .as('inviteLink');
+            });
+    });
 });
 
 
-// Команда сохраняет заново сгенерированную ссылку-приглашение в алиас inviteNewUrl
-Cypress.Commands.add('getNewInvitationLinkUI', () => {
-    cy.url().then((url) => {
-        if (!url.includes("/participants")) {
-            cy.contains('.ant-menu-item a', 'Участники').click();
-        }
+
+// Добавление участника в мероприятие по логину через API
+Cypress.Commands.add('addParticipantByLoginAPI', (eventId, userName) => {
+    cy.request({
+        method: 'POST',
+        url: `${Cypress.env('apiUrl')}${PAGES.EVENT_PARTICIPANTS(eventId)}`,
+        body: { login: userName },
+        failOnStatusCode: false
+    }).then((response) => {
+        expect(response.status).to.eq(204);
     });
+});
 
-    // Нажимаем на кнопку для добавления участника
-    cy.contains('button', 'Добавить участника').should('be.visible').click();
 
-    // В появившемся модальном окне
-    cy.contains('.ant-modal-content', 'Добавить участника').should('be.visible')
-        .within(() => {
-            // Выбираем вкладку "По ссылке-приглашению"
-            cy.contains('.ant-tabs-tab', 'По ссылке-приглашению').should('be.visible').click();
+// Изменение роли участника мероприятия через API
+Cypress.Commands.add('changeParticipantRoleAPI', (eventId, userName, role) => {
+    // Сначала получаем список участников, чтобы найти participantId по login
+    cy.request({
+        method: 'GET',
+        url: `${Cypress.env('apiUrl')}${PAGES.EVENT_PARTICIPANTS(eventId)}`,
+        failOnStatusCode: false
+    }).then((response) => {
+        expect(response.status).to.eq(200);
 
-            // Получаем старую ссылку
-            cy.get('span.ant-typography code').invoke('text')
-                .then((inviteOldUrl) => {
-                    cy.log('Старая ссылка:' + inviteOldUrl);
-                    cy.wrap(inviteOldUrl).as('inviteOldUrl');
-
-                    // Кликаем для генерации новой ссылки
-                    cy.contains('button', 'Создать новую ссылку').should('be.visible').click();
-
-                    // Ожидаем, пока новая ссылка станет отличной от старой
-                    cy.get('span.ant-typography code')
-                        .should('not.have.text', inviteOldUrl).invoke('text')
-                        .then((inviteNewUrl) => {
-                            cy.log('Новая ссылка: ' + inviteNewUrl);
-                            cy.wrap(inviteNewUrl).as('inviteNewUrl');
-                        });
-
-                    // Закрываем модальное окно
-                    cy.get('.ant-modal-close').click();
-                });
+        // Находим участника по логину
+        const participant = response.body.find(p => {
+            // Логируем каждый проверяемый участник
+            cy.log(`Checking participant: ${JSON.stringify(p)}`);
+            return p.login === userName
         });
+
+        if (!participant) {
+            expect(response.status).to.eq(404);
+        }
+
+        // меняем роль
+        return cy.request({
+            method: 'PATCH',
+            url: `${Cypress.env('apiUrl')}${PAGES.EVENT_PARTICIPANTS(eventId)}/${participant.id}/role`, ///events/${eventId}/participants`,//`${Cypress.env('apiUrl')}${PAGES.HOME}`,
+            body: {
+                role: role === 'Администратор' ? 'admin' : 'participant'
+            },
+            failOnStatusCode: false
+        }).then((response1) => {
+            expect(response1.status).to.eq(204);
+        });
+    })
 });

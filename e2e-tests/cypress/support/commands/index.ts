@@ -34,7 +34,6 @@ declare global {
             registerUserAPI(registerRequest: RegisterRequestAPI): Chainable<void>;
             loginUserUI(username: string, password?: string): Chainable<void>;
             loginUserAPI(loginRequest: LoginRequestAPI): Chainable<void>;
-            logoutUserUI(username: string): Chainable<void>;
 
             // Events commands
             createEventUI(eventData: CreateEventData): Chainable<void>;
@@ -43,6 +42,9 @@ declare global {
             // Participants commands
             addParticipantByLoginUI(username: string): Chainable<void>;
             changeParticipantRoleByNameUI(participantName: string, newRole: ParticipantRole): Chainable<void>;
+            addParticipantByLoginAPI(eventId: string, userName: string): Chainable<void>;
+            changeParticipantRoleAPI(eventId: string, userName: string, role: ParticipantRole): Chainable<void>;
+
 
             // Shopping Lists commands
             createShoppingListUI(listName: string, description?: string): Chainable<void>;
@@ -66,8 +68,7 @@ declare global {
             closeModal(): Chainable<void>;
 
             // Participants commands: join By Invitation
-            getInvitationLinkUI(): Chainable<void>;
-            getNewInvitationLinkUI(): Chainable<void>;
+            openInviteByLinkModal(): Chainable<void>;
         }
     }
 }
