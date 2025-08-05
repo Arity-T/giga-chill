@@ -5,78 +5,110 @@ import { ShoppingItemData } from "../types";
 declare global {
     namespace Cypress {
         interface Chainable {
-            // Shopping Lists commands
-            createShoppingListUI(listName: string, description?: string): Chainable<void>;
-            addShoppingItemUI(listName: string, itemData: ShoppingItemData): Chainable<void>;
-            assignShoppingListConsumers(listName: string, selectAll?: boolean): Chainable<void>;
-            markShoppingItemAsPurchasedUI(listName: string, itemName: string): Chainable<void>;
-            setShoppingListBudgetUI(listName: string, budget: string): Chainable<void>;
+            // Shopping Lists
+            createShoppingList(listName: string, description?: string): Chainable<void>;
+            getShoppingList(listName: string): Chainable<JQuery<HTMLElement>>;
+            toogleShoppingList(): Chainable<JQuery<HTMLElement>>;
+
+            // Shopping List Consumers
+            setShoppingListConsumers(selectAll?: boolean): Chainable<JQuery<HTMLElement>>;
+            getShoppingListConsumersCount(): Chainable<string>;
+
+            // Shopping List Budget
+            setShoppingListBudget(budget: string): Chainable<JQuery<HTMLElement>>;
+            getShoppingListBudget(): Chainable<string>;
+
+            // Shopping Items
+            addShoppingItem(itemData: ShoppingItemData): Chainable<JQuery<HTMLElement>>;
+            getShoppingItem(itemName: string): Chainable<JQuery<HTMLElement>>;
+            markShoppingItemAsPurchased(): Chainable<JQuery<HTMLElement>>;
         }
     }
 };
 export { } // Необходимо для использования global
 
 
-Cypress.Commands.add('createShoppingListUI', (listName, description) => {
-    // Переходим на вкладку списков покупок
-    cy.url().then((url) => {
-        // TODO: переделать на использование конфига
-        if (!url.includes("/shopping")) {
-            cy.contains('.ant-menu-item a', 'Списки покупок').click();
-        }
-    });
-
-    // Нажимаем кнопку добавления списка
+Cypress.Commands.add('createShoppingList', (listName, description) => {
     cy.contains('button', 'Добавить список').should('be.visible').click();
 
-    // Внутри модального окна
     cy.contains('.ant-modal-content', 'Создать список покупок').should('be.visible')
         .within(() => {
-            // Вводим название списка покупок
-            cy.get('input[placeholder="Введите название списка покупок"]')
+            cy.get('input[placeholder*="название"]')
                 .type(listName)
                 .should('have.value', listName);
 
-            // Заполняем описание, если передано
             if (description) {
                 cy.get('textarea[placeholder*="описание"]')
                     .type(description);
             }
 
-            // Создаём список
             cy.contains('button', 'Создать').click();
         });
-
-    // Проверяем, что список создан
-    cy.contains('.ant-card', listName).should('be.visible');
 });
 
 
-Cypress.Commands.add('addShoppingItemUI', (listName, itemData) => {
-    // Переходим на вкладку списков покупок
-    cy.url().then((url) => {
-        // TODO: переделать на использование конфига
-        if (!url.includes("/shopping")) {
-            cy.contains('.ant-menu-item a', 'Списки покупок').click();
-        }
-    });
+Cypress.Commands.add('getShoppingList', (listName) => {
+    return cy.contains('.ant-card', listName);
+});
 
-    // Ждём загрузки и находим нужный список
-    cy.contains('.ant-card', listName).should('be.visible').as('shoppingListCard')
 
-    // Если список закрыт, открываем его
-    cy.get('@shoppingListCard')
-        .invoke('outerHeight')
-        .then((height) => {
-            if (height <= 80) {
-                cy.get('@shoppingListCard').click();
+Cypress.Commands.add('toogleShoppingList', { prevSubject: 'element' }, (shoppingListCard) => {
+    cy.wrap(shoppingListCard).find('.anticon-caret-right').should('be.visible').click();
+    return cy.wrap(shoppingListCard);
+});
+
+
+Cypress.Commands.add('setShoppingListConsumers', { prevSubject: 'element' }, (shoppingListCard, selectAll = true) => {
+    // Находим список и кликаем на иконку назначения потребителей
+    cy.wrap(shoppingListCard).find('.anticon-user-add').last().click();
+
+    cy.contains('.ant-modal-content', 'Выбрать потребителей').should('be.visible')
+        .within(() => {
+            // TODO: реализовать выбор потребителей по спику имён или логинов
+            if (selectAll) {
+                // Выбираем всех потребителей
+                cy.contains('Выбрать всех').click();
             }
+
+            // Сохраняем выбор
+            cy.contains('button', 'Сохранить').click();
         });
 
-    // Нажимаем кнопку добавления покупки
-    cy.get('@shoppingListCard').contains('button', 'Добавить покупку').should('be.visible').click();
+    return cy.wrap(shoppingListCard);
+});
 
-    // В появившемся модальном окне создаём покупку
+
+Cypress.Commands.add('getShoppingListConsumersCount', { prevSubject: 'element' }, (shoppingListCard) => {
+    return cy.wrap(shoppingListCard).find('.anticon-user-add')
+        .parent()
+        .find('.ant-typography')
+        .should('be.visible')
+        .invoke('text');
+});
+
+
+Cypress.Commands.add('setShoppingListBudget', { prevSubject: 'element' }, (shoppingListCard, budget) => {
+    cy.wrap(shoppingListCard).within(() => {
+        cy.get('input[placeholder="Бюджет"]').clear().should('be.visible').type(budget);
+        cy.get('.anticon-check').should('be.visible').click();
+
+        // Проверяем, что бюджет сохранился
+        // Икнока для сохранения должна исчезнуть
+        cy.get('.anticon-check').should('not.exist');
+    });
+
+    return cy.wrap(shoppingListCard);
+});
+
+
+Cypress.Commands.add('getShoppingListBudget', { prevSubject: 'element' }, (shoppingListCard) => {
+    return cy.wrap(shoppingListCard).find('input[placeholder="Бюджет"]').invoke('val');
+});
+
+
+Cypress.Commands.add('addShoppingItem', { prevSubject: 'element' }, (shoppingListCard, itemData) => {
+    cy.wrap(shoppingListCard).contains('button', 'Добавить покупку').should('be.visible').click();
+
     cy.contains('.ant-modal-content', 'Добавить покупку').should('be.visible').as('addShoppingItemModal');
 
     cy.get('@addShoppingItemModal').within(() => {
@@ -95,88 +127,18 @@ Cypress.Commands.add('addShoppingItemUI', (listName, itemData) => {
     // Выбираем нужную единицу измерения
     cy.contains('.ant-select-item', itemData.unit).should('be.visible').click();
 
-    // Добавляем товар
     cy.get('@addShoppingItemModal').contains('button', 'Добавить').should('be.visible').click();
 
-    // Проверяем, что покупка добавлена
-    cy.get('@shoppingListCard').contains(itemData.name).should('be.visible');
+    return cy.wrap(shoppingListCard);
 });
 
 
-Cypress.Commands.add('assignShoppingListConsumers', (listName, selectAll = true) => {
-    // Находим список и кликаем на иконку назначения потребителей
-    cy.contains('.ant-card-body', listName).within(() => {
-        cy.get('.anticon-user-add').last().as('assignConsumersIcon');
-        cy.get('@assignConsumersIcon').click();
-    });
-
-    cy.contains('.ant-modal-content', 'Выбрать потребителей').should('be.visible')
-        .within(() => {
-            // TODO: реализовать выбор потребителей по спику имён или логинов
-            if (selectAll) {
-                // Выбираем всех потребителей
-                cy.contains('Выбрать всех').click();
-
-                // Сохраняем ожидаемое количество потребителей
-                cy.get('ul.ant-list-items > li.ant-list-item')
-                    .its('length')
-                    .as('expectedConsumerCount');
-            }
-
-            // Сохраняем выбор
-            cy.contains('button', 'Сохранить').click();
-        });
-
-    // Проверяем, что количество потребителей соответствует ожидаемому
-    cy.get('@expectedConsumerCount').then((count) => {
-        cy.get('@assignConsumersIcon')
-            .parent()
-            .contains('span', `${count}`)
-            .should('be.visible');
-    });
-
+Cypress.Commands.add('getShoppingItem', { prevSubject: 'element' }, (shoppingListCard, itemName) => {
+    return cy.wrap(shoppingListCard).contains('.ant-card', itemName);
 });
 
 
-Cypress.Commands.add('markShoppingItemAsPurchasedUI', (listName, itemName) => {
-    // Находим карточку списка и кликаем на неё
-    cy.contains('.ant-card', listName).as('shoppingListCard');
-
-    // Если список закрыт, открываем его
-    cy.get('@shoppingListCard')
-        .invoke('outerHeight')
-        .then((height) => {
-            if (height <= 80) {
-                cy.get('@shoppingListCard').click();
-            }
-        });
-
-    // Находим товар в списке
-    cy.get('@shoppingListCard').contains('.ant-card', itemName).should('be.visible')
-        .within(() => {
-            // Отмечаем товар как купленный и проверяем, что он действительно отмечен
-            cy.get('input[type="checkbox"]').click().should('be.checked');
-        });
+Cypress.Commands.add('markShoppingItemAsPurchased', { prevSubject: 'element' }, (shoppingItemCard) => {
+    cy.wrap(shoppingItemCard).find('.ant-checkbox').should('be.visible')
+        .find('input[type="checkbox"]').click().should('be.checked');
 });
-
-
-Cypress.Commands.add('setShoppingListBudgetUI', (listName, budget) => {
-    // Работаем внутри карточки списка
-    cy.contains('.ant-card', listName).should('be.visible').within(() => {
-        // Указываем бюджет
-        cy.get('input[placeholder="Бюджет"]').clear().type(budget);
-
-        // Сохраняем
-        cy.get('.anticon-check').should('be.visible').click();
-
-        // Проверяем, что бюджет сохранился
-        // Икнока для сохранения должна исчезнуть
-        cy.get('.anticon-check').should('not.exist');
-
-        // Проверяем, что бюджет отображается
-        // при этом может добавиться десятичная часть, поэтому проверяем по вхождению
-        cy.get('input[placeholder="Бюджет"]')
-            .invoke('val')
-            .should('contain', budget);
-    });
-}); 

@@ -35,21 +35,26 @@ describe('Полный пользовательский сценарий', { tes
 
         // Назначаем роль администратора
         cy.changeParticipantRoleByName('Ксения', 'Администратор');
-
     });
 
     it('Создание списка покупок', () => {
-        // Создаём список покупок используя команды
-        cy.createShoppingListUI('Напитки');
+        cy.contains('.ant-menu-item a', 'Списки покупок').click();
+        cy.createShoppingList('Напитки');
 
-        cy.addShoppingItemUI('Напитки', {
-            name: 'Сок яблочный',
-            quantity: '3',
-            unit: 'л'
-        });
+        cy.getShoppingList('Напитки')
+            .toogleShoppingList()
+            .addShoppingItem({
+                name: 'Сок яблочный',
+                quantity: '3',
+                unit: 'л'
+            })
+            .setShoppingListConsumers()
+            .getShoppingListConsumersCount()
+            .should('equal', '3');
 
-        // Назначение потребителей для покупки
-        cy.assignShoppingListConsumers('Напитки');
+        cy.getShoppingList('Напитки')
+            .getShoppingItem('Сок яблочный')
+            .should('be.visible');
     });
 
     it('Создание задачи', () => {
@@ -72,11 +77,15 @@ describe('Полный пользовательский сценарий', { tes
         // Берём задачу в работу
         cy.takeTaskInProgressUI('Купить напитки');
 
-        // Отмечаем покупку как выполненную
-        cy.markShoppingItemAsPurchasedUI('Напитки', 'Сок яблочный');
+        cy.getShoppingList('Напитки')
+            .setShoppingListBudget('46')
+            .toogleShoppingList()
+            .getShoppingItem('Сок яблочный')
+            .markShoppingItemAsPurchased();
 
-        // Устанавливаем бюджет для списка покупок
-        cy.setShoppingListBudgetUI('Напитки', '46');
+        cy.getShoppingList('Напитки')
+            .getShoppingListBudget()
+            .should('contain', '46');
 
         // Отправляем задачу на проверку
         cy.submitTaskForReviewUI('купила');
@@ -96,7 +105,8 @@ describe('Полный пользовательский сценарий', { tes
         cy.contains('.ant-card', 'Купить напитки').should('be.visible').click();
 
         // Можем изменить бюджет списка покупок
-        cy.setShoppingListBudgetUI('Напитки', '100');
+        cy.getShoppingList('Напитки')
+            .setShoppingListBudget('100');
 
         // Подтверждаем выполнение задачи
         cy.completeTaskUI('молодец', true);
