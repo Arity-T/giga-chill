@@ -45,9 +45,9 @@ describe('Ссылки-приглашения', () => {
             password: '12345678'
         });
 
-        // Открываем страницу мероприятия
+        // Открываем страницу участников мероприятия
         cy.get('@eventId').then((eventId) => {
-            cy.visit(PAGES.EVENT_DETAILS(`${eventId}`));
+            cy.visit(PAGES.EVENT_PARTICIPANTS(`${eventId}`));
         });
 
         // Открываем модалку и получаем ссылку-приглашение
@@ -88,9 +88,9 @@ describe('Ссылки-приглашения', () => {
             password: '12345678'
         });
 
-        // Открываем страницу мероприятия
+        // Открываем страницу участников мероприятия
         cy.get('@eventId').then((eventId) => {
-            cy.visit(PAGES.EVENT_DETAILS(`${eventId}`));
+            cy.visit(PAGES.EVENT_PARTICIPANTS(`${eventId}`));
         });
 
         // Открываем модалку, регенерируем ссылку и получаем новую ссылку-приглашение

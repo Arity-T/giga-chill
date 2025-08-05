@@ -29,12 +29,12 @@ describe('Полный пользовательский сценарий', { tes
     });
 
     it('Добавление участников', () => {
-        // Добавляем участников используя команды
-        cy.addParticipantByLoginUI('xuxa');
-        cy.addParticipantByLoginUI('didi');
+        cy.contains('.ant-menu-item a', 'Участники').click();
+        cy.openAddParticipantModal().addParticipantByLogin('xuxa');
+        cy.openAddParticipantModal().addParticipantByLogin('didi');
 
         // Назначаем роль администратора
-        cy.changeParticipantRoleByNameUI('Ксения', 'Администратор');
+        cy.changeParticipantRoleByName('Ксения', 'Администратор');
 
     });
 

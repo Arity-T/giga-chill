@@ -40,8 +40,8 @@ declare global {
             createEventAPI(eventData: EventCreateAPI): Chainable<string>;
 
             // Participants commands
-            addParticipantByLoginUI(username: string): Chainable<void>;
-            changeParticipantRoleByNameUI(participantName: string, newRole: ParticipantRole): Chainable<void>;
+            addParticipantByLogin(username: string): Chainable<void>;
+            changeParticipantRoleByName(participantName: string, newRole: ParticipantRole): Chainable<void>;
             openAddParticipantModal(): Chainable<JQuery<HTMLElement>>;
             switchToInviteByLinkTab(): Chainable<JQuery<HTMLElement>>;
             getInvitationLink(): Chainable<string>;

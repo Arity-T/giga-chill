@@ -1,54 +1,11 @@
 /// <reference types="cypress" />
 
-import { PAGES } from "../config/pages.config";
-
 /**
  * Команды для работы с участниками мероприятий
  */
 
-// Custom command для добавления участника по логину
-Cypress.Commands.add('addParticipantByLoginUI', (username) => {
-    // Переходим на вкладку участников
-    cy.url().then((url) => {
-        // TODO: переделать на использование конфига
-        if (!url.includes("/participants")) {
-            cy.contains('.ant-menu-item a', 'Участники').click();
-        }
-    });
-
-    // Проверяем, что таблица с участниками загружена
-    cy.contains('table', 'Организатор').should('be.visible');
-
-    // Проверяем, что участник ещё не был добавлен
-    cy.contains('tr', username).should('not.exist');
-
-    // Ждём загрузки и нажимаем кнопку добавления участника
-    cy.contains('button', 'Добавить участника').should('be.visible').click();
-
-    // В появившемся модальном окне вводим логин пользователя и нажимаем кнопку добавления
-    cy.contains('.ant-modal-content', 'Добавить участника').should('be.visible')
-        .within(() => {
-            cy.get('input[placeholder="Введите логин пользователя"]')
-                .type(username)
-                .should('have.value', username);
-
-            cy.contains('button', 'Добавить участника').should('be.visible').click();
-        });
-
-    // Проверяем, что участник добавлен
-    cy.contains('tr', username).should('exist');
-});
-
 // Custom command для изменения роли участника по имени
-Cypress.Commands.add('changeParticipantRoleByNameUI', (participantName, newRole) => {
-    // Переходим на вкладку участников
-    cy.url().then((url) => {
-        // TODO: переделать на использование конфига
-        if (!url.includes("/participants")) {
-            cy.contains('.ant-menu-item a', 'Участники').click();
-        }
-    });
-
+Cypress.Commands.add('changeParticipantRoleByName', (participantName, newRole) => {
     // Находим строку и сохраняем её в алиас
     cy.contains('tr', participantName).as('participantRow');
 
@@ -67,17 +24,24 @@ Cypress.Commands.add('changeParticipantRoleByNameUI', (participantName, newRole)
 
 
 Cypress.Commands.add('openAddParticipantModal', () => {
-    cy.url().then((url) => {
-        if (!url.includes("/participants")) {
-            cy.contains('.ant-menu-item a', 'Участники').click();
-        }
-    });
-
     // Кликаем по кнопке "Добавить участника"
     cy.contains('button', 'Добавить участника').should('be.visible').click();
 
     // Внутри модального окна "Добавить участника"
     return cy.contains('.ant-modal-content', 'Добавить участника').should('be.visible');
+});
+
+
+Cypress.Commands.add('addParticipantByLogin', { prevSubject: 'element' }, (modalContent, username) => {
+    // Внутри модального окна "Добавить участника"
+    cy.wrap(modalContent)
+        .within(() => {
+            cy.get('input[placeholder="Введите логин пользователя"]')
+                .type(username)
+                .should('have.value', username);
+
+            cy.contains('button', 'Добавить участника').should('be.visible').click();
+        });
 });
 
 
