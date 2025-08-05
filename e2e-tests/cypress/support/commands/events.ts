@@ -1,9 +1,17 @@
 /// <reference types="cypress" />
-/**
- * Команды для работы с мероприятиями
- */
 
 import { PAGES } from '../config/pages.config';
+import { CreateEventData, EventCreateAPI } from '../types';
+
+declare global {
+    namespace Cypress {
+        interface Chainable {
+            createEventUI(eventData: CreateEventData): Chainable<void>;
+            createEventAPI(eventData: EventCreateAPI): Chainable<string>;
+        }
+    }
+};
+export { } // Необходимо для использования global
 
 /**
  * Создает новое мероприятие через UI интерфейс.

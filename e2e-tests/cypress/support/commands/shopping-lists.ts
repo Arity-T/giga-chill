@@ -1,9 +1,22 @@
 /// <reference types="cypress" />
-/**
- * Команды для работы со списками покупок
- */
 
-// Custom command для создания списка покупок
+import { ShoppingItemData } from "../types";
+
+declare global {
+    namespace Cypress {
+        interface Chainable {
+            // Shopping Lists commands
+            createShoppingListUI(listName: string, description?: string): Chainable<void>;
+            addShoppingItemUI(listName: string, itemData: ShoppingItemData): Chainable<void>;
+            assignShoppingListConsumers(listName: string, selectAll?: boolean): Chainable<void>;
+            markShoppingItemAsPurchasedUI(listName: string, itemName: string): Chainable<void>;
+            setShoppingListBudgetUI(listName: string, budget: string): Chainable<void>;
+        }
+    }
+};
+export { } // Необходимо для использования global
+
+
 Cypress.Commands.add('createShoppingListUI', (listName, description) => {
     // Переходим на вкладку списков покупок
     cy.url().then((url) => {
@@ -38,7 +51,7 @@ Cypress.Commands.add('createShoppingListUI', (listName, description) => {
     cy.contains('.ant-card', listName).should('be.visible');
 });
 
-// Custom command для добавления элемента в список покупок
+
 Cypress.Commands.add('addShoppingItemUI', (listName, itemData) => {
     // Переходим на вкладку списков покупок
     cy.url().then((url) => {
@@ -89,7 +102,7 @@ Cypress.Commands.add('addShoppingItemUI', (listName, itemData) => {
     cy.get('@shoppingListCard').contains(itemData.name).should('be.visible');
 });
 
-// Custom command для назначения потребителей на список покупок
+
 Cypress.Commands.add('assignShoppingListConsumers', (listName, selectAll = true) => {
     // Находим список и кликаем на иконку назначения потребителей
     cy.contains('.ant-card-body', listName).within(() => {
@@ -124,7 +137,7 @@ Cypress.Commands.add('assignShoppingListConsumers', (listName, selectAll = true)
 
 });
 
-// Custom command для отметки товара как купленного
+
 Cypress.Commands.add('markShoppingItemAsPurchasedUI', (listName, itemName) => {
     // Находим карточку списка и кликаем на неё
     cy.contains('.ant-card', listName).as('shoppingListCard');
@@ -146,7 +159,7 @@ Cypress.Commands.add('markShoppingItemAsPurchasedUI', (listName, itemName) => {
         });
 });
 
-// Custom command для установки бюджета списка покупок
+
 Cypress.Commands.add('setShoppingListBudgetUI', (listName, budget) => {
     // Работаем внутри карточки списка
     cy.contains('.ant-card', listName).should('be.visible').within(() => {

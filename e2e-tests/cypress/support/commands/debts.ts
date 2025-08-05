@@ -1,9 +1,18 @@
 /// <reference types="cypress" />
-/**
- * Команды для работы с долгами (Debts)
- */
 
-// Custom command для завершения мероприятия
+import { ParticipantStatus } from "../types";
+
+declare global {
+    namespace Cypress {
+        interface Chainable {
+            finishEventUI(): Chainable<void>;
+            checkParticipantBalanceUI(participantLogin: string, expectedBalance: string, expectedStatus: ParticipantStatus): Chainable<void>;
+        }
+    }
+};
+export { } // Необходимо для использования global
+
+
 Cypress.Commands.add('finishEventUI', () => {
     // Переходим к общим расчётам
     cy.url().then((url) => {
@@ -22,7 +31,7 @@ Cypress.Commands.add('finishEventUI', () => {
     cy.get('table').should('exist');
 });
 
-// Custom command для проверки баланса участника
+
 Cypress.Commands.add('checkParticipantBalanceUI', (participantLogin, expectedBalance, expectedStatus) => {
     // Находим строку с участником и проверяем его баланс и статус
     cy.contains('tr', participantLogin)

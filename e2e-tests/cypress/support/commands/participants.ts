@@ -1,10 +1,22 @@
 /// <reference types="cypress" />
 
-/**
- * Команды для работы с участниками мероприятий
- */
+import { ParticipantRole } from "../types";
 
-// Custom command для изменения роли участника по имени
+declare global {
+    namespace Cypress {
+        interface Chainable {
+            changeParticipantRoleByName(participantName: string, newRole: ParticipantRole): Chainable<void>;
+            addParticipantByLogin(username: string): Chainable<void>;
+            openAddParticipantModal(): Chainable<JQuery<HTMLElement>>;
+            switchToInviteByLinkTab(): Chainable<JQuery<HTMLElement>>;
+            getInvitationLink(): Chainable<string>;
+            regenerateInvitationLink(): Chainable<JQuery<HTMLElement>>;
+        }
+    }
+};
+export { } // Необходимо для использования global
+
+
 Cypress.Commands.add('changeParticipantRoleByName', (participantName, newRole) => {
     // Находим строку и сохраняем её в алиас
     cy.contains('tr', participantName).as('participantRow');

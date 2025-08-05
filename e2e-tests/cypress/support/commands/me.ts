@@ -1,13 +1,21 @@
 /// <reference types="cypress" />
-/**
- * Команды для работы с пользователем (Me)
- */
 
 import { PAGES } from '../config/pages.config';
-import { LoginRequestAPI } from '../types';
+import { LoginRequestAPI, RegisterRequestAPI } from '../types';
+
+declare global {
+    namespace Cypress {
+        interface Chainable {
+            registerUserUI(name: string, username: string, password?: string): Chainable<void>;
+            registerUserAPI(registerRequest: RegisterRequestAPI): Chainable<void>;
+            loginUserUI(username: string, password?: string): Chainable<void>;
+            loginUserAPI(loginRequest: LoginRequestAPI): Chainable<void>;
+        }
+    }
+};
+export { } // Необходимо для использования global
 
 
-// Custom command для регистрации пользователя
 Cypress.Commands.add('registerUserUI', (name, username, password = '12345678') => {
     // Переходим на страницу регистрации, если ещё не там
     cy.url().then((url) => {
@@ -47,6 +55,7 @@ Cypress.Commands.add('registerUserUI', (name, username, password = '12345678') =
         .and('contain', `@${username}`);
 });
 
+
 Cypress.Commands.add('registerUserAPI', registerRequest => {
     cy.request({
         method: 'POST',
@@ -58,7 +67,7 @@ Cypress.Commands.add('registerUserAPI', registerRequest => {
     });
 });
 
-// Custom command для логина пользователя
+
 Cypress.Commands.add('loginUserUI', (username, password = '12345678') => {
     // Переходим на страницу логина, если ещё не там
     cy.url().then((url) => {
@@ -102,5 +111,3 @@ Cypress.Commands.add('loginUserAPI', loginRequest => {
         expect(response.status).to.eq(204);
     });
 });
-
-

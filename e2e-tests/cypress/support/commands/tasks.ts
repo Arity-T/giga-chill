@@ -1,9 +1,20 @@
 /// <reference types="cypress" />
-/**
- * Команды для работы с задачами
- */
 
-// Custom command для создания задачи
+import { CreateTaskData } from "../types";
+
+declare global {
+    namespace Cypress {
+        interface Chainable {
+            createTaskUI(taskData: CreateTaskData): Chainable<void>;
+            takeTaskInProgressUI(taskName: string): Chainable<void>;
+            submitTaskForReviewUI(executorComment: string): Chainable<void>;
+            completeTaskUI(reviwerComment: string, isApproved: boolean): Chainable<void>;
+        }
+    }
+};
+export { } // Необходимо для использования global
+
+
 Cypress.Commands.add('createTaskUI', (taskData) => {
     // Переходим на вкладку задач
     cy.url().then((url) => {
@@ -87,7 +98,7 @@ Cypress.Commands.add('createTaskUI', (taskData) => {
     cy.contains('.ant-card', taskData.name).should('exist');
 });
 
-// Custom command для взятия задачи в работу
+
 Cypress.Commands.add('takeTaskInProgressUI', (taskName) => {
     // Переходим на вкладку задач
     cy.url().then((url) => {
@@ -114,7 +125,6 @@ Cypress.Commands.add('takeTaskInProgressUI', (taskName) => {
 // TODO: привести к одному формату с takeTaskInProgressUI, добавить проверку, 
 // открыта ли модалка с задачей, открыта ли страница задач, etc
 // либо убрать эти проверки из takeTaskInProgressUI тоже
-// Custom command для отправки задачи на проверку
 Cypress.Commands.add('submitTaskForReviewUI', (executorComment) => {
     // Внутри модального окна с задачей
     cy.get('.ant-modal-content').should('be.visible').within(() => {
@@ -130,7 +140,7 @@ Cypress.Commands.add('submitTaskForReviewUI', (executorComment) => {
     });
 });
 
-// Custom command для подтверждения выполнения задачи
+
 Cypress.Commands.add('completeTaskUI', (reviwerComment, isApproved) => {
     // Внутри модального окна с задачей
     cy.get('.ant-modal-content').should('be.visible').within(() => {
