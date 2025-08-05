@@ -41,7 +41,8 @@ export interface ShoppingItemData {
 export interface CreateTaskData {
     name: string;
     description?: string;
-    hour: string;
+    // Дата и время дедлайна в формате `14.08.2025 00:10`
+    deadline: string;
     assigneeName?: string;
     shoppingLists?: string[];
 }

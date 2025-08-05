@@ -16,6 +16,10 @@ Cypress.Commands.add('cleanupDatabase', () => {
 });
 
 
-Cypress.Commands.add('closeModal', () => {
-    cy.get('.ant-modal-close').should('be.visible').click();
+Cypress.Commands.add('closeModal', { prevSubject: ['optional', 'element'] }, (modal) => {
+    if (modal) {
+        cy.wrap(modal).find('.ant-modal-close').should('be.visible').click();
+    } else {
+        cy.get('.ant-modal-close').should('be.visible').click();
+    }
 });

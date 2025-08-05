@@ -58,60 +58,61 @@ describe('Полный пользовательский сценарий', { tes
     });
 
     it('Создание задачи', () => {
-        // Создание задачи
-        cy.createTaskUI({
+        cy.contains('.ant-menu-item a', 'Задачи').click();
+
+        cy.createTask({
             name: 'Купить напитки',
-            hour: '03',
+            deadline: '14.08.2025 00:10',
             assigneeName: 'Ксения',
             shoppingLists: ['Напитки']
         });
+
+        cy.getTaskCard('Купить напитки').should('be.visible');
     });
 
     it('Выполнение задачи исполнителем', () => {
-        // Входим под другим пользователем
         cy.loginUserUI("xuxa");
 
-        // Переходим на страницу мероприятия
         cy.contains('.ant-card', 'Пикник').should('be.visible').click();
+        cy.contains('.ant-menu-item a', 'Задачи').click();
 
-        // Берём задачу в работу
-        cy.takeTaskInProgressUI('Купить напитки');
+        cy.getTaskCard('Купить напитки').should('be.visible').click();
 
-        cy.getShoppingList('Напитки')
-            .setShoppingListBudget('46')
-            .toogleShoppingList()
-            .getShoppingItem('Сок яблочный')
-            .markShoppingItemAsPurchased();
+        cy.getTaskModal('Купить напитки').should('be.visible')
+            .takeTaskInProgress()
+            .within(() => {
+                cy.getShoppingList('Напитки')
+                    .setShoppingListBudget('46')
+                    .toogleShoppingList()
+                    .getShoppingItem('Сок яблочный')
+                    .markShoppingItemAsPurchased();
 
-        cy.getShoppingList('Напитки')
-            .getShoppingListBudget()
-            .should('contain', '46');
+                cy.getShoppingList('Напитки')
+                    .getShoppingListBudget()
+                    .should('contain', '46');
+            });
 
-        // Отправляем задачу на проверку
-        cy.submitTaskForReviewUI('купила');
+        cy.getTaskModal('Купить напитки').getTaskStatus().should('equal', 'В работе');
+
+        cy.getTaskModal('Купить напитки').submitTaskForReview('купила')
+            .getTaskStatus().should('equal', 'На проверке');
     });
 
     it('Проверка выполнения задачи ревьюером', () => {
-        // Возвращаемся под организатором мероприятия
         cy.loginUserUI("lili");
 
-        // Переходим на страницу мероприятия
         cy.contains('.ant-card', 'Пикник').should('be.visible').click();
-
-        // Переходим на страницу задач
         cy.contains('.ant-menu-item a', 'Задачи').click();
 
-        // Открываем задачу
-        cy.contains('.ant-card', 'Купить напитки').should('be.visible').click();
+        cy.getTaskCard('Купить напитки').should('be.visible').click();
 
-        // Можем изменить бюджет списка покупок
-        cy.getShoppingList('Напитки')
-            .setShoppingListBudget('100');
+        cy.getTaskModal('Купить напитки').within(() => {
+            cy.getShoppingList('Напитки').setShoppingListBudget('100');
+        });
 
-        // Подтверждаем выполнение задачи
-        cy.completeTaskUI('молодец', true);
+        cy.getTaskModal('Купить напитки').completeTask('молодец', true)
+            .getTaskStatus().should('equal', 'Завершена')
 
-        // Закрываем модальное окно с задачей
         cy.closeModal();
     });
 
