@@ -78,4 +78,40 @@ Cypress.Commands.add('createEventUI', (eventData) => {
 
     // Ждём создания и переходим на страницу мероприятия
     cy.contains('.ant-card', eventData.title).should('be.visible').click();
-}); 
+});
+
+/**
+ * Создает мероприятие через API
+ * @param eventData - данные для создания мероприятия
+ * @param authToken - токен авторизации (опционально, если нужен другой пользователь)
+ */
+
+Cypress.Commands.add('createEventAPI', (eventData) => {
+    cy.request({
+        method: 'POST',
+        url: `${Cypress.env('apiUrl')}${PAGES.HOME}`,
+        body: eventData
+    }).then((response) => {
+        expect(response.status).to.eq(204);// Проверка, что запрос прошёл успешно
+
+        // Получить список всех мероприятий пользователя
+        cy.request({
+            method: 'GET',
+            url: `${Cypress.env('apiUrl')}${PAGES.HOME}`,
+        }).then((getResponse) => {
+            expect(getResponse.status).to.eq(200);
+
+            // Найти только что созданное мероприятие
+            const createdEvent = getResponse.body.find((event) =>
+                event.title === eventData.title
+            );
+
+            if (!createdEvent) {
+                expect(createdEvent, 'Мероприятие не найдено после создания').to.exist;
+            }
+
+            // ID мероприятия
+            return createdEvent.event_id;
+        });
+    });
+});

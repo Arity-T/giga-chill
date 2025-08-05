@@ -1,4 +1,7 @@
 /// <reference types="cypress" />
+
+import { PAGES } from "../config/pages.config";
+
 /**
  * Команды для работы с участниками мероприятий
  */
@@ -60,4 +63,52 @@ Cypress.Commands.add('changeParticipantRoleByNameUI', (participantName, newRole)
 
     // Проверяем, что роль поменялась
     cy.get('@participantRow').contains(newRole).should('exist');
+});
+
+
+Cypress.Commands.add('openAddParticipantModal', () => {
+    cy.url().then((url) => {
+        if (!url.includes("/participants")) {
+            cy.contains('.ant-menu-item a', 'Участники').click();
+        }
+    });
+
+    // Кликаем по кнопке "Добавить участника"
+    cy.contains('button', 'Добавить участника').should('be.visible').click();
+
+    // Внутри модального окна "Добавить участника"
+    return cy.contains('.ant-modal-content', 'Добавить участника').should('be.visible');
+});
+
+
+Cypress.Commands.add('switchToInviteByLinkTab', { prevSubject: 'element' }, (modalContent) => {
+    // Внутри модального окна "Добавить участника"
+    cy.wrap(modalContent)
+        .within(() => {
+            // Переключаемся на вкладку "По ссылке-приглашению"
+            cy.contains('.ant-tabs-tab', 'По ссылке-приглашению').should('be.visible').click();
+        });
+
+    return cy.wrap(modalContent);
+});
+
+
+Cypress.Commands.add('getInvitationLink', { prevSubject: 'element' }, (modalContent) => {
+    // Внутри модального окна "Добавить участника"
+    return cy.wrap(modalContent).find('span.ant-typography code')
+        .invoke('text');
+});
+
+
+Cypress.Commands.add('regenerateInvitationLink', { prevSubject: 'element' }, (modalContent) => {
+    // Внутри модального окна "Добавить участника"
+    cy.wrap(modalContent)
+        .within(() => {
+            // Находим кнопку "Создать новую ссылку", сохраняем в алиас и кликаем
+            cy.contains('button', 'Создать новую ссылку')
+                .should('be.visible')
+                .click();
+        });
+
+    return cy.wrap(modalContent);
 });

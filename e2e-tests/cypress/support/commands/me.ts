@@ -4,6 +4,7 @@
  */
 
 import { PAGES } from '../config/pages.config';
+import { LoginRequestAPI } from '../types';
 
 
 // Custom command для регистрации пользователя
@@ -46,6 +47,17 @@ Cypress.Commands.add('registerUserUI', (name, username, password = '12345678') =
         .and('contain', `@${username}`);
 });
 
+Cypress.Commands.add('registerUserAPI', registerRequest => {
+    cy.request({
+        method: 'POST',
+        url: `${Cypress.env('apiUrl')}${PAGES.REGISTER}`,
+        body: registerRequest,
+        failOnStatusCode: false
+    }).then((response) => {
+        expect(response.status).to.eq(204);
+    });
+});
+
 // Custom command для логина пользователя
 Cypress.Commands.add('loginUserUI', (username, password = '12345678') => {
     // Переходим на страницу логина, если ещё не там
@@ -74,4 +86,21 @@ Cypress.Commands.add('loginUserUI', (username, password = '12345678') => {
     cy.get('.ant-dropdown-trigger')
         .should('be.visible')
         .and('contain', `@${username}`);
-}); 
+});
+
+/**
+ * Команда для входа пользователя через API
+ */
+Cypress.Commands.add('loginUserAPI', loginRequest => {
+    // Отправляем POST-запрос на эндпоинт входа
+    cy.request({
+        method: 'POST',
+        url: `${Cypress.env('apiUrl')}${PAGES.LOGIN}`, // Путь к эндпоинту аутентификации
+        body: loginRequest,
+        failOnStatusCode: false // Не завершать тест при ошибках
+    }).then((response) => {
+        expect(response.status).to.eq(204);
+    });
+});
+
+
