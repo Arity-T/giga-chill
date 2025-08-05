@@ -88,8 +88,6 @@ Cypress.Commands.add('loginUserUI', (username, password = '12345678') => {
         .and('contain', `@${username}`);
 });
 
-
-
 /**
  * Команда для входа пользователя через API
  */
@@ -97,12 +95,10 @@ Cypress.Commands.add('loginUserAPI', loginRequest => {
     // Отправляем POST-запрос на эндпоинт входа
     cy.request({
         method: 'POST',
-        url: `${Cypress.env('apiUrl')}${PAGES.LOGIN}`,// Путь к эндпоинту аутентификации
+        url: `${Cypress.env('apiUrl')}${PAGES.LOGIN}`, // Путь к эндпоинту аутентификации
         body: loginRequest,
         failOnStatusCode: false // Не завершать тест при ошибках
     }).then((response) => {
         expect(response.status).to.eq(204);
     });
 });
-
-

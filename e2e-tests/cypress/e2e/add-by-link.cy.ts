@@ -1,8 +1,8 @@
 import { PAGES } from "../support/config/pages.config";
 
-describe('Добавление участников по новой сгенерированной ссылке', () => {
+describe('Ссылки-приглашения', () => {
     // Подготавливаем состояние приложения для тестов
-    before(() => {
+    beforeEach(() => {
         // Очищаем базу данных
         cy.cleanupDatabase();
 
@@ -17,14 +17,7 @@ describe('Добавление участников по новой сгенер
             password: '12345678',
             name: 'Ксюша'
         })
-        cy.registerUserAPI({
-            login: 'didi',
-            password: '12345678',
-            name: 'Даша'
-        })
-    });
 
-    beforeEach(() => {
         // Создаём мероприятие из под пользователя lili
         cy.loginUserAPI({
             login: 'lili',
@@ -45,7 +38,7 @@ describe('Добавление участников по новой сгенер
         cy.clearCookies();
     });
 
-    it('Добавление участника по ссылке', () => {
+    it('Добавление участника по ссылке-приглашению', () => {
         // Логинимся как организатор
         cy.loginUserAPI({
             login: 'lili',
@@ -57,8 +50,11 @@ describe('Добавление участников по новой сгенер
             cy.visit(PAGES.EVENT_DETAILS(`${eventId}`));
         });
 
-        // Открываем модалку и получаем элементы
-        cy.openInviteByLinkModal();
+        // Открываем модалку и получаем ссылку-приглашение
+        cy.openAddParticipantModal()
+            .switchToInviteByLinkTab()
+            .getInvitationLink()
+            .as('inviteLink');
 
         // Очищаем состояние браузера
         cy.clearLocalStorage();
@@ -71,7 +67,7 @@ describe('Добавление участников по новой сгенер
         });
 
         // Переходим по ссылке-приглашению
-        cy.get<string>('@inviteLink').then((inviteUrl) => {
+        cy.get('@inviteLink').then((inviteUrl) => {
             cy.log('Текущая ссылка: ' + `${inviteUrl}`);
             cy.visit(`${inviteUrl}`);
         });
@@ -85,9 +81,7 @@ describe('Добавление участников по новой сгенер
         cy.contains('Пикник').should('exist');
     });
 
-
-
-    it('Добавление участника по новой сгенерированной ссылке', () => {
+    it('Регенрация ссылки-приглашения и добавление участника', () => {
         // Логинимся как организатор
         cy.loginUserAPI({
             login: 'lili',
@@ -99,11 +93,12 @@ describe('Добавление участников по новой сгенер
             cy.visit(PAGES.EVENT_DETAILS(`${eventId}`));
         });
 
-        // Открываем модалку и получаем элементы
-        cy.openInviteByLinkModal();
-
-        // Кликаем по кнопке пересоздания ссылки
-        cy.get('@inviteRegenerateBtn').click();
+        // Открываем модалку, регенерируем ссылку и получаем новую ссылку-приглашение
+        cy.openAddParticipantModal()
+            .switchToInviteByLinkTab()
+            .regenerateInvitationLink()
+            .getInvitationLink()
+            .as('inviteLink');
 
         // Очищаем состояние браузера
         cy.clearLocalStorage();
@@ -111,12 +106,12 @@ describe('Добавление участников по новой сгенер
 
         // Логинимся как участник
         cy.loginUserAPI({
-            login: 'didi',
+            login: 'xuxa',
             password: '12345678'
         });
 
         // Переходим по ссылке-приглашению
-        cy.get<string>('@inviteLink').then((inviteUrl) => {
+        cy.get('@inviteLink').then((inviteUrl) => {
             cy.log('Текущая ссылка: ' + `${inviteUrl}`);
             cy.visit(`${inviteUrl}`);
         });

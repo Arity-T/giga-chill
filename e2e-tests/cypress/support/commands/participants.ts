@@ -66,93 +66,49 @@ Cypress.Commands.add('changeParticipantRoleByNameUI', (participantName, newRole)
 });
 
 
-
-// Custom command для открытия модального окна и получения ссылки-приглашения
-Cypress.Commands.add('openInviteByLinkModal', () => {
+Cypress.Commands.add('openAddParticipantModal', () => {
     cy.url().then((url) => {
         if (!url.includes("/participants")) {
             cy.contains('.ant-menu-item a', 'Участники').click();
         }
     });
 
+    // Кликаем по кнопке "Добавить участника"
+    cy.contains('button', 'Добавить участника').should('be.visible').click();
 
-    cy.get('.ant-space-item').then(($items) => {
-        const hasAccess = $items.toArray().some(el =>
-            el.textContent.includes('Организатор')
-        );
-
-        // Кликаем по кнопке "Добавить участника"
-        cy.contains('button', 'Добавить участника').should('be.visible').click();
-
-        // Внутри модального окна "Добавить участника"
-        cy.contains('.ant-modal-content', 'Добавить участника').should('be.visible')
-            .within(() => {
-                // Переключаемся на вкладку "По ссылке-приглашению"
-                cy.contains('.ant-tabs-tab', 'По ссылке-приглашению').should('be.visible').click();
-
-                if (hasAccess) {
-                    // Находим кнопку "Создать новую ссылку" и сохраняем в алиас
-                    cy.contains('button', 'Создать новую ссылку')
-                        .should('be.visible')
-                        .as('inviteRegenerateBtn');
-                } else {
-                    cy.contains('button', 'Создать новую ссылку').should('not.exist');
-                    cy.log('Не ялвяется организатором');
-                }
-                // Находим элемент с текстом ссылки и сохраняем в алиас
-                cy.get('span.ant-typography code')
-                    .invoke('text')
-                    .as('inviteLink');
-            });
-    });
+    // Внутри модального окна "Добавить участника"
+    return cy.contains('.ant-modal-content', 'Добавить участника').should('be.visible');
 });
 
 
+Cypress.Commands.add('switchToInviteByLinkTab', { prevSubject: 'element' }, (modalContent) => {
+    // Внутри модального окна "Добавить участника"
+    cy.wrap(modalContent)
+        .within(() => {
+            // Переключаемся на вкладку "По ссылке-приглашению"
+            cy.contains('.ant-tabs-tab', 'По ссылке-приглашению').should('be.visible').click();
+        });
 
-// Добавление участника в мероприятие по логину через API
-Cypress.Commands.add('addParticipantByLoginAPI', (eventId, userName) => {
-    cy.request({
-        method: 'POST',
-        url: `${Cypress.env('apiUrl')}${PAGES.EVENT_PARTICIPANTS(eventId)}`,
-        body: { login: userName },
-        failOnStatusCode: false
-    }).then((response) => {
-        expect(response.status).to.eq(204);
-    });
+    return cy.wrap(modalContent);
 });
 
 
-// Изменение роли участника мероприятия через API
-Cypress.Commands.add('changeParticipantRoleAPI', (eventId, userName, role) => {
-    // Сначала получаем список участников, чтобы найти participantId по login
-    cy.request({
-        method: 'GET',
-        url: `${Cypress.env('apiUrl')}${PAGES.EVENT_PARTICIPANTS(eventId)}`,
-        failOnStatusCode: false
-    }).then((response) => {
-        expect(response.status).to.eq(200);
+Cypress.Commands.add('getInvitationLink', { prevSubject: 'element' }, (modalContent) => {
+    // Внутри модального окна "Добавить участника"
+    return cy.wrap(modalContent).find('span.ant-typography code')
+        .invoke('text');
+});
 
-        // Находим участника по логину
-        const participant = response.body.find(p => {
-            // Логируем каждый проверяемый участник
-            cy.log(`Checking participant: ${JSON.stringify(p)}`);
-            return p.login === userName
+
+Cypress.Commands.add('regenerateInvitationLink', { prevSubject: 'element' }, (modalContent) => {
+    // Внутри модального окна "Добавить участника"
+    cy.wrap(modalContent)
+        .within(() => {
+            // Находим кнопку "Создать новую ссылку", сохраняем в алиас и кликаем
+            cy.contains('button', 'Создать новую ссылку')
+                .should('be.visible')
+                .click();
         });
 
-        if (!participant) {
-            expect(response.status).to.eq(404);
-        }
-
-        // меняем роль
-        return cy.request({
-            method: 'PATCH',
-            url: `${Cypress.env('apiUrl')}${PAGES.EVENT_PARTICIPANTS(eventId)}/${participant.id}/role`, ///events/${eventId}/participants`,//`${Cypress.env('apiUrl')}${PAGES.HOME}`,
-            body: {
-                role: role === 'Администратор' ? 'admin' : 'participant'
-            },
-            failOnStatusCode: false
-        }).then((response1) => {
-            expect(response1.status).to.eq(204);
-        });
-    })
+    return cy.wrap(modalContent);
 });
