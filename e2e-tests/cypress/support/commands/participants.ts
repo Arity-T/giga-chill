@@ -112,3 +112,51 @@ Cypress.Commands.add('regenerateInvitationLink', { prevSubject: 'element' }, (mo
 
     return cy.wrap(modalContent);
 });
+
+// Добавление участника в мероприятие по логину через API
+Cypress.Commands.add('addParticipantByLoginAPI', (eventId, userName) => {
+    cy.request({
+        method: 'POST',
+        url: `${Cypress.env('apiUrl')}${PAGES.EVENT_PARTICIPANTS(eventId)}`,
+        body: { login: userName },
+        failOnStatusCode: false
+    }).then((response) => {
+        expect(response.status).to.eq(204);
+    });
+});
+
+
+// Изменение роли участника мероприятия через API
+Cypress.Commands.add('changeParticipantRoleAPI', (eventId, userName, role) => {
+    // Сначала получаем список участников, чтобы найти participantId по login
+    cy.request({
+        method: 'GET',
+        url: `${Cypress.env('apiUrl')}${PAGES.EVENT_PARTICIPANTS(eventId)}`,
+        failOnStatusCode: false
+    }).then((response) => {
+        expect(response.status).to.eq(200);
+
+        // Находим участника по логину
+        const participant = response.body.find(p => {
+            // Логируем каждый проверяемый участник
+            cy.log(`Checking participant: ${JSON.stringify(p)}`);
+            return p.login === userName
+        });
+
+        if (!participant) {
+            expect(response.status).to.eq(404);
+        }
+
+        // меняем роль
+        return cy.request({
+            method: 'PATCH',
+            url: `${Cypress.env('apiUrl')}${PAGES.EVENT_PARTICIPANTS(eventId)}/${participant.id}/role`, ///events/${eventId}/participants`,//`${Cypress.env('apiUrl')}${PAGES.HOME}`,
+            body: {
+                role: role === 'Администратор' ? 'admin' : 'participant'
+            },
+            failOnStatusCode: false
+        }).then((response1) => {
+            expect(response1.status).to.eq(204);
+        });
+    })
+});

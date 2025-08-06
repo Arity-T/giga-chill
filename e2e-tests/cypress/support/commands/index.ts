@@ -46,6 +46,8 @@ declare global {
             switchToInviteByLinkTab(): Chainable<JQuery<HTMLElement>>;
             getInvitationLink(): Chainable<string>;
             regenerateInvitationLink(): Chainable<JQuery<HTMLElement>>;
+            addParticipantByLoginAPI(eventId: string, userName: string): Chainable<void>;
+            changeParticipantRoleAPI(eventId: string, userName: string, role: ParticipantRole): Chainable<void>;
 
             // Shopping Lists commands
             createShoppingListUI(listName: string, description?: string): Chainable<void>;

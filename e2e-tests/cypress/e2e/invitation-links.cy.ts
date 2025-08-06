@@ -124,4 +124,88 @@ describe('Ссылки-приглашения', () => {
         // Проверяем, что на странице есть название мероприятия
         cy.contains('Пикник').should('exist');
     });
+
+    it('Проверка прав администратора мероприятия, может только делиться с ссылкой', () => {
+        cy.loginUserAPI({
+            login: 'lili',
+            password: '12345678'
+        })
+        //добавляем участника и назначаем его администратором
+        cy.get('@eventId').then((eventId) => {
+            cy.addParticipantByLoginAPI(`${eventId}`, 'xuxa');
+            cy.changeParticipantRoleAPI(`${eventId}`, 'xuxa', 'Администратор')
+        });
+
+        // Очищаем состояние браузера
+        cy.clearLocalStorage();
+        cy.clearCookies();
+
+        // заходим в мероприятие как администратор
+        cy.loginUserAPI({
+            login: 'xuxa',
+            password: '12345678'
+        })
+
+        // Открываем страницу мероприятия
+        cy.get('@eventId').then((eventId) => {
+            cy.visit(PAGES.EVENT_PARTICIPANTS(`${eventId}`));
+        });
+
+        // проверяем нашу роль в мероприятии
+        cy.contains('.ant-space-item', 'Администратор').should('be.visible');
+
+        // можем добавлять по ссылке
+        // вот мы можем открыть модалку для добавления участника 
+        // и перейти в раздел, где ссылка-приглашение
+        cy.openAddParticipantModal()
+            .switchToInviteByLinkTab()
+            .getInvitationLink()
+            .as('inviteLink');
+
+        cy.get<string>('@inviteLink').then((inviteUrl) => {
+            cy.log('Текущая ссылка: ' + `${inviteUrl}`);
+        });
+
+        // проверяем, что здесь у нас нет кнопки, чтобы сгенерировать новую ссылку (((
+        cy.get('.ant-modal-content')
+            .should('be.visible')
+            .within(() => {
+                cy.contains('button', 'Создать новую ссылку').should('not.exist');
+                cy.get('.ant-modal-close').click();
+            });
+    });
+
+
+    it('Проверка прав участника мероприятия, у него нет возможности добавить участников', () => {
+        cy.loginUserAPI({
+            login: 'lili',
+            password: '12345678'
+        })
+        //добавляем участника
+        cy.get('@eventId').then((eventId) => {
+            cy.addParticipantByLoginAPI(`${eventId}`, 'xuxa');
+        });
+
+        // Очищаем состояние браузера
+        cy.clearLocalStorage();
+        cy.clearCookies();
+
+        // заходим в мероприятие как участник
+        cy.loginUserAPI({
+            login: 'xuxa',
+            password: '12345678'
+        })
+
+        // Открываем страницу мероприятия
+        cy.get('@eventId').then((eventId) => {
+            cy.visit(PAGES.EVENT_PARTICIPANTS(`${eventId}`));
+        });
+
+        // проверяем нашу роль в мероприятии
+        cy.contains('.ant-space-item', 'Участник').should('be.visible');
+
+        // проверяем наши возможности для добавления участников
+        // не можем добавлять как-либо
+        cy.contains('button', 'Добавить участника').should('not.exist');
+    });
 });
