@@ -1,14 +1,12 @@
 /// <reference types="cypress" />
 
-import { PAGES } from '../config/pages.config';
-import { CreateEventData, EventCreate, Events } from '../types';
+import { PAGES } from '../../config/pages.config';
+import { CreateEventData } from '../../types/ui';
 
 declare global {
     namespace Cypress {
         interface Chainable {
             createEventUI(eventData: CreateEventData): Chainable<void>;
-            createEventAPI(eventData: EventCreate): Chainable<void>;
-            getEventsAPI(): Chainable<Response<Events>>;
         }
     }
 };
@@ -85,21 +83,4 @@ Cypress.Commands.add('createEventUI', (eventData) => {
 
     // Ждём создания и переходим на страницу мероприятия
     cy.contains('.ant-card', eventData.title).click();
-});
-
-
-Cypress.Commands.add('createEventAPI', (eventData) => {
-    cy.request({
-        method: 'POST',
-        url: `${Cypress.env('apiUrl')}/events`,
-        body: eventData
-    });
-});
-
-
-Cypress.Commands.add('getEventsAPI', () => {
-    return cy.request({
-        method: 'GET',
-        url: `${Cypress.env('apiUrl')}/events`,
-    });
 });

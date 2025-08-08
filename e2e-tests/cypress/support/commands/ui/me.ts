@@ -1,15 +1,12 @@
 /// <reference types="cypress" />
 
-import { PAGES } from '../config/pages.config';
-import { LoginRequest, RegisterRequest } from '../types';
+import { PAGES } from '../../config/pages.config';
 
 declare global {
     namespace Cypress {
         interface Chainable {
             registerUserUI(name: string, username: string, password?: string): Chainable<void>;
-            registerUserAPI(registerRequest: RegisterRequest): Chainable<void>;
             loginUserUI(username: string, password?: string): Chainable<void>;
-            loginUserAPI(loginRequest: LoginRequest): Chainable<void>;
         }
     }
 };
@@ -44,15 +41,6 @@ Cypress.Commands.add('registerUserUI', (name, username, password = '12345678') =
 });
 
 
-Cypress.Commands.add('registerUserAPI', registerRequest => {
-    cy.request({
-        method: 'POST',
-        url: `${Cypress.env('apiUrl')}/auth/register`,
-        body: registerRequest
-    });
-});
-
-
 Cypress.Commands.add('loginUserUI', (username, password = '12345678') => {
     // Переходим на страницу логина, если ещё не там
     cy.url().then((url) => {
@@ -80,13 +68,4 @@ Cypress.Commands.add('loginUserUI', (username, password = '12345678') => {
     cy.get('.ant-dropdown-trigger')
         .should('be.visible')
         .and('contain', `@${username}`);
-});
-
-
-Cypress.Commands.add('loginUserAPI', loginRequest => {
-    cy.request({
-        method: 'POST',
-        url: `${Cypress.env('apiUrl')}/auth/login`,
-        body: loginRequest
-    });
 });

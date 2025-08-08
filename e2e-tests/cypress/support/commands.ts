@@ -6,4 +6,5 @@
 // ***********************************************
 
 // Импортируем все custom commands из организованной структуры
-import './commands/index'; 
+import './commands/ui';
+import './commands/api';

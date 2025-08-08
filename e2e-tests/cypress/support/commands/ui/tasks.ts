@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { CreateTaskData } from "../types";
+import { CreateTaskData } from "../../types/ui";
 
 declare global {
     namespace Cypress {
