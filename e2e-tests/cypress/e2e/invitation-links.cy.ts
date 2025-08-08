@@ -29,8 +29,9 @@ describe('Ссылки-приглашения', () => {
             start_datetime: '2025-08-20T06:00:00Z',
             end_datetime: '2025-08-30T20:00:00Z',
             description: 'всем добра!!!!'
-        }).then((eventId) => {
-            cy.wrap(eventId).as('eventId');
+        });
+        cy.getEventsAPI().then((response) => {
+            cy.wrap(response.body[0].event_id).as('eventId');
         });
 
         // Очищаем состояние браузера

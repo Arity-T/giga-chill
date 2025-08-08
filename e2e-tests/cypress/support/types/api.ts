@@ -5,7 +5,34 @@
 // frontend/src/store/api/codegenApi.ts
 // Чтобы файлик появился, надо предварительно выполнить npm run codegen
 
-export type EventCreateAPI = {
+export enum UserRole {
+    Owner = "owner",
+    Admin = "admin",
+    Participant = "participant",
+}
+
+export type Event = {
+    event_id: string;
+    user_role: UserRole;
+    /** Название мероприятия */
+    title: string;
+    /** Место мероприятия */
+    location: string;
+    /** Дата и время начала мероприятия */
+    start_datetime: string;
+    /** Дата и время окончания мероприятия */
+    end_datetime: string;
+    /** Описание мероприятия */
+    description?: string;
+    /** Бюджет мероприятия */
+    budget?: number;
+    /** Флаг, который показывает завершено ли мероприятие или нет. */
+    is_finalized: boolean;
+};
+
+export type Events = Event[];
+
+export type EventCreate = {
     title: string;
     location: string;
     start_datetime: string;
@@ -13,13 +40,13 @@ export type EventCreateAPI = {
     description?: string;
 };
 
-export type LoginRequestAPI = {
+export type LoginRequest = {
     login: string;
     /** Пароль пользователя */
     password: string;
 };
 
-export type RegisterRequestAPI = {
+export type RegisterRequest = {
     login: string;
     password: string;
     name: string;

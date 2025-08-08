@@ -1,13 +1,14 @@
 /// <reference types="cypress" />
 
 import { PAGES } from '../config/pages.config';
-import { CreateEventData, EventCreateAPI } from '../types';
+import { CreateEventData, EventCreate, Events } from '../types';
 
 declare global {
     namespace Cypress {
         interface Chainable {
             createEventUI(eventData: CreateEventData): Chainable<void>;
-            createEventAPI(eventData: EventCreateAPI): Chainable<string>;
+            createEventAPI(eventData: EventCreate): Chainable<void>;
+            getEventsAPI(): Chainable<Response<Events>>;
         }
     }
 };
@@ -86,38 +87,19 @@ Cypress.Commands.add('createEventUI', (eventData) => {
     cy.contains('.ant-card', eventData.title).click();
 });
 
-/**
- * Создает мероприятие через API
- * @param eventData - данные для создания мероприятия
- * @param authToken - токен авторизации (опционально, если нужен другой пользователь)
- */
 
 Cypress.Commands.add('createEventAPI', (eventData) => {
     cy.request({
         method: 'POST',
-        url: `${Cypress.env('apiUrl')}${PAGES.HOME}`,
+        url: `${Cypress.env('apiUrl')}/events`,
         body: eventData
-    }).then((response) => {
-        expect(response.status).to.eq(204);// Проверка, что запрос прошёл успешно
+    });
+});
 
-        // Получить список всех мероприятий пользователя
-        cy.request({
-            method: 'GET',
-            url: `${Cypress.env('apiUrl')}${PAGES.HOME}`,
-        }).then((getResponse) => {
-            expect(getResponse.status).to.eq(200);
 
-            // Найти только что созданное мероприятие
-            const createdEvent = getResponse.body.find((event) =>
-                event.title === eventData.title
-            );
-
-            if (!createdEvent) {
-                expect(createdEvent, 'Мероприятие не найдено после создания').to.exist;
-            }
-
-            // ID мероприятия
-            return createdEvent.event_id;
-        });
+Cypress.Commands.add('getEventsAPI', () => {
+    return cy.request({
+        method: 'GET',
+        url: `${Cypress.env('apiUrl')}/events`,
     });
 });

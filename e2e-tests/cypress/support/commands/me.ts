@@ -1,15 +1,15 @@
 /// <reference types="cypress" />
 
 import { PAGES } from '../config/pages.config';
-import { LoginRequestAPI, RegisterRequestAPI } from '../types';
+import { LoginRequest, RegisterRequest } from '../types';
 
 declare global {
     namespace Cypress {
         interface Chainable {
             registerUserUI(name: string, username: string, password?: string): Chainable<void>;
-            registerUserAPI(registerRequest: RegisterRequestAPI): Chainable<void>;
+            registerUserAPI(registerRequest: RegisterRequest): Chainable<void>;
             loginUserUI(username: string, password?: string): Chainable<void>;
-            loginUserAPI(loginRequest: LoginRequestAPI): Chainable<void>;
+            loginUserAPI(loginRequest: LoginRequest): Chainable<void>;
         }
     }
 };
@@ -47,11 +47,8 @@ Cypress.Commands.add('registerUserUI', (name, username, password = '12345678') =
 Cypress.Commands.add('registerUserAPI', registerRequest => {
     cy.request({
         method: 'POST',
-        url: `${Cypress.env('apiUrl')}${PAGES.REGISTER}`,
-        body: registerRequest,
-        failOnStatusCode: false
-    }).then((response) => {
-        expect(response.status).to.eq(204);
+        url: `${Cypress.env('apiUrl')}/auth/register`,
+        body: registerRequest
     });
 });
 
@@ -85,17 +82,11 @@ Cypress.Commands.add('loginUserUI', (username, password = '12345678') => {
         .and('contain', `@${username}`);
 });
 
-/**
- * Команда для входа пользователя через API
- */
+
 Cypress.Commands.add('loginUserAPI', loginRequest => {
-    // Отправляем POST-запрос на эндпоинт входа
     cy.request({
         method: 'POST',
-        url: `${Cypress.env('apiUrl')}${PAGES.LOGIN}`, // Путь к эндпоинту аутентификации
-        body: loginRequest,
-        failOnStatusCode: false // Не завершать тест при ошибках
-    }).then((response) => {
-        expect(response.status).to.eq(204);
+        url: `${Cypress.env('apiUrl')}/auth/login`,
+        body: loginRequest
     });
 });
