@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 
-import { PAGES } from '../../config/pages.config';
-import { CreateEventData } from '../../types/ui';
+import { PAGES } from '@config/pages.config';
+import type { CreateEventData } from '@typings/ui';
 
 declare global {
     namespace Cypress {

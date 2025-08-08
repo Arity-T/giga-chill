@@ -1,4 +1,4 @@
-import { PAGES } from "../support/config/pages.config";
+import { PAGES } from "@config/pages.config";
 
 describe('Ссылки-приглашения', () => {
     // Подготавливаем состояние приложения для тестов

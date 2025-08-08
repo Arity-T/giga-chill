@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { EventCreate, Events } from '../../types/api';
+import type { EventCreate, Events } from '@typings/api';
 
 declare global {
     namespace Cypress {

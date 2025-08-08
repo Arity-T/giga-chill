@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { LoginRequest, RegisterRequest } from '../../types/api';
+import type { LoginRequest, RegisterRequest } from '@typings/api';
 
 declare global {
     namespace Cypress {

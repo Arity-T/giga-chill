@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { ParticipantStatus } from "../../types/ui";
+import type { ParticipantStatus } from "@typings/ui";
 
 declare global {
     namespace Cypress {

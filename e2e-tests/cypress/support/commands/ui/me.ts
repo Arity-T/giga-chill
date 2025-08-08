@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { PAGES } from '../../config/pages.config';
+import { PAGES } from '@config/pages.config';
 
 declare global {
     namespace Cypress {
