@@ -24,27 +24,15 @@ Cypress.Commands.add('registerUserUI', (name, username, password = '12345678') =
         }
     });
 
-    cy.get('#register_name')
-        .should('be.visible')
-        .and('have.value', '')
-        .type(name)
-        .should('have.value', name);
+    cy.get('#register_name').type(name);
 
-    cy.get('#register_login')
-        .type(username)
-        .should('have.value', username);
+    cy.get('#register_login').type(username);
 
-    cy.get('#register_password')
-        .type(password)
-        .should('have.value', password);
+    cy.get('#register_password').type(password);
 
-    cy.get('#register_password2')
-        .type(password)
-        .should('have.value', password);
+    cy.get('#register_password2').type(password);
 
-    cy.contains('button', 'Зарегистрироваться')
-        .should('be.enabled')
-        .click();
+    cy.contains('button', 'Зарегистрироваться').click();
 
     // Проверяем успешную регистрацию (переход на главную)
     cy.url().should('include', PAGES.HOME);

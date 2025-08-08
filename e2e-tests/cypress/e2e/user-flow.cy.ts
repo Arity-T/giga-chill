@@ -73,12 +73,12 @@ describe('Полный пользовательский сценарий', { tes
     it('Выполнение задачи исполнителем', () => {
         cy.loginUserUI("xuxa");
 
-        cy.contains('.ant-card', 'Пикник').should('be.visible').click();
+        cy.contains('.ant-card', 'Пикник').click();
         cy.contains('.ant-menu-item a', 'Задачи').click();
 
-        cy.getTaskCard('Купить напитки').should('be.visible').click();
+        cy.getTaskCard('Купить напитки').click();
 
-        cy.getTaskModal('Купить напитки').should('be.visible')
+        cy.getTaskModal('Купить напитки')
             .takeTaskInProgress()
             .within(() => {
                 cy.getShoppingList('Напитки')
@@ -101,10 +101,10 @@ describe('Полный пользовательский сценарий', { tes
     it('Проверка выполнения задачи ревьюером', () => {
         cy.loginUserUI("lili");
 
-        cy.contains('.ant-card', 'Пикник').should('be.visible').click();
+        cy.contains('.ant-card', 'Пикник').click();
         cy.contains('.ant-menu-item a', 'Задачи').click();
 
-        cy.getTaskCard('Купить напитки').should('be.visible').click();
+        cy.getTaskCard('Купить напитки').click();
 
         cy.getTaskModal('Купить напитки').within(() => {
             cy.getShoppingList('Напитки').setShoppingListBudget('100');

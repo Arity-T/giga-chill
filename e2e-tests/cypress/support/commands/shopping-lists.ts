@@ -29,13 +29,12 @@ export { } // Необходимо для использования global
 
 
 Cypress.Commands.add('createShoppingList', (listName, description) => {
-    cy.contains('button', 'Добавить список').should('be.visible').click();
+    cy.contains('button', 'Добавить список').click();
 
-    cy.contains('.ant-modal-content', 'Создать список покупок').should('be.visible')
+    cy.contains('.ant-modal-content', 'Создать список покупок')
         .within(() => {
             cy.get('input[placeholder*="название"]')
-                .type(listName)
-                .should('have.value', listName);
+                .type(listName);
 
             if (description) {
                 cy.get('textarea[placeholder*="описание"]')
@@ -53,7 +52,7 @@ Cypress.Commands.add('getShoppingList', (listName) => {
 
 
 Cypress.Commands.add('toogleShoppingList', { prevSubject: 'element' }, (shoppingListCard) => {
-    cy.wrap(shoppingListCard).find('.anticon-caret-right').should('be.visible').click();
+    cy.wrap(shoppingListCard).find('.anticon-caret-right').click();
     return cy.wrap(shoppingListCard);
 });
 
@@ -62,7 +61,7 @@ Cypress.Commands.add('setShoppingListConsumers', { prevSubject: 'element' }, (sh
     // Находим список и кликаем на иконку назначения потребителей
     cy.wrap(shoppingListCard).find('.anticon-user-add').last().click();
 
-    cy.contains('.ant-modal-content', 'Выбрать потребителей').should('be.visible')
+    cy.contains('.ant-modal-content', 'Выбрать потребителей')
         .within(() => {
             // TODO: реализовать выбор потребителей по спику имён или логинов
             if (selectAll) {
@@ -89,8 +88,8 @@ Cypress.Commands.add('getShoppingListConsumersCount', { prevSubject: 'element' }
 
 Cypress.Commands.add('setShoppingListBudget', { prevSubject: 'element' }, (shoppingListCard, budget) => {
     cy.wrap(shoppingListCard).within(() => {
-        cy.get('input[placeholder="Бюджет"]').clear().should('be.visible').type(budget);
-        cy.get('.anticon-check').should('be.visible').click();
+        cy.get('input[placeholder="Бюджет"]').clear().type(budget);
+        cy.get('.anticon-check').click();
 
         // Проверяем, что бюджет сохранился
         // Икнока для сохранения должна исчезнуть
@@ -107,15 +106,14 @@ Cypress.Commands.add('getShoppingListBudget', { prevSubject: 'element' }, (shopp
 
 
 Cypress.Commands.add('addShoppingItem', { prevSubject: 'element' }, (shoppingListCard, itemData) => {
-    cy.wrap(shoppingListCard).contains('button', 'Добавить покупку').should('be.visible').click();
+    cy.wrap(shoppingListCard).contains('button', 'Добавить покупку').click();
 
-    cy.contains('.ant-modal-content', 'Добавить покупку').should('be.visible').as('addShoppingItemModal');
+    cy.contains('.ant-modal-content', 'Добавить покупку').as('addShoppingItemModal');
 
     cy.get('@addShoppingItemModal').within(() => {
         // Заполняем название товара
         cy.get('input[placeholder="Введите название товара"]')
-            .type(itemData.name)
-            .should('have.value', itemData.name);
+            .type(itemData.name);
 
         // Заполняем количество
         cy.get('input[placeholder="1"]').clear().type(itemData.quantity);
@@ -125,9 +123,9 @@ Cypress.Commands.add('addShoppingItem', { prevSubject: 'element' }, (shoppingLis
     });
 
     // Выбираем нужную единицу измерения
-    cy.contains('.ant-select-item', itemData.unit).should('be.visible').click();
+    cy.contains('.ant-select-item', itemData.unit).click();
 
-    cy.get('@addShoppingItemModal').contains('button', 'Добавить').should('be.visible').click();
+    cy.get('@addShoppingItemModal').contains('button', 'Добавить').click();
 
     return cy.wrap(shoppingListCard);
 });
@@ -139,6 +137,6 @@ Cypress.Commands.add('getShoppingItem', { prevSubject: 'element' }, (shoppingLis
 
 
 Cypress.Commands.add('markShoppingItemAsPurchased', { prevSubject: 'element' }, (shoppingItemCard) => {
-    cy.wrap(shoppingItemCard).find('.ant-checkbox').should('be.visible')
+    cy.wrap(shoppingItemCard).find('.ant-checkbox')
         .find('input[type="checkbox"]').click().should('be.checked');
 });

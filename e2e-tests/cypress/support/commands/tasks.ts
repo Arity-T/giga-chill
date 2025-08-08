@@ -19,10 +19,9 @@ export { } // Необходимо для использования global
 
 
 Cypress.Commands.add('createTask', (taskData) => {
-    cy.contains('button', 'Создать задачу').should('be.visible').click();
+    cy.contains('button', 'Создать задачу').click();
 
-    cy.contains('.ant-modal-content', 'Создать задачу').should('be.visible')
-        .as('createTaskModal');
+    cy.contains('.ant-modal-content', 'Создать задачу').as('createTaskModal');
 
     // Сохраняем заголовок, чтобы потом кликать по нему для закрытия выпадающих списокв
     cy.get('@createTaskModal').contains('Создать задачу').as('createTaskModalTitle');
@@ -43,9 +42,9 @@ Cypress.Commands.add('createTask', (taskData) => {
 
     if (taskData.assigneeName) {
         cy.get('@createTaskModal').contains('.ant-select', 'Выберите исполнителя')
-            .should('be.visible').click();
+            .click();
 
-        cy.contains('.ant-select-item', taskData.assigneeName).should('be.visible')
+        cy.contains('.ant-select-item', taskData.assigneeName)
             .click();
 
         // Закрываем выпадающий список
@@ -54,10 +53,10 @@ Cypress.Commands.add('createTask', (taskData) => {
 
     if (taskData.shoppingLists) {
         cy.get('@createTaskModal').contains('.ant-select', 'Выберите списки покупок')
-            .should('be.visible').click();
+            .click();
 
         taskData.shoppingLists.forEach(listName => {
-            cy.contains('.ant-select-item', listName).should('be.visible')
+            cy.contains('.ant-select-item', listName)
                 .click();
         });
 
@@ -65,7 +64,7 @@ Cypress.Commands.add('createTask', (taskData) => {
         cy.get('@createTaskModalTitle').click();
     }
 
-    cy.get('@createTaskModal').contains('button', 'Создать').should('be.visible').click();
+    cy.get('@createTaskModal').contains('button', 'Создать').click();
 });
 
 
@@ -81,8 +80,7 @@ Cypress.Commands.add('getTaskModal', (taskName) => {
 
 
 Cypress.Commands.add('takeTaskInProgress', { prevSubject: 'element' }, (taskModal) => {
-    cy.wrap(taskModal).contains('button', 'Взять в работу').should('be.visible')
-        .should('be.enabled').click();
+    cy.wrap(taskModal).contains('button', 'Взять в работу').click();
 
     return cy.wrap(taskModal);
 });
@@ -112,9 +110,9 @@ Cypress.Commands.add('completeTask', { prevSubject: 'element' }, (taskModal, rev
             .type(reviwerComment);
 
         if (isApproved) {
-            cy.contains('button', 'Подтвердить выполнение').should('be.enabled').click();
+            cy.contains('button', 'Подтвердить выполнение').click();
         } else {
-            cy.contains('button', 'Отправить назад в работу').should('be.enabled').click();
+            cy.contains('button', 'Отправить назад в работу').click();
         }
     });
 }); 

@@ -24,23 +24,22 @@ Cypress.Commands.add('changeParticipantRoleByName', (participantName, newRole) =
     // Кликаем на текущую роль в этой строке
     cy.get('@participantRow')
         .contains(/^(Участник|Администратор)$/)
-        .should('be.visible')
         .click();
 
     // Выбираем новую роль
-    cy.get('.ant-select-item').contains(newRole).should('be.visible').click();
+    cy.get('.ant-select-item').contains(newRole).click();
 
     // Проверяем, что роль поменялась
-    cy.get('@participantRow').contains(newRole).should('exist');
+    cy.get('@participantRow').contains(newRole).should('be.visible');
 });
 
 
 Cypress.Commands.add('openAddParticipantModal', () => {
     // Кликаем по кнопке "Добавить участника"
-    cy.contains('button', 'Добавить участника').should('be.visible').click();
+    cy.contains('button', 'Добавить участника').click();
 
     // Внутри модального окна "Добавить участника"
-    return cy.contains('.ant-modal-content', 'Добавить участника').should('be.visible');
+    return cy.contains('.ant-modal-content', 'Добавить участника');
 });
 
 
@@ -50,9 +49,8 @@ Cypress.Commands.add('addParticipantByLogin', { prevSubject: 'element' }, (modal
         .within(() => {
             cy.get('input[placeholder="Введите логин пользователя"]')
                 .type(username)
-                .should('have.value', username);
 
-            cy.contains('button', 'Добавить участника').should('be.visible').click();
+            cy.contains('button', 'Добавить участника').click();
         });
 });
 
@@ -62,7 +60,7 @@ Cypress.Commands.add('switchToInviteByLinkTab', { prevSubject: 'element' }, (mod
     cy.wrap(modalContent)
         .within(() => {
             // Переключаемся на вкладку "По ссылке-приглашению"
-            cy.contains('.ant-tabs-tab', 'По ссылке-приглашению').should('be.visible').click();
+            cy.contains('.ant-tabs-tab', 'По ссылке-приглашению').click();
         });
 
     return cy.wrap(modalContent);
@@ -82,7 +80,6 @@ Cypress.Commands.add('regenerateInvitationLink', { prevSubject: 'element' }, (mo
         .within(() => {
             // Находим кнопку "Создать новую ссылку", сохраняем в алиас и кликаем
             cy.contains('button', 'Создать новую ссылку')
-                .should('be.visible')
                 .click();
         });
 

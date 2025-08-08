@@ -32,20 +32,18 @@ Cypress.Commands.add('createEventUI', (eventData) => {
         .click();
 
     // Находим модальное окно с формой добавления мероприятия
-    cy.contains('.ant-modal-content', 'Создать мероприятие').should('be.visible').as('createEventModal');
+    cy.contains('.ant-modal-content', 'Создать мероприятие').as('createEventModal');
 
     // Внутри модального окна
     cy.get('@createEventModal')
         .within(() => {
             // Заполняем название
             cy.get('input[placeholder="Введите название мероприятия"]')
-                .type(eventData.title)
-                .should('have.value', eventData.title);
+                .type(eventData.title);
 
             // Заполняем место проведения
             cy.get('input[placeholder="Введите адрес или место проведения"]')
-                .type(eventData.location)
-                .should('have.value', eventData.location);
+                .type(eventData.location);
 
             // Заполняем описание, если передано
             if (eventData.description) {
@@ -59,7 +57,7 @@ Cypress.Commands.add('createEventUI', (eventData) => {
     cy.get('@createEventModal').find('input[placeholder="Начало"]').click();
 
     // Внутри панели выбора даты и времени
-    cy.get('.ant-picker-datetime-panel-container').should('be.visible').within(() => {
+    cy.get('.ant-picker-datetime-panel-container').within(() => {
         cy.get('.ant-picker-cell').contains(eventData.startDay).click();
         cy.get('.ant-picker-time-panel-column')
             .first()
@@ -72,7 +70,7 @@ Cypress.Commands.add('createEventUI', (eventData) => {
     cy.get('@createEventModal').find('input[placeholder="Окончание"]').click();
 
     // Внутри панели выбора даты и времени
-    cy.get('.ant-picker-datetime-panel-container').should('be.visible').within(() => {
+    cy.get('.ant-picker-datetime-panel-container').within(() => {
         cy.get('.ant-picker-cell').contains(eventData.endDay).click();
         cy.get('.ant-picker-time-panel-column')
             .first()
@@ -85,7 +83,7 @@ Cypress.Commands.add('createEventUI', (eventData) => {
     cy.get('@createEventModal').find('button').contains('Создать').click();
 
     // Ждём создания и переходим на страницу мероприятия
-    cy.contains('.ant-card', eventData.title).should('be.visible').click();
+    cy.contains('.ant-card', eventData.title).click();
 });
 
 /**

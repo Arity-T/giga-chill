@@ -18,17 +18,17 @@ Cypress.Commands.add('finishEventUI', () => {
     cy.url().then((url) => {
         // TODO: переделать на использование конфига
         if (!url.includes("/debts")) {
-            cy.contains('.ant-menu-item a', 'Общие расчёты').should('be.visible').click();
+            cy.contains('.ant-menu-item a', 'Общие расчёты').click();
         }
     });
 
     // Завершаем мероприятие
-    cy.contains('button', 'Завершить мероприятие').should('be.visible').click();
+    cy.contains('button', 'Завершить мероприятие').click();
     cy.get('.ant-modal-content').contains('button', 'Да, завершить мероприятие')
-        .should('be.visible').click();
+        .click();
 
     // Проверяем, что мероприятие завершено (есть таблица с балансами)
-    cy.get('table').should('exist');
+    cy.get('table').should('be.visible');
 });
 
 
