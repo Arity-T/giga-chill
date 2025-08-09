@@ -5,8 +5,12 @@ import type { ParticipantRole } from "@typings/ui";
 declare global {
     namespace Cypress {
         interface Chainable {
-            changeParticipantRoleByName(participantName: string, newRole: ParticipantRole): Chainable<void>;
+            getParticipantRow(login: string): Chainable<JQuery<HTMLElement>>;
+            getParticipantRole(): Chainable<string>;
+            getParticipantRoleSelect(): Chainable<JQuery<HTMLElement>>;
+            setParticipantRole(newRole: ParticipantRole): Chainable<JQuery<HTMLElement>>;
             addParticipantByLogin(username: string): Chainable<void>;
+            getDeleteParticipantBtn(): Chainable<JQuery<HTMLElement>>;
             openAddParticipantModal(): Chainable<JQuery<HTMLElement>>;
             switchToInviteByLinkTab(): Chainable<JQuery<HTMLElement>>;
             getInvitationLink(): Chainable<string>;
@@ -17,20 +21,27 @@ declare global {
 export { } // Необходимо для использования global
 
 
-Cypress.Commands.add('changeParticipantRoleByName', (participantName, newRole) => {
-    // Находим строку и сохраняем её в алиас
-    cy.contains('tr', participantName).as('participantRow');
+Cypress.Commands.add('getParticipantRow', (login) => {
+    return cy.contains('tr', login);
+});
 
-    // Кликаем на текущую роль в этой строке
-    cy.get('@participantRow')
-        .contains(/^(Участник|Администратор)$/)
-        .click();
 
-    // Выбираем новую роль
+Cypress.Commands.add('getParticipantRole', { prevSubject: 'element' }, (participantRow) => {
+    return cy.wrap(participantRow).find('td:nth-child(2) .ant-tag').invoke('text');
+});
+
+
+Cypress.Commands.add('getParticipantRoleSelect', { prevSubject: 'element' }, (participantRow) => {
+    return cy.wrap(participantRow).find('td:nth-child(2) .ant-select');
+});
+
+
+Cypress.Commands.add('setParticipantRole', { prevSubject: 'element' }, (participantRow, newRole) => {
+    cy.wrap(participantRow).getParticipantRoleSelect().click();
+
     cy.get('.ant-select-item').contains(newRole).click();
 
-    // Проверяем, что роль поменялась
-    cy.get('@participantRow').contains(newRole).should('be.visible');
+    return cy.wrap(participantRow);
 });
 
 
@@ -52,6 +63,11 @@ Cypress.Commands.add('addParticipantByLogin', { prevSubject: 'element' }, (modal
 
             cy.contains('button', 'Добавить участника').click();
         });
+});
+
+
+Cypress.Commands.add('getDeleteParticipantBtn', { prevSubject: 'element' }, (participantRow) => {
+    return cy.wrap(participantRow).find('td:nth-child(3) .ant-btn');
 });
 
 

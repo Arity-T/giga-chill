@@ -4,6 +4,7 @@ declare global {
     namespace Cypress {
         interface Chainable {
             closeModal(): Chainable<void>;
+            confirmModal(): Chainable<void>;
         }
     }
 }
@@ -16,4 +17,9 @@ Cypress.Commands.add('closeModal', { prevSubject: ['optional', 'element'] }, (mo
     } else {
         cy.get('.ant-modal-close').click();
     }
+});
+
+
+Cypress.Commands.add('confirmModal', () => {
+    cy.get('.ant-modal-confirm-btns').contains('button', 'Да').click();
 });

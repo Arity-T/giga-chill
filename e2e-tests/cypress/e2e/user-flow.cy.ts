@@ -33,7 +33,8 @@ describe('Полный пользовательский сценарий', { tes
         cy.openAddParticipantModal().addParticipantByLogin('didi');
 
         // Назначаем роль администратора
-        cy.changeParticipantRoleByName('Ксения', 'Администратор');
+        cy.getParticipantRow('Ксения').setParticipantRole('Администратор');
+        cy.getParticipantRow('Ксения').getParticipantRole().should('eq', 'Администратор');
     });
 
     it('Создание списка покупок', () => {

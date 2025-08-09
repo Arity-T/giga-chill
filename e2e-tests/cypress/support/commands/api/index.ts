@@ -8,3 +8,4 @@
 // Импортируем команды по категориям
 import './me';
 import './events';
+import './participants';

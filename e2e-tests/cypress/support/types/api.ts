@@ -51,3 +51,12 @@ export type RegisterRequest = {
     password: string;
     name: string;
 };
+
+export type Participant = {
+    id: string;
+    login: string;
+    name: string;
+    user_role: UserRole;
+};
+
+export type Participants = Participant[];
