@@ -1,4 +1,5 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+import com.github.gradle.node.npm.task.NpmInstallTask
 
 plugins {
 	java
@@ -7,6 +8,7 @@ plugins {
 	id("nu.studer.jooq") version "10.1"
     id("com.diffplug.spotless") version "6.19.0"
     id("org.openapi.generator") version "7.14.0"
+    id("com.github.node-gradle.node") version "7.0.2"
 }
 
 group = "com.github.giga-chill"
@@ -52,6 +54,7 @@ dependencies {
 
     //Swagger API
     implementation("io.swagger.core.v3:swagger-annotations:2.2.9")
+    implementation("org.openapitools:jackson-databind-nullable:0.2.6")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     // Lombok
     compileOnly("org.projectlombok:lombok")
@@ -93,19 +96,72 @@ dependencies {
     jooqGenerator("org.postgresql:postgresql")
 }
 
+
+// === Пути для файлов генерации ===
+val specMainPath = System.getenv("OPEN_API_MAIN_SPECIFICATION")
+val specTestPath = System.getenv("OPEN_API_TEST_SPECIFICATION")
+var bundledPath = "$buildDir/generated/api/bundled.yaml"
+var mergedPath = "$buildDir/generated/api/merged.yaml"
+
+// === Установка Node ===
+node {
+    download.set(true) // скачиваем Node.js автоматически
+    version.set("20.16.0")
+    npmVersion.set("10.8.2")
+}
+
+// === Установка зависимостей для Node ===
+val npmInstallDeps by tasks.registering(Exec::class) {
+    group = "openapi"
+    description = "Устанавливает swagger-cli и openapi-merge локально"
+
+    commandLine("npm", "install", "--no-save", "swagger-cli", "@redocly/cli")
+}
+
+// === Сборка основного API ===
+val bundleApi by tasks.registering(Exec::class) {
+    group = "openapi";
+    description = "Сборка основного файла API"
+
+    dependsOn(npmInstallDeps)
+    inputs.file(specMainPath)
+    outputs.file(bundledPath)
+    commandLine(
+        "npx", "swagger-cli", "bundle",
+        specMainPath,
+        "--type", "yaml",
+        "-o", bundledPath
+    )
+}
+
+// === Слияние с API для тестов ===
+val mergeSpecs by tasks.registering(Exec::class) {
+    group = "openapi";
+    description = "Слияние с API для тестов"
+
+    dependsOn(bundleApi)
+    inputs.files(specTestPath, bundledPath)
+    outputs.file(mergedPath)
+    commandLine(
+        "$projectDir/node_modules/.bin/redocly",
+        "join", bundledPath, specTestPath,
+        "--output", mergedPath
+    )
+}
+
 // === Задача для генерации основного API ===
-val generateMainApi by tasks.registering(GenerateTask::class) {
+val generateOpenApi by tasks.registering(GenerateTask::class) {
     group = "openapi"
     description = "Генерация кода по основному API"
-    val specMainPath = System.getenv("OPEN_API_MAIN_SPECIFICATION")
+    dependsOn(mergeSpecs)
 
     validateSpec.set(false)
     generatorName.set("spring")
-    inputSpec.set(specMainPath)
-    outputDir.set("$buildDir/generated/api/main")
-    apiPackage.set("com.github.giga_chill.gigachill.web.api.main")
-    modelPackage.set("com.github.giga_chill.gigachill.web.api.main.model")
-    invokerPackage.set("com.github.giga_chill.gigachill.web.api.main.invoker")
+    inputSpec.set(mergedPath)
+    outputDir.set("$buildDir/generated/api")
+    apiPackage.set("com.github.giga_chill.gigachill.web.api")
+    modelPackage.set("com.github.giga_chill.gigachill.web.api.model")
+    invokerPackage.set("com.github.giga_chill.gigachill.web.api.invoker")
     configOptions.set(
         mapOf(
             "useJakartaEe" to "true",
@@ -117,39 +173,6 @@ val generateMainApi by tasks.registering(GenerateTask::class) {
         )
     )
 }
-
-// === Задача для генерации API для тестов===
-val generateTestApi by tasks.registering(GenerateTask::class) {
-    group = "openapi"
-    description = "Генерация кода по API для тестов"
-    val specTestPath = System.getenv("OPEN_API_TEST_SPECIFICATION")
-
-
-    validateSpec.set(false)
-    generatorName.set("spring")
-    inputSpec.set(specTestPath)
-    outputDir.set("$buildDir/generated/api/test")
-    apiPackage.set("com.github.giga_chill.gigachill.web.api.test")
-    modelPackage.set("com.github.giga_chill.gigachill.web.api.test.model")
-    invokerPackage.set("com.github.giga_chill.gigachill.web.api.test.invoker")
-    configOptions.set(
-        mapOf(
-            "useJakartaEe" to "true",
-            "interfaceOnly" to "true",
-            "skipDefaultInterface" to "true",
-            "dateLibrary" to "java8",
-            "useBeanValidation" to "false",
-            "sourceFolder" to ""
-        )
-    )
-}
-
-val generateAllApis by tasks.registering {
-    group = "openapi"
-    description = "Сгенерировать все API сразу"
-    dependsOn(generateTestApi)
-}
-
 
 tasks.withType<Test> {
 	useJUnitPlatform()
@@ -165,6 +188,8 @@ val jdbcUrl = "jdbc:postgresql://$dbHost:$dbPort/$dbName"
 
 sourceSets["main"].java.srcDir("build/generated-sources/jooq")
 sourceSets["main"].java.srcDir("build/generated/api")
+
+
 
 // === jOOQ codegen конфигурация ===
 jooq {
