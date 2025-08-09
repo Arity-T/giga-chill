@@ -68,8 +68,7 @@ Cypress.Commands.add('switchToInviteByLinkTab', { prevSubject: 'element' }, (mod
 
 
 Cypress.Commands.add('getInvitationLink', { prevSubject: 'element' }, (modalContent) => {
-    // Внутри модального окна "Добавить участника"
-    return cy.wrap(modalContent).find('span.ant-typography code')
+    return cy.wrap(modalContent).find('span.ant-typography code').should('be.visible')
         .invoke('text');
 });
 

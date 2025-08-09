@@ -8,3 +8,4 @@
 // Импортируем все custom commands из организованной структуры
 import './commands/ui';
 import './commands/api';
+import './commands/utils';
