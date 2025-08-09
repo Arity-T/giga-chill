@@ -1,0 +1,19 @@
+{
+  "name": "openapi",
+  "version": "1.0.0",
+  "description": "Скрипты для объединения файлов OpenAPI",
+  "main": "index.js",
+  
+  "scripts": {
+    "bundle:api": "redocly bundle api.yml --output build/api.bundled.yml",
+    "join": "redocly join build/api.bundled.yml test-utils.yml -o build/combined.yml",
+    "build": "npm run bundle:api && npm run join"
+  },
+  "author": "ООО tishenko.dev",
+  "license": "ISC",
+  "devDependencies": {
+    "@apidevtools/swagger-cli": "^4.0.4",
+    "@redocly/cli": "^1.0.0",
+    "js-yaml": "^4.1.0"
+  }
+}

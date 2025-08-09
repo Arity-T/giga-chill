@@ -1,0 +1,1637 @@
+openapi: 3.0.0
+info:
+  title: GigaChill
+  version: 0.1.0
+servers:
+  - url: http://localhost:3000
+tags:
+  - name: Me
+    x-displayName: Me
+  - name: Events
+    x-displayName: Events
+  - name: Invitation Tokens
+    x-displayName: Invitation Tokens
+  - name: Participants
+    x-displayName: Participants
+  - name: Shopping Lists
+    x-displayName: Shopping Lists
+  - name: Shopping List Items
+    x-displayName: Shopping List Items
+  - name: Tasks
+    x-displayName: Tasks
+  - name: Debts
+    x-displayName: Debts
+  - name: Database
+    x-displayName: Database
+paths:
+  /auth/login:
+    post:
+      summary: Аутентификация пользователя
+      description: Возвращает JWT токен при успешной аутентификации.
+      tags:
+        - Me
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '204':
+          description: JWT отправлен в Set-Cookie (HttpOnly). Тело пустое.
+        '401':
+          description: Неверный логин или пароль
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/register:
+    post:
+      summary: Регистрация нового пользователя
+      tags:
+        - Me
+      operationId: register
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '204':
+          description: >-
+            Пользователь создан. JWT-токен отправлен в Set-Cookie (HttpOnly).
+            Тело пустое.
+        '400':
+          $ref: '#/components/responses/InvalidDataError'
+        '409':
+          description: Пользователь с таким логином уже существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/logout:
+    post:
+      summary: Выход из системы
+      description: Удаляет JWT токен из cookie.
+      tags:
+        - Me
+      operationId: logout
+      responses:
+        '204':
+          description: Пользователь успешно вышел из системы. JWT токен удалён из cookie.
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      security:
+        - CookieAuth: []
+  /me:
+    get:
+      summary: Текущий пользователь
+      description: Возвращает данные пользователя, идентифицированного по JWT.
+      tags:
+        - Me
+      operationId: getMe
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      security:
+        - CookieAuth: []
+  /events:
+    get:
+      summary: Список моих мероприятий
+      description: >-
+        Возвращает все мероприятия, в которых участвует аутентифицированный
+        пользователь, вместе с его ролью в этих мероприятиях.
+      tags:
+        - Events
+      operationId: getEvents
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Events'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      security:
+        - CookieAuth: []
+    post:
+      summary: Создать мероприятие
+      description: Автор запроса автоматически становится **owner**.
+      tags:
+        - Events
+      operationId: createEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventCreate'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/InvalidDataError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}:
+    get:
+      summary: Получить мероприятие
+      description: >-
+        Возвращает мероприятие, в котором участвует аутентифицированный
+        пользователь, вместе с его ролью в этом мероприятии.
+      tags:
+        - Events
+      operationId: getEvent
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+    patch:
+      summary: Обновить мероприятие
+      tags:
+        - Events
+      operationId: updateEvent
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventUpdate'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/InvalidDataError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+    delete:
+      summary: Удалить мероприятие
+      tags:
+        - Events
+      operationId: deleteEvent
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/invitation-token:
+    post:
+      summary: Создать новый токен
+      description: Токен генерирует пользователь со статусом **owner**.
+      tags:
+        - Invitation Tokens
+      operationId: createInvitationToken
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+    get:
+      summary: Получение токена
+      description: >-
+        Возвращает заранее сгенерированный токен-приглашение. Доступно
+        пользователям с ролью **admin** или **owner**. Если токен ещё не был
+        сгенерирован, то в поле **invitation_token** возвращается **null**.
+      tags:
+        - Invitation Tokens
+      operationId: getInvitationToken
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvitationToken'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /events/join-by-invitation-token:
+    post:
+      summary: Присоединиться к мероприятию по токену
+      description: Пользователь становится участником мероприятия.
+      tags:
+        - Invitation Tokens
+      operationId: joinByInvitationToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitationToken'
+      responses:
+        '200':
+          description: Идентификатор мероприятия, к которому присоединился пользователь
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - event_id
+                properties:
+                  event_id:
+                    $ref: '#/components/schemas/UUID'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          description: Пользователь уже является участником мероприятия
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/participants:
+    get:
+      summary: Список участников
+      tags:
+        - Participants
+      operationId: getParticipants
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Participants'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+    post:
+      summary: Добавить участника
+      description: Добавление по логину. Роль по умолчанию — **participant**.
+      tags:
+        - Participants
+      operationId: addParticipant
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParticipantCreate'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/InvalidDataError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          description: Пользователь уже является участником мероприятия
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/participants/{participantId}:
+    delete:
+      summary: Удалить участника
+      tags:
+        - Participants
+      operationId: deleteParticipant
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/participantId'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/participants/{participantId}/role:
+    patch:
+      summary: Изменить роль участника
+      tags:
+        - Participants
+      operationId: setParticipantRole
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/participantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParticipantSetRole'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/InvalidDataError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/shopping-lists:
+    get:
+      summary: Получение списков покупок
+      description: >-
+        Возвращает все списки покупок, связанные с указанным мероприятием,
+        вместе с элементами списков покупок и потребителями.
+      tags:
+        - Shopping Lists
+      operationId: getShoppingLists
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingListsWithItems'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+    post:
+      summary: Добавить список покупок
+      tags:
+        - Shopping Lists
+      operationId: createShoppingList
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShoppingListCreate'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/InvalidDataError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/shopping-lists/{shoppingListId}:
+    patch:
+      summary: Изменить список покупок
+      tags:
+        - Shopping Lists
+      operationId: updateShoppingList
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/shoppingListId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShoppingListUpdate'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/InvalidDataError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+    delete:
+      summary: Удалить список покупок
+      tags:
+        - Shopping Lists
+      operationId: deleteShoppingList
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/shoppingListId'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/shopping-lists/{shoppingListId}/budget:
+    put:
+      summary: Изменить бюджет списка покупок
+      tags:
+        - Shopping Lists
+      operationId: setShoppingListBudget
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/shoppingListId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShoppingListSetBudget'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/InvalidDataError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/shopping-lists/{shoppingListId}/consumers:
+    put:
+      summary: Указать потребителей для списка покупок
+      description: |
+        Идемпотентное действие - список потребителей полностью заменяется.
+
+        Есть некоторый риск, что один клиент перезапишет другого. 
+        Не критично, но стоит иметь в виду. Вариант решения - ETag/If-Match.
+      tags:
+        - Shopping Lists
+      operationId: setShoppingListConsumers
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/shoppingListId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UUIDList'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/InvalidDataError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          description: Статус списка покупок не позволяет изменять потребителей
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/shopping-lists/{shoppingListId}/shopping-items:
+    post:
+      summary: Добавить элемент в список покупок
+      tags:
+        - Shopping List Items
+      operationId: createShoppingItem
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/shoppingListId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShoppingItemCreate'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/InvalidDataError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/shopping-lists/{shoppingListId}/shopping-items/{shoppingItemId}:
+    patch:
+      summary: Изменить элемент списка покупок
+      tags:
+        - Shopping List Items
+      operationId: updateShoppingItem
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/shoppingListId'
+        - $ref: '#/components/parameters/shoppingItemId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShoppingItemUpdate'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/InvalidDataError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+    delete:
+      summary: Удалить элемент из списка покупок
+      tags:
+        - Shopping List Items
+      operationId: deleteShoppingItem
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/shoppingListId'
+        - $ref: '#/components/parameters/shoppingItemId'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/shopping-lists/{shoppingListId}/shopping-items/{shoppingItemId}/purchased-state:
+    patch:
+      summary: Изменить статус элемента списка покупок
+      tags:
+        - Shopping List Items
+      operationId: setShoppingItemPurchased
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/shoppingListId'
+        - $ref: '#/components/parameters/shoppingItemId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShoppingItemSetPurchased'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/InvalidDataError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/tasks:
+    get:
+      summary: Получить задачи
+      tags:
+        - Tasks
+      operationId: getTasks
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tasks'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+    post:
+      summary: Создать задачу
+      tags:
+        - Tasks
+      operationId: createTask
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/InvalidDataError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/tasks/{taskId}:
+    get:
+      summary: Получить задачу
+      tags:
+        - Tasks
+      operationId: getTask
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/taskId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskWithShoppingLists'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+    patch:
+      summary: Обновить задачу
+      tags:
+        - Tasks
+      operationId: updateTask
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/taskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdate'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/InvalidDataError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+    delete:
+      summary: Удалить задачу
+      tags:
+        - Tasks
+      operationId: deleteTask
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/taskId'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/tasks/{taskId}/executor:
+    put:
+      summary: Указать исполнителя
+      description: >-
+        Поле executor_id может быть null - это означает, что у задачи нет
+        исполнителя. В этом случае задача переходит в статус "открыта".
+      tags:
+        - Tasks
+      operationId: setTaskExecutor
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/taskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskSetExecutor'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/InvalidDataError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/tasks/{taskId}/shopping-lists:
+    put:
+      summary: Указать списки покупок для задачи
+      tags:
+        - Tasks
+      operationId: setTaskShoppingLists
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/taskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UUIDList'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/InvalidDataError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/tasks/{taskId}/take-in-work:
+    post:
+      summary: Взять задачу в работу
+      description: >-
+        Если исполнитель не указан, то тот кто взял задачу в работу становится
+        её исполнителем.
+      tags:
+        - Tasks
+      operationId: takeTaskInWork
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/taskId'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/tasks/{taskId}/send-for-review:
+    post:
+      summary: Отправить задачу на проверку
+      tags:
+        - Tasks
+      operationId: sendTaskForReview
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/taskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskSendForReviewRequest'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/tasks/{taskId}/review:
+    post:
+      summary: Подтвердить или отклонить задачу
+      tags:
+        - Tasks
+      operationId: reviewTask
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/taskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskReviewRequest'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/finalize:
+    post:
+      summary: Завершить мероприятие и провести расчёты долгов участников
+      tags:
+        - Debts
+      operationId: finalizeEvent
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/my-balance:
+    get:
+      summary: Получить баланс пользователя в мероприятии
+      tags:
+        - Debts
+      operationId: getMyBalance
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBalance'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /events/{eventId}/balance-summary:
+    get:
+      summary: Получить сводку по балансу мероприятия
+      tags:
+        - Debts
+      operationId: getBalanceSummary
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventBalanceSummary'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      security:
+        - CookieAuth: []
+  /test-utils/cleanup:
+    post:
+      tags:
+        - Database
+      summary: Очистить базу данных
+      description: >
+        Полная очистка всех таблиц — только для тестового профиля
+        (profile=test).
+      responses:
+        '204':
+          description: No Content
+components:
+  responses:
+    InvalidDataError:
+      description: Невалидные данные в теле запроса
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UnauthorizedError:
+      description: Токен отсутствует, истёк или некорректен
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ForbiddenError:
+      description: У пользователя недостаточно прав для выполнения операции
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFoundError:
+      description: Один или несколько задействованных ресурсов не найдены
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  parameters:
+    eventId:
+      name: eventId
+      in: path
+      required: true
+      description: Идентификатор мероприятия
+      schema:
+        $ref: '#/components/schemas/UUID'
+    participantId:
+      name: participantId
+      in: path
+      required: true
+      description: Идентификатор участника
+      schema:
+        $ref: '#/components/schemas/UUID'
+    shoppingListId:
+      name: shoppingListId
+      in: path
+      required: true
+      description: Идентификатор списка покупок
+      schema:
+        $ref: '#/components/schemas/UUID'
+    shoppingItemId:
+      name: shoppingItemId
+      in: path
+      required: true
+      description: Идентификатор элемента списка покупок
+      schema:
+        $ref: '#/components/schemas/UUID'
+    taskId:
+      name: taskId
+      in: path
+      required: true
+      description: Идентификатор задачи
+      schema:
+        $ref: '#/components/schemas/UUID'
+  securitySchemes:
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+  schemas:
+    login:
+      type: string
+      description: Логин пользователя
+      example: user123
+    password:
+      type: string
+      description: Пароль пользователя
+      example: mysecurepassword
+    LoginRequest:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          $ref: '#/components/schemas/login'
+        password:
+          $ref: '#/components/schemas/password'
+    ErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Сообщение об ошибке
+          example: Something went wrong
+    name:
+      type: string
+      description: Имя пользователя
+      example: Иван Иванов
+    RegisterRequest:
+      type: object
+      required:
+        - login
+        - password
+        - name
+      properties:
+        login:
+          $ref: '#/components/schemas/login'
+        password:
+          $ref: '#/components/schemas/password'
+        name:
+          $ref: '#/components/schemas/name'
+    UUID:
+      type: string
+      format: uuid
+      example: 123e4567-e89b-12d3-a456-426614174000
+    User:
+      type: object
+      required:
+        - login
+        - name
+        - id
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        login:
+          $ref: '#/components/schemas/login'
+        name:
+          $ref: '#/components/schemas/name'
+    UserRole:
+      type: string
+      enum:
+        - owner
+        - admin
+        - participant
+      description: Роль пользователя в мероприятии
+      example: owner
+    title:
+      type: string
+      description: Название мероприятия
+      example: Встреча с друзьями
+    location:
+      type: string
+      description: Место мероприятия
+      example: Политехническая улица, 29 лит П
+    start_datetime:
+      type: string
+      format: date-time
+      description: Дата и время начала мероприятия
+      example: '2025-01-01T10:00:00Z'
+    end_datetime:
+      type: string
+      format: date-time
+      description: Дата и время окончания мероприятия
+      example: '2025-01-01T12:00:00Z'
+    description:
+      type: string
+      description: Описание мероприятия
+      example: Встреча с друзьями в кафе
+    budget:
+      type: number
+      description: Бюджет мероприятия
+      example: 10000
+    is_finalized:
+      type: boolean
+      description: Флаг, который показывает завершено ли мероприятие или нет.
+      example: false
+    Event:
+      type: object
+      required:
+        - event_id
+        - user_role
+        - title
+        - location
+        - start_datetime
+        - end_datetime
+        - is_finalized
+      properties:
+        event_id:
+          $ref: '#/components/schemas/UUID'
+        user_role:
+          $ref: '#/components/schemas/UserRole'
+        title:
+          $ref: '#/components/schemas/title'
+        location:
+          $ref: '#/components/schemas/location'
+        start_datetime:
+          $ref: '#/components/schemas/start_datetime'
+        end_datetime:
+          $ref: '#/components/schemas/end_datetime'
+        description:
+          $ref: '#/components/schemas/description'
+        budget:
+          $ref: '#/components/schemas/budget'
+        is_finalized:
+          $ref: '#/components/schemas/is_finalized'
+    Events:
+      type: array
+      items:
+        $ref: '#/components/schemas/Event'
+    EventCreate:
+      type: object
+      required:
+        - title
+        - location
+        - start_datetime
+        - end_datetime
+      properties:
+        title:
+          $ref: '#/components/schemas/title'
+        location:
+          $ref: '#/components/schemas/location'
+        start_datetime:
+          $ref: '#/components/schemas/start_datetime'
+        end_datetime:
+          $ref: '#/components/schemas/end_datetime'
+        description:
+          $ref: '#/components/schemas/description'
+    EventUpdate:
+      type: object
+      properties:
+        title:
+          $ref: '#/components/schemas/title'
+        location:
+          $ref: '#/components/schemas/location'
+        start_datetime:
+          $ref: '#/components/schemas/start_datetime'
+        end_datetime:
+          $ref: '#/components/schemas/end_datetime'
+        description:
+          $ref: '#/components/schemas/description'
+    InvitationToken:
+      type: object
+      required:
+        - invitation_token
+      properties:
+        invitation_token:
+          type: string
+          description: Токен-приглашение
+          example: 0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c
+          nullable: true
+    Participant:
+      type: object
+      required:
+        - id
+        - login
+        - name
+        - user_role
+        - balance
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        login:
+          $ref: '#/components/schemas/login'
+        name:
+          $ref: '#/components/schemas/name'
+        user_role:
+          $ref: '#/components/schemas/UserRole'
+    Participants:
+      type: array
+      items:
+        $ref: '#/components/schemas/Participant'
+    ParticipantCreate:
+      type: object
+      required:
+        - login
+      properties:
+        login:
+          $ref: '#/components/schemas/login'
+    ParticipantSetRole:
+      type: object
+      required:
+        - role
+      properties:
+        role:
+          $ref: '#/components/schemas/UserRole'
+    ShoppingList_title:
+      type: string
+      description: Название списка покупок
+      example: Купить фрукты
+    ShoppingList_description:
+      type: string
+      description: Описание списка покупок
+      example: Купить фрукты для вечеринки
+    ShoppingListStatus:
+      type: string
+      enum:
+        - unassigned
+        - assigned
+        - in_progress
+        - bought
+        - partially_bought
+        - cancelled
+      description: Статус списка покупок
+      example: unassigned
+    ShoppingList_budget:
+      type: number
+      description: Реальная стоимость списка покупок
+      example: 499.99
+    ShoppingItem_title:
+      type: string
+      description: Название элемента списка покупок
+      example: Яблоки
+    quantity:
+      type: number
+      description: Количество элемента списка покупок
+      example: 10
+    unit:
+      type: string
+      description: Единицы измерения
+      example: шт
+    is_purchased:
+      type: boolean
+      description: Признак того, что элемент списка покупок куплен
+      example: false
+    ShoppingItem:
+      type: object
+      required:
+        - shopping_item_id
+        - title
+        - quantity
+        - unit
+        - is_purchased
+      properties:
+        shopping_item_id:
+          $ref: '#/components/schemas/UUID'
+        title:
+          $ref: '#/components/schemas/ShoppingItem_title'
+        quantity:
+          $ref: '#/components/schemas/quantity'
+        unit:
+          $ref: '#/components/schemas/unit'
+        is_purchased:
+          $ref: '#/components/schemas/is_purchased'
+    ShoppingItems:
+      type: array
+      items:
+        $ref: '#/components/schemas/ShoppingItem'
+    ShoppingListWithItems:
+      type: object
+      required:
+        - shopping_list_id
+        - task_id
+        - title
+        - description
+        - status
+        - can_edit
+        - budget
+        - shopping_items
+        - consumers
+      properties:
+        shopping_list_id:
+          $ref: '#/components/schemas/UUID'
+        task_id:
+          $ref: '#/components/schemas/UUID'
+        title:
+          $ref: '#/components/schemas/ShoppingList_title'
+        description:
+          $ref: '#/components/schemas/ShoppingList_description'
+        status:
+          $ref: '#/components/schemas/ShoppingListStatus'
+        can_edit:
+          type: boolean
+          description: Может ли пользователь редактировать список покупок
+          example: true
+        budget:
+          $ref: '#/components/schemas/ShoppingList_budget'
+        shopping_items:
+          $ref: '#/components/schemas/ShoppingItems'
+        consumers:
+          $ref: '#/components/schemas/Participants'
+    ShoppingListsWithItems:
+      type: array
+      items:
+        $ref: '#/components/schemas/ShoppingListWithItems'
+    ShoppingListCreate:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          $ref: '#/components/schemas/ShoppingList_title'
+        description:
+          $ref: '#/components/schemas/ShoppingList_description'
+    ShoppingListUpdate:
+      type: object
+      properties:
+        title:
+          $ref: '#/components/schemas/ShoppingList_title'
+        description:
+          $ref: '#/components/schemas/ShoppingList_description'
+    ShoppingListSetBudget:
+      type: object
+      required:
+        - budget
+      properties:
+        budget:
+          $ref: '#/components/schemas/ShoppingList_budget'
+    UUIDList:
+      type: array
+      items:
+        $ref: '#/components/schemas/UUID'
+    ShoppingItemCreate:
+      type: object
+      required:
+        - title
+        - quantity
+        - unit
+      properties:
+        title:
+          $ref: '#/components/schemas/ShoppingItem_title'
+        quantity:
+          $ref: '#/components/schemas/quantity'
+        unit:
+          $ref: '#/components/schemas/unit'
+    ShoppingItemUpdate:
+      type: object
+      properties:
+        title:
+          $ref: '#/components/schemas/ShoppingItem_title'
+        quantity:
+          $ref: '#/components/schemas/quantity'
+        unit:
+          $ref: '#/components/schemas/unit'
+    ShoppingItemSetPurchased:
+      type: object
+      required:
+        - is_purchased
+      properties:
+        is_purchased:
+          $ref: '#/components/schemas/is_purchased'
+    Task_title:
+      type: string
+      description: Название задачи
+      example: Купить фрукты
+    Task_description:
+      type: string
+      description: Описание задачи
+      example: Купить фрукты для вечеринки
+    TaskStatus:
+      type: string
+      enum:
+        - open
+        - in_progress
+        - under_review
+        - completed
+      description: Статус задачи
+    deadline_datetime:
+      type: string
+      format: date-time
+      description: Дедлайн задачи
+      example: '2025-01-01T12:00:00Z'
+    executor_comment:
+      type: string
+      description: Комментарий исполнителя
+      example: Задача выполнена
+    reviewer_comment:
+      type: string
+      description: Комментарий проверяющего
+      example: Подтверждаю выполнение задачи
+    permissions:
+      type: object
+      required:
+        - can_edit
+        - can_take_in_work
+        - can_review
+      properties:
+        can_edit:
+          type: boolean
+          description: Может ли пользователь редактировать задачу
+          example: true
+        can_take_in_work:
+          type: boolean
+          description: Может ли пользователь взять задачу в работу
+          example: true
+        can_review:
+          type: boolean
+          description: Может ли пользователь подтвердить или отклонить задачу
+          example: true
+    Task:
+      type: object
+      required:
+        - task_id
+        - title
+        - description
+        - status
+        - deadline_datetime
+        - permissions
+        - author
+      properties:
+        task_id:
+          $ref: '#/components/schemas/UUID'
+        title:
+          $ref: '#/components/schemas/Task_title'
+        description:
+          $ref: '#/components/schemas/Task_description'
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+        deadline_datetime:
+          $ref: '#/components/schemas/deadline_datetime'
+        executor_comment:
+          $ref: '#/components/schemas/executor_comment'
+        reviewer_comment:
+          $ref: '#/components/schemas/reviewer_comment'
+        permissions:
+          $ref: '#/components/schemas/permissions'
+        author:
+          $ref: '#/components/schemas/User'
+        executor:
+          $ref: '#/components/schemas/User'
+    Tasks:
+      type: array
+      items:
+        $ref: '#/components/schemas/Task'
+    TaskCreate:
+      type: object
+      required:
+        - title
+        - deadline_datetime
+      properties:
+        title:
+          $ref: '#/components/schemas/Task_title'
+        description:
+          $ref: '#/components/schemas/Task_description'
+        deadline_datetime:
+          $ref: '#/components/schemas/deadline_datetime'
+        executor_id:
+          description: Идентификатор исполнителя задачи
+          $ref: '#/components/schemas/UUID'
+        shopping_lists_ids:
+          $ref: '#/components/schemas/UUIDList'
+    TaskWithShoppingLists:
+      allOf:
+        - $ref: '#/components/schemas/Task'
+        - type: object
+          required:
+            - shopping_lists
+          properties:
+            shopping_lists:
+              $ref: '#/components/schemas/ShoppingListsWithItems'
+    TaskUpdate:
+      type: object
+      properties:
+        title:
+          $ref: '#/components/schemas/Task_title'
+        description:
+          $ref: '#/components/schemas/Task_description'
+        deadline_datetime:
+          $ref: '#/components/schemas/deadline_datetime'
+    TaskSetExecutor:
+      type: object
+      required:
+        - executor_id
+      properties:
+        executor_id:
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+          nullable: true
+    TaskSendForReviewRequest:
+      type: object
+      required:
+        - executor_comment
+      properties:
+        executor_comment:
+          $ref: '#/components/schemas/executor_comment'
+    TaskReviewRequest:
+      type: object
+      required:
+        - reviewer_comment
+        - is_approved
+      properties:
+        reviewer_comment:
+          $ref: '#/components/schemas/reviewer_comment'
+        is_approved:
+          type: boolean
+          description: Признак того, что задача одобрена
+    Debt:
+      type: object
+      required:
+        - user
+        - amount
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        amount:
+          type: number
+          description: Сумма долга
+          example: 1000
+    UserBalance:
+      type: object
+      required:
+        - my_debts
+        - debts_to_me
+      properties:
+        my_debts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Debt'
+        debts_to_me:
+          type: array
+          items:
+            $ref: '#/components/schemas/Debt'
+    ParticipantBalanceSummary:
+      type: object
+      required:
+        - user
+        - total_balance
+        - user_balance
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        total_balance:
+          type: number
+          description: Сумма долгов пользователя в мероприятии (может быть отрицательной)
+          example: 200
+        user_balance:
+          $ref: '#/components/schemas/UserBalance'
+    EventBalanceSummary:
+      type: array
+      items:
+        $ref: '#/components/schemas/ParticipantBalanceSummary'
+x-tagGroups:
+  - name: GigaChill
+    tags:
+      - Me
+      - Events
+      - Invitation Tokens
+      - Participants
+      - Shopping Lists
+      - Shopping List Items
+      - Tasks
+      - Debts
+  - name: GigaChill Test Utils API
+    tags:
+      - Database
