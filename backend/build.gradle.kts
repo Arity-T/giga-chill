@@ -98,73 +98,15 @@ dependencies {
 
 // === Пути для файлов генерации ===
 val specMainPath = System.getenv("OPEN_API_MAIN_SPECIFICATION")
-val specTestPath = System.getenv("OPEN_API_TEST_SPECIFICATION")
-var bundledPath = "$buildDir/generated/api/bundled.yaml"
-var mergedPath = "$buildDir/generated/api/merged.yaml"
-
-// === Установка Node ===
-node {
-    download.set(true) // скачиваем Node.js автоматически
-    version.set("22.12.0")
-    npmVersion.set("10.9.2")
-}
-
-// === Установка зависимостей для Node ===
-val npmInstallDeps by tasks.registering(Exec::class) {
-    group = "openapi"
-    description = "Устанавливает swagger-cli и openapi-merge локально"
-    environment("NPM_CONFIG_CACHE", "$buildDir/.npm-cache")
-
-    commandLine("npm", "install", "--no-save", "swagger-cli", "@redocly/cli@1.0.0")
-    outputs.file("$buildDir/.npm-cache/.stamp")
-    doLast {
-        file("$buildDir/.npm-cache/.stamp").apply {
-            parentFile.mkdirs()
-            writeText(System.currentTimeMillis().toString())
-        }
-    }
-}
-
-// === Сборка основного API ===
-val bundleApi by tasks.registering(Exec::class) {
-    group = "openapi";
-    description = "Сборка основного файла API"
-
-    dependsOn(npmInstallDeps)
-    inputs.file(specMainPath)
-    outputs.file(bundledPath)
-    commandLine(
-        "npx", "swagger-cli", "bundle",
-        specMainPath,
-        "--type", "yaml",
-        "-o", bundledPath
-    )
-}
-
-// === Слияние с API для тестов ===
-val mergeSpecs by tasks.registering(Exec::class) {
-    group = "openapi";
-    description = "Слияние с API для тестов"
-
-    dependsOn(bundleApi)
-    inputs.files(specTestPath, bundledPath)
-    outputs.file(mergedPath)
-    commandLine(
-        "$projectDir/node_modules/.bin/redocly",
-        "join", bundledPath, specTestPath,
-        "--output", mergedPath
-    )
-}
 
 // === Задача для генерации основного API ===
 val generateOpenApi by tasks.registering(GenerateTask::class) {
     group = "openapi"
     description = "Генерация кода по основному API"
-    dependsOn(mergeSpecs)
 
     validateSpec.set(false)
     generatorName.set("spring")
-    inputSpec.set(mergedPath)
+    inputSpec.set(specMainPath)
     outputDir.set("$buildDir/generated/api")
     apiPackage.set("com.github.giga_chill.gigachill.web.api")
     modelPackage.set("com.github.giga_chill.gigachill.web.api.model")
