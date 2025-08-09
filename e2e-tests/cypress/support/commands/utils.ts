@@ -1,14 +1,24 @@
 /// <reference types="cypress" />
-/**
- * Команды для работы с задачами
- */
 
-// Custom command для создания задачи
+declare global {
+    namespace Cypress {
+        interface Chainable {
+            resetBrowserState(): Chainable<void>;
+            cleanupDatabase(): Chainable<void>;
+        }
+    }
+}
+export { } // Необходимо для использования global
+
 Cypress.Commands.add('cleanupDatabase', () => {
     cy.request('POST', `${Cypress.env('apiUrl')}/test-utils/cleanup`);
 });
 
-// Custom command для закрытия модального окна
-Cypress.Commands.add('closeModal', () => {
-    cy.get('.ant-modal-close').should('be.visible').click();
+Cypress.Commands.add('resetBrowserState', () => {
+    cy.clearAllCookies();
+    cy.clearAllLocalStorage();
+    cy.clearAllSessionStorage();
+    cy.window().then((win) => {
+        win.location.href = 'about:blank'
+    })
 });
