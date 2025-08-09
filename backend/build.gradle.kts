@@ -1,5 +1,4 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
-import com.github.gradle.node.npm.task.NpmInstallTask
 
 plugins {
 	java
@@ -106,16 +105,24 @@ var mergedPath = "$buildDir/generated/api/merged.yaml"
 // === Установка Node ===
 node {
     download.set(true) // скачиваем Node.js автоматически
-    version.set("20.16.0")
-    npmVersion.set("10.8.2")
+    version.set("22.12.0")
+    npmVersion.set("10.9.2")
 }
 
 // === Установка зависимостей для Node ===
 val npmInstallDeps by tasks.registering(Exec::class) {
     group = "openapi"
     description = "Устанавливает swagger-cli и openapi-merge локально"
+    environment("NPM_CONFIG_CACHE", "$buildDir/.npm-cache")
 
-    commandLine("npm", "install", "--no-save", "swagger-cli", "@redocly/cli")
+    commandLine("npm", "install", "--no-save", "swagger-cli", "@redocly/cli@1.0.0")
+    outputs.file("$buildDir/.npm-cache/.stamp")
+    doLast {
+        file("$buildDir/.npm-cache/.stamp").apply {
+            parentFile.mkdirs()
+            writeText(System.currentTimeMillis().toString())
+        }
+    }
 }
 
 // === Сборка основного API ===
