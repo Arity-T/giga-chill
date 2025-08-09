@@ -1,20 +1,19 @@
+import { PAGES } from '@config/pages.config';
+
 describe('Полный пользовательский сценарий', { testIsolation: false }, () => {
     before(() => {
         // Очищаем базу данных перед началом сценария
         cy.cleanupDatabase();
-    });
 
-
-    it('Подготовка: регистрация тестовых пользователей', () => {
-        // Регистрируем всех тестовых пользователей используя команды
-        cy.registerUserUI("Ксения", "xuxa");
-        cy.registerUserUI("Дарья", "didi");
-        cy.registerUserUI("Юлия", "lili");
+        cy.registerUserAPI("xuxa", "Ксения");
+        cy.registerUserAPI("didi", "Дарья");
+        cy.registerUserAPI("lili", "Юлия");
     });
 
     it('Создание мероприятия', () => {
         // Входим в систему
-        cy.loginUserUI("lili");
+        cy.resetBrowserState();
+        cy.loginUserAPI("lili");
 
         // Создаём мероприятие используя команду
         cy.createEventUI({
@@ -71,7 +70,9 @@ describe('Полный пользовательский сценарий', { tes
     });
 
     it('Выполнение задачи исполнителем', () => {
-        cy.loginUserUI("xuxa");
+        cy.resetBrowserState();
+        cy.loginUserAPI("xuxa");
+        cy.visit(PAGES.EVENTS);
 
         cy.contains('.ant-card', 'Пикник').click();
         cy.contains('.ant-menu-item a', 'Задачи').click();
@@ -99,7 +100,9 @@ describe('Полный пользовательский сценарий', { tes
     });
 
     it('Проверка выполнения задачи ревьюером', () => {
-        cy.loginUserUI("lili");
+        cy.resetBrowserState();
+        cy.loginUserAPI("lili");
+        cy.visit(PAGES.EVENTS);
 
         cy.contains('.ant-card', 'Пикник').click();
         cy.contains('.ant-menu-item a', 'Задачи').click();
