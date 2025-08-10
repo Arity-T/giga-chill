@@ -8,7 +8,9 @@ declare global {
             // Shopping Lists
             createShoppingList(listName: string, description?: string): Chainable<void>;
             getShoppingList(listName: string): Chainable<JQuery<HTMLElement>>;
+            getShoppingListStatus(): Chainable<string>;
             toogleShoppingList(): Chainable<JQuery<HTMLElement>>;
+            getDeleteShoppingListBtn(): Chainable<JQuery<HTMLElement>>;
 
             // Shopping List Consumers
             setShoppingListConsumers(selectAll?: boolean): Chainable<JQuery<HTMLElement>>;
@@ -48,6 +50,11 @@ Cypress.Commands.add('createShoppingList', (listName, description) => {
 
 Cypress.Commands.add('getShoppingList', (listName) => {
     return cy.contains('.ant-card', listName);
+});
+
+
+Cypress.Commands.add('getShoppingListStatus', { prevSubject: 'element' }, (shoppingListCard) => {
+    return cy.wrap(shoppingListCard).find('.ant-tag').invoke('text');
 });
 
 

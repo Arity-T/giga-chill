@@ -9,3 +9,4 @@
 import './me';
 import './events';
 import './participants';
+import './shopping-lists';

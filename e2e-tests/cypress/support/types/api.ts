@@ -60,3 +60,10 @@ export type Participant = {
 };
 
 export type Participants = Participant[];
+
+export type ShoppingListCreate = {
+    /** Название списка покупок */
+    title: string;
+    /** Описание списка покупок */
+    description?: string;
+};
