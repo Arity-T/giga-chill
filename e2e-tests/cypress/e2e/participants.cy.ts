@@ -5,39 +5,8 @@ import { UserRole } from "@typings/api";
 describe('Управление участниками мероприятия', () => {
     beforeEach(() => {
         cy.cleanupDatabase();
-
-        cy.registerUserAPI('organizer', 'Юля');
-        cy.registerUserAPI('admin', 'Даша');
-        cy.registerUserAPI('participant', 'Ксюша');
+        cy.testEventSetup().as('eventId');
         cy.registerUserAPI('guest', 'Влад');
-
-        cy.loginUserAPI('organizer');
-        cy.createEventAPI({
-            title: 'Пикник',
-            location: 'Лес',
-            start_datetime: dayjs().add(1, 'day').hour(17).toISOString(),
-            end_datetime: dayjs().add(1, 'day').hour(20).toISOString(),
-            description: 'всем добра!!!!'
-        });
-        cy.getEventsAPI().then((eventsResponse) => {
-            cy.wrap(eventsResponse.body[0].event_id).as('eventId');
-
-            // Добавляем админа
-            cy.addParticipantAPI(eventsResponse.body[0].event_id, 'admin');
-            cy.getParticipantsAPI(eventsResponse.body[0].event_id)
-                .then((participantsResponse) => {
-                    // Надо получить id участника, чтобы сделать его администратором
-                    cy.wrap(participantsResponse.body).then((participants) => {
-                        const adminParticipant = participants
-                            .find(participant => participant.login === 'admin');
-                        cy.setParticipantRoleAPI(eventsResponse.body[0].event_id, adminParticipant.id, UserRole.Admin);
-                    });
-                });
-
-            // Добавляем участника
-            cy.addParticipantAPI(eventsResponse.body[0].event_id, 'participant');
-        });
-
         cy.resetBrowserState();
     });
 
