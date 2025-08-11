@@ -116,7 +116,7 @@ export default function ShoppingListCard({
                 </div>
             ),
             icon: <ExclamationCircleOutlined />,
-            okText: 'Удалить',
+            okText: 'Да, удалить',
             okType: 'danger',
             cancelText: 'Отмена',
             onOk: async () => {
@@ -157,7 +157,7 @@ export default function ShoppingListCard({
                 </div>
             ),
             icon: <ExclamationCircleOutlined />,
-            okText: 'Удалить',
+            okText: 'Да, удалить',
             okType: 'danger',
             cancelText: 'Отмена',
             onOk: async () => {
@@ -203,6 +203,7 @@ export default function ShoppingListCard({
                 styles={{ body: { padding: 0 } }}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
+                data-cy='shopping-list-card'
             >
                 <div>
                     <div
