@@ -1,20 +1,19 @@
+import { PAGES } from '@config/pages.config';
+
 describe('Полный пользовательский сценарий', { testIsolation: false }, () => {
     before(() => {
         // Очищаем базу данных перед началом сценария
         cy.cleanupDatabase();
-    });
 
-
-    it('Подготовка: регистрация тестовых пользователей', () => {
-        // Регистрируем всех тестовых пользователей используя команды
-        cy.registerUserUI("Ксения", "xuxa");
-        cy.registerUserUI("Дарья", "didi");
-        cy.registerUserUI("Юлия", "lili");
+        cy.registerUserAPI("xuxa", "Ксения");
+        cy.registerUserAPI("didi", "Дарья");
+        cy.registerUserAPI("lili", "Юлия");
     });
 
     it('Создание мероприятия', () => {
         // Входим в систему
-        cy.loginUserUI("lili");
+        cy.resetBrowserState();
+        cy.loginUserAPI("lili");
 
         // Создаём мероприятие используя команду
         cy.createEventUI({
@@ -29,79 +28,95 @@ describe('Полный пользовательский сценарий', { tes
     });
 
     it('Добавление участников', () => {
-        // Добавляем участников используя команды
-        cy.addParticipantByLoginUI('xuxa');
-        cy.addParticipantByLoginUI('didi');
+        cy.contains('.ant-menu-item a', 'Участники').click();
+        cy.openAddParticipantModal().addParticipantByLogin('xuxa');
+        cy.openAddParticipantModal().addParticipantByLogin('didi');
 
         // Назначаем роль администратора
-        cy.changeParticipantRoleByNameUI('Ксения', 'Администратор');
-
+        cy.getParticipantRow('Ксения').setParticipantRole('Администратор');
+        cy.getParticipantRow('Ксения').getParticipantRole().should('eq', 'Администратор');
     });
 
     it('Создание списка покупок', () => {
-        // Создаём список покупок используя команды
-        cy.createShoppingListUI('Напитки');
+        cy.contains('.ant-menu-item a', 'Списки покупок').click();
+        cy.createShoppingList('Напитки');
 
-        cy.addShoppingItemUI('Напитки', {
-            name: 'Сок яблочный',
-            quantity: '3',
-            unit: 'л'
-        });
+        cy.getShoppingList('Напитки')
+            .toggleShoppingList()
+            .addShoppingItem({
+                name: 'Сок яблочный',
+                quantity: '3',
+                unit: 'л'
+            })
+            .setShoppingListConsumers()
+            .getShoppingListConsumersCount()
+            .should('equal', '3');
 
-        // Назначение потребителей для покупки
-        cy.assignShoppingListConsumers('Напитки');
+        cy.getShoppingList('Напитки')
+            .getShoppingItem('Сок яблочный')
+            .should('be.visible');
     });
 
     it('Создание задачи', () => {
-        // Создание задачи
-        cy.createTaskUI({
+        cy.contains('.ant-menu-item a', 'Задачи').click();
+
+        cy.createTask({
             name: 'Купить напитки',
-            hour: '03',
+            deadline: '14.08.2025 00:10',
             assigneeName: 'Ксения',
             shoppingLists: ['Напитки']
         });
+
+        cy.getTaskCard('Купить напитки').should('be.visible');
     });
 
     it('Выполнение задачи исполнителем', () => {
-        // Входим под другим пользователем
-        cy.loginUserUI("xuxa");
+        cy.resetBrowserState();
+        cy.loginUserAPI("xuxa");
+        cy.visit(PAGES.EVENTS);
 
-        // Переходим на страницу мероприятия
-        cy.contains('.ant-card', 'Пикник').should('be.visible').click();
+        cy.contains('.ant-card', 'Пикник').click();
+        cy.contains('.ant-menu-item a', 'Задачи').click();
 
-        // Берём задачу в работу
-        cy.takeTaskInProgressUI('Купить напитки');
+        cy.getTaskCard('Купить напитки').click();
 
-        // Отмечаем покупку как выполненную
-        cy.markShoppingItemAsPurchasedUI('Напитки', 'Сок яблочный');
+        cy.getTaskModal('Купить напитки')
+            .takeTaskInProgress()
+            .within(() => {
+                cy.getShoppingList('Напитки')
+                    .setShoppingListBudget('46')
+                    .toggleShoppingList()
+                    .getShoppingItem('Сок яблочный')
+                    .markShoppingItemAsPurchased();
 
-        // Устанавливаем бюджет для списка покупок
-        cy.setShoppingListBudgetUI('Напитки', '46');
+                cy.getShoppingList('Напитки')
+                    .getShoppingListBudget()
+                    .should('contain', '46');
+            });
 
-        // Отправляем задачу на проверку
-        cy.submitTaskForReviewUI('купила');
+        cy.getTaskModal('Купить напитки').getTaskStatus().should('equal', 'В работе');
+
+        cy.getTaskModal('Купить напитки').submitTaskForReview('купила')
+            .getTaskStatus().should('equal', 'На проверке');
     });
 
     it('Проверка выполнения задачи ревьюером', () => {
-        // Возвращаемся под организатором мероприятия
-        cy.loginUserUI("lili");
+        cy.resetBrowserState();
+        cy.loginUserAPI("lili");
+        cy.visit(PAGES.EVENTS);
 
-        // Переходим на страницу мероприятия
-        cy.contains('.ant-card', 'Пикник').should('be.visible').click();
-
-        // Переходим на страницу задач
+        cy.contains('.ant-card', 'Пикник').click();
         cy.contains('.ant-menu-item a', 'Задачи').click();
 
-        // Открываем задачу
-        cy.contains('.ant-card', 'Купить напитки').should('be.visible').click();
+        cy.getTaskCard('Купить напитки').click();
 
-        // Можем изменить бюджет списка покупок
-        cy.setShoppingListBudgetUI('Напитки', '100');
+        cy.getTaskModal('Купить напитки').within(() => {
+            cy.getShoppingList('Напитки').setShoppingListBudget('100');
+        });
 
-        // Подтверждаем выполнение задачи
-        cy.completeTaskUI('молодец', true);
+        cy.getTaskModal('Купить напитки').completeTask('молодец', true)
+            .getTaskStatus().should('equal', 'Завершена')
 
-        // Закрываем модальное окно с задачей
         cy.closeModal();
     });
 
