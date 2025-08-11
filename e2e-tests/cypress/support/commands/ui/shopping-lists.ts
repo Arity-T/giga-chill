@@ -9,7 +9,7 @@ declare global {
             createShoppingList(listName: string, description?: string): Chainable<void>;
             getShoppingList(listName: string): Chainable<JQuery<HTMLElement>>;
             getShoppingListStatus(): Chainable<string>;
-            toogleShoppingList(): Chainable<JQuery<HTMLElement>>;
+            toggleShoppingList(): Chainable<JQuery<HTMLElement>>;
             getDeleteShoppingListBtn(): Chainable<JQuery<HTMLElement>>;
 
             // Shopping List Consumers
@@ -49,7 +49,7 @@ Cypress.Commands.add('createShoppingList', (listName, description) => {
 
 
 Cypress.Commands.add('getShoppingList', (listName) => {
-    return cy.contains('.ant-card', listName);
+    return cy.contains('[data-cy="shopping-list-card"]', listName);
 });
 
 
@@ -58,9 +58,14 @@ Cypress.Commands.add('getShoppingListStatus', { prevSubject: 'element' }, (shopp
 });
 
 
-Cypress.Commands.add('toogleShoppingList', { prevSubject: 'element' }, (shoppingListCard) => {
+Cypress.Commands.add('toggleShoppingList', { prevSubject: 'element' }, (shoppingListCard) => {
     cy.wrap(shoppingListCard).find('.anticon-caret-right').click();
     return cy.wrap(shoppingListCard);
+});
+
+
+Cypress.Commands.add('getDeleteShoppingListBtn', { prevSubject: 'element' }, (shoppingListCard) => {
+    return cy.wrap(shoppingListCard).trigger('mouseover').find('.anticon-delete');
 });
 
 

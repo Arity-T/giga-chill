@@ -203,6 +203,7 @@ export default function ShoppingListCard({
                 styles={{ body: { padding: 0 } }}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
+                data-cy='shopping-list-card'
             >
                 <div>
                     <div

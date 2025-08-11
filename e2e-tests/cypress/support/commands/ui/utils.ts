@@ -5,6 +5,8 @@ declare global {
         interface Chainable {
             closeModal(): Chainable<void>;
             confirmModal(): Chainable<void>;
+            getBySel(selector: string, ...args: any[]): Chainable<JQuery<HTMLElement>>;
+            getBySelLike(selector: string, ...args: any[]): Chainable<JQuery<HTMLElement>>;
         }
     }
 }
@@ -22,4 +24,14 @@ Cypress.Commands.add('closeModal', { prevSubject: ['optional', 'element'] }, (mo
 
 Cypress.Commands.add('confirmModal', () => {
     cy.get('.ant-modal-confirm-btns').contains('button', 'Да').click();
+});
+
+
+Cypress.Commands.add('getBySel', (selector, ...args) => {
+    return cy.get(`[data-cy=${selector}]`, ...args);
+});
+
+
+Cypress.Commands.add('getBySelLike', (selector, ...args) => {
+    return cy.get(`[data-cy*=${selector}]`, ...args);
 });

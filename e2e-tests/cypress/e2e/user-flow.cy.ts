@@ -42,7 +42,7 @@ describe('Полный пользовательский сценарий', { tes
         cy.createShoppingList('Напитки');
 
         cy.getShoppingList('Напитки')
-            .toogleShoppingList()
+            .toggleShoppingList()
             .addShoppingItem({
                 name: 'Сок яблочный',
                 quantity: '3',
@@ -85,7 +85,7 @@ describe('Полный пользовательский сценарий', { tes
             .within(() => {
                 cy.getShoppingList('Напитки')
                     .setShoppingListBudget('46')
-                    .toogleShoppingList()
+                    .toggleShoppingList()
                     .getShoppingItem('Сок яблочный')
                     .markShoppingItemAsPurchased();
 
