@@ -29,6 +29,7 @@ paths:
       summary: Аутентификация пользователя
       description: Возвращает JWT токен при успешной аутентификации.
       tags:
+        - Auth
       operationId: login
       security: []
       requestBody:
