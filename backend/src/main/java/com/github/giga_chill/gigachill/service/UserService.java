@@ -3,7 +3,7 @@ package com.github.giga_chill.gigachill.service;
 import com.github.giga_chill.gigachill.exception.BadRequestException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.exception.UnauthorizedException;
-import com.github.giga_chill.gigachill.model.User;
+import com.github.giga_chill.gigachill.model.UserEntity;
 import com.github.giga_chill.gigachill.repository.UserRepository;
 import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 import java.util.List;
@@ -61,13 +61,13 @@ public class UserService {
         return userRepository.findByLogin(login).isPresent();
     }
 
-    public User userAuthentication(Authentication authentication) {
+    public UserEntity userAuthentication(Authentication authentication) {
         var login = authentication.getName();
         return usersRecordToUser(
                 findByLogin(login).orElseThrow(() -> new UnauthorizedException("User not found")));
     }
 
-    public User getById(UUID id) {
+    public UserEntity getById(UUID id) {
         return usersRecordToUser(
                 userRepository
                         .findById(id)
@@ -75,11 +75,11 @@ public class UserService {
                                 () -> new NotFoundException("User with id " + id + " not found")));
     }
 
-    private User usersRecordToUser(UsersRecord user) {
-        return new User(user.getUserId(), user.getLogin(), user.getName());
+    private UserEntity usersRecordToUser(UsersRecord user) {
+        return new UserEntity(user.getUserId(), user.getLogin(), user.getName());
     }
 
-    public User getByLogin(String login) {
+    public UserEntity getByLogin(String login) {
         return usersRecordToUser(
                 findByLogin(login)
                         .orElseThrow(

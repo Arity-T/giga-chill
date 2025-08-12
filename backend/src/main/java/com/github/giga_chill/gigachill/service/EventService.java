@@ -5,7 +5,7 @@ import com.github.giga_chill.gigachill.data.transfer.object.EventDTO;
 import com.github.giga_chill.gigachill.exception.BadRequestException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.mapper.EventMapper;
-import com.github.giga_chill.gigachill.model.User;
+import com.github.giga_chill.gigachill.model.UserEntity;
 import com.github.giga_chill.gigachill.service.validator.EventServiceValidator;
 import com.github.giga_chill.gigachill.service.validator.ParticipantServiceValidator;
 import com.github.giga_chill.gigachill.util.UuidUtils;
@@ -121,7 +121,7 @@ public class EventService {
         return eventDAO.getEventByLinkUuid(linkUuid);
     }
 
-    public UUID joinByLink(User user, Map<String, Object> body) {
+    public UUID joinByLink(UserEntity userEntity, Map<String, Object> body) {
         var rawToken = (String) body.get("invitation_token");
         if (Objects.isNull(rawToken)) {
             throw new BadRequestException("Invalid request body: " + body);
@@ -131,9 +131,9 @@ public class EventService {
             throw new NotFoundException("Link with hash " + rawToken + " not found");
         }
         eventServiceValidator.checkIsFinalized(eventId);
-        participantsServiceValidator.checkIsAlreadyParticipant(eventId, user.getId());
+        participantsServiceValidator.checkIsAlreadyParticipant(eventId, userEntity.getId());
 
-        participantsService.addParticipantToEvent(eventId, user);
+        participantsService.addParticipantToEvent(eventId, userEntity);
         return eventId;
     }
 

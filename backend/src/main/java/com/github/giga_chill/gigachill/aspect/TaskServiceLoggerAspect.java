@@ -1,7 +1,7 @@
 package com.github.giga_chill.gigachill.aspect;
 
 import com.github.giga_chill.gigachill.config.LoggerColorConfig;
-import com.github.giga_chill.gigachill.model.User;
+import com.github.giga_chill.gigachill.model.UserEntity;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class TaskServiceLoggerAspect {
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.createTask(..)) "
                     + "&& args(eventId, user, ..)")
-    public void createTask(UUID eventId, User user) {}
+    public void createTask(UUID eventId, UserEntity userEntity) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.updateTask(..)) "
@@ -125,7 +125,8 @@ public class TaskServiceLoggerAspect {
     }
 
     @Around("createTask(eventId, user)")
-    public Object logCreateTask(ProceedingJoinPoint proceedingJoinPoint, UUID eventId, User user)
+    public Object logCreateTask(
+            ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UserEntity userEntity)
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -135,7 +136,7 @@ public class TaskServiceLoggerAspect {
                             + "User with id: {} created task with id: "
                             + "{} in event with id: {}"
                             + loggerColorConfig.getRESET_COLOR(),
-                    user.getId(),
+                    userEntity.getId(),
                     (String) result,
                     eventId);
             return result;

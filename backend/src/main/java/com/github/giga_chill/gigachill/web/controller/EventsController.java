@@ -1,6 +1,6 @@
 package com.github.giga_chill.gigachill.web.controller;
 
-import com.github.giga_chill.gigachill.model.User;
+import com.github.giga_chill.gigachill.model.UserEntity;
 import com.github.giga_chill.gigachill.service.EventService;
 import com.github.giga_chill.gigachill.service.ParticipantService;
 import com.github.giga_chill.gigachill.service.UserService;
@@ -79,9 +79,9 @@ public class EventsController {
     // ACCESS: owner
     public ResponseEntity<Void> postEventLink(
             Authentication authentication, @PathVariable UUID eventId) {
-        User user = userService.userAuthentication(authentication);
+        UserEntity userEntity = userService.userAuthentication(authentication);
 
-        eventService.createInviteLink(eventId, user.getId());
+        eventService.createInviteLink(eventId, userEntity.getId());
         return ResponseEntity.noContent().build();
     }
 
@@ -89,9 +89,9 @@ public class EventsController {
     // ACCESS: admin, owner
     public ResponseEntity<Map<String, String>> getEventLink(
             Authentication authentication, @PathVariable UUID eventId) {
-        User user = userService.userAuthentication(authentication);
+        UserEntity userEntity = userService.userAuthentication(authentication);
 
-        var eventLink = eventService.getInviteLink(eventId, user.getId());
+        var eventLink = eventService.getInviteLink(eventId, userEntity.getId());
         return ResponseEntity.ok(Collections.singletonMap("invitation_token", eventLink));
     }
 
@@ -99,9 +99,9 @@ public class EventsController {
     // ACCESS: ALL
     public ResponseEntity<Map<String, String>> postJoinByLink(
             Authentication authentication, @RequestBody Map<String, Object> body) {
-        User user = userService.userAuthentication(authentication);
+        UserEntity userEntity = userService.userAuthentication(authentication);
 
-        var eventId = eventService.joinByLink(user, body);
+        var eventId = eventService.joinByLink(userEntity, body);
         return ResponseEntity.ok(Collections.singletonMap("event_id", eventId.toString()));
     }
 
@@ -109,9 +109,9 @@ public class EventsController {
     // ACCESS: owner
     public ResponseEntity<Void> postFinalizeEvent(
             Authentication authentication, @PathVariable UUID eventId) {
-        User user = userService.userAuthentication(authentication);
+        UserEntity userEntity = userService.userAuthentication(authentication);
 
-        eventService.finalizeEvent(eventId, user.getId());
+        eventService.finalizeEvent(eventId, userEntity.getId());
         return ResponseEntity.noContent().build();
     }
 

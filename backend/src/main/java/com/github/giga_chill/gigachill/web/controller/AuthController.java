@@ -86,7 +86,7 @@ public class AuthController {
         return ResponseEntity.noContent().build(); // 204 No Content
     }
 
-    @GetMapping("/me")
+    @GetMapping("/auth/me")
     public ResponseEntity<UserInfo> me(Authentication authentication) {
         var user = userService.findByLogin(authentication.getName());
         if (user.isEmpty()) {

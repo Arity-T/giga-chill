@@ -1,7 +1,7 @@
 package com.github.giga_chill.gigachill.aspect;
 
 import com.github.giga_chill.gigachill.config.LoggerColorConfig;
-import com.github.giga_chill.gigachill.model.User;
+import com.github.giga_chill.gigachill.model.UserEntity;
 import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +63,7 @@ public class EventServiceLoggerAspect {
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.joinByLink(..)) "
                     + "&& args(user, ..)")
-    public void joinByLink(User user) {}
+    public void joinByLink(UserEntity userEntity) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.getEndDatetime(..)) "
@@ -226,7 +226,7 @@ public class EventServiceLoggerAspect {
     }
 
     @Around("joinByLink(user, ..)")
-    public Object logJoinByLink(ProceedingJoinPoint proceedingJoinPoint, User user)
+    public Object logJoinByLink(ProceedingJoinPoint proceedingJoinPoint, UserEntity userEntity)
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -235,7 +235,7 @@ public class EventServiceLoggerAspect {
                             + loggerColorConfig.getPOST_LABEL()
                             + "User with id: {} joined event with id: {} via a link"
                             + loggerColorConfig.getRESET_COLOR(),
-                    user.getId(),
+                    userEntity.getId(),
                     (UUID) result);
             return result;
         } catch (Throwable ex) {

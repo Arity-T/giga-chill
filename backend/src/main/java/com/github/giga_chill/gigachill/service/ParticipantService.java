@@ -7,7 +7,7 @@ import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.mapper.ParticipantBalanceMapper;
 import com.github.giga_chill.gigachill.mapper.ParticipantMapper;
 import com.github.giga_chill.gigachill.mapper.ParticipantSummaryBalanceMapper;
-import com.github.giga_chill.gigachill.model.User;
+import com.github.giga_chill.gigachill.model.UserEntity;
 import com.github.giga_chill.gigachill.service.validator.EventServiceValidator;
 import com.github.giga_chill.gigachill.service.validator.ParticipantServiceValidator;
 import com.github.giga_chill.gigachill.web.info.ParticipantBalanceInfo;
@@ -81,17 +81,17 @@ public class ParticipantService {
         return userToAdd.getId();
     }
 
-    public UUID addParticipantToEvent(UUID eventId, User user) {
+    public UUID addParticipantToEvent(UUID eventId, UserEntity userEntity) {
         var participant =
                 new ParticipantDTO(
-                        user.getId(),
-                        user.getLogin(),
-                        user.getName(),
+                        userEntity.getId(),
+                        userEntity.getLogin(),
+                        userEntity.getName(),
                         env.getProperty("roles.participant").toString(),
                         BigDecimal.valueOf(0));
 
         participantDAO.addParticipantToEvent(eventId, participant);
-        return user.getId();
+        return userEntity.getId();
     }
 
     public void deleteParticipant(UUID eventId, UUID participantId, UUID userId) {

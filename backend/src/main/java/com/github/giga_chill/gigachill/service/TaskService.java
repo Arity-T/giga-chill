@@ -5,7 +5,7 @@ import com.github.giga_chill.gigachill.data.transfer.object.TaskDTO;
 import com.github.giga_chill.gigachill.exception.BadRequestException;
 import com.github.giga_chill.gigachill.mapper.TaskMapper;
 import com.github.giga_chill.gigachill.mapper.UserMapper;
-import com.github.giga_chill.gigachill.model.User;
+import com.github.giga_chill.gigachill.model.UserEntity;
 import com.github.giga_chill.gigachill.service.validator.*;
 import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.info.RequestTaskInfo;
@@ -75,7 +75,7 @@ public class TaskService {
         return task;
     }
 
-    public String createTask(UUID eventId, User user, RequestTaskInfo requestTaskInfo) {
+    public String createTask(UUID eventId, UserEntity userEntity, RequestTaskInfo requestTaskInfo) {
         var executorId =
                 !Objects.isNull(requestTaskInfo.executorId())
                         ? UuidUtils.safeUUID(requestTaskInfo.executorId())
@@ -83,7 +83,7 @@ public class TaskService {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsFinalized(eventId);
-        participantsServiceValidator.checkIsParticipant(eventId, user.getId());
+        participantsServiceValidator.checkIsParticipant(eventId, userEntity.getId());
         if (!Objects.isNull(executorId)) {
             userServiceValidator.checkIsExisted(executorId);
             participantsServiceValidator.checkIsParticipant(eventId, executorId);
@@ -105,7 +105,7 @@ public class TaskService {
                         requestTaskInfo.deadlineDatetime(),
                         null,
                         null,
-                        userMapper.toUserDto(user),
+                        userMapper.toUserDto(userEntity),
                         requestTaskInfo.executorId() != null
                                 ? userMapper.toUserDto(
                                         userService.getById(
