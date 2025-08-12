@@ -1,0 +1,2 @@
+# redocly генерирует yml-файлы с концом строки LF
+*.yml text eol=lf
