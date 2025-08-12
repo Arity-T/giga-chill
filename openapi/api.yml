@@ -79,7 +79,7 @@ paths:
           description: Пользователь успешно вышел из системы. JWT токен удалён из cookie.
         "401":
           $ref: "#/components/responses/UnauthorizedError"
-  /me:
+  /auth/me:
     get:
       summary: Текущий пользователь
       description: Возвращает данные пользователя, идентифицированного по JWT.
