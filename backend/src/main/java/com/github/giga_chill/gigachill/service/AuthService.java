@@ -8,6 +8,7 @@ import com.github.giga_chill.gigachill.web.api.model.LoginRequest;
 import com.github.giga_chill.gigachill.web.api.model.RegisterRequest;
 import com.github.giga_chill.gigachill.web.api.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,9 @@ public class AuthService {
     private final JwtService jwtService;
     private final UserService userService;
     private final UserMapper userMapper;
+
+    @Value("${server.is_prod:false}")
+    private boolean isProd;
 
     public ResponseCookie login(LoginRequest loginRequest) {
         userService.validateLogin(loginRequest.getLogin());
@@ -31,7 +35,7 @@ public class AuthService {
 
         return ResponseCookie.from("token", jwt)
                 .httpOnly(true)
-                .secure(false) // TODO: false для localhost, true для прода
+                .secure(isProd)
                 .path("/")
                 .sameSite("Strict")
                 .build();
@@ -53,7 +57,7 @@ public class AuthService {
 
         return ResponseCookie.from("token", jwt)
                 .httpOnly(true)
-                .secure(false) // TODO: false для localhost, true для прода
+                .secure(isProd)
                 .path("/")
                 .sameSite("Strict")
                 .build();
@@ -62,7 +66,7 @@ public class AuthService {
     public ResponseCookie logout() {
         return ResponseCookie.from("token", "")
                 .httpOnly(true)
-                .secure(false) // TODO: true на проде
+                .secure(isProd)
                 .path("/")
                 .sameSite("Strict")
                 .maxAge(0) // Удалить cookie
