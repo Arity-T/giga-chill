@@ -5,7 +5,12 @@
     "lib": ["es5", "dom"],
     "sourceMap": true,
     "types": ["cypress", "node"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@config/*": ["cypress/support/config/*"],
+      "@typings/*": ["cypress/support/types/*"]
+    }
   },
   "include": ["**/*.ts"]
 }

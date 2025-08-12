@@ -121,7 +121,7 @@ export default function TaskModal({
                 </div>
             ),
             icon: <ExclamationCircleOutlined />,
-            okText: 'Удалить',
+            okText: 'Да, удалить',
             okType: 'danger',
             cancelText: 'Отмена',
             onOk: async () => {

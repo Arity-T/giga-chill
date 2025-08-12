@@ -74,7 +74,7 @@ export default function TasksPage({ params }: EventIdPathParam) {
         Modal.confirm({
             title: 'Удалить задачу?',
             content: 'Это действие нельзя отменить.',
-            okText: 'Удалить',
+            okText: 'Да, удалить',
             cancelText: 'Отмена',
             okType: 'danger',
             onOk: async () => {
