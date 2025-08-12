@@ -33,7 +33,7 @@ skip_startup=false
 while getopts "mgbSh" opt; do
     case $opt in
         m) run_migrations=true ;;
-        g) generate_jooq=true ;;
+        g) generate_jooq_and_open_api=true ;;
         b) build_app=true ;;
         S) skip_startup=true ;;
         h) show_help; exit 0 ;;
