@@ -62,7 +62,7 @@ public class EventServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.joinByLink(..)) "
-                    + "&& args(user, ..)")
+                    + "&& args(userEntity, ..)")
     public void joinByLink(UserEntity userEntity) {}
 
     @Pointcut(
@@ -224,7 +224,7 @@ public class EventServiceLoggerAspect {
         }
     }
 
-    @Around("joinByLink(user, ..)")
+    @Around("joinByLink(userEntity, ..)")
     public Object logJoinByLink(ProceedingJoinPoint proceedingJoinPoint, UserEntity userEntity)
             throws Throwable {
         try {

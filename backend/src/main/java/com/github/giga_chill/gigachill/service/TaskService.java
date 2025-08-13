@@ -7,10 +7,7 @@ import com.github.giga_chill.gigachill.mapper.TaskMapper;
 import com.github.giga_chill.gigachill.mapper.UserMapper;
 import com.github.giga_chill.gigachill.model.UserEntity;
 import com.github.giga_chill.gigachill.service.validator.*;
-import com.github.giga_chill.gigachill.util.UuidUtils;
-import com.github.giga_chill.gigachill.web.info.RequestTaskInfo;
-import com.github.giga_chill.gigachill.web.info.ResponseTaskInfo;
-import com.github.giga_chill.gigachill.web.info.ResponseTaskWithShoppingListsInfo;
+import com.github.giga_chill.gigachill.web.api.model.*;
 import java.time.OffsetDateTime;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
@@ -35,51 +32,45 @@ public class TaskService {
     private final TaskServiceValidator taskServiceValidator;
     private final UserServiceValidator userServiceValidator;
 
-    public List<ResponseTaskInfo> getAllTasksFromEvent(UUID eventId, UUID userId) {
+    public List<Task> getAllTasksFromEvent(UUID eventId, UUID userId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
 
         return taskDAO.getAllTasksFromEvent(eventId).stream()
-                .map(taskMapper::toResponseTaskInfo)
+                .map(taskMapper::toTask)
                 .peek(
                         item ->
                                 item.setPermissions(
-                                        taskPermissions(
-                                                eventId,
-                                                UuidUtils.safeUUID(item.getTaskId()),
-                                                userId)))
+                                        taskPermissions(eventId, item.getTaskId(), userId)))
                 .toList();
     }
 
-    public ResponseTaskWithShoppingListsInfo getTaskById(UUID taskId, UUID eventId, UUID userId) {
+    public TaskWithShoppingLists getTaskById(UUID taskId, UUID eventId, UUID userId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         taskServiceValidator.checkIsExisted(eventId, taskId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
 
-        var task = taskMapper.toResponseTaskWithShoppingListsInfo(taskDAO.getTaskById(taskId));
+        var task = taskMapper.toTaskWithShoppingLists(taskDAO.getTaskById(taskId));
         task.setPermissions(taskPermissions(eventId, taskId, userId));
         task.getShoppingLists()
                 .forEach(
                         item ->
                                 item.setStatus(
-                                        shoppingListsService.getShoppingListStatus(
-                                                UuidUtils.safeUUID(item.getShoppingListId()))));
+                                        ShoppingListStatus.fromValue(
+                                                shoppingListsService.getShoppingListStatus(
+                                                        item.getShoppingListId()))));
         task.getShoppingLists()
                 .forEach(
                         item ->
                                 item.setCanEdit(
                                         shoppingListsService.canEdit(
-                                                eventId,
-                                                UuidUtils.safeUUID(item.getShoppingListId()),
-                                                userId)));
+                                                eventId, item.getShoppingListId(), userId)));
         return task;
     }
 
-    public String createTask(UUID eventId, UserEntity userEntity, RequestTaskInfo requestTaskInfo) {
+    public String createTask(UUID eventId, UserEntity userEntity, TaskCreate taskCreate) {
         var executorId =
-                !Objects.isNull(requestTaskInfo.executorId())
-                        ? UuidUtils.safeUUID(requestTaskInfo.executorId())
-                        : null;
+                !Objects.isNull(taskCreate.getExecutorId()) ? taskCreate.getExecutorId() : null;
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsFinalized(eventId);
@@ -88,35 +79,30 @@ public class TaskService {
             userServiceValidator.checkIsExisted(executorId);
             participantsServiceValidator.checkIsParticipant(eventId, executorId);
         }
-        var shoppingListsIds =
-                requestTaskInfo.shoppingListsIds().stream().map(UuidUtils::safeUUID).toList();
+        var shoppingListsIds = taskCreate.getShoppingListsIds();
         shoppingListsServiceValidator.checkAreExisted(shoppingListsIds);
         shoppingListsServiceValidator.checkOpportunityToBindShoppingListsToTask(shoppingListsIds);
         var eventEndDatetime = OffsetDateTime.parse(eventService.getEndDatetime(eventId));
-        var taskDeadline = OffsetDateTime.parse(requestTaskInfo.deadlineDatetime());
-        taskServiceValidator.checkTaskDeadline(eventEndDatetime, taskDeadline);
+        taskServiceValidator.checkTaskDeadline(eventEndDatetime, taskCreate.getDeadlineDatetime());
 
         var task =
                 new TaskDTO(
                         UUID.randomUUID(),
-                        requestTaskInfo.title(),
-                        requestTaskInfo.description(),
+                        taskCreate.getTitle(),
+                        taskCreate.getDescription(),
                         env.getProperty("task_status.open"),
-                        requestTaskInfo.deadlineDatetime(),
+                        taskCreate.getDeadlineDatetime(),
                         null,
                         null,
                         userMapper.toUserDto(userEntity),
-                        requestTaskInfo.executorId() != null
-                                ? userMapper.toUserDto(
-                                        userService.getById(
-                                                UuidUtils.safeUUID(requestTaskInfo.executorId())))
+                        executorId != null
+                                ? userMapper.toUserDto(userService.getById(executorId))
                                 : null);
         taskDAO.createTask(eventId, task, shoppingListsIds);
         return task.getTaskId().toString();
     }
 
-    public void updateTask(
-            UUID eventId, UUID taskId, UUID userId, RequestTaskInfo requestTaskInfo) {
+    public void updateTask(UUID eventId, UUID taskId, UUID userId, TaskUpdate taskUpdate) {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsFinalized(eventId);
@@ -125,16 +111,15 @@ public class TaskService {
         taskServiceValidator.checkNotCompletedStatus(taskId, getTaskStatus(taskId));
         participantsServiceValidator.checkIsAuthorOrAdminOrOwner(eventId, userId, taskId);
         var eventEndDatetime = OffsetDateTime.parse(eventService.getEndDatetime(eventId));
-        var taskDeadline = OffsetDateTime.parse(requestTaskInfo.deadlineDatetime());
-        taskServiceValidator.checkTaskDeadline(eventEndDatetime, taskDeadline);
+        taskServiceValidator.checkTaskDeadline(eventEndDatetime, taskUpdate.getDeadlineDatetime());
 
         var task =
                 new TaskDTO(
                         taskId,
-                        requestTaskInfo.title(),
-                        requestTaskInfo.description(),
+                        taskUpdate.getTitle(),
+                        taskUpdate.getDescription(),
                         null,
-                        requestTaskInfo.deadlineDatetime(),
+                        taskUpdate.getDeadlineDatetime(),
                         null,
                         null,
                         null,
@@ -180,14 +165,12 @@ public class TaskService {
         return taskDAO.getExecutorId(taskId);
     }
 
-    public UUID updateExecutor(UUID taskId, UUID eventId, UUID userId, Map<String, Object> body) {
+    public UUID updateExecutor(
+            UUID taskId, UUID eventId, UUID userId, TaskSetExecutor taskSetExecutor) {
 
-        if (!body.containsKey("executor_id")) {
-            throw new BadRequestException("Invalid request body: " + body);
-        }
         UUID executorId =
-                !Objects.isNull(body.get("executor_id"))
-                        ? UuidUtils.safeUUID((String) body.get("executor_id"))
+                !Objects.isNull(taskSetExecutor.getExecutorId())
+                        ? taskSetExecutor.getExecutorId().get()
                         : null;
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
@@ -204,9 +187,8 @@ public class TaskService {
         return executorId;
     }
 
-    public void updateShoppingLists(UUID taskId, UUID eventId, UUID userId, List<String> body) {
-        var shoppingListsIds =
-                !Objects.isNull(body) ? body.stream().map(UuidUtils::safeUUID).toList() : null;
+    public void updateShoppingLists(UUID taskId, UUID eventId, UUID userId, List<UUID> body) {
+        var shoppingListsIds = !Objects.isNull(body) ? body : null;
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsFinalized(eventId);
@@ -224,11 +206,14 @@ public class TaskService {
     }
 
     public String setExecutorComment(
-            UUID taskId, UUID eventId, UUID userId, Map<String, String> body) {
+            UUID taskId,
+            UUID eventId,
+            UUID userId,
+            TaskSendForReviewRequest taskSendForReviewRequest) {
 
-        var executorComment = body.get("executor_comment");
-        if (Objects.isNull(executorComment)) {
-            throw new BadRequestException("Invalid request body: " + body);
+        if (Objects.isNull(taskSendForReviewRequest.getExecutorComment())) {
+            throw new BadRequestException(
+                    "Invalid request body: " + taskSendForReviewRequest.toString());
         }
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
@@ -238,17 +223,16 @@ public class TaskService {
         taskServiceValidator.checkInProgressStatus(taskId, getTaskStatus(taskId));
         taskServiceValidator.checkOpportunityToSentTaskToReview(taskId, userId);
 
-        taskDAO.setExecutorComment(taskId, executorComment);
-        return executorComment;
+        taskDAO.setExecutorComment(taskId, taskSendForReviewRequest.getExecutorComment());
+        return taskSendForReviewRequest.getExecutorComment();
     }
 
     public void setReviewerComment(
-            UUID taskId, Map<String, Object> body, UUID eventId, UUID userId) {
+            UUID taskId, TaskReviewRequest taskReviewRequest, UUID eventId, UUID userId) {
 
-        var reviewerComment = (String) body.get("reviewer_comment");
-        var isApproved = (Boolean) body.get("is_approved");
-        if (Objects.isNull(reviewerComment) || Objects.isNull(isApproved)) {
-            throw new BadRequestException("Invalid request body: " + body);
+        if (Objects.isNull(taskReviewRequest.getReviewerComment())
+                || Objects.isNull(taskReviewRequest.getIsApproved())) {
+            throw new BadRequestException("Invalid request body: " + taskReviewRequest.toString());
         }
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
@@ -258,33 +242,31 @@ public class TaskService {
         taskServiceValidator.checkUnderReviewStatus(taskId, getTaskStatus(taskId));
         taskServiceValidator.checkOpportunityToApproveTask(eventId, taskId, userId);
 
-        taskDAO.setReviewerComment(taskId, reviewerComment, isApproved);
+        taskDAO.setReviewerComment(
+                taskId, taskReviewRequest.getReviewerComment(), taskReviewRequest.getIsApproved());
     }
 
-    public Map<String, Boolean> taskPermissions(UUID eventId, UUID taskId, UUID userId) {
-        Map<String, Boolean> permissions = new HashMap<>();
-        var canEdit = true;
-        var canTakeItToWork = false;
-        var canReview = false;
+    public Permissions taskPermissions(UUID eventId, UUID taskId, UUID userId) {
+        var permissions = new Permissions();
+        permissions.setCanEdit(true);
+        permissions.setCanTakeInWork(false);
+        permissions.setCanReview(false);
         var executorId = getExecutorId(taskId);
         if (getTaskStatus(taskId).equals(env.getProperty("task_status.completed"))) {
-            canEdit = false;
+            permissions.setCanEdit(false);
         }
         if (participantsService.isParticipantRole(eventId, userId) && !isAuthor(taskId, userId)) {
-            canEdit = false;
+            permissions.setCanEdit(false);
         }
         if (getTaskStatus(taskId).equals(env.getProperty("task_status.open"))
                 && (Objects.isNull(executorId) || executorId.equals(userId))) {
-            canTakeItToWork = true;
+            permissions.canTakeInWork(true);
         }
         if (getTaskStatus(taskId).equals(env.getProperty("task_status.under_review"))
                 && !participantsService.isParticipantRole(eventId, userId)
                 && !getExecutorId(taskId).equals(userId)) {
-            canReview = true;
+            permissions.setCanReview(true);
         }
-        permissions.put("can_edit", canEdit);
-        permissions.put("can_take_in_work", canTakeItToWork);
-        permissions.put("can_review", canReview);
         return permissions;
     }
 }
