@@ -65,7 +65,7 @@ Cypress.Commands.add('toggleShoppingList', { prevSubject: 'element' }, (shopping
 
 
 Cypress.Commands.add('getDeleteShoppingListBtn', { prevSubject: 'element' }, (shoppingListCard) => {
-    return cy.wrap(shoppingListCard).trigger('mouseover').find('.anticon-delete');
+    return cy.wrap(shoppingListCard).trigger('mouseover', 'right').find('.anticon-delete');
 });
 
 
