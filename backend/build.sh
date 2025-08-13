@@ -1,5 +1,8 @@
 #!/bin/bash
 # Подразумевается, что скрипт используется в Docker контейнере с нужной версией gradle
+
+set -Eeuo pipefail
+
 # === Проверка переменной окружения KEEP_DATABASE ===
 if [ -z "$KEEP_DATABASE" ]; then
     echo "Переменная окружения KEEP_DATABASE не установлена. Используйте KEEP_DATABASE=true или KEEP_DATABASE=false в .env файле."
