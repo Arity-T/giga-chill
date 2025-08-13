@@ -10,12 +10,9 @@ import com.github.giga_chill.gigachill.mapper.ParticipantSummaryBalanceMapper;
 import com.github.giga_chill.gigachill.model.UserEntity;
 import com.github.giga_chill.gigachill.service.validator.EventServiceValidator;
 import com.github.giga_chill.gigachill.service.validator.ParticipantServiceValidator;
-import com.github.giga_chill.gigachill.web.api.model.ParticipantBalanceSummary;
-import com.github.giga_chill.gigachill.web.api.model.UserBalance;
-import com.github.giga_chill.gigachill.web.info.ParticipantInfo;
+import com.github.giga_chill.gigachill.web.api.model.*;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -35,31 +32,27 @@ public class ParticipantService {
     private final ParticipantServiceValidator participantsServiceValidator;
     private final UserService userService;
 
-    public List<ParticipantInfo> getAllParticipantsByEventId(UUID eventId, UUID participantId) {
+    public List<Participant> getAllParticipantsByEventId(UUID eventId, UUID participantId) {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, participantId);
 
         return participantDAO.getAllParticipantsByEventId(eventId).stream()
-                .map(participantMapper::toParticipantInfo)
+                .map(participantMapper::toParticipant)
                 .toList();
     }
 
-    public ParticipantInfo getParticipantById(UUID eventId, UUID participantId) {
-        return participantMapper.toParticipantInfo(
-                participantDAO.getParticipantById(eventId, participantId));
-    }
-
-    public UUID addParticipantToEvent(UUID eventId, UUID participantId, Map<String, Object> body) {
+    public UUID addParticipantToEvent(
+            UUID eventId, UUID participantId, ParticipantCreate participantCreate) {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsFinalized(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, participantId);
         participantsServiceValidator.checkAdminOrOwnerRole(eventId, participantId);
 
-        var participantLogin = (String) body.get("login");
+        var participantLogin = participantCreate.getLogin();
         if (Objects.isNull(participantLogin)) {
-            throw new BadRequestException("Invalid request body: " + body);
+            throw new BadRequestException("Invalid request body: " + participantCreate.toString());
         }
         var userToAdd = userService.getByLogin(participantLogin);
 
@@ -107,11 +100,10 @@ public class ParticipantService {
     }
 
     public void updateParticipantRole(
-            UUID eventId, UUID userId, UUID participantId, Map<String, Object> body) {
+            UUID eventId, UUID userId, UUID participantId, ParticipantSetRole participantSetRole) {
 
-        var newRole = (String) body.get("role");
-        if (Objects.isNull(newRole)) {
-            throw new BadRequestException("Invalid request body: " + body);
+        if (Objects.isNull(participantSetRole)) {
+            throw new BadRequestException("Invalid request body: " + participantSetRole);
         }
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsFinalized(eventId);
@@ -120,6 +112,7 @@ public class ParticipantService {
         participantsServiceValidator.checkIsParticipant(eventId, participantId);
         participantsServiceValidator.checkReplaceRole(eventId, participantId);
 
+        var newRole = participantSetRole.getRole().getValue();
         participantDAO.updateParticipantRole(eventId, participantId, newRole);
     }
 
