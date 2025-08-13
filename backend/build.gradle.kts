@@ -30,7 +30,6 @@ repositories {
 	mavenCentral()
 }
 
-
 val jooqVersion = "3.20.5"
 
 // === spotless конфигурация ===
@@ -95,7 +94,6 @@ dependencies {
     jooqGenerator("org.postgresql:postgresql")
 }
 
-
 // === Пути для файлов генерации ===
 val specMainPath = System.getenv("OPEN_API_MAIN_SPECIFICATION")
 
@@ -138,7 +136,6 @@ val jdbcUrl = "jdbc:postgresql://$dbHost:$dbPort/$dbName"
 
 sourceSets["main"].java.srcDir("build/generated-sources/jooq")
 sourceSets["main"].java.srcDir("build/generated/api")
-
 
 
 // === jOOQ codegen конфигурация ===
@@ -185,7 +182,3 @@ jooq {
         }
     }
 }
-
-
-
-
