@@ -63,7 +63,7 @@ public class ParticipantServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.getParticipantsSummaryBalance(..)) "
-                    + "&& args(eventId)")
+                    + "&& args(eventId, ..)")
     public void getParticipantsSummaryBalance(UUID eventId) {}
 
     @Around("getAllParticipantsByEventId(eventId, ..)")
@@ -230,7 +230,7 @@ public class ParticipantServiceLoggerAspect {
         }
     }
 
-    @Around("getParticipantsSummaryBalance(eventId)")
+    @Around("getParticipantsSummaryBalance(eventId, ..)")
     public Object logGetParticipantsSummaryBalance(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId) throws Throwable {
         try {

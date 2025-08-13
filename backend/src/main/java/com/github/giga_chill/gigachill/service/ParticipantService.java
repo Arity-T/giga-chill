@@ -10,9 +10,9 @@ import com.github.giga_chill.gigachill.mapper.ParticipantSummaryBalanceMapper;
 import com.github.giga_chill.gigachill.model.UserEntity;
 import com.github.giga_chill.gigachill.service.validator.EventServiceValidator;
 import com.github.giga_chill.gigachill.service.validator.ParticipantServiceValidator;
-import com.github.giga_chill.gigachill.web.info.ParticipantBalanceInfo;
+import com.github.giga_chill.gigachill.web.api.model.ParticipantBalanceSummary;
+import com.github.giga_chill.gigachill.web.api.model.UserBalance;
 import com.github.giga_chill.gigachill.web.info.ParticipantInfo;
-import com.github.giga_chill.gigachill.web.info.ParticipantSummaryBalanceInfo;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -142,22 +142,22 @@ public class ParticipantService {
                 .equals(env.getProperty("roles.participant"));
     }
 
-    public ParticipantBalanceInfo getParticipantBalance(UUID eventId, UUID participantId) {
+    public UserBalance getParticipantBalance(UUID eventId, UUID participantId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, participantId);
 
-        return participantBalanceMapper.toParticipantBalanceInfo(
+        return participantBalanceMapper.toUserBalance(
                 participantDAO.getParticipantBalance(eventId, participantId));
     }
 
-    public List<ParticipantSummaryBalanceInfo> getParticipantsSummaryBalance(
+    public List<ParticipantBalanceSummary> getParticipantsSummaryBalance(
             UUID eventId, UUID participantId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, participantId);
         participantsServiceValidator.checkAdminOrOwnerRole(eventId, participantId);
 
         return participantDAO.getSummaryParticipantBalance(eventId).stream()
-                .map(participantSummaryBalanceMapper::toParticipantSummaryBalanceInfo)
+                .map(participantSummaryBalanceMapper::toParticipantBalanceSummary)
                 .toList();
     }
 }

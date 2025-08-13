@@ -1,7 +1,7 @@
 package com.github.giga_chill.gigachill.mapper;
 
 import com.github.giga_chill.gigachill.data.transfer.object.UserDTO;
-import com.github.giga_chill.gigachill.web.info.DebtInfo;
+import com.github.giga_chill.gigachill.web.api.model.Debt;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -15,16 +15,16 @@ public interface DebtMapper {
 
     @Mapping(source = "key", target = "user")
     @Mapping(source = "value", target = "amount")
-    DebtInfo toDebtInfo(Map.Entry<UserDTO, BigDecimal> entry);
+    Debt toDebt(Map.Entry<UserDTO, BigDecimal> entry);
 
-    default List<DebtInfo> toDebtInfoList(List<Map<UserDTO, BigDecimal>> maps) {
+    default List<Debt> toDebtInfoList(List<Map<UserDTO, BigDecimal>> maps) {
         if (Objects.isNull(maps)) {
             return null;
         }
         return maps.stream()
                 .filter(Objects::nonNull)
                 .flatMap(map -> map.entrySet().stream())
-                .map(this::toDebtInfo)
+                .map(this::toDebt)
                 .collect(Collectors.toList());
     }
 }
