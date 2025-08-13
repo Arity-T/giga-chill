@@ -32,12 +32,44 @@ jobs:
           path: artifacts/app.jar
           if-no-files-found: error
 
-  # build-frontend:
-  #   name: Build Frontend
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check out the repository to the runner
-  #       uses: actions/checkout@v4
+  # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-a-registry-using-a-personal-access-token
+  build-frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: giga-chill-frontend
+    permissions:
+      contents: read
+      packages: write
+    environment:
+      name: production
+      url: ${{ vars.FRONTEND_URL }}
+    steps:
+      - name: Check out the repository to the runner
+        uses: actions/checkout@v4
+
+      - name: Build Frontend
+        run: |
+          docker build -f frontend/Dockerfile -t $IMAGE_NAME \
+            --label "runnumber=${GITHUB_RUN_ID}" \
+            --build-arg NEXT_PUBLIC_API_BASE_URL=${{ vars.BACKEND_URL }} \
+            --build-arg NEXT_PUBLIC_BASE_URL=${{ vars.FRONTEND_URL }} .
+
+      - name: Log in to registry
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | \
+            docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push image
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+
+          # This changes all uppercase characters to lowercase.
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+
+          echo IMAGE_ID=$IMAGE_ID
+          docker tag $IMAGE_NAME $IMAGE_ID:latest
+          docker push $IMAGE_ID:latest
 
   # start-app:
   #   name: Start App
