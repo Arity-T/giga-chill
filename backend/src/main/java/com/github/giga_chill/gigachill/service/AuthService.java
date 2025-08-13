@@ -20,7 +20,7 @@ public class AuthService {
     private final UserService userService;
     private final UserMapper userMapper;
 
-    @Value("${server.is_prod:false}")
+    @Value("${server.https_cookies_only:false}")
     private boolean isProd;
 
     public ResponseCookie login(LoginRequest loginRequest) {

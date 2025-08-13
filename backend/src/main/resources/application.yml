@@ -10,7 +10,7 @@ spring:
 
 server:
   port: ${SERVER_PORT}
-  is_prod: ${SERVER_IS_PROD}
+  https_cookies_only: ${HTTPS_COOKIES_ONLY}
 
 jwt:
   expiration: ${JWT_EXPIRATION}
