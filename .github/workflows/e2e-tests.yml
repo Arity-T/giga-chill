@@ -1,0 +1,65 @@
+name: E2E Tests Workflow
+
+run-name: "E2E Tests for PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}"
+
+on:
+  # https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request
+  pull_request:
+    # https://docs.github.com/en/webhooks/webhook-events-and-payloads?actionType=ready_for_review#pull_request
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches:
+      - main
+    # https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#filter-pattern-cheat-sheet
+    paths-ignore:
+      - "**.md"
+
+# https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e-tests:
+    name: E2E Tests
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository to the runner
+        uses: actions/checkout@v4
+
+      - name: Build the application
+        run: |
+          cp .env.example .env
+          docker compose build
+
+      - name: Run the application
+        run: docker compose up -d --wait
+
+      - name: Wait for the application to be ready
+        run: sleep 10
+
+      - name: Run the tests
+        id: run-tests
+        run: |
+          cd e2e-tests && cp .env.example .env
+          docker compose run --rm --build e2e-tests
+
+      - name: Upload logs
+        # https://docs.github.com/en/actions/reference/workflows-and-actions/expressions#example-of-failure-with-conditions
+        if: ${{ failure() && steps.run-tests.conclusion == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-tests-logs
+          path: e2e-tests/cypress/logs
+      - name: Upload screenshots
+        if: ${{ failure() && steps.run-tests.conclusion == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-tests-screenshots
+          path: e2e-tests/cypress/screenshots
+      - name: Upload videos
+        if: ${{ failure() && steps.run-tests.conclusion == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-tests-videos
+          path: e2e-tests/cypress/videos
