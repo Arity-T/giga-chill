@@ -2,7 +2,6 @@ package com.github.giga_chill.gigachill.aspect;
 
 import com.github.giga_chill.gigachill.config.LoggerColorConfig;
 import com.github.giga_chill.gigachill.model.UserEntity;
-import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -22,8 +21,8 @@ public class EventServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.createEvent(..)) "
-                    + "&& args(userId, requestEventInfo)")
-    public void createEvent(UUID userId, RequestEventInfo requestEventInfo) {}
+                    + "&& args(userId, ..)")
+    public void createEvent(UUID userId) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.getAllUserEvents(..)) "
@@ -75,9 +74,8 @@ public class EventServiceLoggerAspect {
                     + "&& args(eventId, ..)")
     public void finalizeEvent(UUID eventId) {}
 
-    @Around("createEvent(userId, requestEventInfo)")
-    public Object logCreateEvent(
-            ProceedingJoinPoint proceedingJoinPoint, UUID userId, RequestEventInfo requestEventInfo)
+    @Around("createEvent(userId, ..)")
+    public Object logCreateEvent(ProceedingJoinPoint proceedingJoinPoint, UUID userId)
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
