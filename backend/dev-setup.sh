@@ -80,7 +80,8 @@ fi
 # === Генерация Jooq ===
 if [ "$generate_jooq_and_open_api" = true ]; then
     echo "=== Генерация классов Jooq и OpenAPI ==="
-    ./gradlew clean generateJooq
+    ./gradlew clean
+    ./gradlew generateJooq
     ./gradlew generateOpenApi
     if [ $? -ne 0 ]; then
         echo "Ошибка при генерации Jooq или OpenAPI"
