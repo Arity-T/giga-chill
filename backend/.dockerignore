@@ -3,6 +3,7 @@
 
 # Кроме необходимых для сборки
 !src/**
+!migrate.sh
 !build.sh
 !build.gradle.kts
 !settings.gradle.kts

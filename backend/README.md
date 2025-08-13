@@ -25,6 +25,16 @@
 - `-S` — не запускать приложение (только выполнить указанные операции)
 - `-h` — показать справку
 
+## Сборка в Fat Jar в Docker
+
+Собрать приложение в Docker контейнере можно с помощью [`compose.build.yml`](compose.build.yml):
+
+```bash
+docker compose -f ./compose.build.yml up --build --abort-on-container-exit --exit-code-from backend-builder
+```
+
+После успешной сборки Fat Jar будет сохранён в `./backend-build`, перед сборкой можно задать переменную окружения `BACKEND_BUILD_DIR` для указания другого пути.
+
 ## Проверка эндпоинтов
 - **Регистрация:**
 ```pwsh

@@ -1,5 +1,8 @@
 #!/bin/bash
 # Применяет миграции из src/main/resources/db/migration с помощью psql
+
+set -Eeuo pipefail
+
 echo "=== Выполнение миграций ==="
 
 if [ "$KEEP_DATABASE" = "false" ]; then

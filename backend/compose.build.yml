@@ -1,0 +1,39 @@
+# Компоуз предназначен для сборки backend'а в Docker и получения результата в виде
+# Fat Jar файла (app.jar), который складывается в каталог хоста через bind-mount,
+# путь задаётся переменной окружения BACKEND_BUILD_DIR.
+
+services:
+  # Временная БД только для генерации классов JOOQ
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: gigachill
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks: [build-net]
+
+  backend-builder:
+    build:
+      dockerfile: Dockerfile.builder
+    image: gigachill-backend-builder
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: gigachill
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      KEEP_DATABASE: false
+    volumes:
+      - ${BACKEND_BUILD_DIR:-./backend-build}:/app/build/libs
+    networks: [build-net]
+
+networks:
+  build-net:
