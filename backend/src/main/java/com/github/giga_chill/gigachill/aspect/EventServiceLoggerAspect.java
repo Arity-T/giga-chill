@@ -2,6 +2,7 @@ package com.github.giga_chill.gigachill.aspect;
 
 import com.github.giga_chill.gigachill.config.LoggerColorConfig;
 import com.github.giga_chill.gigachill.model.UserEntity;
+import com.github.giga_chill.gigachill.web.api.model.JoinByInvitationToken200Response;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -234,7 +235,7 @@ public class EventServiceLoggerAspect {
                             + "User with id: {} joined event with id: {} via a link"
                             + loggerColorConfig.getRESET_COLOR(),
                     userEntity.getId(),
-                    (UUID) result);
+                    ((JoinByInvitationToken200Response) result).getEventId());
             return result;
         } catch (Throwable ex) {
             throw ex;

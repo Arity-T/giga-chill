@@ -9,10 +9,7 @@ import com.github.giga_chill.gigachill.model.UserEntity;
 import com.github.giga_chill.gigachill.service.validator.EventServiceValidator;
 import com.github.giga_chill.gigachill.service.validator.ParticipantServiceValidator;
 import com.github.giga_chill.gigachill.util.UuidUtils;
-import com.github.giga_chill.gigachill.web.api.model.Event;
-import com.github.giga_chill.gigachill.web.api.model.EventCreate;
-import com.github.giga_chill.gigachill.web.api.model.EventUpdate;
-import com.github.giga_chill.gigachill.web.api.model.UserRole;
+import com.github.giga_chill.gigachill.web.api.model.*;
 import java.math.BigDecimal;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
@@ -112,24 +109,25 @@ public class EventService {
         return inviteLinkUuid.toString();
     }
 
-    public String getInviteLink(UUID eventId, UUID userId) {
+    public InvitationToken getInviteLink(UUID eventId, UUID userId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         participantsServiceValidator.checkAdminOrOwnerRole(eventId, userId);
 
-        return eventDAO.getInviteLinkUuid(eventId).toString();
+        return new InvitationToken(eventDAO.getInviteLinkUuid(eventId).toString());
     }
 
     public UUID getEventByLinkUuid(UUID linkUuid) {
         return eventDAO.getEventByLinkUuid(linkUuid);
     }
 
-    public UUID joinByLink(UserEntity userEntity, Map<String, Object> body) {
-        var rawToken = (String) body.get("invitation_token");
-        if (Objects.isNull(rawToken)) {
-            throw new BadRequestException("Invalid request body: " + body);
+    public JoinByInvitationToken200Response joinByLink(
+            UserEntity userEntity, InvitationToken invitationToken) {
+        var rawToken = invitationToken.getInvitationToken();
+        if (!rawToken.isPresent()) {
+            throw new BadRequestException("Invalid request body: " + invitationToken);
         }
-        var eventId = getEventByLinkUuid(UuidUtils.safeUUID(rawToken));
+        var eventId = getEventByLinkUuid(UuidUtils.safeUUID(rawToken.get()));
         if (Objects.isNull(eventId)) {
             throw new NotFoundException("Link with hash " + rawToken + " not found");
         }
@@ -137,7 +135,7 @@ public class EventService {
         participantsServiceValidator.checkIsAlreadyParticipant(eventId, userEntity.getId());
 
         participantsService.addParticipantToEvent(eventId, userEntity);
-        return eventId;
+        return new JoinByInvitationToken200Response(eventId);
     }
 
     public void finalizeEvent(UUID eventId, UUID userId) {
