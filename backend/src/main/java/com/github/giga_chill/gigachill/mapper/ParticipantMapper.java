@@ -3,16 +3,12 @@ package com.github.giga_chill.gigachill.mapper;
 import com.github.giga_chill.gigachill.data.transfer.object.ParticipantDTO;
 import com.github.giga_chill.gigachill.web.api.model.Participant;
 import com.github.giga_chill.gigachill.web.api.model.UserRole;
-import com.github.giga_chill.gigachill.web.info.ConsumerInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-@Mapper(componentModel = "spring", uses = UuidMapper.class)
+@Mapper(componentModel = "spring")
 public interface ParticipantMapper {
-
-    @Mapping(source = "role", target = "userRole")
-    ConsumerInfo toConsumerInfo(ParticipantDTO dto);
 
     @Mapping(source = "role", target = "userRole", qualifiedByName = "stringToUserRole")
     Participant toParticipant(ParticipantDTO dto);

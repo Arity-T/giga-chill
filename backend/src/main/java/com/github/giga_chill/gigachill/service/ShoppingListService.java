@@ -7,10 +7,7 @@ import com.github.giga_chill.gigachill.exception.BadRequestException;
 import com.github.giga_chill.gigachill.mapper.ShoppingItemMapper;
 import com.github.giga_chill.gigachill.mapper.ShoppingListMapper;
 import com.github.giga_chill.gigachill.service.validator.*;
-import com.github.giga_chill.gigachill.util.UuidUtils;
 import com.github.giga_chill.gigachill.web.api.model.*;
-import com.github.giga_chill.gigachill.web.info.ShoppingItemInfo;
-import com.github.giga_chill.gigachill.web.info.ShoppingListInfo;
 import java.math.BigDecimal;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
@@ -45,25 +42,6 @@ public class ShoppingListService {
                                         ShoppingListStatus.fromValue(
                                                 getShoppingListStatus(item.getShoppingListId()))))
                 .peek(item -> item.setCanEdit(canEdit(eventId, item.getShoppingListId(), userId)))
-                .toList();
-    }
-
-    public ShoppingListInfo getShoppingListById(UUID shoppingListId) {
-        var shoppingList =
-                shoppingListMapper.toShoppingListInfo(
-                        shoppingListDAO.getShoppingListById(shoppingListId));
-        shoppingList.setStatus(getShoppingListStatus(shoppingListId));
-        return shoppingList;
-    }
-
-    public List<ShoppingListInfo> getShoppingListsByIds(List<UUID> shoppingListsIds) {
-        return shoppingListDAO.getShoppingListsByIds(shoppingListsIds).stream()
-                .map(shoppingListMapper::toShoppingListInfo)
-                .peek(
-                        item ->
-                                item.setStatus(
-                                        getShoppingListStatus(
-                                                UuidUtils.safeUUID(item.getShoppingListId()))))
                 .toList();
     }
 
@@ -219,11 +197,6 @@ public class ShoppingListService {
 
         shoppingListDAO.updateShoppingItemStatus(shoppingItemId, status);
         return status;
-    }
-
-    public ShoppingItemInfo getShoppingItemById(UUID shoppingItemId) {
-        return shoppingItemMapper.toShoppingItemInfo(
-                shoppingListDAO.getShoppingItemById(shoppingItemId));
     }
 
     public void updateShoppingListConsumers(

@@ -11,7 +11,7 @@ import org.mapstruct.Named;
 
 @Mapper(
         componentModel = "spring",
-        uses = {ShoppingListMapper.class, UserMapper.class, UuidMapper.class})
+        uses = {ShoppingListMapper.class, UserMapper.class})
 public interface TaskMapper {
 
     @Mapping(source = "status", target = "status", qualifiedByName = "stringToTaskStatus")
