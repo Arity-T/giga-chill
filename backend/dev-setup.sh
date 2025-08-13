@@ -56,25 +56,7 @@ echo "Using DB: $DB_HOST:$DB_PORT/$DB_NAME as $DB_USER"
 
 # === Выполнение миграций ===
 if [ "$run_migrations" = true ]; then
-    echo "=== Выполнение миграций ==="
-    
-    # Удалим и создадим базу заново
-    echo "Пересоздание базы данных..."
-    PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -U "$DB_USER" -c "DROP DATABASE IF EXISTS $DB_NAME"
-    PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -U "$DB_USER" -c "CREATE DATABASE $DB_NAME"
-    
-    # Применим миграции
-    echo "Применение миграций..."
-    for file in $(find src/main/resources/db/migration -name "V*.sql" | sort); do
-        echo "Applying: $file"
-        PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -f "$file" -v ON_ERROR_STOP=1
-        if [ $? -ne 0 ]; then
-            echo "Migration failed: $file"
-            exit 1
-        fi
-    done
-    
-    echo "Все миграции применены успешно!"
+    ./migrate.sh
 fi
 
 # === Генерация Jooq ===
