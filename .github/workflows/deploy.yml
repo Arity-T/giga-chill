@@ -1,0 +1,48 @@
+name: Deploy Workflow
+
+on:
+  push:
+    # branches:
+    #   - main
+    # paths-ignore:
+    #   - "**.md"
+
+jobs:
+  build-backend:
+    name: Build Backend
+    runs-on: ubuntu-latest
+    env:
+      BACKEND_BUILD_DIR: ${{ github.workspace }}/artifacts
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Check out the repository to the runner
+        uses: actions/checkout@v4
+
+      - name: Build Backend
+        run: |
+          docker compose -f ./compose.build.yml up --build \
+            --abort-on-container-exit --exit-code-from backend-builder
+
+      - name: Upload app.jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: app.jar
+          path: artifacts/app.jar
+          if-no-files-found: error
+
+  # build-frontend:
+  #   name: Build Frontend
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Check out the repository to the runner
+  #       uses: actions/checkout@v4
+
+  # start-app:
+  #   name: Start App
+  #   runs-on: [self-hosted, dev]
+  #   environment: dev
+  #   steps:
+  #     - name: Check out the repository to the runner
+  #       uses: actions/checkout@v4
