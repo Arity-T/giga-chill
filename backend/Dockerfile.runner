@@ -1,7 +1,20 @@
 FROM eclipse-temurin:21-jre-jammy
 
+# Установка клиента PostgreSQL
+RUN apt-get update -y && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      postgresql-client ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 COPY --from=build app.jar /app/app.jar
+
+# Копируем скрипт миграций и файлы миграций в образ, чтобы он содержал
+# все необходимые файлы для запуска приложения. При запуске контейнера
+# CMD можно будет переопределить для выполнения миграций.
+COPY migrate.sh /app/migrate.sh
+COPY src/main/resources/db/migration /app/src/main/resources/db/migration
+RUN chmod +x /app/migrate.sh
 
 CMD ["java", "-jar", "/app/app.jar"]

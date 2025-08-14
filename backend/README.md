@@ -35,16 +35,10 @@ docker compose -f ./compose.build.yml up --build --abort-on-container-exit --exi
 
 После успешной сборки Fat Jar будет сохранён в `./backend-build`, перед сборкой можно задать переменную окружения `BACKEND_BUILD_DIR` для указания другого пути.
 
-На основе полученного Fat Jar можно собрать образ с помощью [`Dockerfile.runner`](Dockerfile.runner).
+На основе полученного Fat Jar можно собрать образ с помощью [`Dockerfile.runner`](Dockerfile.runner):
 
-Bash:
 ```bash
-docker build -t giga-chill-backend --build-context build=./backend-build - < Dockerfile.runner
-```
-
-PowerShell:
-```powershell
-Get-Content Dockerfile.runner | docker build -t giga-chill-backend --build-context build=./backend-build -
+docker build -f Dockerfile.runner -t giga-chill-backend --build-context build=./backend-build .
 ```
 
 Который затем можно запустить:
@@ -53,6 +47,16 @@ Get-Content Dockerfile.runner | docker build -t giga-chill-backend --build-conte
 cp .env.runner.example .env.runner
 docker run -p 8081:8081 --env-file ./.env.runner -d giga-chill-backend
 ```
+
+Образ также содержит в себе скрипт миграций и файлы миграций, которые можно выполнить
+командой:
+
+```bash
+docker run --rm --env-file ./.env.runner giga-chill-backend ./migrate.sh
+```
+
+К команде запуска бэкенда и миграций можно добавить параметр `--network gigachill-network`,
+если база данных доступна в Docker сети. 
 
 ## Проверка эндпоинтов
 - **Регистрация:**
