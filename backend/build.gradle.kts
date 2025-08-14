@@ -1,9 +1,13 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
 	java
 	id("org.springframework.boot") version "3.5.3"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("nu.studer.jooq") version "10.1"
     id("com.diffplug.spotless") version "6.19.0"
+    id("org.openapi.generator") version "7.14.0"
+    id("com.github.node-gradle.node") version "7.0.2"
 }
 
 group = "com.github.giga-chill"
@@ -45,6 +49,11 @@ spotless {
 
 // === Зависимости приложения и тестов ===
 dependencies {
+
+    //Swagger API
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.9")
+    implementation("org.openapitools:jackson-databind-nullable:0.2.6")
+    compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     // Lombok
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
@@ -85,7 +94,33 @@ dependencies {
     jooqGenerator("org.postgresql:postgresql")
 }
 
+// === Пути для файлов генерации ===
+val specMainPath = System.getenv("OPEN_API_MAIN_SPECIFICATION")
 
+// === Задача для генерации основного API ===
+val generateOpenApi by tasks.registering(GenerateTask::class) {
+    group = "openapi"
+    description = "Генерация кода по основному API"
+
+    validateSpec.set(false)
+    generatorName.set("spring")
+    inputSpec.set(specMainPath)
+    outputDir.set("$buildDir/generated/api")
+    apiPackage.set("com.github.giga_chill.gigachill.web.api")
+    modelPackage.set("com.github.giga_chill.gigachill.web.api.model")
+    invokerPackage.set("com.github.giga_chill.gigachill.web.api.invoker")
+    configOptions.set(
+        mapOf(
+            "useJakartaEe" to "true",
+            "interfaceOnly" to "true",
+            "skipDefaultInterface" to "true",
+            "dateLibrary" to "java8",
+            "useBeanValidation" to "false",
+            "sourceFolder" to "",
+            "useTags" to "true"
+        )
+    )
+}
 
 tasks.withType<Test> {
 	useJUnitPlatform()
@@ -100,6 +135,8 @@ val dbPassword = System.getenv("DB_PASSWORD")
 val jdbcUrl = "jdbc:postgresql://$dbHost:$dbPort/$dbName"
 
 sourceSets["main"].java.srcDir("build/generated-sources/jooq")
+sourceSets["main"].java.srcDir("build/generated/api")
+
 
 // === jOOQ codegen конфигурация ===
 jooq {
@@ -145,6 +182,3 @@ jooq {
         }
     }
 }
-
-
-

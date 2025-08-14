@@ -5,7 +5,6 @@ import com.github.giga_chill.jooq.generated.enums.TaskStatus;
 import com.github.giga_chill.jooq.generated.tables.Tasks;
 import com.github.giga_chill.jooq.generated.tables.records.TasksRecord;
 import jakarta.annotation.Nullable;
-import java.time.OffsetDateTime;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
@@ -55,8 +54,7 @@ public class TaskRepository {
             updates.put(Tasks.TASKS.STATUS, TaskStatus.valueOf(dto.getStatus()));
         }
         if (dto.getDeadlineDatetime() != null) {
-            updates.put(
-                    Tasks.TASKS.DEADLINE_DATETIME, OffsetDateTime.parse(dto.getDeadlineDatetime()));
+            updates.put(Tasks.TASKS.DEADLINE_DATETIME, dto.getDeadlineDatetime());
         }
         if (dto.getExecutorComment() != null) {
             updates.put(Tasks.TASKS.EXECUTOR_COMMENT, dto.getExecutorComment());

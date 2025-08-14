@@ -1,8 +1,8 @@
 package com.github.giga_chill.gigachill.aspect;
 
 import com.github.giga_chill.gigachill.config.LoggerColorConfig;
-import com.github.giga_chill.gigachill.model.User;
-import java.util.Map;
+import com.github.giga_chill.gigachill.model.UserEntity;
+import com.github.giga_chill.gigachill.web.api.model.TaskReviewRequest;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -32,8 +32,8 @@ public class TaskServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.createTask(..)) "
-                    + "&& args(eventId, user, ..)")
-    public void createTask(UUID eventId, User user) {}
+                    + "&& args(eventId, userEntity, ..)")
+    public void createTask(UUID eventId, UserEntity userEntity) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.updateTask(..)) "
@@ -65,7 +65,6 @@ public class TaskServiceLoggerAspect {
                     + "&& args(eventID, taskId)")
     public void isExisted(UUID eventID, UUID taskId) {}
 
-
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.getExecutorId(..)) "
                     + "&& args(taskId)")
@@ -88,8 +87,8 @@ public class TaskServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.TaskService.setReviewerComment(..)) "
-                    + "&& args(taskId, body, ..)")
-    public void setReviewerComment(UUID taskId, Map<String, Object> body) {}
+                    + "&& args(taskId, taskReviewRequest, ..)")
+    public void setReviewerComment(UUID taskId, TaskReviewRequest taskReviewRequest) {}
 
     @Around("getAllTasksFromEvent(eventId)")
     public Object logGetAllTasksFromEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
@@ -125,8 +124,9 @@ public class TaskServiceLoggerAspect {
         }
     }
 
-    @Around("createTask(eventId, user)")
-    public Object logCreateTask(ProceedingJoinPoint proceedingJoinPoint, UUID eventId, User user)
+    @Around("createTask(eventId, userEntity)")
+    public Object logCreateTask(
+            ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UserEntity userEntity)
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -136,7 +136,7 @@ public class TaskServiceLoggerAspect {
                             + "User with id: {} created task with id: "
                             + "{} in event with id: {}"
                             + loggerColorConfig.getRESET_COLOR(),
-                    user.getId(),
+                    userEntity.getId(),
                     (String) result,
                     eventId);
             return result;
@@ -271,7 +271,6 @@ public class TaskServiceLoggerAspect {
         }
     }
 
-
     @Around("getExecutorId(taskId)")
     public Object logGetExecutorId(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
             throws Throwable {
@@ -363,12 +362,14 @@ public class TaskServiceLoggerAspect {
 
     @Around("setReviewerComment(taskId, body)")
     public Object logSetReviewerComment(
-            ProceedingJoinPoint proceedingJoinPoint, UUID taskId, Map<String, Object> body)
+            ProceedingJoinPoint proceedingJoinPoint,
+            UUID taskId,
+            TaskReviewRequest taskReviewRequest)
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
-            var reviewerComment = (String) body.get("reviewer_comment");
-            var isApproved = (Boolean) body.get("is_approved");
+            var reviewerComment = taskReviewRequest.getReviewerComment();
+            var isApproved = taskReviewRequest.getIsApproved();
             if (isApproved) {
                 LOGGER.info(
                         loggerColorConfig.getPOST_COLOR()

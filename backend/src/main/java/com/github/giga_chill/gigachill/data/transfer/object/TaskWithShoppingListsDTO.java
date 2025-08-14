@@ -1,6 +1,7 @@
 package com.github.giga_chill.gigachill.data.transfer.object;
 
 import jakarta.annotation.Nullable;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ public class TaskWithShoppingListsDTO {
     private String title;
     @Nullable private String description;
     private String status;
-    private String deadlineDatetime;
+    private OffsetDateTime deadlineDatetime;
     @Nullable private String executorComment;
     @Nullable private String reviewerComment;
     private UserDTO author;

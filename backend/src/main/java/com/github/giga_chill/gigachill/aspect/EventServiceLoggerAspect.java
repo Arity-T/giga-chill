@@ -1,8 +1,8 @@
 package com.github.giga_chill.gigachill.aspect;
 
 import com.github.giga_chill.gigachill.config.LoggerColorConfig;
-import com.github.giga_chill.gigachill.model.User;
-import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
+import com.github.giga_chill.gigachill.model.UserEntity;
+import com.github.giga_chill.gigachill.web.api.model.JoinByInvitationToken200Response;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -22,8 +22,8 @@ public class EventServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.createEvent(..)) "
-                    + "&& args(userId, requestEventInfo)")
-    public void createEvent(UUID userId, RequestEventInfo requestEventInfo) {}
+                    + "&& args(userId, ..)")
+    public void createEvent(UUID userId) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.getAllUserEvents(..)) "
@@ -45,7 +45,6 @@ public class EventServiceLoggerAspect {
                     + "&& args(eventId, ..)")
     public void updateEvent(UUID eventId) {}
 
-
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.createInviteLink(..)) "
                     + "&& args(eventId, ..)")
@@ -63,8 +62,8 @@ public class EventServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.joinByLink(..)) "
-                    + "&& args(user, ..)")
-    public void joinByLink(User user) {}
+                    + "&& args(userEntity, ..)")
+    public void joinByLink(UserEntity userEntity) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.EventService.getEndDatetime(..)) "
@@ -76,10 +75,8 @@ public class EventServiceLoggerAspect {
                     + "&& args(eventId, ..)")
     public void finalizeEvent(UUID eventId) {}
 
-
-    @Around("createEvent(userId, requestEventInfo)")
-    public Object logCreateEvent(
-            ProceedingJoinPoint proceedingJoinPoint, UUID userId, RequestEventInfo requestEventInfo)
+    @Around("createEvent(userId, ..)")
+    public Object logCreateEvent(ProceedingJoinPoint proceedingJoinPoint, UUID userId)
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -165,7 +162,6 @@ public class EventServiceLoggerAspect {
         }
     }
 
-
     @Around("createInviteLink(eventId, ..)")
     public Object logCreateInviteLink(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
@@ -228,8 +224,8 @@ public class EventServiceLoggerAspect {
         }
     }
 
-    @Around("joinByLink(user, ..)")
-    public Object logJoinByLink(ProceedingJoinPoint proceedingJoinPoint, User user)
+    @Around("joinByLink(userEntity, ..)")
+    public Object logJoinByLink(ProceedingJoinPoint proceedingJoinPoint, UserEntity userEntity)
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
@@ -238,8 +234,8 @@ public class EventServiceLoggerAspect {
                             + loggerColorConfig.getPOST_LABEL()
                             + "User with id: {} joined event with id: {} via a link"
                             + loggerColorConfig.getRESET_COLOR(),
-                    user.getId(),
-                    (UUID) result);
+                    userEntity.getId(),
+                    ((JoinByInvitationToken200Response) result).getEventId());
             return result;
         } catch (Throwable ex) {
             throw ex;

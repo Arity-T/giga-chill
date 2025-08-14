@@ -1,135 +1,72 @@
 package com.github.giga_chill.gigachill.web.controller;
 
-import com.github.giga_chill.gigachill.model.User;
 import com.github.giga_chill.gigachill.service.EventService;
-import com.github.giga_chill.gigachill.service.ParticipantService;
 import com.github.giga_chill.gigachill.service.UserService;
-import com.github.giga_chill.gigachill.web.info.ParticipantBalanceInfo;
-import com.github.giga_chill.gigachill.web.info.ParticipantSummaryBalanceInfo;
-import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
-import com.github.giga_chill.gigachill.web.info.ResponseEventInfo;
-import java.util.Collections;
+import com.github.giga_chill.gigachill.web.api.EventsApi;
+import com.github.giga_chill.gigachill.web.api.model.Event;
+import com.github.giga_chill.gigachill.web.api.model.EventCreate;
+import com.github.giga_chill.gigachill.web.api.model.EventUpdate;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping("events")
 @RequiredArgsConstructor
-public class EventsController {
-
+@RestController
+public class EventsController implements EventsApi {
     private final EventService eventService;
     private final UserService userService;
-    private final ParticipantService participantsService;
 
-    @GetMapping
+    @Override
     // ACCESS: ALL
-    public ResponseEntity<List<ResponseEventInfo>> getEvents(Authentication authentication) {
-        var user = userService.userAuthentication(authentication);
+    public ResponseEntity<Void> createEvent(EventCreate eventCreate) {
+        var user =
+                userService.userAuthentication(
+                        SecurityContextHolder.getContext().getAuthentication());
+        eventService.createEvent(user.getId(), eventCreate);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    // ACCESS: owner
+    public ResponseEntity<Void> deleteEvent(UUID eventId) {
+        var user =
+                userService.userAuthentication(
+                        SecurityContextHolder.getContext().getAuthentication());
+        eventService.deleteEvent(eventId, user.getId());
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    // ACCESS: owner, admin, participant
+    public ResponseEntity<Event> getEvent(UUID eventId) {
+        var user =
+                userService.userAuthentication(
+                        SecurityContextHolder.getContext().getAuthentication());
+        return ResponseEntity.ok(eventService.getEventById(user.getId(), eventId));
+    }
+
+    @Override
+    // ACCESS: ALL
+    public ResponseEntity<List<Event>> getEvents() {
+        var user =
+                userService.userAuthentication(
+                        SecurityContextHolder.getContext().getAuthentication());
         var userEvents = eventService.getAllUserEvents(user.getId());
 
         return ResponseEntity.ok(userEvents.isEmpty() ? null : userEvents);
     }
 
-    @PostMapping
-    // ACCESS: ALL
-    public ResponseEntity<Void> postEvents(
-            @RequestBody RequestEventInfo requestEventInfo, Authentication authentication) {
-        var user = userService.userAuthentication(authentication);
-        eventService.createEvent(user.getId(), requestEventInfo);
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/{eventId}")
-    // ACCESS: owner, admin, participant
-    public ResponseEntity<ResponseEventInfo> getEventById(
-            Authentication authentication, @PathVariable UUID eventId) {
-        var user = userService.userAuthentication(authentication);
-
-        return ResponseEntity.ok(eventService.getEventById(user.getId(), eventId));
-    }
-
-    @PatchMapping("/{eventId}")
+    @Override
     // ACCESS: owner, admin
-    public ResponseEntity<Void> patchEventById(
-            @RequestBody RequestEventInfo requestEventInfo,
-            Authentication authentication,
-            @PathVariable UUID eventId) {
-        var user = userService.userAuthentication(authentication);
+    public ResponseEntity<Void> updateEvent(UUID eventId, EventUpdate eventUpdate) {
+        var user =
+                userService.userAuthentication(
+                        SecurityContextHolder.getContext().getAuthentication());
 
-        eventService.updateEvent(eventId, user.getId(), requestEventInfo);
+        eventService.updateEvent(eventId, user.getId(), eventUpdate);
         return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/{eventId}")
-    // ACCESS: owner
-    public ResponseEntity<Void> deleteEventById(
-            Authentication authentication, @PathVariable UUID eventId) {
-        var user = userService.userAuthentication(authentication);
-
-        eventService.deleteEvent(eventId, user.getId());
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/{eventId}/invitation-token")
-    // ACCESS: owner
-    public ResponseEntity<Void> postEventLink(
-            Authentication authentication, @PathVariable UUID eventId) {
-        User user = userService.userAuthentication(authentication);
-
-        eventService.createInviteLink(eventId, user.getId());
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/{eventId}/invitation-token")
-    // ACCESS: admin, owner
-    public ResponseEntity<Map<String, String>> getEventLink(
-            Authentication authentication, @PathVariable UUID eventId) {
-        User user = userService.userAuthentication(authentication);
-
-        var eventLink = eventService.getInviteLink(eventId, user.getId());
-        return ResponseEntity.ok(Collections.singletonMap("invitation_token", eventLink));
-    }
-
-    @PostMapping("/join-by-invitation-token")
-    // ACCESS: ALL
-    public ResponseEntity<Map<String, String>> postJoinByLink(
-            Authentication authentication, @RequestBody Map<String, Object> body) {
-        User user = userService.userAuthentication(authentication);
-
-        var eventId = eventService.joinByLink(user, body);
-        return ResponseEntity.ok(Collections.singletonMap("event_id", eventId.toString()));
-    }
-
-    @PostMapping("/{eventId}/finalize")
-    // ACCESS: owner
-    public ResponseEntity<Void> postFinalizeEvent(
-            Authentication authentication, @PathVariable UUID eventId) {
-        User user = userService.userAuthentication(authentication);
-
-        eventService.finalizeEvent(eventId, user.getId());
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/{eventId}/my-balance")
-    // ACCESS: owner, admin, participant
-    public ResponseEntity<ParticipantBalanceInfo> getParticipantBalance(
-            Authentication authentication, @PathVariable UUID eventId) {
-        var user = userService.userAuthentication(authentication);
-        return ResponseEntity.ok(participantsService.getParticipantBalance(eventId, user.getId()));
-    }
-
-    @GetMapping("/{eventId}/balance-summary")
-    // ACCESS: owner, admin
-    public ResponseEntity<List<ParticipantSummaryBalanceInfo>> getParticipantsSummaryBalance(
-            Authentication authentication, @PathVariable UUID eventId) {
-        var user = userService.userAuthentication(authentication);
-
-        return ResponseEntity.ok(
-                participantsService.getParticipantsSummaryBalance(eventId, user.getId()));
     }
 }

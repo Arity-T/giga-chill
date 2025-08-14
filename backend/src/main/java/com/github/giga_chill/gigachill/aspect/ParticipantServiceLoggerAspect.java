@@ -1,7 +1,7 @@
 package com.github.giga_chill.gigachill.aspect;
 
 import com.github.giga_chill.gigachill.config.LoggerColorConfig;
-import java.util.Map;
+import com.github.giga_chill.gigachill.web.api.model.ParticipantSetRole;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -42,9 +42,9 @@ public class ParticipantServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.updateParticipantRole(..)) "
-                    + "&& args(eventId, userId, participantId, body)")
+                    + "&& args(eventId, userId, participantId, participantSetRole)")
     public void updateParticipantRole(
-            UUID eventId, UUID userId, UUID participantId, Map<String, Object> body) {}
+            UUID eventId, UUID userId, UUID participantId, ParticipantSetRole participantSetRole) {}
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.getParticipantRoleInEvent(..)) "
@@ -63,7 +63,7 @@ public class ParticipantServiceLoggerAspect {
 
     @Pointcut(
             "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.getParticipantsSummaryBalance(..)) "
-                    + "&& args(eventId)")
+                    + "&& args(eventId, ..)")
     public void getParticipantsSummaryBalance(UUID eventId) {}
 
     @Around("getAllParticipantsByEventId(eventId, ..)")
@@ -166,17 +166,17 @@ public class ParticipantServiceLoggerAspect {
         }
     }
 
-    @Around("updateParticipantRole(eventId, userId, participantId, body)")
+    @Around("updateParticipantRole(eventId, userId, participantId, participantSetRole)")
     public Object logUpdateParticipantRole(
             ProceedingJoinPoint proceedingJoinPoint,
             UUID eventId,
             UUID userId,
             UUID participantId,
-            Map<String, Object> body)
+            ParticipantSetRole participantSetRole)
             throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();
-            var role = (String) body.get("role");
+            var role = participantSetRole.getRole().getValue();
             LOGGER.info(
                     loggerColorConfig.getPATCH_COLOR()
                             + loggerColorConfig.getPATCH_LABEL()
@@ -230,7 +230,7 @@ public class ParticipantServiceLoggerAspect {
         }
     }
 
-    @Around("getParticipantsSummaryBalance(eventId)")
+    @Around("getParticipantsSummaryBalance(eventId, ..)")
     public Object logGetParticipantsSummaryBalance(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId) throws Throwable {
         try {

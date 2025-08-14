@@ -11,7 +11,7 @@ security:
   - CookieAuth: []
 
 tags:
-  - name: Me
+  - name: Auth
   - name: Events
   - name: Invitation Tokens
   - name: Participants
@@ -25,7 +25,7 @@ paths:
     post:
       summary: Аутентификация пользователя
       description: Возвращает JWT токен при успешной аутентификации.
-      tags: [Me]
+      tags: [Auth]
       operationId: login
       security: []
       requestBody:
@@ -47,7 +47,7 @@ paths:
   /auth/register:
     post:
       summary: Регистрация нового пользователя
-      tags: [Me]
+      tags: [Auth]
       operationId: register
       security: []
       requestBody:
@@ -72,18 +72,18 @@ paths:
     post:
       summary: Выход из системы
       description: Удаляет JWT токен из cookie.
-      tags: [Me]
+      tags: [Auth]
       operationId: logout
       responses:
         "204":
           description: Пользователь успешно вышел из системы. JWT токен удалён из cookie.
         "401":
           $ref: "#/components/responses/UnauthorizedError"
-  /me:
+  /auth/me:
     get:
       summary: Текущий пользователь
       description: Возвращает данные пользователя, идентифицированного по JWT.
-      tags: [Me]
+      tags: [Auth]
       operationId: getMe
       responses:
         "200":

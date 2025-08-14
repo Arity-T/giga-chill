@@ -1,7 +1,7 @@
 package com.github.giga_chill.gigachill.mapper;
 
 import com.github.giga_chill.gigachill.data.transfer.object.ParticipantSummaryBalanceDTO;
-import com.github.giga_chill.gigachill.web.info.ParticipantSummaryBalanceInfo;
+import com.github.giga_chill.gigachill.web.api.model.ParticipantBalanceSummary;
 import org.mapstruct.Mapper;
 
 @Mapper(
@@ -9,5 +9,5 @@ import org.mapstruct.Mapper;
         uses = {UserMapper.class, ParticipantBalanceMapper.class})
 public interface ParticipantSummaryBalanceMapper {
 
-    ParticipantSummaryBalanceInfo toParticipantSummaryBalanceInfo(ParticipantSummaryBalanceDTO dto);
+    ParticipantBalanceSummary toParticipantBalanceSummary(ParticipantSummaryBalanceDTO dto);
 }

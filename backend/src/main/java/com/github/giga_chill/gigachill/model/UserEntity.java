@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class UserEntity {
     private UUID id;
     private String login;
     private String name;
 
-    public User(String login, String name) {
+    public UserEntity(String login, String name) {
         this.id = UUID.randomUUID();
         this.login = login;
         this.name = name;
