@@ -5,12 +5,11 @@ import com.github.giga_chill.gigachill.data.transfer.object.EventDTO;
 import com.github.giga_chill.gigachill.exception.BadRequestException;
 import com.github.giga_chill.gigachill.exception.NotFoundException;
 import com.github.giga_chill.gigachill.mapper.EventMapper;
-import com.github.giga_chill.gigachill.model.User;
+import com.github.giga_chill.gigachill.model.UserEntity;
 import com.github.giga_chill.gigachill.service.validator.EventServiceValidator;
 import com.github.giga_chill.gigachill.service.validator.ParticipantServiceValidator;
 import com.github.giga_chill.gigachill.util.UuidUtils;
-import com.github.giga_chill.gigachill.web.info.RequestEventInfo;
-import com.github.giga_chill.gigachill.web.info.ResponseEventInfo;
+import com.github.giga_chill.gigachill.web.api.model.*;
 import java.math.BigDecimal;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
@@ -26,30 +25,31 @@ public class EventService {
     private final EventServiceValidator eventServiceValidator;
     private final ParticipantServiceValidator participantsServiceValidator;
 
-    public ResponseEventInfo getEventById(UUID userId, UUID eventId) {
-
+    public Event getEventById(UUID userId, UUID eventId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
-        var eventInfo = eventMapper.toResponseEventInfo(eventDAO.getEventById(eventId));
-        eventInfo.setUserRole(
-                participantsService.getParticipantRoleInEvent(
-                        UuidUtils.safeUUID(eventInfo.getEventId()), userId));
 
-        return eventInfo;
+        var event = eventMapper.toEvent(eventDAO.getEventById(eventId));
+        event.setUserRole(
+                UserRole.fromValue(
+                        participantsService.getParticipantRoleInEvent(event.getEventId(), userId)));
+
+        return event;
     }
 
-    public List<ResponseEventInfo> getAllUserEvents(UUID userId) {
+    public List<Event> getAllUserEvents(UUID userId) {
         return eventDAO.getAllUserEvents(userId).stream()
-                .map(eventMapper::toResponseEventInfo)
+                .map(eventMapper::toEvent)
                 .peek(
                         item ->
                                 item.setUserRole(
-                                        participantsService.getParticipantRoleInEvent(
-                                                UuidUtils.safeUUID(item.getEventId()), userId)))
+                                        UserRole.fromValue(
+                                                participantsService.getParticipantRoleInEvent(
+                                                        item.getEventId(), userId))))
                 .toList();
     }
 
-    public void updateEvent(UUID eventId, UUID userId, RequestEventInfo requestEventInfo) {
+    public void updateEvent(UUID eventId, UUID userId, EventUpdate eventUpdate) {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsFinalized(eventId);
@@ -59,25 +59,25 @@ public class EventService {
         var event =
                 new EventDTO(
                         eventId,
-                        requestEventInfo.title(),
-                        requestEventInfo.location(),
-                        requestEventInfo.startDatetime(),
-                        requestEventInfo.endDatetime(),
-                        requestEventInfo.description(),
+                        eventUpdate.getTitle(),
+                        eventUpdate.getLocation(),
+                        eventUpdate.getStartDatetime(),
+                        eventUpdate.getEndDatetime(),
+                        eventUpdate.getDescription(),
                         null,
                         null);
         eventDAO.updateEvent(eventId, event);
     }
 
-    public String createEvent(UUID userId, RequestEventInfo requestEventInfo) {
+    public String createEvent(UUID userId, EventCreate eventCreate) {
         var event =
                 new EventDTO(
                         UUID.randomUUID(),
-                        requestEventInfo.title(),
-                        requestEventInfo.location(),
-                        requestEventInfo.startDatetime(),
-                        requestEventInfo.endDatetime(),
-                        requestEventInfo.description(),
+                        eventCreate.getTitle(),
+                        eventCreate.getLocation(),
+                        eventCreate.getStartDatetime(),
+                        eventCreate.getEndDatetime(),
+                        eventCreate.getDescription(),
                         BigDecimal.valueOf(0),
                         null);
 
@@ -109,32 +109,33 @@ public class EventService {
         return inviteLinkUuid.toString();
     }
 
-    public String getInviteLink(UUID eventId, UUID userId) {
+    public InvitationToken getInviteLink(UUID eventId, UUID userId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         participantsServiceValidator.checkAdminOrOwnerRole(eventId, userId);
 
-        return eventDAO.getInviteLinkUuid(eventId).toString();
+        return new InvitationToken(eventDAO.getInviteLinkUuid(eventId).toString());
     }
 
     public UUID getEventByLinkUuid(UUID linkUuid) {
         return eventDAO.getEventByLinkUuid(linkUuid);
     }
 
-    public UUID joinByLink(User user, Map<String, Object> body) {
-        var rawToken = (String) body.get("invitation_token");
-        if (Objects.isNull(rawToken)) {
-            throw new BadRequestException("Invalid request body: " + body);
+    public JoinByInvitationToken200Response joinByLink(
+            UserEntity userEntity, InvitationToken invitationToken) {
+        var rawToken = invitationToken.getInvitationToken();
+        if (!rawToken.isPresent()) {
+            throw new BadRequestException("Invalid request body: " + invitationToken);
         }
-        var eventId = getEventByLinkUuid(UuidUtils.safeUUID(rawToken));
+        var eventId = getEventByLinkUuid(UuidUtils.safeUUID(rawToken.get()));
         if (Objects.isNull(eventId)) {
             throw new NotFoundException("Link with hash " + rawToken + " not found");
         }
         eventServiceValidator.checkIsFinalized(eventId);
-        participantsServiceValidator.checkIsAlreadyParticipant(eventId, user.getId());
+        participantsServiceValidator.checkIsAlreadyParticipant(eventId, userEntity.getId());
 
-        participantsService.addParticipantToEvent(eventId, user);
-        return eventId;
+        participantsService.addParticipantToEvent(eventId, userEntity);
+        return new JoinByInvitationToken200Response(eventId);
     }
 
     public void finalizeEvent(UUID eventId, UUID userId) {

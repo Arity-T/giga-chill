@@ -1,21 +1,18 @@
 package com.github.giga_chill.gigachill.mapper;
 
 import com.github.giga_chill.gigachill.data.transfer.object.UserDTO;
-import com.github.giga_chill.gigachill.model.User;
-import com.github.giga_chill.gigachill.web.info.UserInfo;
+import com.github.giga_chill.gigachill.model.UserEntity;
+import com.github.giga_chill.gigachill.web.api.model.User;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = UuidMapper.class)
+@Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    @Mapping(source = "id", target = "id", qualifiedByName = "stringToUuid")
-    UserDTO toUserDto(UserInfo info);
+    UserDTO toUserDto(UserEntity entity);
 
-    UserDTO toUserDto(User entity);
+    UserEntity toUserEntity(UserDTO dto);
 
-    @Mapping(source = "id", target = "id", qualifiedByName = "uuidToString")
-    UserInfo toUserInfo(UserDTO dto);
+    User toUser(UserEntity user);
 
-    User toUserEntity(UserDTO dto);
+    User toUser(UserDTO user);
 }

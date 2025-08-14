@@ -10,6 +10,7 @@ spring:
 
 server:
   port: ${SERVER_PORT}
+  https_cookies_only: ${HTTPS_COOKIES_ONLY}
 
 jwt:
   expiration: ${JWT_EXPIRATION}

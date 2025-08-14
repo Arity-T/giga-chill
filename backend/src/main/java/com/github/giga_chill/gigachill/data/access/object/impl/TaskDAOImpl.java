@@ -13,7 +13,6 @@ import com.github.giga_chill.jooq.generated.enums.TaskStatus;
 import com.github.giga_chill.jooq.generated.tables.records.TasksRecord;
 import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 import jakarta.annotation.Nullable;
-import java.time.OffsetDateTime;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -57,7 +56,7 @@ public class TaskDAOImpl implements TaskDAO {
                 record.getTitle(),
                 record.getDescription(),
                 record.getStatus().getLiteral(),
-                record.getDeadlineDatetime().toString(),
+                record.getDeadlineDatetime(),
                 record.getExecutorComment(),
                 record.getReviewerComment(),
                 getAuthorDTO(record.getAuthorId()),
@@ -71,7 +70,7 @@ public class TaskDAOImpl implements TaskDAO {
                 record.getTitle(),
                 record.getDescription(),
                 record.getStatus().getLiteral(),
-                record.getDeadlineDatetime().toString(),
+                record.getDeadlineDatetime(),
                 record.getExecutorComment(),
                 record.getReviewerComment(),
                 getAuthorDTO(record.getAuthorId()),
@@ -135,7 +134,7 @@ public class TaskDAOImpl implements TaskDAO {
                                 ? TaskStatus.valueOf(taskDTO.getStatus())
                                 : null,
                         taskDTO.getDeadlineDatetime() != null
-                                ? OffsetDateTime.parse(taskDTO.getDeadlineDatetime())
+                                ? taskDTO.getDeadlineDatetime()
                                 : null,
                         taskDTO.getExecutorComment(),
                         taskDTO.getReviewerComment()));

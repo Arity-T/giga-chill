@@ -1,6 +1,7 @@
 package com.github.giga_chill.gigachill.data.transfer.object;
 
 import jakarta.annotation.Nullable;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +15,7 @@ public class TaskDTO {
     @Nullable private String title;
     @Nullable private String description;
     @Nullable private String status;
-    @Nullable private String deadlineDatetime;
+    @Nullable private OffsetDateTime deadlineDatetime;
     @Nullable private String executorComment;
     @Nullable private String reviewerComment;
     @Nullable private UserDTO author;

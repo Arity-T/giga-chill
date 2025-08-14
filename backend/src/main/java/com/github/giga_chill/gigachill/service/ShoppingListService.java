@@ -7,9 +7,7 @@ import com.github.giga_chill.gigachill.exception.BadRequestException;
 import com.github.giga_chill.gigachill.mapper.ShoppingItemMapper;
 import com.github.giga_chill.gigachill.mapper.ShoppingListMapper;
 import com.github.giga_chill.gigachill.service.validator.*;
-import com.github.giga_chill.gigachill.util.UuidUtils;
-import com.github.giga_chill.gigachill.web.info.ShoppingItemInfo;
-import com.github.giga_chill.gigachill.web.info.ShoppingListInfo;
+import com.github.giga_chill.gigachill.web.api.model.*;
 import java.math.BigDecimal;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
@@ -31,53 +29,28 @@ public class ShoppingListService {
     private final ParticipantServiceValidator participantsServiceValidator;
     private final UserServiceValidator userServiceValidator;
 
-    public List<ShoppingListInfo> getAllShoppingListsFromEvent(UUID eventId, UUID userId) {
+    public List<ShoppingListWithItems> getAllShoppingListsFromEvent(UUID eventId, UUID userId) {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
 
         return shoppingListDAO.getAllShoppingListsFromEvent(eventId).stream()
-                .map(shoppingListMapper::toShoppingListInfo)
+                .map(shoppingListMapper::toShoppingListWithItems)
                 .peek(
                         item ->
                                 item.setStatus(
-                                        getShoppingListStatus(
-                                                UuidUtils.safeUUID(item.getShoppingListId()))))
-                .peek(
-                        item ->
-                                item.setCanEdit(
-                                        canEdit(
-                                                eventId,
-                                                UuidUtils.safeUUID(item.getShoppingListId()),
-                                                userId)))
+                                        ShoppingListStatus.fromValue(
+                                                getShoppingListStatus(item.getShoppingListId()))))
+                .peek(item -> item.setCanEdit(canEdit(eventId, item.getShoppingListId(), userId)))
                 .toList();
     }
 
-    public ShoppingListInfo getShoppingListById(UUID shoppingListId) {
-        var shoppingList =
-                shoppingListMapper.toShoppingListInfo(
-                        shoppingListDAO.getShoppingListById(shoppingListId));
-        shoppingList.setStatus(getShoppingListStatus(shoppingListId));
-        return shoppingList;
-    }
+    public String createShoppingList(
+            UUID eventId, UUID userId, ShoppingListCreate shoppingListCreate) {
 
-    public List<ShoppingListInfo> getShoppingListsByIds(List<UUID> shoppingListsIds) {
-        return shoppingListDAO.getShoppingListsByIds(shoppingListsIds).stream()
-                .map(shoppingListMapper::toShoppingListInfo)
-                .peek(
-                        item ->
-                                item.setStatus(
-                                        getShoppingListStatus(
-                                                UuidUtils.safeUUID(item.getShoppingListId()))))
-                .toList();
-    }
-
-    public String createShoppingList(UUID eventId, UUID userId, Map<String, Object> body) {
-
-        var title = (String) body.get("title");
-        var description = (String) body.get("description");
-        if (Objects.isNull(title) || Objects.isNull(description)) {
-            throw new BadRequestException("Invalid request body: " + body);
+        if (Objects.isNull(shoppingListCreate.getTitle())
+                || Objects.isNull(shoppingListCreate.getDescription())) {
+            throw new BadRequestException("Invalid request body: " + shoppingListCreate.toString());
         }
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
@@ -85,15 +58,17 @@ public class ShoppingListService {
         participantsServiceValidator.checkIsParticipant(eventId, userId);
 
         var shoppingListId = UUID.randomUUID();
-        shoppingListDAO.createShoppingList(eventId, shoppingListId, userId, title, description);
+        shoppingListDAO.createShoppingList(
+                eventId,
+                shoppingListId,
+                userId,
+                shoppingListCreate.getTitle(),
+                shoppingListCreate.getDescription());
         return shoppingListId.toString();
     }
 
     public void updateShoppingList(
-            UUID eventId, UUID userId, UUID shoppingListId, Map<String, Object> body) {
-
-        var title = (String) body.get("title");
-        var description = (String) body.get("description");
+            UUID eventId, UUID userId, UUID shoppingListId, ShoppingListUpdate shoppingListUpdate) {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsFinalized(eventId);
@@ -104,7 +79,8 @@ public class ShoppingListService {
         shoppingListsServiceValidator.checkUnassignedOrAssignedStatus(
                 shoppingListId, shoppingListStatus);
 
-        shoppingListDAO.updateShoppingList(shoppingListId, title, description);
+        shoppingListDAO.updateShoppingList(
+                shoppingListId, shoppingListUpdate.getTitle(), shoppingListUpdate.getDescription());
     }
 
     public void deleteShoppingList(UUID shoppingListId, UUID eventId, UUID userId) {
@@ -122,15 +98,11 @@ public class ShoppingListService {
     }
 
     public String addShoppingItem(
-            UUID shoppingListId, UUID eventId, UUID userId, Map<String, Object> body) {
-        var title = (String) body.get("title");
-        var quantity =
-                !Objects.isNull(body.get("quantity"))
-                        ? new BigDecimal(String.valueOf((Number) body.get("quantity")))
-                        : null;
-        var unit = (String) body.get("unit");
-        if (Objects.isNull(title) || Objects.isNull(quantity) || Objects.isNull(unit)) {
-            throw new BadRequestException("Invalid request body: " + body);
+            UUID shoppingListId, UUID eventId, UUID userId, ShoppingItemCreate shoppingItemCreate) {
+        if (Objects.isNull(shoppingItemCreate.getQuantity())
+                || Objects.isNull(shoppingItemCreate.getTitle())
+                || Objects.isNull(shoppingItemCreate.getUnit())) {
+            throw new BadRequestException("Invalid request body: " + shoppingItemCreate.toString());
         }
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
@@ -138,11 +110,18 @@ public class ShoppingListService {
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         participantsServiceValidator.checkIsConsumerOrAdminOrOwner(eventId, userId, shoppingListId);
+
         var shoppingListStatus = getShoppingListStatus(shoppingListId);
         shoppingListsServiceValidator.checkUnassignedOrAssignedStatus(
                 shoppingListId, shoppingListStatus);
 
-        var shoppingItem = new ShoppingItemDTO(UUID.randomUUID(), title, quantity, unit, false);
+        var shoppingItem =
+                new ShoppingItemDTO(
+                        UUID.randomUUID(),
+                        shoppingItemCreate.getTitle(),
+                        shoppingItemCreate.getQuantity(),
+                        shoppingItemCreate.getUnit(),
+                        false);
         shoppingListDAO.addShoppingItem(shoppingListId, shoppingItem);
         return shoppingItem.getShoppingItemId().toString();
     }
@@ -152,14 +131,7 @@ public class ShoppingListService {
             UUID eventId,
             UUID userId,
             UUID shoppingListId,
-            Map<String, Object> body) {
-
-        var title = (String) body.get("title");
-        var quantity =
-                !Objects.isNull(body.get("quantity"))
-                        ? new BigDecimal(String.valueOf((Number) body.get("quantity")))
-                        : null;
-        var unit = (String) body.get("unit");
+            ShoppingItemUpdate shoppingItemUpdate) {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsFinalized(eventId);
@@ -171,7 +143,13 @@ public class ShoppingListService {
         shoppingListsServiceValidator.checkUnassignedOrAssignedStatus(
                 shoppingListId, shoppingListStatus);
 
-        var shoppingItem = new ShoppingItemDTO(shoppingItemId, title, quantity, unit, null);
+        var shoppingItem =
+                new ShoppingItemDTO(
+                        shoppingItemId,
+                        shoppingItemUpdate.getTitle(),
+                        shoppingItemUpdate.getQuantity(),
+                        shoppingItemUpdate.getUnit(),
+                        null);
         shoppingListDAO.updateShoppingItem(shoppingItem);
     }
 
@@ -195,11 +173,12 @@ public class ShoppingListService {
             UUID eventId,
             UUID userId,
             UUID shoppingListId,
-            Map<String, Object> body) {
+            ShoppingItemSetPurchased shoppingItemSetPurchased) {
 
-        var status = (Boolean) body.get("is_purchased");
+        var status = shoppingItemSetPurchased.getIsPurchased();
         if (Objects.isNull(status)) {
-            throw new BadRequestException("Invalid request body: " + body);
+            throw new BadRequestException(
+                    "Invalid request body: " + shoppingItemSetPurchased.toString());
         }
 
         shoppingListsServiceValidator.checkShoppingItemIsExisted(shoppingItemId);
@@ -220,13 +199,8 @@ public class ShoppingListService {
         return status;
     }
 
-    public ShoppingItemInfo getShoppingItemById(UUID shoppingItemId) {
-        return shoppingItemMapper.toShoppingItemInfo(
-                shoppingListDAO.getShoppingItemById(shoppingItemId));
-    }
-
     public void updateShoppingListConsumers(
-            UUID shoppingListId, UUID eventId, UUID userId, List<String> body) {
+            UUID shoppingListId, UUID eventId, UUID userId, List<UUID> body) {
         if (Objects.isNull(body) || body.isEmpty()) {
             throw new BadRequestException("Invalid request body: " + body);
         }
@@ -239,10 +213,10 @@ public class ShoppingListService {
         String shoppingListStatus = getShoppingListStatus(shoppingListId);
         shoppingListsServiceValidator.checkUnassignedOrAssignedStatus(
                 shoppingListId, shoppingListStatus);
-        List<UUID> allUsersIds = body.stream().map(UuidUtils::safeUUID).toList();
-        userServiceValidator.checkAreExisted(allUsersIds);
 
-        shoppingListDAO.updateShoppingListConsumers(shoppingListId, allUsersIds);
+        userServiceValidator.checkAreExisted(body);
+
+        shoppingListDAO.updateShoppingListConsumers(shoppingListId, body);
     }
 
     public UUID getTaskIdForShoppingList(UUID shoppingListId) {
@@ -281,13 +255,15 @@ public class ShoppingListService {
     }
 
     public BigDecimal setBudget(
-            UUID shoppingListId, UUID eventId, UUID userId, Map<String, Object> body) {
-        var budget =
-                !Objects.isNull(body.get("budget"))
-                        ? new BigDecimal(String.valueOf((Number) body.get("budget")))
-                        : null;
+            UUID shoppingListId,
+            UUID eventId,
+            UUID userId,
+            ShoppingListSetBudget shoppingListSetBudget) {
+
+        var budget = shoppingListSetBudget.getBudget();
         if (Objects.isNull(budget) || budget.compareTo(new BigDecimal(0)) < 0) {
-            throw new BadRequestException("Invalid request body: " + body);
+            throw new BadRequestException(
+                    "Invalid request body: " + shoppingListSetBudget.toString());
         }
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
