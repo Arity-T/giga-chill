@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS consumer_in_list (
   PRIMARY KEY (user_id, shopping_list_id)
 );
 
-CREATE MATERIALIZED VIEW debts_per_event AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS debts_per_event AS
 SELECT
   sl.event_id,
   c.user_id AS debtor_id,

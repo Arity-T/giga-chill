@@ -1,22 +1,20 @@
 # TODO: https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
-
 # 1. Build stage
 FROM node:22-alpine AS builder
 
-WORKDIR /app
+WORKDIR /app/frontend
 
 # Install dependencies
-COPY frontend/package.json frontend/package-lock.json ./frontend/
-RUN cd frontend && npm ci
+COPY package.json package-lock.json ./
+RUN npm ci
 
 # Copy API schema
-COPY openapi/ ./openapi/
+COPY --from=openapi . /app/openapi/
 
 # Copy other frontend files
-COPY frontend/ ./frontend/
+COPY . .
 
 # Generate code from API schema
-WORKDIR /app/frontend
 RUN npm run codegen
 
 # Build frontend
@@ -27,6 +25,8 @@ RUN npm run build
 # 2. Production image
 FROM node:22-alpine AS runner
 WORKDIR /app
+
+ENV NODE_ENV=production
 
 # Если используете public/static файлы, скопируйте их
 COPY --from=builder /app/frontend/public ./public

@@ -3,7 +3,9 @@
 
 # Кроме необходимых для сборки
 !src/**
-!migrate.sh
-!build.sh
-!build.gradle.kts
-!settings.gradle.kts
+!public/**
+!codegen.ts
+!next.config.ts
+!package-lock.json
+!package.json
+!tsconfig.json

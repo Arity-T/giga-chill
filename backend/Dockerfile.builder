@@ -9,6 +9,9 @@ RUN microdnf update -y && \
 WORKDIR /app
 COPY . .
 
+ENV OPEN_API_MAIN_SPECIFICATION=/app/openapi/build/combined.yml
+COPY --from=openapi build/combined.yml /app/openapi/build/combined.yml
+
 RUN chmod +x ./build.sh
 
 CMD ["./build.sh"]

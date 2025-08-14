@@ -1,0 +1,26 @@
+services:
+  backend:
+    image: ${REGISTRY}/${REPOSITORY_OWNER}/${BACKEND_IMAGE_NAME}:${DEPLOY_TAG}
+    container_name: gigachill-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_HOST_PORT:-8081}:8081"
+    env_file:
+      - .env
+    environment:
+      SERVER_PORT: "8081"
+    networks: 
+      - gigachill-network
+
+  frontend:
+    image: ${REGISTRY}/${REPOSITORY_OWNER}/${FRONTEND_IMAGE_NAME}:${DEPLOY_TAG}
+    container_name: gigachill-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_HOST_PORT:-3000}:3000"
+    networks: 
+      - gigachill-network
+
+networks:
+  gigachill-network:
+    external: true
