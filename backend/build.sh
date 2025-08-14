@@ -21,6 +21,15 @@ if [ $? -ne 0 ]; then
 fi
 echo "Классы Jooq сгенерированы успешно!"
 
+# === Генерация OpenAPI ===
+echo "=== Генерация классов по спецификации OpenAPI ==="
+gradle generateOpenApi --no-daemon
+if [ $? -ne 0 ]; then
+    echo "Ошибка при генерации классов по спецификации OpenAPI"
+    exit 1
+fi
+echo "Классы по спецификации OpenAPI сгенерированы успешно!"
+
 # === Сборка приложения ===
 echo "=== Сборка приложения ==="
 gradle bootJar --no-daemon

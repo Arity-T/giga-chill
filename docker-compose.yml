@@ -17,11 +17,13 @@ services:
     networks: 
       - gigachill-network
 
-  builder:
+  backend-builder:
     build:
       context: backend
       dockerfile: Dockerfile.builder
-    image: gigachill-builder
+      additional_contexts:
+        openapi: ./openapi
+    image: gigachill-backend-builder
     depends_on:
       postgres:
         condition: service_healthy
@@ -41,13 +43,14 @@ services:
     image: eclipse-temurin:21-jre-jammy
     command: ["java", "-jar", "/app/build/libs/app.jar"]
     depends_on:
-      builder:
+      backend-builder:
         condition: service_completed_successfully
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432
       - SERVER_PORT=8081
       - JWT_EXPIRATION=1d
+      - HTTPS_COOKIES_ONLY=${HTTPS_COOKIES_ONLY}
       - BACKEND_PROFILE=${BACKEND_PROFILE}
       - FRONTEND_ORIGIN=${FRONTEND_ORIGIN}
       - DB_NAME=${DB_NAME}

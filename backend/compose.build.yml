@@ -19,7 +19,10 @@ services:
 
   backend-builder:
     build:
+      context: .
       dockerfile: Dockerfile.builder
+      additional_contexts:
+        openapi: ../openapi
     image: gigachill-backend-builder
     depends_on:
       postgres:
