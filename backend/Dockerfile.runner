@@ -1,0 +1,7 @@
+FROM eclipse-temurin:21-jre-jammy
+
+WORKDIR /app
+
+COPY --from=build app.jar /app/app.jar
+
+CMD ["java", "-jar", "/app/app.jar"]

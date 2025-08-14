@@ -25,7 +25,7 @@
 - `-S` — не запускать приложение (только выполнить указанные операции)
 - `-h` — показать справку
 
-## Сборка в Fat Jar в Docker
+## Сборка и запуск в Docker
 
 Собрать приложение в Docker контейнере можно с помощью [`compose.build.yml`](compose.build.yml):
 
@@ -34,6 +34,25 @@ docker compose -f ./compose.build.yml up --build --abort-on-container-exit --exi
 ```
 
 После успешной сборки Fat Jar будет сохранён в `./backend-build`, перед сборкой можно задать переменную окружения `BACKEND_BUILD_DIR` для указания другого пути.
+
+На основе полученного Fat Jar можно собрать образ с помощью [`Dockerfile.runner`](Dockerfile.runner).
+
+Bash:
+```bash
+docker build -t giga-chill-backend --build-context build=./backend-build - < Dockerfile.runner
+```
+
+PowerShell:
+```powershell
+Get-Content Dockerfile.runner | docker build -t giga-chill-backend --build-context build=./backend-build -
+```
+
+Который затем можно запустить:
+
+```bash
+cp .env.runner.example .env.runner
+docker run -p 8081:8081 --env-file ./.env.runner -d giga-chill-backend
+```
 
 ## Проверка эндпоинтов
 - **Регистрация:**
