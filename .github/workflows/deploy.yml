@@ -67,9 +67,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-    environment:
-      name: production
-      url: ${{ vars.FRONTEND_URL }}
     defaults:
       run:
         working-directory: frontend
@@ -81,8 +78,8 @@ jobs:
         run: |
           docker build -t $IMAGE_NAME \
             --label "runnumber=${GITHUB_RUN_ID}" \
-            --build-arg NEXT_PUBLIC_API_BASE_URL=${{ vars.BACKEND_URL }} \
-            --build-arg NEXT_PUBLIC_BASE_URL=${{ vars.FRONTEND_URL }} \
+            --build-arg NEXT_PUBLIC_API_BASE_URL=${{ vars.FRONTEND_URL_PROD }} \
+            --build-arg NEXT_PUBLIC_BASE_URL=${{ vars.BACKEND_URL_PROD }} \
             --build-context openapi=../openapi .
 
       - name: Log in to registry
