@@ -7,6 +7,10 @@ on:
     # paths-ignore:
     #   - "**.md"
 
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
 jobs:
   # https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-a-registry-using-a-personal-access-token
   build-backend:
@@ -39,9 +43,9 @@ jobs:
       
       - name: Build Backend Runner
         run: |
-          docker build -t $IMAGE_NAME \
+          docker build -f Dockerfile.runner -t $IMAGE_NAME \
             --label "runnumber=${GITHUB_RUN_ID}" \
-            --build-context build="$BACKEND_BUILD_DIR" - < Dockerfile.runner
+            --build-context build="$BACKEND_BUILD_DIR" .
 
       - name: Log in to registry
         run: |
@@ -55,9 +59,13 @@ jobs:
           # This changes all uppercase characters to lowercase.
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
+          GIT_TAG=${{ github.sha }}
+
           echo IMAGE_ID=$IMAGE_ID
-              docker tag $IMAGE_NAME $IMAGE_ID:latest
-              docker push $IMAGE_ID:latest
+          docker tag "$IMAGE_NAME" "$IMAGE_ID:latest"
+          docker tag "$IMAGE_NAME" "$IMAGE_ID:$GIT_TAG"
+          docker push "$IMAGE_ID:latest"
+          docker push "$IMAGE_ID:$GIT_TAG"
 
   build-frontend:
     name: Build Frontend
@@ -78,8 +86,8 @@ jobs:
         run: |
           docker build -t $IMAGE_NAME \
             --label "runnumber=${GITHUB_RUN_ID}" \
-            --build-arg NEXT_PUBLIC_API_BASE_URL=${{ vars.FRONTEND_URL_PROD }} \
-            --build-arg NEXT_PUBLIC_BASE_URL=${{ vars.BACKEND_URL_PROD }} \
+            --build-arg NEXT_PUBLIC_API_BASE_URL=${{ vars.BACKEND_URL_PROD }} \
+            --build-arg NEXT_PUBLIC_BASE_URL=${{ vars.FRONTEND_URL_PROD }} \
             --build-context openapi=../openapi .
 
       - name: Log in to registry
@@ -94,14 +102,66 @@ jobs:
           # This changes all uppercase characters to lowercase.
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
-          echo IMAGE_ID=$IMAGE_ID
-          docker tag $IMAGE_NAME $IMAGE_ID:latest
-          docker push $IMAGE_ID:latest
+          GIT_TAG=${{ github.sha }}
 
-  # start-app:
-  #   name: Start App
-  #   runs-on: [self-hosted, dev]
-  #   environment: dev
-  #   steps:
-  #     - name: Check out the repository to the runner
-  #       uses: actions/checkout@v4
+          echo IMAGE_ID=$IMAGE_ID
+          docker tag "$IMAGE_NAME" "$IMAGE_ID:latest"
+          docker tag "$IMAGE_NAME" "$IMAGE_ID:$GIT_TAG"
+          docker push "$IMAGE_ID:latest"
+          docker push "$IMAGE_ID:$GIT_TAG"
+
+  deploy-app:
+    name: Deploy App
+    runs-on: [self-hosted, prod]
+    needs: [build-backend, build-frontend]
+    permissions:
+      contents: read
+      packages: read
+    environment:
+      name: production
+      url: ${{ vars.FRONTEND_URL_PROD }}
+    env:
+      REGISTRY: ghcr.io
+      BACKEND_IMAGE_NAME: giga-chill-backend
+      FRONTEND_IMAGE_NAME: giga-chill-frontend
+      REPOSITORY_OWNER: ${{ github.repository_owner }}
+      DEPLOY_TAG: ${{ github.sha }}
+    steps:
+      - name: Check out the repository to the runner
+        uses: actions/checkout@v4
+
+      - name: Log in to registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+  
+      - name: Normalize owner to lowercase for registry
+        run: echo "REPOSITORY_OWNER=$(echo "${REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+  
+      - name: Create .env from github environment variables and secrets
+        env:
+          RUNTIME_VARS: ${{ vars.PROD_ENV_VARS }}
+          RUNTIME_SECRETS: ${{ secrets.PROD_ENV_SECRETS }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' "${RUNTIME_VARS}"   > .env
+          printf '%s\n' "${RUNTIME_SECRETS}" >> .env
+
+      - name: Pull images
+        run: docker compose -f compose.deploy.yml pull
+
+      - name: Ensure docker network
+        run: docker network inspect gigachill-network >/dev/null 2>&1 || docker network create gigachill-network
+
+      - name: Apply migrations from backend runner image
+        run: |
+          docker run --rm \
+            --network gigachill-network \
+            --env-file .env \
+            "${REGISTRY}/${REPOSITORY_OWNER}/${BACKEND_IMAGE_NAME}:${DEPLOY_TAG}" \
+            ./migrate.sh
+
+      - name: Up services
+        run: docker compose -f compose.deploy.yml up -d --remove-orphans
+
+      - name: Cleanup env files
+        if: always()
+        run: shred -u .env || true
