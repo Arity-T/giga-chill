@@ -1,5 +1,7 @@
 name: Deploy Workflow
 
+run-name: "Deploy to production (initiated by ${{ github.actor }})"
+
 on:
   push:
     # branches:
