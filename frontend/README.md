@@ -2,16 +2,27 @@
 
 ## Сборка и запуск в Docker
 
-Запускайте docker build из корневой директории проекта, фронтенду нужно видеть 
-[схему API](../openapi/api.yml) для кодогенерации. Также при сборке 
-нужно указать два аргумента `NEXT_PUBLIC_API_BASE_URL` и `NEXT_PUBLIC_BASE_URL`:
+Во время сборки фронтенду должна быть доступна [схема API](../openapi/api.yml)
+для кодогенерации. Путь до неё указывается в [именованном контексте](https://docs.docker.com/build/concepts/context/#named-contexts) `openapi`. 
+Также при сборке нужно указать два аргумента:
+- `NEXT_PUBLIC_API_BASE_URL` - ссылка на API
+- `NEXT_PUBLIC_BASE_URL` - ссылка на сам фронтенд
 
 ```bash
 # Сборка образа
-docker build -f frontend/Dockerfile -t giga-chill-frontend --build-arg NEXT_PUBLIC_API_BASE_URL=http://localhost:8081 --build-arg NEXT_PUBLIC_BASE_URL=http://localhost:3000 .
+docker build -t giga-chill-frontend --build-arg NEXT_PUBLIC_API_BASE_URL=http://localhost:8081 --build-arg NEXT_PUBLIC_BASE_URL=http://localhost:3000 --build-context openapi=../openapi .
 
 # Запуск контейнера
 docker run -p 3000:3000 giga-chill-frontend
+```
+
+Либо с помощью [docker-compose](docker-compose.yml):
+
+```bash
+# Нужно указать аргументы сборки в переменных окружения
+cp .env.example .env
+
+docker-compose up -d --build
 ```
 
 ## Сборка и запуск (без Docker)

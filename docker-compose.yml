@@ -63,17 +63,15 @@ services:
 
   frontend:
     build:
-      # Фронтенд должен видеть схему API для кодогенерации,
-      # поэтому сборка должна запускаться из корневой директории проекта
-      context: .
-      dockerfile: frontend/Dockerfile
+      context: frontend
       args:
         NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
         NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL}
+      additional_contexts:
+        openapi: ./openapi
     ports:
       - "${FRONTEND_HOST_PORT}:3000"
     environment:
-      - NODE_ENV=production
       - PORT=3000
     networks: 
       - gigachill-network

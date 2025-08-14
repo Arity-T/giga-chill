@@ -1,0 +1,11 @@
+# Исключаем все файлы, чтобы не раздувать образ
+*
+
+# Кроме необходимых для сборки
+!src/**
+!public/**
+!codegen.ts
+!next.config.ts
+!package-lock.json
+!package.json
+!tsconfig.json
