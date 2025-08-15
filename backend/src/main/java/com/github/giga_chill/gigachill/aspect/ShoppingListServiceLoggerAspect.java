@@ -165,7 +165,7 @@ public class ShoppingListServiceLoggerAspect {
         }
     }
 
-    @Around("updateShoppingList(eventId, userId, shoppingListId, ..)")
+    @Around("updateShoppingList(eventId, userId, shoppingListId)")
     public Object logUpdateShoppingList(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UUID userId, UUID shoppingListId)
             throws Throwable {
@@ -183,7 +183,7 @@ public class ShoppingListServiceLoggerAspect {
         }
     }
 
-    @Around("deleteShoppingList(shoppingListId, ..)")
+    @Around("deleteShoppingList(shoppingListId)")
     public Object logDeleteShoppingList(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId) throws Throwable {
         try {
@@ -200,7 +200,7 @@ public class ShoppingListServiceLoggerAspect {
         }
     }
 
-    @Around("addShoppingItem(shoppingListId, ..)")
+    @Around("addShoppingItem(shoppingListId)")
     public Object logAddShoppingItem(ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId)
             throws Throwable {
         try {
@@ -218,7 +218,7 @@ public class ShoppingListServiceLoggerAspect {
         }
     }
 
-    @Around("updateShoppingItem(shoppingItemId, ..)")
+    @Around("updateShoppingItem(shoppingItemId)")
     public Object logUpdateShoppingItem(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingItemId) throws Throwable {
         try {
@@ -235,7 +235,7 @@ public class ShoppingListServiceLoggerAspect {
         }
     }
 
-    @Around("deleteShoppingItemFromShoppingList(shoppingListId, shoppingItemId, ..)")
+    @Around("deleteShoppingItemFromShoppingList(shoppingListId, shoppingItemId)")
     public Object logDeleteShoppingItemFromShoppingList(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId, UUID shoppingItemId)
             throws Throwable {
@@ -254,7 +254,7 @@ public class ShoppingListServiceLoggerAspect {
         }
     }
 
-    @Around("updateShoppingItemStatus(shoppingItemId, ..)")
+    @Around("updateShoppingItemStatus(shoppingItemId)")
     public Object logUpdateShoppingItemStatus(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingItemId) throws Throwable {
         try {
@@ -289,7 +289,7 @@ public class ShoppingListServiceLoggerAspect {
         }
     }
 
-    @Around("updateShoppingListConsumers(shoppingListId, ..)")
+    @Around("updateShoppingListConsumers(shoppingListId)")
     public Object logUpdateShoppingListConsumers(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId) throws Throwable {
         try {
@@ -450,7 +450,7 @@ public class ShoppingListServiceLoggerAspect {
         }
     }
 
-    @Around("canBindShoppingListsToTask(shoppingListsIds, ..)")
+    @Around("canBindShoppingListsToTask(shoppingListsIds)")
     public Object logCanBindShoppingListsToTask(
             ProceedingJoinPoint proceedingJoinPoint, List<UUID> shoppingListsIds) throws Throwable {
         try {
@@ -476,7 +476,7 @@ public class ShoppingListServiceLoggerAspect {
         }
     }
 
-    @Around("setBudget(shoppingListId, ..)")
+    @Around("setBudget(shoppingListId)")
     public Object logSetBudget(ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId)
             throws Throwable {
         try {

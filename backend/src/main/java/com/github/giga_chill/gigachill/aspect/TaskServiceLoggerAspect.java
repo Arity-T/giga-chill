@@ -162,7 +162,7 @@ public class TaskServiceLoggerAspect {
         }
     }
 
-    @Around("startExecuting(taskId, userId, ..)")
+    @Around("startExecuting(taskId, userId)")
     public Object logStartExecuting(
             ProceedingJoinPoint proceedingJoinPoint, UUID taskId, UUID userId) throws Throwable {
         try {
@@ -298,7 +298,7 @@ public class TaskServiceLoggerAspect {
         }
     }
 
-    @Around("updateExecutor(taskId, ..)")
+    @Around("updateExecutor(taskId)")
     public Object logUpdateExecutor(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
             throws Throwable {
         try {
@@ -325,7 +325,7 @@ public class TaskServiceLoggerAspect {
         }
     }
 
-    @Around("updateShoppingLists(taskId, ..)")
+    @Around("updateShoppingLists(taskId)")
     public Object logUpdateShoppingLists(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
             throws Throwable {
         try {
@@ -342,7 +342,7 @@ public class TaskServiceLoggerAspect {
         }
     }
 
-    @Around("setExecutorComment(taskId, ..)")
+    @Around("setExecutorComment(taskId)")
     public Object logSetExecutorComment(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
             throws Throwable {
         try {

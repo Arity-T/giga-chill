@@ -23,7 +23,7 @@ public class TestServiceLoggerAspect {
     @Pointcut("execution(public * com.github.giga_chill.gigachill.service.TestService.cleanBD(..))")
     public void cleanBD() {}
 
-    @Around("cleanBD(..)")
+    @Around("cleanBD()")
     public Object logCleanBD(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         try {
             Object result = proceedingJoinPoint.proceed();

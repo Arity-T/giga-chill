@@ -75,7 +75,7 @@ public class EventServiceLoggerAspect {
                     + "&& args(eventId, ..)")
     public void finalizeEvent(UUID eventId) {}
 
-    @Around("createEvent(userId, ..)")
+    @Around("createEvent(userId)")
     public Object logCreateEvent(ProceedingJoinPoint proceedingJoinPoint, UUID userId)
             throws Throwable {
         try {
@@ -128,7 +128,7 @@ public class EventServiceLoggerAspect {
         }
     }
 
-    @Around("deleteEvent(eventId, ..)")
+    @Around("deleteEvent(eventId)")
     public Object logDeleteEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
         try {
@@ -145,7 +145,7 @@ public class EventServiceLoggerAspect {
         }
     }
 
-    @Around("updateEvent(eventId, ..)")
+    @Around("updateEvent(eventId)")
     public Object logUpdateEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
         try {
@@ -162,7 +162,7 @@ public class EventServiceLoggerAspect {
         }
     }
 
-    @Around("createInviteLink(eventId, ..)")
+    @Around("createInviteLink(eventId)")
     public Object logCreateInviteLink(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
         try {
@@ -180,7 +180,7 @@ public class EventServiceLoggerAspect {
         }
     }
 
-    @Around("getInviteLink(eventId, ..)")
+    @Around("getInviteLink(eventId)")
     public Object logGetInviteLink(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
         try {
@@ -224,7 +224,7 @@ public class EventServiceLoggerAspect {
         }
     }
 
-    @Around("joinByLink(userEntity, ..)")
+    @Around("joinByLink(userEntity)")
     public Object logJoinByLink(ProceedingJoinPoint proceedingJoinPoint, UserEntity userEntity)
             throws Throwable {
         try {
@@ -260,7 +260,7 @@ public class EventServiceLoggerAspect {
         }
     }
 
-    @Around("finalizeEvent(eventId, ..)")
+    @Around("finalizeEvent(eventId)")
     public Object logFinalizeEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
         try {

@@ -26,8 +26,9 @@ public class ParticipantServiceLoggerAspect {
     public void getAllParticipantsByEventId(UUID eventId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.addParticipantToEvent(..)) "
-                    + "&& args(eventId, ..)")
+            value =
+                    "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.addParticipantToEvent(..)) "
+                            + "&& args(eventId, ..)")
     public void addParticipantToEvent(UUID eventId) {}
 
     @Pointcut(
@@ -66,7 +67,7 @@ public class ParticipantServiceLoggerAspect {
                     + "&& args(eventId, ..)")
     public void getParticipantsSummaryBalance(UUID eventId) {}
 
-    @Around("getAllParticipantsByEventId(eventId, ..)")
+    @Around("getAllParticipantsByEventId(eventId)")
     public Object logGetAllParticipantsByEventId(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId) throws Throwable {
         try {
@@ -102,7 +103,7 @@ public class ParticipantServiceLoggerAspect {
         }
     }
 
-    @Around("addParticipantToEvent(eventId, ..)")
+    @Around("addParticipantToEvent(eventId)")
     public Object logAddParticipantToEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
         try {
@@ -120,7 +121,7 @@ public class ParticipantServiceLoggerAspect {
         }
     }
 
-    @Around("deleteParticipant(eventId, participantId, ..)")
+    @Around("deleteParticipant(eventId, participantId)")
     public Object logDeleteParticipant(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UUID participantId)
             throws Throwable {
@@ -230,7 +231,7 @@ public class ParticipantServiceLoggerAspect {
         }
     }
 
-    @Around("getParticipantsSummaryBalance(eventId, ..)")
+    @Around("getParticipantsSummaryBalance(eventId)")
     public Object logGetParticipantsSummaryBalance(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId) throws Throwable {
         try {
