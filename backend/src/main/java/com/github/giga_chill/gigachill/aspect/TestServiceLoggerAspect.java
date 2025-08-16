@@ -25,16 +25,12 @@ public class TestServiceLoggerAspect {
 
     @Around("cleanBD()")
     public Object logCleanBD(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getDB_COLOR()
-                            + loggerColorConfig.getDB_LABEL()
-                            + "Data base was cleaned"
-                            + loggerColorConfig.getRESET_COLOR());
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Data base was cleaned{}",
+                loggerColorConfig.getDB_COLOR(),
+                loggerColorConfig.getDB_LABEL(),
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 }

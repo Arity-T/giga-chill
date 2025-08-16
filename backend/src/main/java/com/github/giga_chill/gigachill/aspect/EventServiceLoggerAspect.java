@@ -78,202 +78,158 @@ public class EventServiceLoggerAspect {
     @Around("createEvent(userId)")
     public Object logCreateEvent(ProceedingJoinPoint proceedingJoinPoint, UUID userId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPOST_COLOR()
-                            + loggerColorConfig.getPOST_LABEL()
-                            + "User with id: {} created event with id: {}"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    userId,
-                    ((String) result));
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}User with id: {} created event with id: {}{}",
+                loggerColorConfig.getPOST_COLOR(),
+                loggerColorConfig.getPOST_LABEL(),
+                userId,
+                (String) result,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("getAllUserEvents(userId)")
     public Object logGetAllUserEvents(ProceedingJoinPoint proceedingJoinPoint, UUID userId)
             throws Throwable {
 
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getGET_COLOR()
-                            + loggerColorConfig.getGET_LABEL()
-                            + "User with id: {} got all his events"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    userId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}User with id: {} got all his events{}",
+                loggerColorConfig.getGET_COLOR(),
+                loggerColorConfig.getGET_LABEL(),
+                userId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("getEventById(userId, eventId)")
     public Object logGetEventById(
             ProceedingJoinPoint proceedingJoinPoint, UUID userId, UUID eventId) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getGET_COLOR()
-                            + loggerColorConfig.getGET_LABEL()
-                            + "Information about the event with id: {} received"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    eventId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Information about the event with id: {} received{}",
+                loggerColorConfig.getGET_COLOR(),
+                loggerColorConfig.getGET_LABEL(),
+                eventId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("deleteEvent(eventId)")
     public Object logDeleteEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getDELETE_COLOR()
-                            + loggerColorConfig.getDELETE_LABEL()
-                            + "Event with id: {} has been deleted"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    eventId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Event with id: {} has been deleted{}",
+                loggerColorConfig.getDELETE_COLOR(),
+                loggerColorConfig.getDELETE_LABEL(),
+                eventId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("updateEvent(eventId)")
     public Object logUpdateEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPATCH_COLOR()
-                            + loggerColorConfig.getPATCH_LABEL()
-                            + "Event with id: {} has been changed"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    eventId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Event with id: {} has been changed{}",
+                loggerColorConfig.getPATCH_COLOR(),
+                loggerColorConfig.getPATCH_LABEL(),
+                eventId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("createInviteLink(eventId)")
     public Object logCreateInviteLink(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPOST_COLOR()
-                            + loggerColorConfig.getPOST_LABEL()
-                            + "Event with id: {} has received a new invite link with hash: {}"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    eventId,
-                    (String) result);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Event with id: {} has received a new invite link with hash: {}{}",
+                loggerColorConfig.getPOST_COLOR(),
+                loggerColorConfig.getPOST_LABEL(),
+                eventId,
+                (String) result,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("getInviteLink(eventId)")
     public Object logGetInviteLink(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getGET_COLOR()
-                            + loggerColorConfig.getGET_LABEL()
-                            + "The invite link to the event with id: {} was received."
-                            + loggerColorConfig.getRESET_COLOR(),
-                    eventId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}The invite link to the event with id: {} was received.{}",
+                loggerColorConfig.getGET_COLOR(),
+                loggerColorConfig.getGET_LABEL(),
+                eventId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("getEventByLinkUuid(linkUuid)")
     public Object logGetEventByLinkUuid(ProceedingJoinPoint proceedingJoinPoint, UUID linkUuid)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            if ((UUID) result == null) {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Invite link with hash: {} did not attach to event"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        linkUuid);
-            } else {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Invite link with hash: {} attached to event with id: {}"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        linkUuid,
-                        (UUID) result);
-            }
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
+        Object result = proceedingJoinPoint.proceed();
+        if ((UUID) result == null) {
+            LOGGER.info(
+                    "{}{}Invite link with hash: {} did not attach to event{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    linkUuid,
+                    loggerColorConfig.getRESET_COLOR());
+        } else {
+            LOGGER.info(
+                    "{}{}Invite link with hash: {} attached to event with id: {}{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    linkUuid,
+                    (UUID) result,
+                    loggerColorConfig.getRESET_COLOR());
         }
+        return result;
     }
 
     @Around("joinByLink(userEntity)")
     public Object logJoinByLink(ProceedingJoinPoint proceedingJoinPoint, UserEntity userEntity)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPOST_COLOR()
-                            + loggerColorConfig.getPOST_LABEL()
-                            + "User with id: {} joined event with id: {} via a link"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    userEntity.getId(),
-                    ((JoinByInvitationToken200Response) result).getEventId());
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}User with id: {} joined event with id: {} via a link{}",
+                loggerColorConfig.getPOST_COLOR(),
+                loggerColorConfig.getPOST_LABEL(),
+                userEntity.getId(),
+                ((JoinByInvitationToken200Response) result).getEventId(),
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("getEndDatetime(eventId)")
     public Object logGetEndDatetime(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getGET_COLOR()
-                            + loggerColorConfig.getGET_LABEL()
-                            + "Event with id: {} has an end time: {}"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    eventId,
-                    (String) result);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Event with id: {} has an end time: {}{}",
+                loggerColorConfig.getGET_COLOR(),
+                loggerColorConfig.getGET_LABEL(),
+                eventId,
+                (String) result,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("finalizeEvent(eventId)")
     public Object logFinalizeEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPOST_COLOR()
-                            + loggerColorConfig.getPOST_LABEL()
-                            + "Event with id: {} was finalized"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    eventId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Event with id: {} was finalized{}",
+                loggerColorConfig.getPOST_COLOR(),
+                loggerColorConfig.getPOST_LABEL(),
+                eventId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 }
