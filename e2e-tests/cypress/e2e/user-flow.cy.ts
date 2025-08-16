@@ -1,4 +1,5 @@
 import { PAGES } from '@config/pages.config';
+import dayjs from 'dayjs';
 
 describe('Полный пользовательский сценарий', { testIsolation: false }, () => {
     before(() => {
@@ -16,15 +17,15 @@ describe('Полный пользовательский сценарий', { tes
         cy.loginUserAPI("lili");
 
         // Создаём мероприятие используя команду
-        cy.createEventUI({
+        cy.createEventAPI({
             title: 'Пикник',
             location: 'Лес',
-            startDay: '18',
-            startHour: '03',
-            endDay: '23',
-            endHour: '20',
-            description: 'всем добра'
+            start_datetime: dayjs().add(1, 'day').hour(17).toISOString(),
+            end_datetime: dayjs().add(5, 'day').hour(20).toISOString(),
+            description: 'всем добра!!!!'
         });
+        cy.visit(PAGES.EVENTS);
+        cy.contains('.ant-card', 'Пикник').click();
     });
 
     it('Добавление участников', () => {
@@ -62,7 +63,7 @@ describe('Полный пользовательский сценарий', { tes
 
         cy.createTask({
             name: 'Купить напитки',
-            deadline: '14.08.2025 00:10',
+            deadline: dayjs().add(2, 'day').hour(17).format('DD.MM.YYYY HH:mm'),
             assigneeName: 'Ксения',
             shoppingLists: ['Напитки']
         });
