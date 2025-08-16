@@ -8,6 +8,7 @@ on:
       - main
     paths-ignore:
       - "**.md"
+      - "e2e-tests/**"
   workflow_dispatch:
 
 concurrency:
