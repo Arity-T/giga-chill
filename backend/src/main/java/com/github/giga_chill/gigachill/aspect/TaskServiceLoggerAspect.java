@@ -93,271 +93,218 @@ public class TaskServiceLoggerAspect {
     @Around("getAllTasksFromEvent(eventId)")
     public Object logGetAllTasksFromEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getGET_COLOR()
-                            + loggerColorConfig.getGET_LABEL()
-                            + "Event tasks with id: {} received"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    eventId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Event tasks with id: {} received{}",
+                loggerColorConfig.getGET_COLOR(),
+                loggerColorConfig.getGET_LABEL(),
+                eventId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("getTaskById(taskId)")
     public Object logGetTaskById(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getGET_COLOR()
-                            + loggerColorConfig.getGET_LABEL()
-                            + "Task with id: {} received"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    taskId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Task with id: {} received{}",
+                loggerColorConfig.getGET_COLOR(),
+                loggerColorConfig.getGET_LABEL(),
+                taskId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("createTask(eventId, userEntity)")
     public Object logCreateTask(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UserEntity userEntity)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPOST_COLOR()
-                            + loggerColorConfig.getPOST_LABEL()
-                            + "User with id: {} created task with id: "
-                            + "{} in event with id: {}"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    userEntity.getId(),
-                    (String) result,
-                    eventId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}User with id: {} created task with id: {} in event with id: {}{}",
+                loggerColorConfig.getPOST_COLOR(),
+                loggerColorConfig.getPOST_LABEL(),
+                userEntity.getId(),
+                (String) result,
+                eventId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("updateTask(eventId, taskId)")
     public Object logUpdateTask(ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UUID taskId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPATCH_COLOR()
-                            + loggerColorConfig.getPATCH_LABEL()
-                            + "Task with id: {} was updated"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    taskId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Task with id: {} was updated{}",
+                loggerColorConfig.getPATCH_COLOR(),
+                loggerColorConfig.getPATCH_LABEL(),
+                taskId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
-    @Around("startExecuting(taskId, userId, ..)")
+    @Around("startExecuting(taskId, userId)")
     public Object logStartExecuting(
             ProceedingJoinPoint proceedingJoinPoint, UUID taskId, UUID userId) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPOST_COLOR()
-                            + loggerColorConfig.getPOST_LABEL()
-                            + "User with id: {} started execution task with id: {}"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    userId,
-                    taskId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}User with id: {} started execution task with id: {}{}",
+                loggerColorConfig.getPOST_COLOR(),
+                loggerColorConfig.getPOST_LABEL(),
+                userId,
+                taskId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("deleteTask(taskId)")
     public Object logDeleteTask(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getDELETE_COLOR()
-                            + loggerColorConfig.getDELETE_LABEL()
-                            + "Task with id: {} was deleted"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    taskId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Task with id: {} was deleted{}",
+                loggerColorConfig.getDELETE_COLOR(),
+                loggerColorConfig.getDELETE_LABEL(),
+                taskId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("isAuthor(taskId, userId)")
     public Object logIsAuthor(ProceedingJoinPoint proceedingJoinPoint, UUID taskId, UUID userId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            if ((Boolean) result) {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "User with id: {} is author of task with id: {}"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        userId,
-                        taskId);
-            } else {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "User with id: {} is not author of task with id: {}"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        userId,
-                        taskId);
-            }
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
+        Object result = proceedingJoinPoint.proceed();
+        if ((Boolean) result) {
+            LOGGER.info(
+                    "{}{}User with id: {} is author of task with id: {}{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    userId,
+                    taskId,
+                    loggerColorConfig.getRESET_COLOR());
+        } else {
+            LOGGER.info(
+                    "{}{}User with id: {} is not author of task with id: {}{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    userId,
+                    taskId,
+                    loggerColorConfig.getRESET_COLOR());
         }
+        return result;
     }
 
     @Around("getTaskStatus(taskId)")
     public Object logGetTaskStatus(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getGET_COLOR()
-                            + loggerColorConfig.getGET_LABEL()
-                            + "Task with id: {} has status {}"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    taskId,
-                    (String) result);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Task with id: {} has status {}{}",
+                loggerColorConfig.getGET_COLOR(),
+                loggerColorConfig.getGET_LABEL(),
+                taskId,
+                (String) result,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("isExisted(eventID, taskId)")
     public Object logIsExisted(ProceedingJoinPoint proceedingJoinPoint, UUID eventID, UUID taskId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            if ((Boolean) result) {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Task with id: {} is existed in event with id: {}"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        taskId,
-                        eventID);
-            } else {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Task with id: {} is not existed in event with id: {}"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        taskId,
-                        eventID);
-            }
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
+        Object result = proceedingJoinPoint.proceed();
+        if ((Boolean) result) {
+            LOGGER.info(
+                    "{}{}Task with id: {} is existed in event with id: {}{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    taskId,
+                    eventID,
+                    loggerColorConfig.getRESET_COLOR());
+        } else {
+            LOGGER.info(
+                    "{}{}Task with id: {} is not existed in event with id: {}{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    taskId,
+                    eventID,
+                    loggerColorConfig.getRESET_COLOR());
         }
+        return result;
     }
 
     @Around("getExecutorId(taskId)")
     public Object logGetExecutorId(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            if ((UUID) result == null) {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Task with id: {} does not have executor"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        taskId);
-            } else {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Task with id: {} has executor with id: {}"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        taskId,
-                        (UUID) result);
-            }
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
+        Object result = proceedingJoinPoint.proceed();
+        if ((UUID) result == null) {
+            LOGGER.info(
+                    "{}{}Task with id: {} does not have executor{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    taskId,
+                    loggerColorConfig.getRESET_COLOR());
+        } else {
+            LOGGER.info(
+                    "{}{}Task with id: {} has executor with id: {}{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    taskId,
+                    (UUID) result,
+                    loggerColorConfig.getRESET_COLOR());
         }
+        return result;
     }
 
-    @Around("updateExecutor(taskId, ..)")
+    @Around("updateExecutor(taskId)")
     public Object logUpdateExecutor(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            if (result == null) {
-                LOGGER.info(
-                        loggerColorConfig.getPUT_COLOR()
-                                + loggerColorConfig.getPUT_LABEL()
-                                + "Task with id: {} no longer has an executor"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        taskId);
-            } else {
-                LOGGER.info(
-                        loggerColorConfig.getPUT_COLOR()
-                                + loggerColorConfig.getPUT_LABEL()
-                                + "Task with id: {} now has an executor with id: {}"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        taskId,
-                        (UUID) result);
-            }
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
+        Object result = proceedingJoinPoint.proceed();
+        if (result == null) {
+            LOGGER.info(
+                    "{}{}Task with id: {} no longer has an executor{}",
+                    loggerColorConfig.getPUT_COLOR(),
+                    loggerColorConfig.getPUT_LABEL(),
+                    taskId,
+                    loggerColorConfig.getRESET_COLOR());
+        } else {
+            LOGGER.info(
+                    "{}{}Task with id: {} now has an executor with id: {}{}",
+                    loggerColorConfig.getPUT_COLOR(),
+                    loggerColorConfig.getPUT_LABEL(),
+                    taskId,
+                    (UUID) result,
+                    loggerColorConfig.getRESET_COLOR());
         }
+        return result;
     }
 
-    @Around("updateShoppingLists(taskId, ..)")
+    @Around("updateShoppingLists(taskId)")
     public Object logUpdateShoppingLists(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPUT_COLOR()
-                            + loggerColorConfig.getPUT_LABEL()
-                            + "Shopping lists in task with id: {} was updated"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    taskId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Shopping lists in task with id: {} was updated{}",
+                loggerColorConfig.getPUT_COLOR(),
+                loggerColorConfig.getPUT_LABEL(),
+                taskId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
-    @Around("setExecutorComment(taskId, ..)")
+    @Around("setExecutorComment(taskId)")
     public Object logSetExecutorComment(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPOST_COLOR()
-                            + loggerColorConfig.getPOST_LABEL()
-                            + "Task with id: {} received a comment from the executor: {}"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    taskId,
-                    (String) result);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Task with id: {} received a comment from the executor: {}{}",
+                loggerColorConfig.getPOST_COLOR(),
+                loggerColorConfig.getPOST_LABEL(),
+                taskId,
+                (String) result,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("setReviewerComment(taskId, body)")
@@ -366,30 +313,26 @@ public class TaskServiceLoggerAspect {
             UUID taskId,
             TaskReviewRequest taskReviewRequest)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            var reviewerComment = taskReviewRequest.getReviewerComment();
-            var isApproved = taskReviewRequest.getIsApproved();
-            if (isApproved) {
-                LOGGER.info(
-                        loggerColorConfig.getPOST_COLOR()
-                                + loggerColorConfig.getPOST_LABEL()
-                                + "Task with id: {} was confirmed with a reviewer comment: {}"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        taskId,
-                        reviewerComment);
-            } else {
-                LOGGER.info(
-                        loggerColorConfig.getPOST_COLOR()
-                                + loggerColorConfig.getPOST_LABEL()
-                                + "Task with id: {} was rejected with a reviewer comment: {}"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        taskId,
-                        reviewerComment);
-            }
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
+        Object result = proceedingJoinPoint.proceed();
+        var reviewerComment = taskReviewRequest.getReviewerComment();
+        var isApproved = taskReviewRequest.getIsApproved();
+        if (isApproved) {
+            LOGGER.info(
+                    "{}{}Task with id: {} was confirmed with a reviewer comment: {}{}",
+                    loggerColorConfig.getPOST_COLOR(),
+                    loggerColorConfig.getPOST_LABEL(),
+                    taskId,
+                    reviewerComment,
+                    loggerColorConfig.getRESET_COLOR());
+        } else {
+            LOGGER.info(
+                    "{}{}Task with id: {} was rejected with a reviewer comment: {}{}",
+                    loggerColorConfig.getPOST_COLOR(),
+                    loggerColorConfig.getPOST_LABEL(),
+                    taskId,
+                    reviewerComment,
+                    loggerColorConfig.getRESET_COLOR());
         }
+        return result;
     }
 }

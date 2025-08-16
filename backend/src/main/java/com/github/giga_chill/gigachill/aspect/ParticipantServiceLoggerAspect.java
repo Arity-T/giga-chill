@@ -26,8 +26,9 @@ public class ParticipantServiceLoggerAspect {
     public void getAllParticipantsByEventId(UUID eventId) {}
 
     @Pointcut(
-            "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.addParticipantToEvent(..)) "
-                    + "&& args(eventId, ..)")
+            value =
+                    "execution(public * com.github.giga_chill.gigachill.service.ParticipantService.addParticipantToEvent(..)) "
+                            + "&& args(eventId, ..)")
     public void addParticipantToEvent(UUID eventId) {}
 
     @Pointcut(
@@ -66,104 +67,84 @@ public class ParticipantServiceLoggerAspect {
                     + "&& args(eventId, ..)")
     public void getParticipantsSummaryBalance(UUID eventId) {}
 
-    @Around("getAllParticipantsByEventId(eventId, ..)")
+    @Around("getAllParticipantsByEventId(eventId)")
     public Object logGetAllParticipantsByEventId(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getGET_COLOR()
-                            + loggerColorConfig.getGET_LABEL()
-                            + "Event participants with: {} id received"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    eventId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Event participants with: {} id received{}",
+                loggerColorConfig.getGET_COLOR(),
+                loggerColorConfig.getGET_LABEL(),
+                eventId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("getParticipantById(eventId, participantId)")
     public Object logGetParticipantById(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UUID participantId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getGET_COLOR()
-                            + loggerColorConfig.getGET_LABEL()
-                            + "Participant with id: {} from event with id: {} received"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    participantId,
-                    eventId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Participant with id: {} from event with id: {} received{}",
+                loggerColorConfig.getGET_COLOR(),
+                loggerColorConfig.getGET_LABEL(),
+                participantId,
+                eventId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
-    @Around("addParticipantToEvent(eventId, ..)")
+    @Around("addParticipantToEvent(eventId)")
     public Object logAddParticipantToEvent(ProceedingJoinPoint proceedingJoinPoint, UUID eventId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPOST_COLOR()
-                            + loggerColorConfig.getPOST_LABEL()
-                            + "User with id: {} was added to event with id: {}"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    (UUID) result,
-                    eventId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}User with id: {} was added to event with id: {}{}",
+                loggerColorConfig.getPOST_COLOR(),
+                loggerColorConfig.getPOST_LABEL(),
+                (UUID) result,
+                eventId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
-    @Around("deleteParticipant(eventId, participantId, ..)")
+    @Around("deleteParticipant(eventId, participantId)")
     public Object logDeleteParticipant(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UUID participantId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getDELETE_COLOR()
-                            + loggerColorConfig.getDELETE_LABEL()
-                            + "User with id: {} was deleted from event with id: {}"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    participantId,
-                    eventId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}User with id: {} was deleted from event with id: {}{}",
+                loggerColorConfig.getDELETE_COLOR(),
+                loggerColorConfig.getDELETE_LABEL(),
+                participantId,
+                eventId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("isParticipant(eventId, userId)")
     public Object logIsParticipant(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UUID userId) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            if ((Boolean) result) {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "User with id: {} is a participant of the event with id: {}"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        userId,
-                        eventId);
-            } else {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + "User with id: {} is not a participant of the event with id: {}"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        userId,
-                        eventId);
-            }
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
+        Object result = proceedingJoinPoint.proceed();
+        if ((Boolean) result) {
+            LOGGER.info(
+                    "{}{}User with id: {} is a participant of the event with id: {}{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    userId,
+                    eventId,
+                    loggerColorConfig.getRESET_COLOR());
+        } else {
+            LOGGER.info(
+                    "{}User with id: {} is not a participant of the event with id: {}{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    userId,
+                    eventId,
+                    loggerColorConfig.getRESET_COLOR());
         }
+        return result;
     }
 
     @Around("updateParticipantRole(eventId, userId, participantId, participantSetRole)")
@@ -174,76 +155,60 @@ public class ParticipantServiceLoggerAspect {
             UUID participantId,
             ParticipantSetRole participantSetRole)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            var role = participantSetRole.getRole().getValue();
-            LOGGER.info(
-                    loggerColorConfig.getPATCH_COLOR()
-                            + loggerColorConfig.getPATCH_LABEL()
-                            + "User with id: {} got role: {} in the event with id: {}"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    participantId,
-                    role,
-                    eventId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        var role = participantSetRole.getRole().getValue();
+        LOGGER.info(
+                "{}{}User with id: {} got role: {} in the event with id: {}{}",
+                loggerColorConfig.getPATCH_COLOR(),
+                loggerColorConfig.getPATCH_LABEL(),
+                participantId,
+                role,
+                eventId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("getParticipantRoleInEvent(eventId, participantId)")
     public Object logGetParticipantRoleInEvent(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UUID participantId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPATCH_COLOR()
-                            + loggerColorConfig.getPATCH_LABEL()
-                            + "User with id: {} has role: {} in the event with id: {}"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    participantId,
-                    (String) result,
-                    eventId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}User with id: {} has role: {} in the event with id: {}{}",
+                loggerColorConfig.getPATCH_COLOR(),
+                loggerColorConfig.getPATCH_LABEL(),
+                participantId,
+                (String) result,
+                eventId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("getParticipantBalance(eventId, participantId)")
     public Object logGetParticipantBalance(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UUID participantId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getGET_COLOR()
-                            + loggerColorConfig.getGET_LABEL()
-                            + "User with id: {} received balance in event with id: {}"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    participantId,
-                    eventId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}User with id: {} received balance in event with id: {}{}",
+                loggerColorConfig.getGET_COLOR(),
+                loggerColorConfig.getGET_LABEL(),
+                participantId,
+                eventId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
-    @Around("getParticipantsSummaryBalance(eventId, ..)")
+    @Around("getParticipantsSummaryBalance(eventId)")
     public Object logGetParticipantsSummaryBalance(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getGET_COLOR()
-                            + loggerColorConfig.getGET_LABEL()
-                            + "The summary balance of event with id: {} participants was received"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    eventId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}The summary balance of event with id: {} participants was received{}",
+                loggerColorConfig.getGET_COLOR(),
+                loggerColorConfig.getGET_LABEL(),
+                eventId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 }

@@ -118,379 +118,301 @@ public class ShoppingListServiceLoggerAspect {
     @Around("getAllShoppingListsFromEvent(eventId)")
     public Object logGetAllShoppingListsFromEvent(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getGET_COLOR()
-                            + loggerColorConfig.getGET_LABEL()
-                            + "Event shopping lists with id: {} received"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    eventId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Event shopping lists with id: {} received{}",
+                loggerColorConfig.getGET_COLOR(),
+                loggerColorConfig.getGET_LABEL(),
+                eventId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("getShoppingListById(shoppingListId)")
     public Object logGetShoppingListById(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getGET_COLOR()
-                            + loggerColorConfig.getGET_LABEL()
-                            + "Shopping list with id: {} received"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    shoppingListId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Shopping list with id: {} received{}",
+                loggerColorConfig.getGET_COLOR(),
+                loggerColorConfig.getGET_LABEL(),
+                shoppingListId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("createShoppingList()")
     public Object logCreateShoppingList(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPOST_COLOR()
-                            + loggerColorConfig.getPOST_LABEL()
-                            + "Shopping list with id: {} was created"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    (String) result);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Shopping list with id: {} was created{}",
+                loggerColorConfig.getPOST_COLOR(),
+                loggerColorConfig.getPOST_LABEL(),
+                (String) result,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
-    @Around("updateShoppingList(eventId, userId, shoppingListId, ..)")
+    @Around("updateShoppingList(eventId, userId, shoppingListId)")
     public Object logUpdateShoppingList(
             ProceedingJoinPoint proceedingJoinPoint, UUID eventId, UUID userId, UUID shoppingListId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPATCH_COLOR()
-                            + loggerColorConfig.getPATCH_LABEL()
-                            + "Shopping list with id: {} was updated"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    shoppingListId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Shopping list with id: {} was updated{}",
+                loggerColorConfig.getPATCH_COLOR(),
+                loggerColorConfig.getPATCH_LABEL(),
+                shoppingListId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
-    @Around("deleteShoppingList(shoppingListId, ..)")
+    @Around("deleteShoppingList(shoppingListId)")
     public Object logDeleteShoppingList(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getDELETE_COLOR()
-                            + loggerColorConfig.getDELETE_LABEL()
-                            + "Shopping list with id: {} was deleted"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    shoppingListId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Shopping list with id: {} was deleted{}",
+                loggerColorConfig.getDELETE_COLOR(),
+                loggerColorConfig.getDELETE_LABEL(),
+                shoppingListId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
-    @Around("addShoppingItem(shoppingListId, ..)")
+    @Around("addShoppingItem(shoppingListId)")
     public Object logAddShoppingItem(ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPOST_COLOR()
-                            + loggerColorConfig.getPOST_LABEL()
-                            + "Shopping item with id: {} was added to shopping list with id: {}"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    (String) result,
-                    shoppingListId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Shopping item with id: {} was added to shopping list with id: {}{}",
+                loggerColorConfig.getPOST_COLOR(),
+                loggerColorConfig.getPOST_LABEL(),
+                (String) result,
+                shoppingListId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
-    @Around("updateShoppingItem(shoppingItemId, ..)")
+    @Around("updateShoppingItem(shoppingItemId)")
     public Object logUpdateShoppingItem(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingItemId) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPATCH_COLOR()
-                            + loggerColorConfig.getPATCH_LABEL()
-                            + "Shopping item with id: {} was updated"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    shoppingItemId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Shopping item with id: {} was updated{}",
+                loggerColorConfig.getPATCH_COLOR(),
+                loggerColorConfig.getPATCH_LABEL(),
+                shoppingItemId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
-    @Around("deleteShoppingItemFromShoppingList(shoppingListId, shoppingItemId, ..)")
+    @Around("deleteShoppingItemFromShoppingList(shoppingListId, shoppingItemId)")
     public Object logDeleteShoppingItemFromShoppingList(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId, UUID shoppingItemId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getDELETE_COLOR()
-                            + loggerColorConfig.getDELETE_LABEL()
-                            + "Shopping item with id: {} was deleted from shopping list with id: {}"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    shoppingItemId,
-                    shoppingListId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Shopping item with id: {} was deleted from shopping list with id: {}{}",
+                loggerColorConfig.getDELETE_COLOR(),
+                loggerColorConfig.getDELETE_LABEL(),
+                shoppingItemId,
+                shoppingListId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
-    @Around("updateShoppingItemStatus(shoppingItemId, ..)")
+    @Around("updateShoppingItemStatus(shoppingItemId)")
     public Object logUpdateShoppingItemStatus(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingItemId) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPATCH_COLOR()
-                            + loggerColorConfig.getPATCH_LABEL()
-                            + "Shopping item with id: {} was bought: {}"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    shoppingItemId,
-                    (Boolean) result);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Shopping item with id: {} was bought: {}{}",
+                loggerColorConfig.getPATCH_COLOR(),
+                loggerColorConfig.getPATCH_LABEL(),
+                shoppingItemId,
+                (Boolean) result,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("getShoppingItemById(shoppingItemId)")
     public Object logGetShoppingItemById(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingItemId) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getGET_COLOR()
-                            + loggerColorConfig.getGET_LABEL()
-                            + "Shopping item with id: {} was received"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    shoppingItemId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Shopping item with id: {} was received{}",
+                loggerColorConfig.getGET_COLOR(),
+                loggerColorConfig.getGET_LABEL(),
+                shoppingItemId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
-    @Around("updateShoppingListConsumers(shoppingListId, ..)")
+    @Around("updateShoppingListConsumers(shoppingListId)")
     public Object logUpdateShoppingListConsumers(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPUT_COLOR()
-                            + loggerColorConfig.getPUT_LABEL()
-                            + "Shopping list with id: {} consumers was updated"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    shoppingListId);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Shopping list with id: {} consumers was updated{}",
+                loggerColorConfig.getPUT_COLOR(),
+                loggerColorConfig.getPUT_LABEL(),
+                shoppingListId,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("getShoppingListStatus(shoppingListId)")
     public Object logGetShoppingListStatus(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getGET_COLOR()
-                            + loggerColorConfig.getGET_LABEL()
-                            + "Shopping list with id: {} has status {}"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    shoppingListId,
-                    (String) result);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Shopping list with id: {} has status {}{}",
+                loggerColorConfig.getGET_COLOR(),
+                loggerColorConfig.getGET_LABEL(),
+                shoppingListId,
+                (String) result,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("isExisted(shoppingListId)")
     public Object logIsExisted(ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            if ((Boolean) result) {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Shopping list with id: {} exists"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        shoppingListId);
-            } else {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Shopping list with id: {} does not exist"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        shoppingListId);
-            }
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
+        Object result = proceedingJoinPoint.proceed();
+        if ((Boolean) result) {
+            LOGGER.info(
+                    "{}{}Shopping list with id: {} exists{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    shoppingListId,
+                    loggerColorConfig.getRESET_COLOR());
+        } else {
+            LOGGER.info(
+                    "{}{}Shopping list with id: {} does not exist{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    shoppingListId,
+                    loggerColorConfig.getRESET_COLOR());
         }
+        return result;
     }
 
     @Around("isConsumer(shoppingListId, consumerId)")
     public Object logIsConsumer(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId, UUID consumerId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            if ((Boolean) result) {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Participant with with id: {} is consumer of "
-                                + "the shopping list with id: {}"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        consumerId,
-                        shoppingListId);
-            } else {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Participant with with id: {} is not consumer of "
-                                + "the shopping list with id: {}"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        consumerId,
-                        shoppingListId);
-            }
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
+        Object result = proceedingJoinPoint.proceed();
+        if ((Boolean) result) {
+            LOGGER.info(
+                    "{}{}Participant with with id: {} is consumer of the shopping list with id: {}{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    consumerId,
+                    shoppingListId,
+                    loggerColorConfig.getRESET_COLOR());
+        } else {
+            LOGGER.info(
+                    "{}{}Participant with with id: {} is not consumer of the shopping list with id: {}{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    consumerId,
+                    shoppingListId,
+                    loggerColorConfig.getRESET_COLOR());
         }
+        return result;
     }
 
     @Around("isShoppingItemExisted(shoppingItemId)")
     public Object logIsShoppingItemExisted(
             ProceedingJoinPoint proceedingJoinPoint, UUID shoppingItemId) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            if ((Boolean) result) {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Shopping item with id: {} exists"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        shoppingItemId);
-            } else {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Shopping item with id: {} does not exist"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        shoppingItemId);
-            }
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
+        Object result = proceedingJoinPoint.proceed();
+        if ((Boolean) result) {
+            LOGGER.info(
+                    "{}{}Shopping item with id: {} exists{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    shoppingItemId,
+                    loggerColorConfig.getRESET_COLOR());
+        } else {
+            LOGGER.info(
+                    "{}{}Shopping item with id: {} does not exist{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    shoppingItemId,
+                    loggerColorConfig.getRESET_COLOR());
         }
+        return result;
     }
 
     @Around("getShoppingListsByIds(shoppingListsIds)")
     public Object logGetShoppingListsByIds(
             ProceedingJoinPoint proceedingJoinPoint, List<UUID> shoppingListsIds) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getGET_COLOR()
-                            + loggerColorConfig.getGET_LABEL()
-                            + "Shopping lists with ids: {} received"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    shoppingListsIds.toString());
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Shopping lists with ids: {} received{}",
+                loggerColorConfig.getGET_COLOR(),
+                loggerColorConfig.getGET_LABEL(),
+                shoppingListsIds.toString(),
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 
     @Around("areExisted(shoppingListsIds)")
     public Object logAreExisted(
             ProceedingJoinPoint proceedingJoinPoint, List<UUID> shoppingListsIds) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            if ((Boolean) result) {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Shopping lists with ids: {} exist"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        shoppingListsIds.toString());
-            } else {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Shopping lists with ids: {} do not exist"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        shoppingListsIds.toString());
-            }
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
+        Object result = proceedingJoinPoint.proceed();
+        if ((Boolean) result) {
+            LOGGER.info(
+                    "{}{}Shopping lists with ids: {} exist{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    shoppingListsIds.toString(),
+                    loggerColorConfig.getRESET_COLOR());
+        } else {
+            LOGGER.info(
+                    "{}{}Shopping lists with ids: {} do not exist{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    shoppingListsIds.toString(),
+                    loggerColorConfig.getRESET_COLOR());
         }
+        return result;
     }
 
-    @Around("canBindShoppingListsToTask(shoppingListsIds, ..)")
+    @Around("canBindShoppingListsToTask(shoppingListsIds)")
     public Object logCanBindShoppingListsToTask(
             ProceedingJoinPoint proceedingJoinPoint, List<UUID> shoppingListsIds) throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            if ((Boolean) result) {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Shopping lists with ids: {} can bind to task"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        shoppingListsIds.toString());
-            } else {
-                LOGGER.info(
-                        loggerColorConfig.getGET_COLOR()
-                                + loggerColorConfig.getGET_LABEL()
-                                + "Shopping lists with ids: {} can not bind to task"
-                                + loggerColorConfig.getRESET_COLOR(),
-                        shoppingListsIds.toString());
-            }
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
+        Object result = proceedingJoinPoint.proceed();
+        if ((Boolean) result) {
+            LOGGER.info(
+                    "{}{}Shopping lists with ids: {} can bind to task{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    shoppingListsIds.toString(),
+                    loggerColorConfig.getRESET_COLOR());
+        } else {
+            LOGGER.info(
+                    "{}{}Shopping lists with ids: {} can not bind to task{}",
+                    loggerColorConfig.getGET_COLOR(),
+                    loggerColorConfig.getGET_LABEL(),
+                    shoppingListsIds.toString(),
+                    loggerColorConfig.getRESET_COLOR());
         }
+        return result;
     }
 
-    @Around("setBudget(shoppingListId, ..)")
+    @Around("setBudget(shoppingListId)")
     public Object logSetBudget(ProceedingJoinPoint proceedingJoinPoint, UUID shoppingListId)
             throws Throwable {
-        try {
-            Object result = proceedingJoinPoint.proceed();
-            LOGGER.info(
-                    loggerColorConfig.getPUT_COLOR()
-                            + loggerColorConfig.getPUT_LABEL()
-                            + "Shopping list with id: {} received a new budget {}"
-                            + loggerColorConfig.getRESET_COLOR(),
-                    shoppingListId,
-                    (BigDecimal) result);
-            return result;
-        } catch (Throwable ex) {
-            throw ex;
-        }
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Shopping list with id: {} received a new budget {}{}",
+                loggerColorConfig.getPUT_COLOR(),
+                loggerColorConfig.getPUT_LABEL(),
+                shoppingListId,
+                (BigDecimal) result,
+                loggerColorConfig.getRESET_COLOR());
+        return result;
     }
 }
