@@ -5,7 +5,8 @@ info:
   version: 0.1.0
 
 servers:
-  - url: http://localhost:3000
+  - url: https://giga-chill.ru/api
+  - url: http://localhost:8081
 
 security:
   - CookieAuth: []
@@ -19,6 +20,8 @@ tags:
   - name: Shopping List Items
   - name: Tasks
   - name: Debts
+  - name: Test Utils
+    description: Доступны только в тестовом окружении (BACKEND_PROFILE=test)
 
 paths:
   /auth/login:
@@ -903,6 +906,18 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+
+  /test-utils/cleanup:
+    post:
+      tags:
+        - Test Utils
+      operationId: cleanup
+      summary: Очистить базу данных
+      description: |
+        Полная очистка всех таблиц БД.
+      responses:
+        "204":
+          description: No Content
 
 components:
   responses:
