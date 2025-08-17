@@ -1,0 +1,26 @@
+name: Deploy OpenAPI Specification
+
+run-name: "Deploy OpenAPI Specification (initiated by ${{ github.actor }})"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "openapi/build/openapi.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-openapi
+  cancel-in-progress: true
+
+jobs:
+  build-openapi:
+    name: Deploy OpenAPI Specification
+    runs-on: [self-hosted, prod]
+    steps:
+      - name: Check out the repository to the runner
+        uses: actions/checkout@v4
+
+      - name: Copy openapi.yml to the host directory
+        run: cp openapi/build/openapi.yml ${{ vars.OPENAPI_HOST_DIR }}
