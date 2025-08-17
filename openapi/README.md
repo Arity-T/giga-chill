@@ -7,42 +7,21 @@
 Можно запустить простой моковый сервер с помощью [Prism](https://github.com/stoplightio/prism).
 
 ```powershell
-prism mock api.yml --port 8081
+prism mock build/openapi.yml --port 8081
 ```
 
-## Merge apis specification
+## Сборка спецификации
 
-Для сборки основного API, а также для слияния его с API для тестов используйте следующие скрипты:
+Для сборки спецификации API в единый файл [`openapi.yml`](build/openapi.yml) можно использовать следующие команды:
 
-1. Устанавливаем все необходимые зависимости для Node js:
-    ```sh
-    npm install
-    ```
-2. Выполняем основные скрипты для объединения API: 
-    ```sh
-    npm run build
-    ```
-
-### Альтернатива через npx (без установки зависимостей)
-
-Можно выполнить те же шаги без `npm install`, используя `npx` (флаг `-y` отключает лишние вопросы):
-
-```powershell
-npx -y @redocly/cli bundle api.yml --output build/api.bundled.yml
-npx -y @redocly/cli join build/api.bundled.yml test-utils.yml -o build/combined.yml
+```sh
+npm install
+npm run build
 ```
-
-Либо одной командой:
-
-```powershell
-npx -y @redocly/cli bundle api.yml --output build/api.bundled.yml && npx -y @redocly/cli join build/api.bundled.yml test-utils.yml -o build/combined.yml
-```
-
-Конечный файл имеет следующий путь: `build/combined.yml`
 
 ## Host Swagger UI with Docker
 
-[Параметры конфигурации](https://github.com/swagger-api/swagger-ui/blob/HEAD/docs/usage/configuration.md).
+[Параметры конфигурации](https://github.com/swagger-api/swagger-ui/blob/HEAD/docs/usage/configuration.md)
 
 
 ```bash
@@ -53,7 +32,7 @@ docker run -p 1240:8080 -e SWAGGER_JSON=/spec/openapi.yml -e LAYOUT=BaseLayout \
 
 ## Host Redocly with Docker
 
-[Документация](https://redocly.com/docs/redoc/deployment/docker).
+[Документация](https://redocly.com/docs/redoc/deployment/docker)
 
 ```bash
 docker run -p 1241:80 -e SPEC_URL=openapi.yml -e PAGE_TITLE="GigaChill API — ReDoc" \
