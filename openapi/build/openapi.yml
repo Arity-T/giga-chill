@@ -5,25 +5,19 @@ info:
 servers:
   - url: https://giga-chill.ru/api
   - url: http://localhost:8081
+security:
+  - CookieAuth: []
 tags:
   - name: Auth
-    x-displayName: Auth
   - name: Events
-    x-displayName: Events
   - name: Invitation Tokens
-    x-displayName: Invitation Tokens
   - name: Participants
-    x-displayName: Participants
   - name: Shopping Lists
-    x-displayName: Shopping Lists
   - name: Shopping List Items
-    x-displayName: Shopping List Items
   - name: Tasks
-    x-displayName: Tasks
   - name: Debts
-    x-displayName: Debts
-  - name: Database
-    x-displayName: Database
+  - name: Test Utils
+    description: Доступны только в тестовом окружении (BACKEND_PROFILE=test)
 paths:
   /auth/login:
     post:
@@ -63,9 +57,7 @@ paths:
               $ref: '#/components/schemas/RegisterRequest'
       responses:
         '204':
-          description: >-
-            Пользователь создан. JWT-токен отправлен в Set-Cookie (HttpOnly).
-            Тело пустое.
+          description: Пользователь создан. JWT-токен отправлен в Set-Cookie (HttpOnly). Тело пустое.
         '400':
           $ref: '#/components/responses/InvalidDataError'
         '409':
@@ -86,8 +78,6 @@ paths:
           description: Пользователь успешно вышел из системы. JWT токен удалён из cookie.
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-      security:
-        - CookieAuth: []
   /auth/me:
     get:
       summary: Текущий пользователь
@@ -104,14 +94,10 @@ paths:
                 $ref: '#/components/schemas/User'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-      security:
-        - CookieAuth: []
   /events:
     get:
       summary: Список моих мероприятий
-      description: >-
-        Возвращает все мероприятия, в которых участвует аутентифицированный
-        пользователь, вместе с его ролью в этих мероприятиях.
+      description: Возвращает все мероприятия, в которых участвует аутентифицированный пользователь, вместе с его ролью в этих мероприятиях.
       tags:
         - Events
       operationId: getEvents
@@ -124,8 +110,6 @@ paths:
                 $ref: '#/components/schemas/Events'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-      security:
-        - CookieAuth: []
     post:
       summary: Создать мероприятие
       description: Автор запроса автоматически становится **owner**.
@@ -145,14 +129,10 @@ paths:
           $ref: '#/components/responses/InvalidDataError'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-      security:
-        - CookieAuth: []
   /events/{eventId}:
     get:
       summary: Получить мероприятие
-      description: >-
-        Возвращает мероприятие, в котором участвует аутентифицированный
-        пользователь, вместе с его ролью в этом мероприятии.
+      description: Возвращает мероприятие, в котором участвует аутентифицированный пользователь, вместе с его ролью в этом мероприятии.
       tags:
         - Events
       operationId: getEvent
@@ -171,8 +151,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
     patch:
       summary: Обновить мероприятие
       tags:
@@ -197,8 +175,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
     delete:
       summary: Удалить мероприятие
       tags:
@@ -215,8 +191,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/invitation-token:
     post:
       summary: Создать новый токен
@@ -235,14 +209,9 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
     get:
       summary: Получение токена
-      description: >-
-        Возвращает заранее сгенерированный токен-приглашение. Доступно
-        пользователям с ролью **admin** или **owner**. Если токен ещё не был
-        сгенерирован, то в поле **invitation_token** возвращается **null**.
+      description: Возвращает заранее сгенерированный токен-приглашение. Доступно пользователям с ролью **admin** или **owner**. Если токен ещё не был сгенерирован, то в поле **invitation_token** возвращается **null**.
       tags:
         - Invitation Tokens
       operationId: getInvitationToken
@@ -261,8 +230,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /events/join-by-invitation-token:
     post:
       summary: Присоединиться к мероприятию по токену
@@ -298,8 +265,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-      security:
-        - CookieAuth: []
   /events/{eventId}/participants:
     get:
       summary: Список участников
@@ -321,8 +286,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
     post:
       summary: Добавить участника
       description: Добавление по логину. Роль по умолчанию — **participant**.
@@ -354,8 +317,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-      security:
-        - CookieAuth: []
   /events/{eventId}/participants/{participantId}:
     delete:
       summary: Удалить участника
@@ -374,8 +335,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/participants/{participantId}/role:
     patch:
       summary: Изменить роль участника
@@ -402,14 +361,10 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/shopping-lists:
     get:
       summary: Получение списков покупок
-      description: >-
-        Возвращает все списки покупок, связанные с указанным мероприятием,
-        вместе с элементами списков покупок и потребителями.
+      description: Возвращает все списки покупок, связанные с указанным мероприятием, вместе с элементами списков покупок и потребителями.
       tags:
         - Shopping Lists
       operationId: getShoppingLists
@@ -428,8 +383,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
     post:
       summary: Добавить список покупок
       tags:
@@ -454,8 +407,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/shopping-lists/{shoppingListId}:
     patch:
       summary: Изменить список покупок
@@ -482,8 +433,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
     delete:
       summary: Удалить список покупок
       tags:
@@ -501,8 +450,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/shopping-lists/{shoppingListId}/budget:
     put:
       summary: Изменить бюджет списка покупок
@@ -529,8 +476,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/shopping-lists/{shoppingListId}/consumers:
     put:
       summary: Указать потребителей для списка покупок
@@ -568,8 +513,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-      security:
-        - CookieAuth: []
   /events/{eventId}/shopping-lists/{shoppingListId}/shopping-items:
     post:
       summary: Добавить элемент в список покупок
@@ -596,8 +539,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/shopping-lists/{shoppingListId}/shopping-items/{shoppingItemId}:
     patch:
       summary: Изменить элемент списка покупок
@@ -625,8 +566,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
     delete:
       summary: Удалить элемент из списка покупок
       tags:
@@ -645,8 +584,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/shopping-lists/{shoppingListId}/shopping-items/{shoppingItemId}/purchased-state:
     patch:
       summary: Изменить статус элемента списка покупок
@@ -674,8 +611,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/tasks:
     get:
       summary: Получить задачи
@@ -697,8 +632,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
     post:
       summary: Создать задачу
       tags:
@@ -723,8 +656,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/tasks/{taskId}:
     get:
       summary: Получить задачу
@@ -747,8 +678,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
     patch:
       summary: Обновить задачу
       tags:
@@ -774,8 +703,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
     delete:
       summary: Удалить задачу
       tags:
@@ -793,14 +720,10 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/tasks/{taskId}/executor:
     put:
       summary: Указать исполнителя
-      description: >-
-        Поле executor_id может быть null - это означает, что у задачи нет
-        исполнителя. В этом случае задача переходит в статус "открыта".
+      description: Поле executor_id может быть null - это означает, что у задачи нет исполнителя. В этом случае задача переходит в статус "открыта".
       tags:
         - Tasks
       operationId: setTaskExecutor
@@ -824,8 +747,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/tasks/{taskId}/shopping-lists:
     put:
       summary: Указать списки покупок для задачи
@@ -852,14 +773,10 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/tasks/{taskId}/take-in-work:
     post:
       summary: Взять задачу в работу
-      description: >-
-        Если исполнитель не указан, то тот кто взял задачу в работу становится
-        её исполнителем.
+      description: Если исполнитель не указан, то тот кто взял задачу в работу становится её исполнителем.
       tags:
         - Tasks
       operationId: takeTaskInWork
@@ -875,8 +792,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/tasks/{taskId}/send-for-review:
     post:
       summary: Отправить задачу на проверку
@@ -899,8 +814,6 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/ForbiddenError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/tasks/{taskId}/review:
     post:
       summary: Подтвердить или отклонить задачу
@@ -923,8 +836,6 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/ForbiddenError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/finalize:
     post:
       summary: Завершить мероприятие и провести расчёты долгов участников
@@ -942,8 +853,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/my-balance:
     get:
       summary: Получить баланс пользователя в мероприятии
@@ -965,8 +874,6 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /events/{eventId}/balance-summary:
     get:
       summary: Получить сводку по балансу мероприятия
@@ -988,16 +895,13 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-      security:
-        - CookieAuth: []
   /test-utils/cleanup:
     post:
       tags:
-        - Database
+        - Test Utils
       summary: Очистить базу данных
-      description: >
-        Полная очистка всех таблиц — только для тестового профиля
-        (profile=test).
+      description: |
+        Полная очистка всех таблиц БД.
       responses:
         '204':
           description: No Content
@@ -1622,17 +1526,3 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/ParticipantBalanceSummary'
-x-tagGroups:
-  - name: GigaChill
-    tags:
-      - Auth
-      - Events
-      - Invitation Tokens
-      - Participants
-      - Shopping Lists
-      - Shopping List Items
-      - Tasks
-      - Debts
-  - name: GigaChill Test Utils API
-    tags:
-      - Database
