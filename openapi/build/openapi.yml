@@ -899,6 +899,7 @@ paths:
     post:
       tags:
         - Test Utils
+      operationId: cleanup
       summary: Очистить базу данных
       description: |
         Полная очистка всех таблиц БД.
