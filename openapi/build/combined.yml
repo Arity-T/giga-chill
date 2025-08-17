@@ -3,7 +3,8 @@ info:
   title: GigaChill
   version: 0.1.0
 servers:
-  - url: http://localhost:3000
+  - url: https://giga-chill.ru/api
+  - url: http://localhost:8081
 tags:
   - name: Auth
     x-displayName: Auth
