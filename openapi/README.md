@@ -7,8 +7,9 @@
 Можно запустить простой моковый сервер с помощью [Prism](https://github.com/stoplightio/prism).
 
 ```powershell
-prism mock api.yml --port 3000
+prism mock api.yml --port 8081
 ```
+
 ## Merge apis specification
 
 Для сборки основного API, а также для слияния его с API для тестов используйте следующие скрипты:
@@ -38,3 +39,24 @@ npx -y @redocly/cli bundle api.yml --output build/api.bundled.yml && npx -y @red
 ```
 
 Конечный файл имеет следующий путь: `build/combined.yml`
+
+## Host Swagger UI with Docker
+
+[Параметры конфигурации](https://github.com/swagger-api/swagger-ui/blob/HEAD/docs/usage/configuration.md).
+
+
+```bash
+docker run -p 1240:8080 -e SWAGGER_JSON=/spec/openapi.yml -e LAYOUT=BaseLayout \
+  -v /var/www/giga-chill/openapi.yml:/spec/openapi.yml \
+  --name giga-chill-swagger-ui -d docker.swagger.io/swaggerapi/swagger-ui:v5.27.1
+```
+
+## Host Redocly with Docker
+
+[Документация](https://redocly.com/docs/redoc/deployment/docker).
+
+```bash
+docker run -p 1241:80 -e SPEC_URL=openapi.yml -e PAGE_TITLE="GigaChill API — ReDoc" \
+  -v /var/www/giga-chill/openapi.yml:/usr/share/nginx/html/openapi.yml \
+  --name giga-chill-redoc -d redocly/redoc:v2.5.0
+```
