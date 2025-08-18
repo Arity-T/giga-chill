@@ -1,0 +1,36 @@
+package ru.gigachill.aspect;
+
+import lombok.RequiredArgsConstructor;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+import ru.gigachill.config.LoggerColorConfig;
+
+@Component
+@Aspect
+@RequiredArgsConstructor
+@Profile("test")
+public class TestServiceLoggerAspect {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestServiceLoggerAspect.class);
+    private final LoggerColorConfig loggerColorConfig;
+
+    // Покрываем оба пакета: repository и impl
+    @Pointcut("execution(public * ru.gigachill.service.TestService.cleanBD(..))")
+    public void cleanBD() {}
+
+    @Around("cleanBD()")
+    public Object logCleanBD(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        Object result = proceedingJoinPoint.proceed();
+        LOGGER.info(
+                "{}{}Data base was cleaned{}",
+                loggerColorConfig.getDB_COLOR(),
+                loggerColorConfig.getDB_LABEL(),
+                loggerColorConfig.getRESET_COLOR());
+        return result;
+    }
+}

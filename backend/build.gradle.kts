@@ -106,16 +106,17 @@ val generateOpenApi by tasks.registering(GenerateTask::class) {
     generatorName.set("spring")
     inputSpec.set(specMainPath)
     outputDir.set("$buildDir/generated/api")
-    apiPackage.set("com.github.giga_chill.gigachill.web.api")
-    modelPackage.set("com.github.giga_chill.gigachill.web.api.model")
-    invokerPackage.set("com.github.giga_chill.gigachill.web.api.invoker")
+    apiPackage.set("ru.gigachill.web.api")
+    modelPackage.set("ru.gigachill.web.api.model")
+    invokerPackage.set("ru.gigachill.web.api.invoker")
     configOptions.set(
         mapOf(
             "useJakartaEe" to "true",
             "interfaceOnly" to "true",
             "skipDefaultInterface" to "true",
             "dateLibrary" to "java8",
-            "useBeanValidation" to "false",
+            "useBeanValidation" to "true",
+            "performBeanValidation" to "true",
             "sourceFolder" to "",
             "useTags" to "true"
         )

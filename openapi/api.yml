@@ -251,18 +251,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/InvitationToken"
+              $ref: "#/components/schemas/InvitationTokenJoin"
       responses:
         "200":
           description: Идентификатор мероприятия, к которому присоединился пользователь
           content:
             application/json:
               schema:
-                type: object
-                required: [event_id]
-                properties:
-                  event_id:
-                    $ref: "#/components/schemas/UUID"
+                $ref: "#/components/schemas/EventId"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "404":

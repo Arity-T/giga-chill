@@ -43,7 +43,7 @@ export default function ShoppingListEditModal({
         try {
             const shoppingListData: ShoppingListUpdate = {
                 title: values.title,
-                description: values.description || '',
+                description: values.description,
             };
 
             await updateShoppingList({
