@@ -46,7 +46,7 @@ public class ParticipantService {
             UUID eventId, UUID participantId, ParticipantCreate participantCreate) {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, participantId);
         participantsServiceValidator.checkAdminOrOwnerRole(eventId, participantId);
 
@@ -91,7 +91,7 @@ public class ParticipantService {
 
         participantsServiceValidator.checkIsSamePerson(userId, participantId);
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         participantsServiceValidator.checkAdminOrOwnerRole(eventId, userId);
         participantsServiceValidator.checkIsParticipant(eventId, participantId);
@@ -106,7 +106,7 @@ public class ParticipantService {
             throw new BadRequestException("Invalid request body: " + participantSetRole);
         }
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         participantsServiceValidator.checkOwnerRole(eventId, userId);
         participantsServiceValidator.checkIsParticipant(eventId, participantId);

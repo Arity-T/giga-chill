@@ -19,7 +19,7 @@ public class EventServiceValidator {
         }
     }
 
-    public void checkIsFinalized(UUID eventId) {
+    public void checkIsNotFinalized(UUID eventId) {
         if (eventDAO.isFinalized(eventId)) {
             throw new ConflictException("Event with id: " + eventId + " was finalized");
         }

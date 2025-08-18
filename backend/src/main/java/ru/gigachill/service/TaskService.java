@@ -73,7 +73,7 @@ public class TaskService {
                 !Objects.isNull(taskCreate.getExecutorId()) ? taskCreate.getExecutorId() : null;
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, userEntity.getId());
         if (!Objects.isNull(executorId)) {
             userServiceValidator.checkIsExisted(executorId);
@@ -105,7 +105,7 @@ public class TaskService {
     public void updateTask(UUID eventId, UUID taskId, UUID userId, TaskUpdate taskUpdate) {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         taskServiceValidator.checkIsExisted(eventId, taskId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         taskServiceValidator.checkNotCompletedStatus(taskId, getTaskStatus(taskId));
@@ -129,7 +129,7 @@ public class TaskService {
 
     public void startExecuting(UUID taskId, UUID userId, UUID eventId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         taskServiceValidator.checkIsExisted(eventId, taskId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         taskServiceValidator.checkNotCompletedStatus(taskId, getTaskStatus(taskId));
@@ -140,7 +140,7 @@ public class TaskService {
 
     public void deleteTask(UUID taskId, UUID eventId, UUID userId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         taskServiceValidator.checkIsExisted(eventId, taskId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         taskServiceValidator.checkNotCompletedStatus(taskId, getTaskStatus(taskId));
@@ -174,7 +174,7 @@ public class TaskService {
                         : null;
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         taskServiceValidator.checkIsExisted(eventId, taskId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         participantsServiceValidator.checkIsAuthorOrAdminOrOwner(eventId, userId, taskId);
@@ -191,7 +191,7 @@ public class TaskService {
         var shoppingListsIds = !Objects.isNull(body) ? body : null;
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         taskServiceValidator.checkIsExisted(eventId, taskId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         taskServiceValidator.checkNotCompletedStatus(taskId, getTaskStatus(taskId));
@@ -217,7 +217,7 @@ public class TaskService {
         }
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         taskServiceValidator.checkIsExisted(eventId, taskId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         taskServiceValidator.checkInProgressStatus(taskId, getTaskStatus(taskId));
@@ -236,7 +236,7 @@ public class TaskService {
         }
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         taskServiceValidator.checkIsExisted(eventId, taskId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         taskServiceValidator.checkUnderReviewStatus(taskId, getTaskStatus(taskId));

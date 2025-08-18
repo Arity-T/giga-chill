@@ -54,7 +54,7 @@ public class ShoppingListService {
         }
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
 
         var shoppingListId = UUID.randomUUID();
@@ -71,7 +71,7 @@ public class ShoppingListService {
             UUID eventId, UUID userId, UUID shoppingListId, ShoppingListUpdate shoppingListUpdate) {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         participantsServiceValidator.checkIsConsumerOrAdminOrOwner(eventId, userId, shoppingListId);
@@ -86,7 +86,7 @@ public class ShoppingListService {
     public void deleteShoppingList(UUID shoppingListId, UUID eventId, UUID userId) {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         participantsServiceValidator.checkIsConsumerOrAdminOrOwner(eventId, userId, shoppingListId);
@@ -106,7 +106,7 @@ public class ShoppingListService {
         }
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         participantsServiceValidator.checkIsConsumerOrAdminOrOwner(eventId, userId, shoppingListId);
@@ -134,7 +134,7 @@ public class ShoppingListService {
             ShoppingItemUpdate shoppingItemUpdate) {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
         shoppingListsServiceValidator.checkShoppingItemIsExisted(shoppingItemId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
@@ -157,7 +157,7 @@ public class ShoppingListService {
             UUID shoppingListId, UUID shoppingItemId, UUID eventId, UUID userId) {
         shoppingListsServiceValidator.checkShoppingItemIsExisted(shoppingItemId);
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         participantsServiceValidator.checkIsConsumerOrAdminOrOwner(eventId, userId, shoppingListId);
@@ -183,7 +183,7 @@ public class ShoppingListService {
 
         shoppingListsServiceValidator.checkShoppingItemIsExisted(shoppingItemId);
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         var shoppingListStatus = getShoppingListStatus(shoppingListId);
@@ -206,7 +206,7 @@ public class ShoppingListService {
         }
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         participantsServiceValidator.checkIsConsumerOrAdminOrOwner(eventId, userId, shoppingListId);
@@ -267,7 +267,7 @@ public class ShoppingListService {
         }
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         var taskId = getTaskIdForShoppingList(shoppingListId);

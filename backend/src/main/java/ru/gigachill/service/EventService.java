@@ -52,7 +52,7 @@ public class EventService {
     public void updateEvent(UUID eventId, UUID userId, EventUpdate eventUpdate) {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         participantsServiceValidator.checkAdminOrOwnerRole(eventId, userId);
 
@@ -87,7 +87,7 @@ public class EventService {
 
     public void deleteEvent(UUID eventId, UUID userId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         participantsServiceValidator.checkOwnerRole(eventId, userId);
 
@@ -100,7 +100,7 @@ public class EventService {
 
     public String createInviteLink(UUID eventId, UUID userId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         participantsServiceValidator.checkOwnerRole(eventId, userId);
 
@@ -131,7 +131,7 @@ public class EventService {
         if (Objects.isNull(eventId)) {
             throw new NotFoundException("Link with hash " + rawToken + " not found");
         }
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         participantsServiceValidator.checkIsAlreadyParticipant(eventId, userEntity.getId());
 
         participantsService.addParticipantToEvent(eventId, userEntity);
@@ -140,7 +140,7 @@ public class EventService {
 
     public void finalizeEvent(UUID eventId, UUID userId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsFinalized(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
         participantsServiceValidator.checkIsParticipant(eventId, userId);
         participantsServiceValidator.checkOwnerRole(eventId, userId);
 
