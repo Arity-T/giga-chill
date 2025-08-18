@@ -120,8 +120,7 @@ public class EventService {
         return eventDAO.getEventByLinkUuid(linkUuid);
     }
 
-    public JoinByInvitationToken200Response joinByLink(
-            UserEntity userEntity, InvitationTokenJoin invitationToken) {
+    public EventId joinByLink(UserEntity userEntity, InvitationTokenJoin invitationToken) {
         var rawToken = invitationToken.getInvitationToken();
         var eventId = getEventByLinkUuid(UuidUtils.safeUUID(rawToken));
         if (Objects.isNull(eventId)) {
@@ -131,7 +130,7 @@ public class EventService {
         participantsServiceValidator.checkIsAlreadyParticipant(eventId, userEntity.getId());
 
         participantsService.addParticipantToEvent(eventId, userEntity);
-        return new JoinByInvitationToken200Response(eventId);
+        return new EventId(eventId);
     }
 
     public void finalizeEvent(UUID eventId, UUID userId) {

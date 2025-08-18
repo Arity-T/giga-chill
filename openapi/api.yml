@@ -258,11 +258,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required: [event_id]
-                properties:
-                  event_id:
-                    $ref: "#/components/schemas/UUID"
+                $ref: "#/components/schemas/EventId"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "404":

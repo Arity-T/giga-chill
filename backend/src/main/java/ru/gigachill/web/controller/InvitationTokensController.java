@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.gigachill.service.EventService;
 import ru.gigachill.service.UserService;
 import ru.gigachill.web.api.InvitationTokensApi;
+import ru.gigachill.web.api.model.EventId;
 import ru.gigachill.web.api.model.InvitationToken;
 import ru.gigachill.web.api.model.InvitationTokenJoin;
-import ru.gigachill.web.api.model.JoinByInvitationToken200Response;
 
 @RequiredArgsConstructor
 @RestController
@@ -40,8 +40,7 @@ public class InvitationTokensController implements InvitationTokensApi {
 
     @Override
     // ACCESS: ALL
-    public ResponseEntity<JoinByInvitationToken200Response> joinByInvitationToken(
-            InvitationTokenJoin invitationToken) {
+    public ResponseEntity<EventId> joinByInvitationToken(InvitationTokenJoin invitationToken) {
         var user =
                 userService.userAuthentication(
                         SecurityContextHolder.getContext().getAuthentication());

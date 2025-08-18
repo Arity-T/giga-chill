@@ -249,12 +249,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - event_id
-                properties:
-                  event_id:
-                    $ref: '#/components/schemas/UUID'
+                $ref: '#/components/schemas/EventId'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '404':
@@ -1156,6 +1151,13 @@ components:
           type: string
           description: Токен-приглашение
           example: 0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c
+    EventId:
+      type: object
+      required:
+        - event_id
+      properties:
+        event_id:
+          $ref: '#/components/schemas/UUID'
     Participant:
       type: object
       required:

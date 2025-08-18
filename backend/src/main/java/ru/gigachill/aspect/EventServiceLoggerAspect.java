@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import ru.gigachill.config.LoggerColorConfig;
 import ru.gigachill.model.UserEntity;
-import ru.gigachill.web.api.model.JoinByInvitationToken200Response;
+import ru.gigachill.web.api.model.EventId;
 
 @Component
 @Aspect
@@ -201,7 +201,7 @@ public class EventServiceLoggerAspect {
                 loggerColorConfig.getPOST_COLOR(),
                 loggerColorConfig.getPOST_LABEL(),
                 userEntity.getId(),
-                ((JoinByInvitationToken200Response) result).getEventId(),
+                ((EventId) result).getEventId(),
                 loggerColorConfig.getRESET_COLOR());
         return result;
     }
