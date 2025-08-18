@@ -15,9 +15,11 @@ import ru.gigachill.web.api.model.TaskWithShoppingLists;
 public interface TaskMapper {
 
     @Mapping(source = "status", target = "status", qualifiedByName = "stringToTaskStatus")
+    @Mapping(target = "permissions", ignore = true)
     TaskWithShoppingLists toTaskWithShoppingLists(TaskWithShoppingListsDTO dto);
 
     @Mapping(source = "status", target = "status", qualifiedByName = "stringToTaskStatus")
+    @Mapping(target = "permissions", ignore = true)
     Task toTask(TaskDTO dto);
 
     @Named("stringToTaskStatus")
