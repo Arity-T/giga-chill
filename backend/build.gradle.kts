@@ -115,7 +115,8 @@ val generateOpenApi by tasks.registering(GenerateTask::class) {
             "interfaceOnly" to "true",
             "skipDefaultInterface" to "true",
             "dateLibrary" to "java8",
-            "useBeanValidation" to "false",
+            "useBeanValidation" to "true",
+            "performBeanValidation" to "true",
             "sourceFolder" to "",
             "useTags" to "true"
         )
