@@ -21,7 +21,7 @@ public class AuthService {
     private final UserMapper userMapper;
 
     @Value("${server.https_cookies_only:false}")
-    private boolean isProd;
+    private boolean isSecureCookies;
 
     public ResponseCookie login(LoginRequest loginRequest) {
         userService.validateLogin(loginRequest.getLogin());
@@ -35,7 +35,7 @@ public class AuthService {
 
         return ResponseCookie.from("token", jwt)
                 .httpOnly(true)
-                .secure(isProd)
+                .secure(isSecureCookies)
                 .path("/")
                 .sameSite("Strict")
                 .build();
@@ -57,7 +57,7 @@ public class AuthService {
 
         return ResponseCookie.from("token", jwt)
                 .httpOnly(true)
-                .secure(isProd)
+                .secure(isSecureCookies)
                 .path("/")
                 .sameSite("Strict")
                 .build();
@@ -66,7 +66,7 @@ public class AuthService {
     public ResponseCookie logout() {
         return ResponseCookie.from("token", "")
                 .httpOnly(true)
-                .secure(isProd)
+                .secure(isSecureCookies)
                 .path("/")
                 .sameSite("Strict")
                 .maxAge(0) // Удалить cookie
