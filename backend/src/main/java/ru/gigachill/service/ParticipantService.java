@@ -35,7 +35,7 @@ public class ParticipantService {
     public List<Participant> getAllParticipantsByEventId(UUID eventId, UUID participantId) {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        participantsServiceValidator.checkIsParticipant(eventId, participantId);
+        participantsServiceValidator.checkUserInEvent(eventId, participantId);
 
         return participantDAO.getAllParticipantsByEventId(eventId).stream()
                 .map(participantMapper::toParticipant)
@@ -47,7 +47,7 @@ public class ParticipantService {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
-        participantsServiceValidator.checkIsParticipant(eventId, participantId);
+        participantsServiceValidator.checkUserInEvent(eventId, participantId);
         participantsServiceValidator.checkAdminOrOwnerRole(eventId, participantId);
 
         var participantLogin = participantCreate.getLogin();
@@ -92,9 +92,9 @@ public class ParticipantService {
         participantsServiceValidator.checkIsSamePerson(userId, participantId);
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         participantsServiceValidator.checkAdminOrOwnerRole(eventId, userId);
-        participantsServiceValidator.checkIsParticipant(eventId, participantId);
+        participantsServiceValidator.checkUserInEvent(eventId, participantId);
 
         participantDAO.deleteParticipant(eventId, participantId);
     }
@@ -107,9 +107,9 @@ public class ParticipantService {
         }
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         participantsServiceValidator.checkOwnerRole(eventId, userId);
-        participantsServiceValidator.checkIsParticipant(eventId, participantId);
+        participantsServiceValidator.checkUserInEvent(eventId, participantId);
         participantsServiceValidator.checkReplaceRole(eventId, participantId);
 
         var newRole = participantSetRole.getRole().getValue();
@@ -137,7 +137,7 @@ public class ParticipantService {
 
     public UserBalance getParticipantBalance(UUID eventId, UUID participantId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        participantsServiceValidator.checkIsParticipant(eventId, participantId);
+        participantsServiceValidator.checkUserInEvent(eventId, participantId);
 
         return participantBalanceMapper.toUserBalance(
                 participantDAO.getParticipantBalance(eventId, participantId));
@@ -146,7 +146,7 @@ public class ParticipantService {
     public List<ParticipantBalanceSummary> getParticipantsSummaryBalance(
             UUID eventId, UUID participantId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        participantsServiceValidator.checkIsParticipant(eventId, participantId);
+        participantsServiceValidator.checkUserInEvent(eventId, participantId);
         participantsServiceValidator.checkAdminOrOwnerRole(eventId, participantId);
 
         return participantDAO.getSummaryParticipantBalance(eventId).stream()

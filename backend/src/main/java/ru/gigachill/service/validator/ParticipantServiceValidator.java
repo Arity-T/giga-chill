@@ -19,8 +19,8 @@ public class ParticipantServiceValidator {
     private final TaskDAO taskDAO;
     private final Environment env;
 
-    public void checkIsParticipant(UUID eventId, UUID userId) {
-        if (!participantDAO.isParticipant(eventId, userId)) {
+    public void checkUserInEvent(UUID eventId, UUID userId) {
+        if (!participantDAO.checkUserInEvent(eventId, userId)) {
             throw new ForbiddenException(
                     "User with id: "
                             + userId
@@ -30,7 +30,7 @@ public class ParticipantServiceValidator {
     }
 
     public void checkIsAlreadyParticipant(UUID eventId, UUID userId) {
-        if (participantDAO.isParticipant(eventId, userId)) {
+        if (participantDAO.checkUserInEvent(eventId, userId)) {
             throw new ConflictException(
                     "User with id "
                             + userId

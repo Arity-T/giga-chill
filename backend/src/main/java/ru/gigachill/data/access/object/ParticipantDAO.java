@@ -45,7 +45,7 @@ public interface ParticipantDAO {
      * @param userId the unique identifier of the user
      * @return {@code true} if the user is a participant in the event, {@code false} otherwise
      */
-    boolean isParticipant(UUID eventId, UUID userId);
+    boolean checkUserInEvent(UUID eventId, UUID userId);
 
     /**
      * Updates the role of a specific participant in an event.

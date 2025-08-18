@@ -32,7 +32,7 @@ public class ShoppingListService {
     public List<ShoppingListWithItems> getAllShoppingListsFromEvent(UUID eventId, UUID userId) {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
 
         return shoppingListDAO.getAllShoppingListsFromEvent(eventId).stream()
                 .map(shoppingListMapper::toShoppingListWithItems)
@@ -55,7 +55,7 @@ public class ShoppingListService {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
 
         var shoppingListId = UUID.randomUUID();
         shoppingListDAO.createShoppingList(
@@ -73,7 +73,7 @@ public class ShoppingListService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         participantsServiceValidator.checkIsConsumerOrAdminOrOwner(eventId, userId, shoppingListId);
         var shoppingListStatus = getShoppingListStatus(shoppingListId);
         shoppingListsServiceValidator.checkUnassignedOrAssignedStatus(
@@ -88,7 +88,7 @@ public class ShoppingListService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         participantsServiceValidator.checkIsConsumerOrAdminOrOwner(eventId, userId, shoppingListId);
         var shoppingListStatus = getShoppingListStatus(shoppingListId);
         shoppingListsServiceValidator.checkUnassignedOrAssignedStatus(
@@ -108,7 +108,7 @@ public class ShoppingListService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         participantsServiceValidator.checkIsConsumerOrAdminOrOwner(eventId, userId, shoppingListId);
 
         var shoppingListStatus = getShoppingListStatus(shoppingListId);
@@ -137,7 +137,7 @@ public class ShoppingListService {
         eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
         shoppingListsServiceValidator.checkShoppingItemIsExisted(shoppingItemId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         participantsServiceValidator.checkIsConsumerOrAdminOrOwner(eventId, userId, shoppingListId);
         var shoppingListStatus = getShoppingListStatus(shoppingListId);
         shoppingListsServiceValidator.checkUnassignedOrAssignedStatus(
@@ -159,7 +159,7 @@ public class ShoppingListService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         participantsServiceValidator.checkIsConsumerOrAdminOrOwner(eventId, userId, shoppingListId);
         String shoppingListStatus = getShoppingListStatus(shoppingListId);
         shoppingListsServiceValidator.checkUnassignedOrAssignedStatus(
@@ -185,7 +185,7 @@ public class ShoppingListService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         var shoppingListStatus = getShoppingListStatus(shoppingListId);
         shoppingListsServiceValidator.checkInProgressStatus(shoppingListId, shoppingListStatus);
         var taskId = getTaskIdForShoppingList(shoppingListId);
@@ -208,7 +208,7 @@ public class ShoppingListService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         participantsServiceValidator.checkIsConsumerOrAdminOrOwner(eventId, userId, shoppingListId);
         String shoppingListStatus = getShoppingListStatus(shoppingListId);
         shoppingListsServiceValidator.checkUnassignedOrAssignedStatus(
@@ -269,7 +269,7 @@ public class ShoppingListService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         var taskId = getTaskIdForShoppingList(shoppingListId);
         var executorId = taskDAO.getExecutorId(taskId);
         shoppingListsServiceValidator.checkProgressOrBoughtOrPartiallyBoughtStatus(

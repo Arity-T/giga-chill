@@ -57,7 +57,7 @@ public class ParticipantDAOImpl implements ParticipantDAO {
 
     // todo: optimize in the repository
     @Override
-    public boolean isParticipant(UUID eventId, UUID userId) {
+    public boolean checkUserInEvent(UUID eventId, UUID userId) {
         List<UserInEventRecord> records = userInEventRepository.findByEventId(eventId);
         for (UserInEventRecord record : records) {
             if (record.getUserId().equals(userId)) {

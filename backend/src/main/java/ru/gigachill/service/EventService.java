@@ -27,7 +27,7 @@ public class EventService {
 
     public Event getEventById(UUID userId, UUID eventId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
 
         var event = eventMapper.toEvent(eventDAO.getEventById(eventId));
         event.setUserRole(
@@ -53,7 +53,7 @@ public class EventService {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         participantsServiceValidator.checkAdminOrOwnerRole(eventId, userId);
 
         var event =
@@ -88,7 +88,7 @@ public class EventService {
     public void deleteEvent(UUID eventId, UUID userId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         participantsServiceValidator.checkOwnerRole(eventId, userId);
 
         eventDAO.deleteEvent(eventId);
@@ -101,7 +101,7 @@ public class EventService {
     public String createInviteLink(UUID eventId, UUID userId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         participantsServiceValidator.checkOwnerRole(eventId, userId);
 
         var inviteLinkUuid = UUID.randomUUID();
@@ -111,7 +111,7 @@ public class EventService {
 
     public InvitationToken getInviteLink(UUID eventId, UUID userId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         participantsServiceValidator.checkAdminOrOwnerRole(eventId, userId);
 
         return new InvitationToken(eventDAO.getInviteLinkUuid(eventId).toString());
@@ -141,7 +141,7 @@ public class EventService {
     public void finalizeEvent(UUID eventId, UUID userId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         participantsServiceValidator.checkOwnerRole(eventId, userId);
 
         eventDAO.calculationEventBudget(eventId);

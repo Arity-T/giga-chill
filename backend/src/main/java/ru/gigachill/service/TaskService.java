@@ -34,7 +34,7 @@ public class TaskService {
 
     public List<Task> getAllTasksFromEvent(UUID eventId, UUID userId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
 
         return taskDAO.getAllTasksFromEvent(eventId).stream()
                 .map(taskMapper::toTask)
@@ -48,7 +48,7 @@ public class TaskService {
     public TaskWithShoppingLists getTaskById(UUID taskId, UUID eventId, UUID userId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         taskServiceValidator.checkIsExisted(eventId, taskId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
 
         var task = taskMapper.toTaskWithShoppingLists(taskDAO.getTaskById(taskId));
         task.setPermissions(taskPermissions(eventId, taskId, userId));
@@ -74,10 +74,10 @@ public class TaskService {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
-        participantsServiceValidator.checkIsParticipant(eventId, userEntity.getId());
+        participantsServiceValidator.checkUserInEvent(eventId, userEntity.getId());
         if (!Objects.isNull(executorId)) {
             userServiceValidator.checkIsExisted(executorId);
-            participantsServiceValidator.checkIsParticipant(eventId, executorId);
+            participantsServiceValidator.checkUserInEvent(eventId, executorId);
         }
         var shoppingListsIds = taskCreate.getShoppingListsIds();
         shoppingListsServiceValidator.checkAreExisted(shoppingListsIds);
@@ -107,7 +107,7 @@ public class TaskService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         taskServiceValidator.checkIsExisted(eventId, taskId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         taskServiceValidator.checkNotCompletedStatus(taskId, getTaskStatus(taskId));
         participantsServiceValidator.checkIsAuthorOrAdminOrOwner(eventId, userId, taskId);
         var eventEndDatetime = OffsetDateTime.parse(eventService.getEndDatetime(eventId));
@@ -131,7 +131,7 @@ public class TaskService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         taskServiceValidator.checkIsExisted(eventId, taskId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         taskServiceValidator.checkNotCompletedStatus(taskId, getTaskStatus(taskId));
         taskServiceValidator.checkExecutionOpportunity(taskId, userId);
 
@@ -142,7 +142,7 @@ public class TaskService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         taskServiceValidator.checkIsExisted(eventId, taskId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         taskServiceValidator.checkNotCompletedStatus(taskId, getTaskStatus(taskId));
         participantsServiceValidator.checkIsAuthorOrAdminOrOwner(eventId, userId, taskId);
 
@@ -176,11 +176,11 @@ public class TaskService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         taskServiceValidator.checkIsExisted(eventId, taskId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         participantsServiceValidator.checkIsAuthorOrAdminOrOwner(eventId, userId, taskId);
         if (!Objects.isNull(executorId)) {
             userServiceValidator.checkIsExisted(executorId);
-            participantsServiceValidator.checkIsParticipant(eventId, executorId);
+            participantsServiceValidator.checkUserInEvent(eventId, executorId);
         }
 
         taskDAO.updateExecutor(taskId, executorId);
@@ -193,7 +193,7 @@ public class TaskService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         taskServiceValidator.checkIsExisted(eventId, taskId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         taskServiceValidator.checkNotCompletedStatus(taskId, getTaskStatus(taskId));
         participantsServiceValidator.checkIsAuthorOrAdminOrOwner(eventId, userId, taskId);
         if (!Objects.isNull(shoppingListsIds)) {
@@ -219,7 +219,7 @@ public class TaskService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         taskServiceValidator.checkIsExisted(eventId, taskId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         taskServiceValidator.checkInProgressStatus(taskId, getTaskStatus(taskId));
         taskServiceValidator.checkOpportunityToSentTaskToReview(taskId, userId);
 
@@ -238,7 +238,7 @@ public class TaskService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         taskServiceValidator.checkIsExisted(eventId, taskId);
-        participantsServiceValidator.checkIsParticipant(eventId, userId);
+        participantsServiceValidator.checkUserInEvent(eventId, userId);
         taskServiceValidator.checkUnderReviewStatus(taskId, getTaskStatus(taskId));
         taskServiceValidator.checkOpportunityToApproveTask(eventId, taskId, userId);
 
