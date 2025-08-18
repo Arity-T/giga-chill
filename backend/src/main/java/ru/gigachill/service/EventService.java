@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.gigachill.data.access.object.EventDAO;
 import ru.gigachill.data.transfer.object.EventDTO;
-import ru.gigachill.exception.BadRequestException;
 import ru.gigachill.exception.NotFoundException;
 import ru.gigachill.mapper.EventMapper;
 import ru.gigachill.model.UserEntity;
@@ -122,12 +121,9 @@ public class EventService {
     }
 
     public JoinByInvitationToken200Response joinByLink(
-            UserEntity userEntity, InvitationToken invitationToken) {
+            UserEntity userEntity, InvitationTokenJoin invitationToken) {
         var rawToken = invitationToken.getInvitationToken();
-        if (!rawToken.isPresent()) {
-            throw new BadRequestException("Invalid request body: " + invitationToken);
-        }
-        var eventId = getEventByLinkUuid(UuidUtils.safeUUID(rawToken.get()));
+        var eventId = getEventByLinkUuid(UuidUtils.safeUUID(rawToken));
         if (Objects.isNull(eventId)) {
             throw new NotFoundException("Link with hash " + rawToken + " not found");
         }

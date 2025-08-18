@@ -251,7 +251,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/InvitationToken"
+              $ref: "#/components/schemas/InvitationTokenJoin"
       responses:
         "200":
           description: Идентификатор мероприятия, к которому присоединился пользователь

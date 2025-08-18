@@ -9,6 +9,7 @@ import ru.gigachill.service.EventService;
 import ru.gigachill.service.UserService;
 import ru.gigachill.web.api.InvitationTokensApi;
 import ru.gigachill.web.api.model.InvitationToken;
+import ru.gigachill.web.api.model.InvitationTokenJoin;
 import ru.gigachill.web.api.model.JoinByInvitationToken200Response;
 
 @RequiredArgsConstructor
@@ -40,7 +41,7 @@ public class InvitationTokensController implements InvitationTokensApi {
     @Override
     // ACCESS: ALL
     public ResponseEntity<JoinByInvitationToken200Response> joinByInvitationToken(
-            InvitationToken invitationToken) {
+            InvitationTokenJoin invitationToken) {
         var user =
                 userService.userAuthentication(
                         SecurityContextHolder.getContext().getAuthentication());

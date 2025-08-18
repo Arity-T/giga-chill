@@ -132,6 +132,15 @@ InvitationToken:
       example: "0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c"
       nullable: true
 
+InvitationTokenJoin:
+  type: object
+  required: [invitation_token]
+  properties:
+    invitation_token:
+      type: string
+      description: Токен-приглашение
+      example: "0fab8e08-4b0d-4a3d-9771-9f6c6a9d5a1c"
+
 Participant:
   type: object
   required:
