@@ -7,7 +7,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import ru.gigachill.data.access.object.TaskDAO;
 import ru.gigachill.data.transfer.object.TaskDTO;
-import ru.gigachill.exception.BadRequestException;
 import ru.gigachill.mapper.TaskMapper;
 import ru.gigachill.mapper.UserMapper;
 import ru.gigachill.model.UserEntity;
@@ -69,8 +68,7 @@ public class TaskService {
     }
 
     public String createTask(UUID eventId, UserEntity userEntity, TaskCreate taskCreate) {
-        var executorId =
-                !Objects.isNull(taskCreate.getExecutorId()) ? taskCreate.getExecutorId() : null;
+        var executorId = taskCreate.getExecutorId();
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
@@ -188,7 +186,7 @@ public class TaskService {
     }
 
     public void updateShoppingLists(UUID taskId, UUID eventId, UUID userId, List<UUID> body) {
-        var shoppingListsIds = !Objects.isNull(body) ? body : null;
+        var shoppingListsIds = body;
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
@@ -211,11 +209,6 @@ public class TaskService {
             UUID userId,
             TaskSendForReviewRequest taskSendForReviewRequest) {
 
-        if (Objects.isNull(taskSendForReviewRequest.getExecutorComment())) {
-            throw new BadRequestException(
-                    "Invalid request body: " + taskSendForReviewRequest.toString());
-        }
-
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         taskServiceValidator.checkIsExisted(eventId, taskId);
@@ -229,11 +222,6 @@ public class TaskService {
 
     public void setReviewerComment(
             UUID taskId, TaskReviewRequest taskReviewRequest, UUID eventId, UUID userId) {
-
-        if (Objects.isNull(taskReviewRequest.getReviewerComment())
-                || Objects.isNull(taskReviewRequest.getIsApproved())) {
-            throw new BadRequestException("Invalid request body: " + taskReviewRequest.toString());
-        }
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);

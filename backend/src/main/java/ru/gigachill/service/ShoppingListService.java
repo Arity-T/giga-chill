@@ -48,11 +48,6 @@ public class ShoppingListService {
     public String createShoppingList(
             UUID eventId, UUID userId, ShoppingListCreate shoppingListCreate) {
 
-        if (Objects.isNull(shoppingListCreate.getTitle())
-                || Objects.isNull(shoppingListCreate.getDescription())) {
-            throw new BadRequestException("Invalid request body: " + shoppingListCreate.toString());
-        }
-
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         participantsServiceValidator.checkUserInEvent(eventId, userId);
@@ -99,11 +94,6 @@ public class ShoppingListService {
 
     public String addShoppingItem(
             UUID shoppingListId, UUID eventId, UUID userId, ShoppingItemCreate shoppingItemCreate) {
-        if (Objects.isNull(shoppingItemCreate.getQuantity())
-                || Objects.isNull(shoppingItemCreate.getTitle())
-                || Objects.isNull(shoppingItemCreate.getUnit())) {
-            throw new BadRequestException("Invalid request body: " + shoppingItemCreate.toString());
-        }
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
@@ -176,10 +166,6 @@ public class ShoppingListService {
             ShoppingItemSetPurchased shoppingItemSetPurchased) {
 
         var status = shoppingItemSetPurchased.getIsPurchased();
-        if (Objects.isNull(status)) {
-            throw new BadRequestException(
-                    "Invalid request body: " + shoppingItemSetPurchased.toString());
-        }
 
         shoppingListsServiceValidator.checkShoppingItemIsExisted(shoppingItemId);
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
@@ -201,8 +187,8 @@ public class ShoppingListService {
 
     public void updateShoppingListConsumers(
             UUID shoppingListId, UUID eventId, UUID userId, List<UUID> body) {
-        if (Objects.isNull(body) || body.isEmpty()) {
-            throw new BadRequestException("Invalid request body: " + body);
+        if (body.isEmpty()) {
+            throw new BadRequestException("Specify at least one consumer");
         }
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
@@ -261,9 +247,8 @@ public class ShoppingListService {
             ShoppingListSetBudget shoppingListSetBudget) {
 
         var budget = shoppingListSetBudget.getBudget();
-        if (Objects.isNull(budget) || budget.compareTo(new BigDecimal(0)) < 0) {
-            throw new BadRequestException(
-                    "Invalid request body: " + shoppingListSetBudget.toString());
+        if (budget.compareTo(BigDecimal.ZERO) < 0) {
+            throw new BadRequestException("Budget must be greater than 0");
         }
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);

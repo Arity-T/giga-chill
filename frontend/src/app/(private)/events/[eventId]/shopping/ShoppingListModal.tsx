@@ -27,7 +27,7 @@ export default function ShoppingListModal({ open, onCancel, eventId }: ShoppingL
         try {
             const shoppingListData: ShoppingListCreate = {
                 title: values.title,
-                description: values.description || '',
+                description: values.description,
             };
 
             await createShoppingList({

@@ -2,15 +2,12 @@ package ru.gigachill.service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import ru.gigachill.data.access.object.ParticipantDAO;
 import ru.gigachill.data.transfer.object.ParticipantDTO;
-import ru.gigachill.exception.BadRequestException;
-import ru.gigachill.exception.NotFoundException;
 import ru.gigachill.mapper.ParticipantBalanceMapper;
 import ru.gigachill.mapper.ParticipantMapper;
 import ru.gigachill.mapper.ParticipantSummaryBalanceMapper;
@@ -51,14 +48,8 @@ public class ParticipantService {
         participantsServiceValidator.checkAdminOrOwnerRole(eventId, participantId);
 
         var participantLogin = participantCreate.getLogin();
-        if (Objects.isNull(participantLogin)) {
-            throw new BadRequestException("Invalid request body: " + participantCreate.toString());
-        }
+        userService.validateLogin(participantLogin);
         var userToAdd = userService.getByLogin(participantLogin);
-
-        if (Objects.isNull(userToAdd)) {
-            throw new NotFoundException("User with login '" + participantLogin + "' not found");
-        }
 
         participantsServiceValidator.checkIsAlreadyParticipant(eventId, userToAdd.getId());
 
@@ -102,9 +93,6 @@ public class ParticipantService {
     public void updateParticipantRole(
             UUID eventId, UUID userId, UUID participantId, ParticipantSetRole participantSetRole) {
 
-        if (Objects.isNull(participantSetRole)) {
-            throw new BadRequestException("Invalid request body: " + participantSetRole);
-        }
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         participantsServiceValidator.checkUserInEvent(eventId, userId);
