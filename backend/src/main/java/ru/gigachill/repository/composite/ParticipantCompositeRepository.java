@@ -11,7 +11,7 @@ import ru.gigachill.data.transfer.object.ParticipantSummaryBalanceDTO;
  *
  * <p>Provides methods to query and manipulate participants associated with events.
  */
-public interface ParticipantDAO {
+public interface ParticipantCompositeRepository {
 
     /**
      * Retrieves all participants for a given event.

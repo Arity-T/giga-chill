@@ -7,7 +7,7 @@ import jakarta.annotation.Nullable;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.gigachill.repository.composite.TaskDAO;
+import ru.gigachill.repository.composite.TaskCompositeRepository;
 import ru.gigachill.data.transfer.object.ShoppingListDTO;
 import ru.gigachill.data.transfer.object.TaskDTO;
 import ru.gigachill.data.transfer.object.TaskWithShoppingListsDTO;
@@ -19,11 +19,11 @@ import ru.gigachill.repository.simple.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-public class TaskDAOImpl implements TaskDAO {
+public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final ShoppingListRepository shoppingListRepository;
-    private final ShoppingListDAOImpl shoppingListDAOImpl;
+    private final ShoppingListCompositeRepositoryImpl shoppingListDAOImpl;
     private final ShoppingItemRepository shoppingItemRepository;
 
     private UserDTO getAuthorDTO(UUID authorId) {

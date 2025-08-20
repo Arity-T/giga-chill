@@ -6,7 +6,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import ru.gigachill.repository.composite.ShoppingListDAO;
+import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 import ru.gigachill.exception.ConflictException;
 import ru.gigachill.exception.ForbiddenException;
 import ru.gigachill.exception.NotFoundException;
@@ -15,12 +15,12 @@ import ru.gigachill.exception.NotFoundException;
 @RequiredArgsConstructor
 public class ShoppingListServiceValidator {
 
-    private final ShoppingListDAO shoppingListDAO;
+    private final ShoppingListCompositeRepository shoppingListCompositeRepository;
     private final ParticipantServiceValidator participantsServiceValidator;
     private final Environment env;
 
     public void checkIsExisted(UUID shoppingListId) {
-        if (!shoppingListDAO.isExisted(shoppingListId)) {
+        if (!shoppingListCompositeRepository.isExisted(shoppingListId)) {
             throw new NotFoundException("Shopping list with id: " + shoppingListId + " not found");
         }
     }
@@ -37,7 +37,7 @@ public class ShoppingListServiceValidator {
     }
 
     public void checkShoppingItemIsExisted(UUID shoppingItemId) {
-        if (!shoppingListDAO.isShoppingItemExisted(shoppingItemId)) {
+        if (!shoppingListCompositeRepository.isShoppingItemExisted(shoppingItemId)) {
             throw new NotFoundException("Shopping item with id: " + shoppingItemId + " not found");
         }
     }
@@ -107,14 +107,14 @@ public class ShoppingListServiceValidator {
     }
 
     public void checkAreExisted(List<UUID> shoppingListsIds) {
-        if (!shoppingListDAO.areExisted(shoppingListsIds)) {
+        if (!shoppingListCompositeRepository.areExisted(shoppingListsIds)) {
             throw new NotFoundException(
                     "One or more of the resources involved were not found: " + shoppingListsIds);
         }
     }
 
     public void checkOpportunityToBindShoppingListsToTask(List<UUID> shoppingListsIds) {
-        if (!shoppingListDAO.canBindShoppingListsToTask(shoppingListsIds)) {
+        if (!shoppingListCompositeRepository.canBindShoppingListsToTask(shoppingListsIds)) {
             throw new ConflictException(
                     "One or more lists are already linked to the task: " + shoppingListsIds);
         }

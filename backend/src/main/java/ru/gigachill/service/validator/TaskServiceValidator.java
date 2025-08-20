@@ -6,19 +6,19 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import ru.gigachill.repository.composite.TaskDAO;
+import ru.gigachill.repository.composite.TaskCompositeRepository;
 import ru.gigachill.exception.ConflictException;
 import ru.gigachill.exception.NotFoundException;
 
 @Component
 @RequiredArgsConstructor
 public class TaskServiceValidator {
-    private final TaskDAO taskDAO;
+    private final TaskCompositeRepository taskCompositeRepository;
     private final ParticipantServiceValidator participantsServiceValidator;
     private final Environment env;
 
     public void checkIsExisted(UUID eventId, UUID taskId) {
-        if (!taskDAO.isExisted(eventId, taskId)) {
+        if (!taskCompositeRepository.isExisted(eventId, taskId)) {
             throw new NotFoundException("Task with id: " + taskId + " not found");
         }
     }
@@ -36,7 +36,7 @@ public class TaskServiceValidator {
     }
 
     public void checkExecutionOpportunity(UUID taskId, UUID userId) {
-        if (!taskDAO.canExecute(taskId, userId)) {
+        if (!taskCompositeRepository.canExecute(taskId, userId)) {
             throw new ConflictException(
                     "User with id: " + userId + " cannot execute " + "task with id: " + taskId);
         }
@@ -49,7 +49,7 @@ public class TaskServiceValidator {
     }
 
     public void checkOpportunityToSentTaskToReview(UUID taskId, UUID userId) {
-        if (!Objects.equals(taskDAO.getExecutorId(taskId), userId)) {
+        if (!Objects.equals(taskCompositeRepository.getExecutorId(taskId), userId)) {
             throw new ConflictException(
                     "User with id: "
                             + userId
@@ -67,7 +67,7 @@ public class TaskServiceValidator {
     }
 
     public void checkOpportunityToApproveTask(UUID eventId, UUID taskId, UUID userId) {
-        if (Objects.equals(taskDAO.getExecutorId(taskId), userId)
+        if (Objects.equals(taskCompositeRepository.getExecutorId(taskId), userId)
                 || participantsServiceValidator.isParticipantRole(eventId, userId)) {
             throw new ConflictException(
                     "User with id: " + userId + " cannot approve " + "task with id: " + taskId);

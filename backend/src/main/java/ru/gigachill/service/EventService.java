@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.gigachill.repository.composite.EventDAO;
+import ru.gigachill.repository.composite.EventCompositeRepository;
 import ru.gigachill.data.transfer.object.EventDTO;
 import ru.gigachill.exception.NotFoundException;
 import ru.gigachill.mapper.EventMapper;
@@ -19,7 +19,7 @@ import ru.gigachill.web.api.model.*;
 public class EventService {
 
     private final EventMapper eventMapper;
-    private final EventDAO eventDAO;
+    private final EventCompositeRepository eventCompositeRepository;
     private final ParticipantService participantsService;
     private final EventServiceValidator eventServiceValidator;
     private final ParticipantServiceValidator participantsServiceValidator;
@@ -28,7 +28,7 @@ public class EventService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         participantsServiceValidator.checkUserInEvent(eventId, userId);
 
-        var event = eventMapper.toEvent(eventDAO.getEventById(eventId));
+        var event = eventMapper.toEvent(eventCompositeRepository.getEventById(eventId));
         event.setUserRole(
                 UserRole.fromValue(
                         participantsService.getParticipantRoleInEvent(event.getEventId(), userId)));
@@ -37,7 +37,7 @@ public class EventService {
     }
 
     public List<Event> getAllUserEvents(UUID userId) {
-        return eventDAO.getAllUserEvents(userId).stream()
+        return eventCompositeRepository.getAllUserEvents(userId).stream()
                 .map(eventMapper::toEvent)
                 .peek(
                         item ->
@@ -65,7 +65,7 @@ public class EventService {
                         eventUpdate.getDescription(),
                         null,
                         null);
-        eventDAO.updateEvent(eventId, event);
+        eventCompositeRepository.updateEvent(eventId, event);
     }
 
     public String createEvent(UUID userId, EventCreate eventCreate) {
@@ -80,7 +80,7 @@ public class EventService {
                         BigDecimal.valueOf(0),
                         null);
 
-        eventDAO.createEvent(userId, event);
+        eventCompositeRepository.createEvent(userId, event);
         return event.getEventId().toString();
     }
 
@@ -90,11 +90,11 @@ public class EventService {
         participantsServiceValidator.checkUserInEvent(eventId, userId);
         participantsServiceValidator.checkOwnerRole(eventId, userId);
 
-        eventDAO.deleteEvent(eventId);
+        eventCompositeRepository.deleteEvent(eventId);
     }
 
     public String getEndDatetime(UUID eventId) {
-        return eventDAO.getEndDatetime(eventId);
+        return eventCompositeRepository.getEndDatetime(eventId);
     }
 
     public String createInviteLink(UUID eventId, UUID userId) {
@@ -104,7 +104,7 @@ public class EventService {
         participantsServiceValidator.checkOwnerRole(eventId, userId);
 
         var inviteLinkUuid = UUID.randomUUID();
-        eventDAO.createInviteLink(eventId, inviteLinkUuid);
+        eventCompositeRepository.createInviteLink(eventId, inviteLinkUuid);
         return inviteLinkUuid.toString();
     }
 
@@ -113,11 +113,11 @@ public class EventService {
         participantsServiceValidator.checkUserInEvent(eventId, userId);
         participantsServiceValidator.checkAdminOrOwnerRole(eventId, userId);
 
-        return new InvitationToken(eventDAO.getInviteLinkUuid(eventId).toString());
+        return new InvitationToken(eventCompositeRepository.getInviteLinkUuid(eventId).toString());
     }
 
     public UUID getEventByLinkUuid(UUID linkUuid) {
-        return eventDAO.getEventByLinkUuid(linkUuid);
+        return eventCompositeRepository.getEventByLinkUuid(linkUuid);
     }
 
     public EventId joinByLink(UserEntity userEntity, InvitationTokenJoin invitationToken) {
@@ -139,7 +139,7 @@ public class EventService {
         participantsServiceValidator.checkUserInEvent(eventId, userId);
         participantsServiceValidator.checkOwnerRole(eventId, userId);
 
-        eventDAO.calculationEventBudget(eventId);
-        eventDAO.finalizeEvent(eventId);
+        eventCompositeRepository.calculationEventBudget(eventId);
+        eventCompositeRepository.finalizeEvent(eventId);
     }
 }

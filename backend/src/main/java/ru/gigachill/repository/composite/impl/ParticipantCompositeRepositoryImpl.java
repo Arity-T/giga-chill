@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.gigachill.repository.composite.ParticipantDAO;
+import ru.gigachill.repository.composite.ParticipantCompositeRepository;
 import ru.gigachill.data.transfer.object.ParticipantBalanceDTO;
 import ru.gigachill.data.transfer.object.ParticipantDTO;
 import ru.gigachill.data.transfer.object.ParticipantSummaryBalanceDTO;
@@ -18,7 +18,7 @@ import ru.gigachill.repository.simple.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-public class ParticipantDAOImpl implements ParticipantDAO {
+public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeRepository {
     private final UserRepository userRepository;
     private final UserInEventRepository userInEventRepository;
     private final EventRepository eventRepository;

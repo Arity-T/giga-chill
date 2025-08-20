@@ -9,14 +9,14 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.gigachill.repository.composite.EventDAO;
+import ru.gigachill.repository.composite.EventCompositeRepository;
 import ru.gigachill.data.transfer.object.EventDTO;
 import ru.gigachill.repository.simple.EventRepository;
 import ru.gigachill.repository.simple.UserInEventRepository;
 
 @Service
 @RequiredArgsConstructor
-public class EventDAOImpl implements EventDAO {
+public class EventCompositeRepositoryImpl implements EventCompositeRepository {
     private final EventRepository eventRepository;
     private final UserInEventRepository userInEventRepository;
 

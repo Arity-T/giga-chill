@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.gigachill.repository.composite.ShoppingListDAO;
+import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 import ru.gigachill.data.transfer.object.ParticipantDTO;
 import ru.gigachill.data.transfer.object.ShoppingItemDTO;
 import ru.gigachill.data.transfer.object.ShoppingListDTO;
@@ -17,7 +17,7 @@ import ru.gigachill.repository.simple.*;
 
 @Service
 @RequiredArgsConstructor
-public class ShoppingListDAOImpl implements ShoppingListDAO {
+public class ShoppingListCompositeRepositoryImpl implements ShoppingListCompositeRepository {
     private final ShoppingListRepository shoppingListRepository;
     private final ConsumerInListRepository consumerInListRepository;
     private final ShoppingItemRepository shoppingItemRepository;

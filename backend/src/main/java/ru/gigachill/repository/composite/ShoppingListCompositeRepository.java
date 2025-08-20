@@ -12,7 +12,7 @@ import ru.gigachill.data.transfer.object.ShoppingListDTO;
  *
  * <p>Provides CRUD operations and status checks for shopping lists and shopping items.
  */
-public interface ShoppingListDAO {
+public interface ShoppingListCompositeRepository {
 
     /**
      * Retrieves all shopping lists associated with the specified event.

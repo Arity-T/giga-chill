@@ -5,8 +5,8 @@ import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import ru.gigachill.repository.composite.ShoppingListDAO;
-import ru.gigachill.repository.composite.TaskDAO;
+import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
+import ru.gigachill.repository.composite.TaskCompositeRepository;
 import ru.gigachill.data.transfer.object.ShoppingItemDTO;
 import ru.gigachill.exception.BadRequestException;
 import ru.gigachill.mapper.ShoppingItemMapper;
@@ -21,8 +21,8 @@ public class ShoppingListService {
     private final ShoppingListMapper shoppingListMapper;
     private final ShoppingItemMapper shoppingItemMapper;
     private final Environment env;
-    private final ShoppingListDAO shoppingListDAO;
-    private final TaskDAO taskDAO;
+    private final ShoppingListCompositeRepository shoppingListCompositeRepository;
+    private final TaskCompositeRepository taskCompositeRepository;
     private final ParticipantService participantsService;
     private final ShoppingListServiceValidator shoppingListsServiceValidator;
     private final EventServiceValidator eventServiceValidator;
@@ -34,7 +34,7 @@ public class ShoppingListService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         participantsServiceValidator.checkUserInEvent(eventId, userId);
 
-        return shoppingListDAO.getAllShoppingListsFromEvent(eventId).stream()
+        return shoppingListCompositeRepository.getAllShoppingListsFromEvent(eventId).stream()
                 .map(shoppingListMapper::toShoppingListWithItems)
                 .peek(
                         item ->
@@ -53,7 +53,7 @@ public class ShoppingListService {
         participantsServiceValidator.checkUserInEvent(eventId, userId);
 
         var shoppingListId = UUID.randomUUID();
-        shoppingListDAO.createShoppingList(
+        shoppingListCompositeRepository.createShoppingList(
                 eventId,
                 shoppingListId,
                 userId,
@@ -74,7 +74,7 @@ public class ShoppingListService {
         shoppingListsServiceValidator.checkUnassignedOrAssignedStatus(
                 shoppingListId, shoppingListStatus);
 
-        shoppingListDAO.updateShoppingList(
+        shoppingListCompositeRepository.updateShoppingList(
                 shoppingListId, shoppingListUpdate.getTitle(), shoppingListUpdate.getDescription());
     }
 
@@ -89,7 +89,7 @@ public class ShoppingListService {
         shoppingListsServiceValidator.checkUnassignedOrAssignedStatus(
                 shoppingListId, shoppingListStatus);
 
-        shoppingListDAO.deleteShoppingList(shoppingListId);
+        shoppingListCompositeRepository.deleteShoppingList(shoppingListId);
     }
 
     public String addShoppingItem(
@@ -112,7 +112,7 @@ public class ShoppingListService {
                         shoppingItemCreate.getQuantity(),
                         shoppingItemCreate.getUnit(),
                         false);
-        shoppingListDAO.addShoppingItem(shoppingListId, shoppingItem);
+        shoppingListCompositeRepository.addShoppingItem(shoppingListId, shoppingItem);
         return shoppingItem.getShoppingItemId().toString();
     }
 
@@ -140,7 +140,7 @@ public class ShoppingListService {
                         shoppingItemUpdate.getQuantity(),
                         shoppingItemUpdate.getUnit(),
                         null);
-        shoppingListDAO.updateShoppingItem(shoppingItem);
+        shoppingListCompositeRepository.updateShoppingItem(shoppingItem);
     }
 
     public void deleteShoppingItemFromShoppingList(
@@ -155,7 +155,7 @@ public class ShoppingListService {
         shoppingListsServiceValidator.checkUnassignedOrAssignedStatus(
                 shoppingListId, shoppingListStatus);
 
-        shoppingListDAO.deleteShoppingItemFromShoppingList(shoppingListId, shoppingItemId);
+        shoppingListCompositeRepository.deleteShoppingItemFromShoppingList(shoppingListId, shoppingItemId);
     }
 
     public Boolean updateShoppingItemStatus(
@@ -176,12 +176,12 @@ public class ShoppingListService {
         shoppingListsServiceValidator.checkInProgressStatus(shoppingListId, shoppingListStatus);
         var taskId = getTaskIdForShoppingList(shoppingListId);
         shoppingListsServiceValidator.checkConnectionWithTask(shoppingListId, taskId);
-        var executorId = taskDAO.getExecutorId(taskId);
-        var taskStatus = taskDAO.getTaskStatus(taskId);
+        var executorId = taskCompositeRepository.getExecutorId(taskId);
+        var taskStatus = taskCompositeRepository.getTaskStatus(taskId);
         shoppingListsServiceValidator.checkOpportunityToChangeShoppingItemStatus(
                 eventId, userId, shoppingListId, executorId, taskStatus);
 
-        shoppingListDAO.updateShoppingItemStatus(shoppingItemId, status);
+        shoppingListCompositeRepository.updateShoppingItemStatus(shoppingItemId, status);
         return status;
     }
 
@@ -202,11 +202,11 @@ public class ShoppingListService {
 
         userServiceValidator.checkAreExisted(body);
 
-        shoppingListDAO.updateShoppingListConsumers(shoppingListId, body);
+        shoppingListCompositeRepository.updateShoppingListConsumers(shoppingListId, body);
     }
 
     public UUID getTaskIdForShoppingList(UUID shoppingListId) {
-        return shoppingListDAO.getTaskIdForShoppingList(shoppingListId);
+        return shoppingListCompositeRepository.getTaskIdForShoppingList(shoppingListId);
     }
 
     public String getShoppingListStatus(UUID shoppingListId) {
@@ -214,7 +214,7 @@ public class ShoppingListService {
         if (Objects.isNull(taskId)) {
             return env.getProperty("shopping_list_status.unassigned");
         }
-        var taskStatus = taskDAO.getTaskStatus(taskId);
+        var taskStatus = taskCompositeRepository.getTaskStatus(taskId);
         if (taskStatus.equals(env.getProperty("task_status.open"))) {
             return env.getProperty("shopping_list_status.assigned");
         }
@@ -223,7 +223,7 @@ public class ShoppingListService {
             return env.getProperty("shopping_list_status.in_progress");
         }
         if (taskStatus.equals(env.getProperty("task_status.completed"))) {
-            if (shoppingListDAO.isBought(shoppingListId)) {
+            if (shoppingListCompositeRepository.isBought(shoppingListId)) {
                 return env.getProperty("shopping_list_status.bought");
             } else {
                 return env.getProperty("shopping_list_status.partially_bought");
@@ -233,11 +233,11 @@ public class ShoppingListService {
     }
 
     public boolean isExisted(UUID shoppingListId) {
-        return shoppingListDAO.isExisted(shoppingListId);
+        return shoppingListCompositeRepository.isExisted(shoppingListId);
     }
 
     public boolean isConsumer(UUID shoppingListId, UUID consumerId) {
-        return shoppingListDAO.isConsumer(shoppingListId, consumerId);
+        return shoppingListCompositeRepository.isConsumer(shoppingListId, consumerId);
     }
 
     public BigDecimal setBudget(
@@ -256,14 +256,14 @@ public class ShoppingListService {
         shoppingListsServiceValidator.checkIsExisted(shoppingListId);
         participantsServiceValidator.checkUserInEvent(eventId, userId);
         var taskId = getTaskIdForShoppingList(shoppingListId);
-        var executorId = taskDAO.getExecutorId(taskId);
+        var executorId = taskCompositeRepository.getExecutorId(taskId);
         shoppingListsServiceValidator.checkProgressOrBoughtOrPartiallyBoughtStatus(
                 shoppingListId, executorId);
-        var taskStatus = taskDAO.getTaskStatus(taskId);
+        var taskStatus = taskCompositeRepository.getTaskStatus(taskId);
         shoppingListsServiceValidator.checkOpportunityToChangeBudget(
                 eventId, shoppingListId, userId, executorId, taskStatus);
 
-        shoppingListDAO.setBudget(shoppingListId, budget);
+        shoppingListCompositeRepository.setBudget(shoppingListId, budget);
         return budget;
     }
 

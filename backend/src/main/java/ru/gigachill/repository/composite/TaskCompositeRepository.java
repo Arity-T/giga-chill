@@ -12,7 +12,7 @@ import ru.gigachill.data.transfer.object.TaskWithShoppingListsDTO;
  * <p>Provides methods to perform CRUD operations, execution control, and permission checks on
  * tasks.
  */
-public interface TaskDAO {
+public interface TaskCompositeRepository {
 
     /**
      * Retrieves all tasks associated with the specified event.

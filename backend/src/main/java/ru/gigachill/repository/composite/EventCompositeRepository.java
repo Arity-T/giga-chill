@@ -11,7 +11,7 @@ import ru.gigachill.data.transfer.object.EventDTO;
  * <p>Provides methods to perform CRUD operations and queries related to events and their
  * participants' roles.
  */
-public interface EventDAO {
+public interface EventCompositeRepository {
 
     /**
      * Retrieves an event by its unique identifier.
