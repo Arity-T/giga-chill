@@ -4,27 +4,24 @@ import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 import ru.gigachill.data.transfer.object.ParticipantDTO;
 
 import java.util.UUID;
 
-@Mapper(componentModel = "spring", uses = {UsersRecordMapper.class, ParticipantsRecordMapper.class})
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {UsersRecordMapper.class, ParticipantsRecordMapper.class})
 public interface ShoppingListConsumerMapper {
 
 	/**
 	 * Maps a user to a basic participant DTO with login and name
 	 */
-	@Mapping(target = "id", source = "userId")
-	@Mapping(target = "role", ignore = true)
-	@Mapping(target = "balance", ignore = true)
+	@Mapping(source = "userId", target = "id")
 	ParticipantDTO toParticipantDTOFromUser(UsersRecord userRecord);
 
 	/**
 	 * Maps a user in event record to participant DTO with role
 	 */
-	@Mapping(target = "login", ignore = true)
-	@Mapping(target = "name", ignore = true)
-	@Mapping(target = "balance", ignore = true)
+  	@Mapping(source = "userId", target = "id")
 	ParticipantDTO toParticipantDTOFromUserInEvent(UserInEventRecord userInEventRecord);
 
 	/**
