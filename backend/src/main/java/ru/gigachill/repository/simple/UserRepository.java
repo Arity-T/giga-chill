@@ -5,17 +5,15 @@ import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class UserRepository {
     private final DSLContext dsl;
-
-    // через конструктор получаем DSLContext — он будет создан в JooqConfig
-    public UserRepository(DSLContext dsl) {
-        this.dsl = dsl;
-    }
 
     public void save(UsersRecord record) {
         dsl.insertInto(Users.USERS).set(record).execute();

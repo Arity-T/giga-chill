@@ -5,16 +5,15 @@ import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class UserInEventRepository {
     private final DSLContext dsl;
-
-    public UserInEventRepository(DSLContext dsl) {
-        this.dsl = dsl;
-    }
 
     public void save(UserInEventRecord record) {
         dsl.insertInto(UserInEvent.USER_IN_EVENT).set(record).execute();
