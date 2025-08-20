@@ -3,8 +3,8 @@ package ru.gigachill.repository.composite;
 import jakarta.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
-import ru.gigachill.data.transfer.object.TaskDTO;
-import ru.gigachill.data.transfer.object.TaskWithShoppingListsDTO;
+import ru.gigachill.dto.TaskDTO;
+import ru.gigachill.dto.TaskWithShoppingListsDTO;
 
 /**
  * Data Access Object (DAO) interface for managing tasks within events.

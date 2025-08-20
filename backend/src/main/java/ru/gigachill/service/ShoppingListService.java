@@ -7,7 +7,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 import ru.gigachill.repository.composite.TaskCompositeRepository;
-import ru.gigachill.data.transfer.object.ShoppingItemDTO;
+import ru.gigachill.dto.ShoppingItemDTO;
 import ru.gigachill.exception.BadRequestException;
 import ru.gigachill.mapper.ShoppingItemMapper;
 import ru.gigachill.mapper.ShoppingListMapper;

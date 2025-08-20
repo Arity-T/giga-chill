@@ -2,9 +2,9 @@ package ru.gigachill.repository.composite;
 
 import java.util.List;
 import java.util.UUID;
-import ru.gigachill.data.transfer.object.ParticipantBalanceDTO;
-import ru.gigachill.data.transfer.object.ParticipantDTO;
-import ru.gigachill.data.transfer.object.ParticipantSummaryBalanceDTO;
+import ru.gigachill.dto.ParticipantBalanceDTO;
+import ru.gigachill.dto.ParticipantDTO;
+import ru.gigachill.dto.ParticipantSummaryBalanceDTO;
 
 /**
  * Data Access Object (DAO) interface for {@link ParticipantDTO} entities.

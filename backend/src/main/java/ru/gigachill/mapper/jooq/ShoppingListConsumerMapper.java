@@ -5,7 +5,7 @@ import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import ru.gigachill.data.transfer.object.ParticipantDTO;
+import ru.gigachill.dto.ParticipantDTO;
 
 import java.util.UUID;
 

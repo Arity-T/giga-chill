@@ -4,7 +4,7 @@ import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import ru.gigachill.data.transfer.object.UserDTO;
+import ru.gigachill.dto.UserDTO;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UsersRecordMapper {

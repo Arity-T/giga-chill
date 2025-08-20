@@ -2,7 +2,7 @@ package ru.gigachill.mapper.jooq;
 
 import com.github.giga_chill.jooq.generated.tables.records.EventsRecord;
 import org.mapstruct.*;
-import ru.gigachill.data.transfer.object.EventDTO;
+import ru.gigachill.dto.EventDTO;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface EventsRecordMapper {

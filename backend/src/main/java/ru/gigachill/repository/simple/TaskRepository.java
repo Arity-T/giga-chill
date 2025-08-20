@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.springframework.stereotype.Repository;
-import ru.gigachill.data.transfer.object.TaskDTO;
+import ru.gigachill.dto.TaskDTO;
 
 @Repository
 @RequiredArgsConstructor

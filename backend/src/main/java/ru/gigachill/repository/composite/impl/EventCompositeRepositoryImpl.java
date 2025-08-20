@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gigachill.repository.composite.EventCompositeRepository;
-import ru.gigachill.data.transfer.object.EventDTO;
+import ru.gigachill.dto.EventDTO;
 import ru.gigachill.mapper.jooq.EventsRecordMapper;
 import ru.gigachill.repository.simple.EventRepository;
 import ru.gigachill.repository.simple.UserInEventRepository;

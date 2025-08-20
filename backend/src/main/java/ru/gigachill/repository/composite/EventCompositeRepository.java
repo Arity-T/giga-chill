@@ -3,7 +3,7 @@ package ru.gigachill.repository.composite;
 import jakarta.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
-import ru.gigachill.data.transfer.object.EventDTO;
+import ru.gigachill.dto.EventDTO;
 
 /**
  * Data Access Object (DAO) interface for {@link EventDTO} entities.

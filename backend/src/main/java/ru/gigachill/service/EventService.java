@@ -5,7 +5,7 @@ import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.gigachill.repository.composite.EventCompositeRepository;
-import ru.gigachill.data.transfer.object.EventDTO;
+import ru.gigachill.dto.EventDTO;
 import ru.gigachill.exception.NotFoundException;
 import ru.gigachill.mapper.EventMapper;
 import ru.gigachill.model.UserEntity;

@@ -1,7 +1,7 @@
 package ru.gigachill.mapper;
 
 import org.mapstruct.Mapper;
-import ru.gigachill.data.transfer.object.ShoppingItemDTO;
+import ru.gigachill.dto.ShoppingItemDTO;
 import ru.gigachill.web.api.model.ShoppingItem;
 
 @Mapper(componentModel = "spring")

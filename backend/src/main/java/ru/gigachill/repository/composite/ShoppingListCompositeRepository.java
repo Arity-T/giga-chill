@@ -4,8 +4,8 @@ import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
-import ru.gigachill.data.transfer.object.ShoppingItemDTO;
-import ru.gigachill.data.transfer.object.ShoppingListDTO;
+import ru.gigachill.dto.ShoppingItemDTO;
+import ru.gigachill.dto.ShoppingListDTO;
 
 /**
  * Data Access Object (DAO) interface for managing shopping lists and their items within events.

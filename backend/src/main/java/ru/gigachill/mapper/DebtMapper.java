@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.gigachill.data.transfer.object.UserDTO;
+import ru.gigachill.dto.UserDTO;
 import ru.gigachill.web.api.model.Debt;
 
 @Mapper(componentModel = "spring", uses = UserMapper.class)

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import ru.gigachill.repository.composite.TaskCompositeRepository;
-import ru.gigachill.data.transfer.object.TaskDTO;
+import ru.gigachill.dto.TaskDTO;
 import ru.gigachill.mapper.TaskMapper;
 import ru.gigachill.mapper.UserMapper;
 import ru.gigachill.model.UserEntity;

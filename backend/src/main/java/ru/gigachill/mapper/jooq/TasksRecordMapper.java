@@ -5,10 +5,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
-import ru.gigachill.data.transfer.object.ShoppingListDTO;
-import ru.gigachill.data.transfer.object.TaskDTO;
+import ru.gigachill.dto.ShoppingListDTO;
+import ru.gigachill.dto.TaskDTO;
 import com.github.giga_chill.jooq.generated.enums.TaskStatus;
-import ru.gigachill.data.transfer.object.TaskWithShoppingListsDTO;
+import ru.gigachill.dto.TaskWithShoppingListsDTO;
 
 import java.util.List;
 import java.util.UUID;

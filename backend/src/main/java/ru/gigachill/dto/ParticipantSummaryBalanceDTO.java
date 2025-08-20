@@ -1,4 +1,4 @@
-package ru.gigachill.data.transfer.object;
+package ru.gigachill.dto;
 
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;

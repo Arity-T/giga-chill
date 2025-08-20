@@ -3,11 +3,10 @@ package ru.gigachill.mapper.jooq;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingItemsRecord;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingListsRecord;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import ru.gigachill.data.transfer.object.ShoppingItemDTO;
-import ru.gigachill.data.transfer.object.ShoppingListDTO;
-import ru.gigachill.data.transfer.object.ParticipantDTO;
+import ru.gigachill.dto.ShoppingItemDTO;
+import ru.gigachill.dto.ShoppingListDTO;
+import ru.gigachill.dto.ParticipantDTO;
 
 import java.util.List;
 import java.util.UUID;

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import ru.gigachill.repository.composite.ParticipantCompositeRepository;
-import ru.gigachill.data.transfer.object.ParticipantDTO;
+import ru.gigachill.dto.ParticipantDTO;
 import ru.gigachill.mapper.ParticipantBalanceMapper;
 import ru.gigachill.mapper.ParticipantMapper;
 import ru.gigachill.mapper.ParticipantSummaryBalanceMapper;
