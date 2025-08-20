@@ -14,6 +14,8 @@ import ru.gigachill.data.transfer.object.ShoppingListDTO;
 import ru.gigachill.data.transfer.object.TaskDTO;
 import ru.gigachill.data.transfer.object.TaskWithShoppingListsDTO;
 import ru.gigachill.data.transfer.object.UserDTO;
+import ru.gigachill.mapper.jooq.TasksRecordMapper;
+import ru.gigachill.mapper.jooq.UsersRecordMapper;
 import ru.gigachill.repository.simple.ShoppingItemRepository;
 import ru.gigachill.repository.simple.ShoppingListRepository;
 import ru.gigachill.repository.simple.TaskRepository;
@@ -28,57 +30,21 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
     private final ShoppingListRepository shoppingListRepository;
     private final ShoppingListCompositeRepository shoppingListCompositeRepository;
     private final ShoppingItemRepository shoppingItemRepository;
+    private final TasksRecordMapper tasksRecordMapper;
+    private final UsersRecordMapper usersRecordMapper;
 
-    private UserDTO getAuthorDTO(UUID authorId) {
-        // Автор - обязательное поле
-        UsersRecord authorRecord = userRepository.findById(authorId).get();
-
-        return new UserDTO(
-                authorRecord.getUserId(), authorRecord.getLogin(), authorRecord.getName());
+    private UserDTO mapUser(UUID userId) {
+        if (userId == null) return null;
+        UsersRecord record = userRepository.findById(userId).orElse(null);
+        return record == null ? null : usersRecordMapper.toUserDTO(record);
     }
 
-    private UserDTO getExecutorDTO(UUID executorId) {
-        // Исполнитель - обрабатываем как nullable
-        UserDTO executor = null;
-        if (executorId != null) {
-            UsersRecord executorRecord = userRepository.findById(executorId).orElse(null);
-            if (executorRecord != null) {
-                executor =
-                        new UserDTO(
-                                executorRecord.getUserId(),
-                                executorRecord.getLogin(),
-                                executorRecord.getName());
-            }
-        }
-        return executor;
-    }
-
-    private TaskDTO convertToTaskDTO(TasksRecord record) {
-        return new TaskDTO(
-                record.getTaskId(),
-                record.getTitle(),
-                record.getDescription(),
-                record.getStatus().getLiteral(),
-                record.getDeadlineDatetime(),
-                record.getExecutorComment(),
-                record.getReviewerComment(),
-                getAuthorDTO(record.getAuthorId()),
-                getExecutorDTO(record.getExecutorId()));
-    }
-
-    private TaskWithShoppingListsDTO convertToTaskWithShoppingListsDTO(
+    private TaskWithShoppingListsDTO toTaskWithShoppingListsDTO(
             TasksRecord record, List<ShoppingListDTO> shoppingLists) {
-        return new TaskWithShoppingListsDTO(
-                record.getTaskId(),
-                record.getTitle(),
-                record.getDescription(),
-                record.getStatus().getLiteral(),
-                record.getDeadlineDatetime(),
-                record.getExecutorComment(),
-                record.getReviewerComment(),
-                getAuthorDTO(record.getAuthorId()),
-                getExecutorDTO(record.getExecutorId()),
-                shoppingLists);
+        TaskDTO dto = tasksRecordMapper.toTaskDTO(record);
+        dto.setAuthor(mapUser(record.getAuthorId()));
+        dto.setExecutor(mapUser(record.getExecutorId()));
+        return tasksRecordMapper.toTaskWithShoppingListsDTO(dto, shoppingLists);
     }
 
     /**
@@ -91,7 +57,12 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
     @Override
     public List<TaskDTO> getAllTasksFromEvent(UUID eventId) {
         return taskRepository.findAllByEventId(eventId).stream()
-                .map(this::convertToTaskDTO)
+                .map(record -> {
+                    TaskDTO dto = tasksRecordMapper.toTaskDTO(record);
+                    dto.setAuthor(mapUser(record.getAuthorId()));
+                    dto.setExecutor(mapUser(record.getExecutorId()));
+                    return dto;
+                })
                 .toList();
     }
 
@@ -112,7 +83,7 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
                         .filter(list -> taskId.equals(list.getTaskId()))
                         .toList();
 
-        return convertToTaskWithShoppingListsDTO(taskRecord, shoppingLists);
+        return toTaskWithShoppingListsDTO(taskRecord, shoppingLists);
     }
 
     /**
@@ -126,22 +97,7 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
     @Transactional
     @Override
     public void createTask(UUID eventId, TaskDTO taskDTO, List<UUID> shoppingListsIds) {
-        taskRepository.save(
-                new TasksRecord(
-                        taskDTO.getTaskId(),
-                        eventId,
-                        taskDTO.getAuthor() != null ? taskDTO.getAuthor().getId() : null,
-                        taskDTO.getExecutor() != null ? taskDTO.getExecutor().getId() : null,
-                        taskDTO.getTitle(),
-                        taskDTO.getDescription(),
-                        taskDTO.getStatus() != null
-                                ? TaskStatus.valueOf(taskDTO.getStatus())
-                                : null,
-                        taskDTO.getDeadlineDatetime() != null
-                                ? taskDTO.getDeadlineDatetime()
-                                : null,
-                        taskDTO.getExecutorComment(),
-                        taskDTO.getReviewerComment()));
+        taskRepository.save(tasksRecordMapper.toTasksRecord(taskDTO, eventId));
 
         // Привязываем shopping lists к задаче
         for (UUID shoppingListId : shoppingListsIds) {

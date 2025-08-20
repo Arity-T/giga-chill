@@ -16,6 +16,8 @@ import ru.gigachill.data.transfer.object.UserDTO;
 import ru.gigachill.repository.simple.EventRepository;
 import ru.gigachill.repository.simple.UserInEventRepository;
 import ru.gigachill.repository.simple.UserRepository;
+import ru.gigachill.mapper.jooq.ParticipantsRecordMapper;
+import ru.gigachill.mapper.jooq.UsersRecordMapper;
 
 @Transactional(readOnly = true)
 @Repository
@@ -24,20 +26,21 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
     private final UserRepository userRepository;
     private final UserInEventRepository userInEventRepository;
     private final EventRepository eventRepository;
+    private final ParticipantsRecordMapper participantsRecordMapper;
+    private final UsersRecordMapper usersRecordMapper;
 
     @Override
     public List<ParticipantDTO> getAllParticipantsByEventId(UUID eventId) {
         List<UserInEventRecord> records = userInEventRepository.findByEventId(eventId);
         List<ParticipantDTO> participants = new ArrayList<>();
         for (UserInEventRecord record : records) {
+            ParticipantDTO dto = participantsRecordMapper.toParticipantDTO(record);
             UsersRecord userRecord = userRepository.findById(record.getUserId()).orElse(null);
-            participants.add(
-                    new ParticipantDTO(
-                            record.getUserId(),
-                            userRecord.getLogin(),
-                            userRecord.getName(),
-                            record.getRole() != null ? record.getRole().getLiteral() : null,
-                            record.getBalance()));
+            if (userRecord != null) {
+                dto.setLogin(userRecord.getLogin());
+                dto.setName(userRecord.getName());
+            }
+            participants.add(dto);
         }
         return participants;
     }
@@ -45,12 +48,8 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
     @Transactional
     @Override
     public void addParticipantToEvent(UUID eventId, ParticipantDTO participant) {
-        UserInEventRecord record = new UserInEventRecord();
-        record.setUserId(participant.getId());
-        record.setEventId(eventId);
-        record.setRole(
-                participant.getRole() != null ? EventRole.valueOf(participant.getRole()) : null);
-        userInEventRepository.save(record);
+        userInEventRepository.save(
+                participantsRecordMapper.toUserInEventRecord(participant, eventId));
     }
 
     @Transactional
@@ -113,14 +112,10 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
         }
         UsersRecord userRecord = userRecordOpt.get();
 
-        EventRole userRole = userInEvent.getRole();
-
-        return new ParticipantDTO(
-                userRecord.getUserId(),
-                userRecord.getLogin(),
-                userRecord.getName(),
-                userRole != null ? userRole.getLiteral() : null,
-                userInEvent.getBalance());
+        ParticipantDTO dto = participantsRecordMapper.toParticipantDTO(userInEvent);
+        dto.setLogin(userRecord.getLogin());
+        dto.setName(userRecord.getName());
+        return dto;
     }
 
     /**
@@ -140,14 +135,7 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
                         .map(
                                 entry -> {
                                     var userOpt = userRepository.findById(entry.getKey());
-                                    return userOpt.map(
-                                                    user ->
-                                                            Map.of(
-                                                                    new UserDTO(
-                                                                            user.getUserId(),
-                                                                            user.getLogin(),
-                                                                            user.getName()),
-                                                                    entry.getValue()))
+                                    return userOpt.map(user -> Map.of(usersRecordMapper.toUserDTO(user), entry.getValue()))
                                             .orElse(null);
                                 })
                         .filter(Objects::nonNull)
@@ -160,14 +148,7 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
                         .map(
                                 entry -> {
                                     var userOpt = userRepository.findById(entry.getKey());
-                                    return userOpt.map(
-                                                    user ->
-                                                            Map.of(
-                                                                    new UserDTO(
-                                                                            user.getUserId(),
-                                                                            user.getLogin(),
-                                                                            user.getName()),
-                                                                    entry.getValue()))
+                                    return userOpt.map(user -> Map.of(usersRecordMapper.toUserDTO(user), entry.getValue()))
                                             .orElse(null);
                                 })
                         .filter(Objects::nonNull)
@@ -213,13 +194,7 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
 
             // Получаем UserDTO
             UsersRecord userRecord = userRepository.findById(userId).orElse(null);
-            UserDTO userDTO =
-                    userRecord == null
-                            ? null
-                            : new UserDTO(
-                                    userRecord.getUserId(),
-                                    userRecord.getLogin(),
-                                    userRecord.getName());
+            UserDTO userDTO = userRecord == null ? null : usersRecordMapper.toUserDTO(userRecord);
 
             result.add(new ParticipantSummaryBalanceDTO(userDTO, totalBalance, userBalance));
         }

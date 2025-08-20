@@ -15,6 +15,8 @@ import ru.gigachill.data.transfer.object.ParticipantDTO;
 import ru.gigachill.data.transfer.object.ShoppingItemDTO;
 import ru.gigachill.data.transfer.object.ShoppingListDTO;
 import ru.gigachill.repository.simple.*;
+import ru.gigachill.mapper.jooq.ShoppingRecordsMapper;
+import ru.gigachill.mapper.jooq.ShoppingListConsumerMapper;
 
 @Transactional(readOnly = true)
 @Repository
@@ -25,48 +27,8 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
     private final ShoppingItemRepository shoppingItemRepository;
     private final UserRepository userRepository;
     private final UserInEventRepository userInEventRepository;
-
-    private List<ShoppingItemDTO> toShoppingItemDTO(UUID shoppingListId) {
-        return shoppingItemRepository.findByShoppingListId(shoppingListId).stream()
-                .map(
-                        item ->
-                                new ShoppingItemDTO(
-                                        item.getShoppingItemId(),
-                                        item.getTitle(),
-                                        item.getQuantity(),
-                                        item.getUnit(),
-                                        item.getIsPurchased()))
-                .toList();
-    }
-
-    private List<ParticipantDTO> toConsumerDTO(UUID shoppingListId) {
-        Optional<ShoppingListsRecord> listOpt = shoppingListRepository.findById(shoppingListId);
-        if (listOpt.isEmpty()) return List.of();
-
-        UUID eventId = listOpt.get().getEventId();
-
-        return consumerInListRepository.findAllConsumers(shoppingListId).stream()
-                .map(
-                        userId -> {
-                            var userOpt = userRepository.findById(userId);
-                            var userInEventOpt = userInEventRepository.findById(eventId, userId);
-
-                            if (userOpt.isEmpty()) {
-                                return new ParticipantDTO(userId, null, null, null, null);
-                            }
-
-                            var user = userOpt.get();
-                            var userInEvent = userInEventOpt.orElse(null);
-
-                            return new ParticipantDTO(
-                                    user.getUserId(),
-                                    user.getLogin(),
-                                    user.getName(),
-                                    userInEvent != null ? userInEvent.getRole().name() : null,
-                                    userInEvent != null ? userInEvent.getBalance() : null);
-                        })
-                .toList();
-    }
+    private final ShoppingRecordsMapper shoppingRecordsMapper;
+    private final ShoppingListConsumerMapper shoppingListConsumerMapper;
 
     /**
      * Retrieves all shopping lists associated with the specified event.
@@ -77,16 +39,15 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
     @Override
     public List<ShoppingListDTO> getAllShoppingListsFromEvent(UUID eventId) {
         return shoppingListRepository.findByEventId(eventId).stream()
-                .map(
-                        list ->
-                                new ShoppingListDTO(
-                                        list.getShoppingListId(),
-                                        list.getTaskId(),
-                                        list.getTitle(),
-                                        list.getDescription(),
-                                        list.getBudget(),
-                                        toShoppingItemDTO(list.getShoppingListId()),
-                                        toConsumerDTO(list.getShoppingListId())))
+                .map(list -> {
+                    List<ShoppingItemDTO> items = shoppingItemRepository.findByShoppingListId(list.getShoppingListId()).stream()
+                            .map(shoppingRecordsMapper::toShoppingItemDTO)
+                            .toList();
+                    
+                    List<ParticipantDTO> consumers = getConsumersForShoppingList(list.getShoppingListId(), eventId);
+                    
+                    return shoppingRecordsMapper.toShoppingListDTOWithDetails(list, items, consumers);
+                })
                 .toList();
     }
 
@@ -105,18 +66,13 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
         }
 
         ShoppingListsRecord record = recordOpt.get();
-
-        List<ShoppingItemDTO> shoppingItems = toShoppingItemDTO(record.getShoppingListId());
-        List<ParticipantDTO> consumers = toConsumerDTO(shoppingListId);
-
-        return new ShoppingListDTO(
-                record.getShoppingListId(),
-                record.getTaskId(),
-                record.getTitle(),
-                record.getDescription(),
-                record.getBudget(),
-                shoppingItems,
-                consumers);
+        List<ShoppingItemDTO> items = shoppingItemRepository.findByShoppingListId(shoppingListId).stream()
+                .map(shoppingRecordsMapper::toShoppingItemDTO)
+                .toList();
+        
+        List<ParticipantDTO> consumers = getConsumersForShoppingList(shoppingListId, record.getEventId());
+        
+        return shoppingRecordsMapper.toShoppingListDTOWithDetails(record, items, consumers);
     }
 
     /**
@@ -175,13 +131,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
     @Override
     public void addShoppingItem(UUID shoppingListId, ShoppingItemDTO shoppingItemDTO) {
         shoppingItemRepository.save(
-                new ShoppingItemsRecord(
-                        shoppingItemDTO.getShoppingItemId(),
-                        shoppingListId,
-                        shoppingItemDTO.getTitle(),
-                        shoppingItemDTO.getQuantity(),
-                        shoppingItemDTO.getUnit(),
-                        shoppingItemDTO.getIsPurchased()));
+                shoppingRecordsMapper.toShoppingItemsRecord(shoppingItemDTO, shoppingListId));
     }
 
     /**
@@ -217,19 +167,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
     @Override
     public ShoppingItemDTO getShoppingItemById(UUID shoppingItemId) {
         Optional<ShoppingItemsRecord> recordOpt = shoppingItemRepository.findById(shoppingItemId);
-
-        if (recordOpt.isEmpty()) {
-            return null;
-        }
-
-        ShoppingItemsRecord record = recordOpt.get();
-
-        return new ShoppingItemDTO(
-                record.getShoppingItemId(),
-                record.getTitle(),
-                record.getQuantity(),
-                record.getUnit(),
-                record.getIsPurchased());
+        return recordOpt.map(shoppingRecordsMapper::toShoppingItemDTO).orElse(null);
     }
 
     /**
@@ -316,16 +254,15 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
     @Override
     public List<ShoppingListDTO> getShoppingListsByIds(List<UUID> shoppingListsIds) {
         return shoppingListRepository.findByIds(shoppingListsIds).stream()
-                .map(
-                        list ->
-                                new ShoppingListDTO(
-                                        list.getShoppingListId(),
-                                        list.getTaskId(),
-                                        list.getTitle(),
-                                        list.getDescription(),
-                                        list.getBudget(),
-                                        toShoppingItemDTO(list.getShoppingListId()),
-                                        toConsumerDTO(list.getShoppingListId())))
+                .map(list -> {
+                    List<ShoppingItemDTO> items = shoppingItemRepository.findByShoppingListId(list.getShoppingListId()).stream()
+                            .map(shoppingRecordsMapper::toShoppingItemDTO)
+                            .toList();
+                    
+                    List<ParticipantDTO> consumers = getConsumersForShoppingList(list.getShoppingListId(), list.getEventId());
+                    
+                    return shoppingRecordsMapper.toShoppingListDTOWithDetails(list, items, consumers);
+                })
                 .toList();
     }
 
@@ -449,5 +386,29 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
     @Override
     public void setBudget(UUID shoppingListId, BigDecimal budget) {
         shoppingListRepository.setBudget(shoppingListId, budget);
+    }
+
+    /**
+     * Helper method to get consumers for a shopping list using the consumer mapper
+     */
+    private List<ParticipantDTO> getConsumersForShoppingList(UUID shoppingListId, UUID eventId) {
+        return consumerInListRepository.findAllConsumers(shoppingListId).stream()
+                .map(userId -> {
+                    var userOpt = userRepository.findById(userId);
+                    var userInEventOpt = userInEventRepository.findById(eventId, userId);
+
+                    ParticipantDTO base = userInEventOpt
+                            .map(shoppingListConsumerMapper::toParticipantDTOFromUserInEvent)
+                            .orElseGet(() -> shoppingListConsumerMapper.createFallbackParticipant(userId));
+
+                    if (userOpt.isPresent()) {
+                        var userRecord = userOpt.get();
+                        base.setLogin(userRecord.getLogin());
+                        base.setName(userRecord.getName());
+                    }
+
+                    return base;
+                })
+                .toList();
     }
 }

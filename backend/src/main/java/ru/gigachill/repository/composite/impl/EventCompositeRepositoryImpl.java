@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gigachill.repository.composite.EventCompositeRepository;
 import ru.gigachill.data.transfer.object.EventDTO;
+import ru.gigachill.mapper.jooq.EventsRecordMapper;
 import ru.gigachill.repository.simple.EventRepository;
 import ru.gigachill.repository.simple.UserInEventRepository;
 
@@ -21,26 +22,13 @@ import ru.gigachill.repository.simple.UserInEventRepository;
 public class EventCompositeRepositoryImpl implements EventCompositeRepository {
     private final EventRepository eventRepository;
     private final UserInEventRepository userInEventRepository;
+    private final EventsRecordMapper eventsRecordMapper;
 
     @Override
     public EventDTO getEventById(UUID eventId) {
         return eventRepository
                 .findById(eventId)
-                .map(
-                        eventRecord ->
-                                new EventDTO(
-                                        eventRecord.getEventId(),
-                                        eventRecord.getTitle(),
-                                        eventRecord.getLocation(),
-                                        eventRecord.getStartDatetime() != null
-                                                ? eventRecord.getStartDatetime()
-                                                : null,
-                                        eventRecord.getEndDatetime() != null
-                                                ? eventRecord.getEndDatetime()
-                                                : null,
-                                        eventRecord.getDescription(),
-                                        eventRecord.getBudget(),
-                                        eventRecord.getIsFinalized()))
+                .map(eventsRecordMapper::toEventDTO)
                 .orElse(null);
     }
 
@@ -51,23 +39,7 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
         for (UserInEventRecord participant : participants) {
             eventRepository
                     .findById(participant.getEventId())
-                    .ifPresent(
-                            eventRecord -> {
-                                events.add(
-                                        new EventDTO(
-                                                eventRecord.getEventId(),
-                                                eventRecord.getTitle(),
-                                                eventRecord.getLocation(),
-                                                eventRecord.getStartDatetime() != null
-                                                        ? eventRecord.getStartDatetime()
-                                                        : null,
-                                                eventRecord.getEndDatetime() != null
-                                                        ? eventRecord.getEndDatetime()
-                                                        : null,
-                                                eventRecord.getDescription(),
-                                                eventRecord.getBudget(),
-                                                eventRecord.getIsFinalized()));
-                            });
+                    .ifPresent(record -> events.add(eventsRecordMapper.toEventDTO(record)));
         }
         return events;
     }
@@ -79,15 +51,8 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
                 .findById(eventId)
                 .ifPresent(
                         eventRecord -> {
-                            if (event.getTitle() != null) eventRecord.setTitle(event.getTitle());
-                            if (event.getLocation() != null)
-                                eventRecord.setLocation(event.getLocation());
-                            if (event.getStartDatetime() != null)
-                                eventRecord.setStartDatetime(event.getStartDatetime());
-                            if (event.getEndDatetime() != null)
-                                eventRecord.setEndDatetime(event.getEndDatetime());
-                            if (event.getDescription() != null)
-                                eventRecord.setDescription(event.getDescription());
+                            // Обновление через маппер: игнорируем null-поля
+                            eventsRecordMapper.updateEventsRecordFromDTO(event, eventRecord);
                             // Обновление через dsl
                             eventRecord.update();
                         });
@@ -96,15 +61,7 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
     @Transactional
     @Override
     public void createEvent(UUID userId, EventDTO event) {
-        EventsRecord eventRecord = new EventsRecord();
-        eventRecord.setEventId(event.getEventId());
-        eventRecord.setTitle(event.getTitle());
-        eventRecord.setLocation(event.getLocation());
-        eventRecord.setStartDatetime(
-                event.getStartDatetime() != null ? event.getStartDatetime() : null);
-        eventRecord.setEndDatetime(event.getEndDatetime() != null ? event.getEndDatetime() : null);
-        eventRecord.setDescription(event.getDescription());
-        eventRecord.setBudget(event.getBudget());
+        EventsRecord eventRecord = eventsRecordMapper.toEventsRecord(event);
         eventRepository.save(eventRecord);
 
         // Привязка пользователя к событию
