@@ -7,6 +7,7 @@ import jakarta.annotation.Nullable;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 import ru.gigachill.repository.composite.TaskCompositeRepository;
 import ru.gigachill.data.transfer.object.ShoppingListDTO;
 import ru.gigachill.data.transfer.object.TaskDTO;
@@ -23,7 +24,7 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final ShoppingListRepository shoppingListRepository;
-    private final ShoppingListCompositeRepositoryImpl shoppingListDAOImpl;
+    private final ShoppingListCompositeRepository shoppingListCompositeRepository;
     private final ShoppingItemRepository shoppingItemRepository;
 
     private UserDTO getAuthorDTO(UUID authorId) {
@@ -105,7 +106,7 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
         if (taskRecord == null) return null;
 
         List<ShoppingListDTO> shoppingLists =
-                shoppingListDAOImpl.getAllShoppingListsFromEvent(taskRecord.getEventId()).stream()
+                shoppingListCompositeRepository.getAllShoppingListsFromEvent(taskRecord.getEventId()).stream()
                         .filter(list -> taskId.equals(list.getTaskId()))
                         .toList();
 
