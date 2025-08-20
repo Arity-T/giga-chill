@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.gigachill.repository.composite.ParticipantCompositeRepository;
 import ru.gigachill.data.transfer.object.ParticipantBalanceDTO;
 import ru.gigachill.data.transfer.object.ParticipantDTO;
@@ -16,6 +17,7 @@ import ru.gigachill.repository.simple.EventRepository;
 import ru.gigachill.repository.simple.UserInEventRepository;
 import ru.gigachill.repository.simple.UserRepository;
 
+@Transactional(readOnly = true)
 @Repository
 @RequiredArgsConstructor
 public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeRepository {
@@ -40,6 +42,7 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
         return participants;
     }
 
+    @Transactional
     @Override
     public void addParticipantToEvent(UUID eventId, ParticipantDTO participant) {
         UserInEventRecord record = new UserInEventRecord();
@@ -50,6 +53,7 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
         userInEventRepository.save(record);
     }
 
+    @Transactional
     @Override
     public void deleteParticipant(UUID eventId, UUID participantId) {
         userInEventRepository.deleteById(eventId, participantId);
@@ -68,6 +72,7 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
     }
 
     // todo: optimize in the repository
+    @Transactional
     @Override
     public void updateParticipantRole(UUID eventId, UUID participantId, String role) {
         List<UserInEventRecord> records = userInEventRepository.findByEventId(eventId);

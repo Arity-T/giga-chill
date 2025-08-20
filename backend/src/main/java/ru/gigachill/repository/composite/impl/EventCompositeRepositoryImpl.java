@@ -9,11 +9,13 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.gigachill.repository.composite.EventCompositeRepository;
 import ru.gigachill.data.transfer.object.EventDTO;
 import ru.gigachill.repository.simple.EventRepository;
 import ru.gigachill.repository.simple.UserInEventRepository;
 
+@Transactional(readOnly = true)
 @Repository
 @RequiredArgsConstructor
 public class EventCompositeRepositoryImpl implements EventCompositeRepository {
@@ -70,6 +72,7 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
         return events;
     }
 
+    @Transactional
     @Override
     public void updateEvent(UUID eventId, EventDTO event) {
         eventRepository
@@ -90,6 +93,7 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
                         });
     }
 
+    @Transactional
     @Override
     public void createEvent(UUID userId, EventDTO event) {
         EventsRecord eventRecord = new EventsRecord();
@@ -128,6 +132,7 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
      * @param eventId the unique identifier of the event
      * @param inviteLinkUuid the UUID to assign as the invite link token
      */
+    @Transactional
     @Override
     public void createInviteLink(UUID eventId, UUID inviteLinkUuid) {
         eventRepository.updateInviteLink(eventId, inviteLinkUuid);
@@ -170,6 +175,7 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
      *
      * @param eventId the unique identifier of the event to recalculate the budget for
      */
+    @Transactional
     @Override
     public void calculationEventBudget(UUID eventId) {
         eventRepository.refreshDebtsView();
@@ -183,6 +189,7 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
      *
      * @param eventId the unique identifier of the event to close
      */
+    @Transactional
     @Override
     public void finalizeEvent(UUID eventId) {
         eventRepository.finalizeEventById(eventId);
@@ -200,6 +207,7 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
         return eventRepository.isFinalized(eventId);
     }
 
+    @Transactional
     @Override
     public void deleteEvent(UUID eventId) {
         eventRepository.deleteById(eventId);

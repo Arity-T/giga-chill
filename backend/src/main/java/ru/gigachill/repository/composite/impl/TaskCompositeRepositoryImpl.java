@@ -7,6 +7,7 @@ import jakarta.annotation.Nullable;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 import ru.gigachill.repository.composite.TaskCompositeRepository;
 import ru.gigachill.data.transfer.object.ShoppingListDTO;
@@ -18,6 +19,7 @@ import ru.gigachill.repository.simple.ShoppingListRepository;
 import ru.gigachill.repository.simple.TaskRepository;
 import ru.gigachill.repository.simple.UserRepository;
 
+@Transactional(readOnly = true)
 @Repository
 @RequiredArgsConstructor
 public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
@@ -121,6 +123,7 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
      * @param shoppingListsIds a {@link List} of {@link UUID} values representing shopping lists to
      *     attach to the task
      */
+    @Transactional
     @Override
     public void createTask(UUID eventId, TaskDTO taskDTO, List<UUID> shoppingListsIds) {
         taskRepository.save(
@@ -152,6 +155,7 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
      * @param taskId the unique identifier of the task to update
      * @param taskDTO the {@link TaskDTO} containing the updated task information
      */
+    @Transactional
     @Override
     public void updateTask(UUID taskId, TaskDTO taskDTO) {
         taskRepository.updateFromDTO(taskId, taskDTO);
@@ -163,6 +167,7 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
      * @param taskId the unique identifier of the task to start
      * @param userId the unique identifier of the user executing the task
      */
+    @Transactional
     @Override
     public void startExecuting(UUID taskId, UUID userId) {
         taskRepository.setExecutorIfNotAlready(taskId, userId);
@@ -173,6 +178,7 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
      *
      * @param taskId the unique identifier of the task to delete
      */
+    @Transactional
     @Override
     public void deleteTask(UUID taskId) {
         List<UUID> shoppingListIds = shoppingListRepository.findIdsByTaskId(taskId);
@@ -264,6 +270,7 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
      * @param executorId the {@link UUID} of the user who will execute the task; may be {@code null}
      *     to clear any existing executor
      */
+    @Transactional
     @Override
     public void updateExecutor(UUID taskId, @Nullable UUID executorId) {
         taskRepository.updateExecutor(taskId, executorId);
@@ -284,6 +291,7 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
      *     to bind; may be {@code null} to clear all associations If the list is unlinked, its
      *     status becomes "Unassigned". And all the purchases become not purchased.
      */
+    @Transactional
     @Override
     public void updateShoppingLists(UUID taskId, @Nullable List<UUID> shoppingLists) {
         // Текущие списки, привязанные к задаче
@@ -325,6 +333,7 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
      * @param taskId the unique identifier of the task to update
      * @param executorComment the comment text from the executor
      */
+    @Transactional
     @Override
     public void setExecutorComment(UUID taskId, String executorComment) {
         taskRepository.setExecutorCommentAndMarkUnderReview(taskId, executorComment);
@@ -339,6 +348,7 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
      * @param isApproved {@code true} if the reviewer approves the task - The task status becomes
      *     "completed"; {@code false} otherwise - The task status becomes "in_progress"
      */
+    @Transactional
     @Override
     public void setReviewerComment(UUID taskId, String reviewerComment, boolean isApproved) {
         taskRepository.setReviewerComment(taskId, reviewerComment);

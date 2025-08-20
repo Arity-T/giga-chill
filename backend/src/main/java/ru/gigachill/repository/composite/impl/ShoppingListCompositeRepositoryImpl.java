@@ -9,12 +9,14 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 import ru.gigachill.data.transfer.object.ParticipantDTO;
 import ru.gigachill.data.transfer.object.ShoppingItemDTO;
 import ru.gigachill.data.transfer.object.ShoppingListDTO;
 import ru.gigachill.repository.simple.*;
 
+@Transactional(readOnly = true)
 @Repository
 @RequiredArgsConstructor
 public class ShoppingListCompositeRepositoryImpl implements ShoppingListCompositeRepository {
@@ -126,6 +128,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
      * @param title the title of the shopping list
      * @param description the description of the shopping list
      */
+    @Transactional
     @Override
     public void createShoppingList(
             UUID eventId, UUID shoppingListId, UUID userId, String title, String description) {
@@ -144,6 +147,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
      * @param title the new title, or {@code null} to leave unchanged
      * @param description the new description, or {@code null} to leave unchanged
      */
+    @Transactional
     @Override
     public void updateShoppingList(
             UUID shoppingListId, @Nullable String title, @Nullable String description) {
@@ -155,6 +159,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
      *
      * @param shoppingListId the unique identifier of the shopping list to delete
      */
+    @Transactional
     @Override
     public void deleteShoppingList(UUID shoppingListId) {
         shoppingListRepository.deleteById(shoppingListId);
@@ -166,6 +171,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
      * @param shoppingListId the unique identifier of the shopping list
      * @param shoppingItemDTO the {@link ShoppingItemDTO} representing the new item
      */
+    @Transactional
     @Override
     public void addShoppingItem(UUID shoppingListId, ShoppingItemDTO shoppingItemDTO) {
         shoppingItemRepository.save(
@@ -184,6 +190,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
      * @param shoppingListId the unique identifier of the shopping list
      * @param shoppingItemId the unique identifier of the item to remove
      */
+    @Transactional
     @Override
     public void deleteShoppingItemFromShoppingList(UUID shoppingListId, UUID shoppingItemId) {
         shoppingItemRepository.deleteById(shoppingItemId);
@@ -195,6 +202,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
      * @param shoppingItemId the unique identifier of the shopping item
      * @param status {@code true} if the item is purchased; {@code false} otherwise
      */
+    @Transactional
     @Override
     public void updateShoppingItemStatus(UUID shoppingItemId, boolean status) {
         shoppingItemRepository.updateStatus(shoppingItemId, status);
@@ -230,6 +238,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
      * @param shoppingListId the unique identifier of the shopping list
      * @param allUserIds the list of user IDs who are allowed to consume this list
      */
+    @Transactional
     @Override
     public void updateShoppingListConsumers(UUID shoppingListId, List<UUID> allUserIds) {
         List<UUID> currentUserIds = consumerInListRepository.findAllConsumers(shoppingListId);
@@ -285,6 +294,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
      * @param shoppingItemDTO the {@link ShoppingItemDTO} containing the new field values for the
      *     item
      */
+    @Transactional
     @Override
     public void updateShoppingItem(ShoppingItemDTO shoppingItemDTO) {
         shoppingItemRepository.update(
@@ -435,6 +445,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
      * @param shoppingListId the unique identifier of the shopping list
      * @param budget the {@link BigDecimal} amount representing the new budget
      */
+    @Transactional
     @Override
     public void setBudget(UUID shoppingListId, BigDecimal budget) {
         shoppingListRepository.setBudget(shoppingListId, budget);
