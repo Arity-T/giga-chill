@@ -11,4 +11,3 @@ public interface UsersRecordMapper {
 	@Mapping(source = "userId", target = "id")
 	UserDTO toUserDTO(UsersRecord record);
 }
-
