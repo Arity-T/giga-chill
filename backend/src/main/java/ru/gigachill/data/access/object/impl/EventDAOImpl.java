@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.gigachill.data.access.object.EventDAO;
 import ru.gigachill.data.transfer.object.EventDTO;
-import ru.gigachill.repository.EventRepository;
-import ru.gigachill.repository.UserInEventRepository;
+import ru.gigachill.repository.simple.EventRepository;
+import ru.gigachill.repository.simple.UserInEventRepository;
 
 @Service
 @RequiredArgsConstructor

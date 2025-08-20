@@ -12,9 +12,9 @@ import ru.gigachill.data.transfer.object.ParticipantBalanceDTO;
 import ru.gigachill.data.transfer.object.ParticipantDTO;
 import ru.gigachill.data.transfer.object.ParticipantSummaryBalanceDTO;
 import ru.gigachill.data.transfer.object.UserDTO;
-import ru.gigachill.repository.EventRepository;
-import ru.gigachill.repository.UserInEventRepository;
-import ru.gigachill.repository.UserRepository;
+import ru.gigachill.repository.simple.EventRepository;
+import ru.gigachill.repository.simple.UserInEventRepository;
+import ru.gigachill.repository.simple.UserRepository;
 
 @Service
 @RequiredArgsConstructor

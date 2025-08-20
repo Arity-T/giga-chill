@@ -1,4 +1,4 @@
-package ru.gigachill.repository;
+package ru.gigachill.repository.simple;
 
 import com.github.giga_chill.jooq.generated.enums.TaskStatus;
 import com.github.giga_chill.jooq.generated.tables.Tasks;

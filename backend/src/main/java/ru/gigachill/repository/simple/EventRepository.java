@@ -1,4 +1,4 @@
-package ru.gigachill.repository;
+package ru.gigachill.repository.simple;
 
 import static org.jooq.impl.DSL.sum;
 

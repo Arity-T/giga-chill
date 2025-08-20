@@ -13,7 +13,7 @@ import ru.gigachill.data.access.object.ShoppingListDAO;
 import ru.gigachill.data.transfer.object.ParticipantDTO;
 import ru.gigachill.data.transfer.object.ShoppingItemDTO;
 import ru.gigachill.data.transfer.object.ShoppingListDTO;
-import ru.gigachill.repository.*;
+import ru.gigachill.repository.simple.*;
 
 @Service
 @RequiredArgsConstructor

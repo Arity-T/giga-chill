@@ -12,10 +12,10 @@ import ru.gigachill.data.transfer.object.ShoppingListDTO;
 import ru.gigachill.data.transfer.object.TaskDTO;
 import ru.gigachill.data.transfer.object.TaskWithShoppingListsDTO;
 import ru.gigachill.data.transfer.object.UserDTO;
-import ru.gigachill.repository.ShoppingItemRepository;
-import ru.gigachill.repository.ShoppingListRepository;
-import ru.gigachill.repository.TaskRepository;
-import ru.gigachill.repository.UserRepository;
+import ru.gigachill.repository.simple.ShoppingItemRepository;
+import ru.gigachill.repository.simple.ShoppingListRepository;
+import ru.gigachill.repository.simple.TaskRepository;
+import ru.gigachill.repository.simple.UserRepository;
 
 @Service
 @RequiredArgsConstructor
