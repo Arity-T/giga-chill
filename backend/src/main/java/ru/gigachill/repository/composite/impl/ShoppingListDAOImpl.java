@@ -1,4 +1,4 @@
-package ru.gigachill.data.access.object.impl;
+package ru.gigachill.repository.composite.impl;
 
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingItemsRecord;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingListsRecord;
@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.gigachill.data.access.object.ShoppingListDAO;
+import ru.gigachill.repository.composite.ShoppingListDAO;
 import ru.gigachill.data.transfer.object.ParticipantDTO;
 import ru.gigachill.data.transfer.object.ShoppingItemDTO;
 import ru.gigachill.data.transfer.object.ShoppingListDTO;

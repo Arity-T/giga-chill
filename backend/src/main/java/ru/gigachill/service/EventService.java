@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.gigachill.data.access.object.EventDAO;
+import ru.gigachill.repository.composite.EventDAO;
 import ru.gigachill.data.transfer.object.EventDTO;
 import ru.gigachill.exception.NotFoundException;
 import ru.gigachill.mapper.EventMapper;

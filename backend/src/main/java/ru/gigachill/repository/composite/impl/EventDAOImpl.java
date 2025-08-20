@@ -1,4 +1,4 @@
-package ru.gigachill.data.access.object.impl;
+package ru.gigachill.repository.composite.impl;
 
 import com.github.giga_chill.jooq.generated.enums.EventRole;
 import com.github.giga_chill.jooq.generated.tables.records.EventsRecord;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.gigachill.data.access.object.EventDAO;
+import ru.gigachill.repository.composite.EventDAO;
 import ru.gigachill.data.transfer.object.EventDTO;
 import ru.gigachill.repository.simple.EventRepository;
 import ru.gigachill.repository.simple.UserInEventRepository;

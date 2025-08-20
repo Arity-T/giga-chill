@@ -6,7 +6,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import ru.gigachill.data.access.object.ShoppingListDAO;
+import ru.gigachill.repository.composite.ShoppingListDAO;
 import ru.gigachill.exception.ConflictException;
 import ru.gigachill.exception.ForbiddenException;
 import ru.gigachill.exception.NotFoundException;

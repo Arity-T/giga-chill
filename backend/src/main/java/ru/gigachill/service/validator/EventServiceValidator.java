@@ -3,7 +3,7 @@ package ru.gigachill.service.validator;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.gigachill.data.access.object.EventDAO;
+import ru.gigachill.repository.composite.EventDAO;
 import ru.gigachill.exception.ConflictException;
 import ru.gigachill.exception.NotFoundException;
 

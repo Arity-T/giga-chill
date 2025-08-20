@@ -5,7 +5,7 @@ import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import ru.gigachill.data.access.object.TaskDAO;
+import ru.gigachill.repository.composite.TaskDAO;
 import ru.gigachill.data.transfer.object.TaskDTO;
 import ru.gigachill.mapper.TaskMapper;
 import ru.gigachill.mapper.UserMapper;

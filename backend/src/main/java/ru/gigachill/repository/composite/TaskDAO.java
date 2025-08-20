@@ -1,4 +1,4 @@
-package ru.gigachill.data.access.object;
+package ru.gigachill.repository.composite;
 
 import jakarta.annotation.Nullable;
 import java.util.List;

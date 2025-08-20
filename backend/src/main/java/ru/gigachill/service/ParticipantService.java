@@ -6,7 +6,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import ru.gigachill.data.access.object.ParticipantDAO;
+import ru.gigachill.repository.composite.ParticipantDAO;
 import ru.gigachill.data.transfer.object.ParticipantDTO;
 import ru.gigachill.mapper.ParticipantBalanceMapper;
 import ru.gigachill.mapper.ParticipantMapper;

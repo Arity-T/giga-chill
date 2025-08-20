@@ -1,4 +1,4 @@
-package ru.gigachill.data.access.object.impl;
+package ru.gigachill.repository.composite.impl;
 
 import com.github.giga_chill.jooq.generated.enums.EventRole;
 import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.gigachill.data.access.object.ParticipantDAO;
+import ru.gigachill.repository.composite.ParticipantDAO;
 import ru.gigachill.data.transfer.object.ParticipantBalanceDTO;
 import ru.gigachill.data.transfer.object.ParticipantDTO;
 import ru.gigachill.data.transfer.object.ParticipantSummaryBalanceDTO;

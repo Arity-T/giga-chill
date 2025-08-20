@@ -6,7 +6,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import ru.gigachill.data.access.object.TaskDAO;
+import ru.gigachill.repository.composite.TaskDAO;
 import ru.gigachill.exception.ConflictException;
 import ru.gigachill.exception.NotFoundException;
 
