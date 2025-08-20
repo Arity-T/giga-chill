@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import ru.gigachill.repository.composite.EventCompositeRepository;
 import ru.gigachill.data.transfer.object.EventDTO;
 import ru.gigachill.repository.simple.EventRepository;
 import ru.gigachill.repository.simple.UserInEventRepository;
 
-@Service
+@Repository
 @RequiredArgsConstructor
 public class EventCompositeRepositoryImpl implements EventCompositeRepository {
     private final EventRepository eventRepository;

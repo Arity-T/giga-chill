@@ -6,7 +6,7 @@ import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 import java.math.BigDecimal;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import ru.gigachill.repository.composite.ParticipantCompositeRepository;
 import ru.gigachill.data.transfer.object.ParticipantBalanceDTO;
 import ru.gigachill.data.transfer.object.ParticipantDTO;
@@ -16,7 +16,7 @@ import ru.gigachill.repository.simple.EventRepository;
 import ru.gigachill.repository.simple.UserInEventRepository;
 import ru.gigachill.repository.simple.UserRepository;
 
-@Service
+@Repository
 @RequiredArgsConstructor
 public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeRepository {
     private final UserRepository userRepository;

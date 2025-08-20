@@ -6,7 +6,7 @@ import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 import jakarta.annotation.Nullable;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import ru.gigachill.repository.composite.TaskCompositeRepository;
 import ru.gigachill.data.transfer.object.ShoppingListDTO;
 import ru.gigachill.data.transfer.object.TaskDTO;
@@ -17,7 +17,7 @@ import ru.gigachill.repository.simple.ShoppingListRepository;
 import ru.gigachill.repository.simple.TaskRepository;
 import ru.gigachill.repository.simple.UserRepository;
 
-@Service
+@Repository
 @RequiredArgsConstructor
 public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
     private final TaskRepository taskRepository;

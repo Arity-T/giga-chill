@@ -8,14 +8,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 import ru.gigachill.data.transfer.object.ParticipantDTO;
 import ru.gigachill.data.transfer.object.ShoppingItemDTO;
 import ru.gigachill.data.transfer.object.ShoppingListDTO;
 import ru.gigachill.repository.simple.*;
 
-@Service
+@Repository
 @RequiredArgsConstructor
 public class ShoppingListCompositeRepositoryImpl implements ShoppingListCompositeRepository {
     private final ShoppingListRepository shoppingListRepository;
