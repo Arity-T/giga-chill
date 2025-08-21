@@ -35,12 +35,6 @@ public class UserInEventRepository {
                 .fetch();
     }
 
-    public List<UserInEventRecord> findByUserId(UUID userId) {
-        return dsl.selectFrom(UserInEvent.USER_IN_EVENT)
-                .where(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId))
-                .fetch();
-    }
-
     public void deleteById(UUID eventId, UUID userId) {
         dsl.delete(UserInEvent.USER_IN_EVENT)
                 .where(

@@ -150,4 +150,13 @@ public class EventRepository {
                                         r.get(DebtsPerEvent.DEBTS_PER_EVENT.DEBTOR_ID),
                                         r.get(DebtsPerEvent.DEBTS_PER_EVENT.AMOUNT)));
     }
+    public List<EventsRecord> findByUserIdWithJoin(UUID userId) {
+        return dsl.select(Events.EVENTS.fields())
+                .from(Events.EVENTS)
+                .join(UserInEvent.USER_IN_EVENT)
+                .on(Events.EVENTS.EVENT_ID.eq(UserInEvent.USER_IN_EVENT.EVENT_ID))
+                .where(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId)
+                        .and(Events.EVENTS.IS_DELETED.eq(false)))
+                .fetchInto(EventsRecord.class);
+    }
 }

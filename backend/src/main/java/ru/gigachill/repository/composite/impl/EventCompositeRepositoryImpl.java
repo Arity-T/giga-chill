@@ -34,14 +34,9 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
 
     @Override
     public List<EventDTO> getAllUserEvents(UUID userId) {
-        List<UserInEventRecord> participants = userInEventRepository.findByUserId(userId);
-        List<EventDTO> events = new ArrayList<>();
-        for (UserInEventRecord participant : participants) {
-            eventRepository
-                    .findById(participant.getEventId())
-                    .ifPresent(record -> events.add(eventsRecordMapper.toEventDTO(record)));
-        }
-        return events;
+        return eventRepository.findByUserIdWithJoin(userId).stream()
+                .map(eventsRecordMapper::toEventDTO)
+                .toList();
     }
 
     @Transactional
