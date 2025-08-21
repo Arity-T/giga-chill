@@ -7,6 +7,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 import ru.gigachill.dto.ParticipantDTO;
+import ru.gigachill.model.UserInEventWithUserData;
 import java.util.UUID;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {UsersRecordMapper.class})
@@ -16,6 +17,10 @@ public interface ParticipantsRecordMapper {
 	@Mapping(source = "role.literal", target = "role")
 	// login и name выставляются отдельно, так как это другой UsersRecord
 	ParticipantDTO toParticipantDTO(UserInEventRecord record);
+
+	@Mapping(source = "userId", target = "id")
+	@Mapping(source = "role.literal", target = "role")
+	ParticipantDTO toParticipantDTO(UserInEventWithUserData record);
 
 	@Mapping(source = "dto.id", target = "userId")
 	@Mapping(source = "dto.role", target = "role", qualifiedByName = "stringToEventRole")

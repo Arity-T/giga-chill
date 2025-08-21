@@ -31,18 +31,9 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
 
     @Override
     public List<ParticipantDTO> getAllParticipantsByEventId(UUID eventId) {
-        List<UserInEventRecord> records = userInEventRepository.findByEventId(eventId);
-        List<ParticipantDTO> participants = new ArrayList<>();
-        for (UserInEventRecord record : records) {
-            ParticipantDTO dto = participantsRecordMapper.toParticipantDTO(record);
-            UsersRecord userRecord = userRepository.findById(record.getUserId()).orElse(null);
-            if (userRecord != null) {
-                dto.setLogin(userRecord.getLogin());
-                dto.setName(userRecord.getName());
-            }
-            participants.add(dto);
-        }
-        return participants;
+        return userInEventRepository.findByEventIdWithUserData(eventId).stream()
+                .map(participantsRecordMapper::toParticipantDTO)
+                .toList();
     }
 
     @Transactional

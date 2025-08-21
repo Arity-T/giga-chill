@@ -1,6 +1,7 @@
 package ru.gigachill.repository.simple;
 
 import com.github.giga_chill.jooq.generated.tables.UserInEvent;
+import com.github.giga_chill.jooq.generated.tables.Users;
 import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +10,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
+import ru.gigachill.model.UserInEventWithUserData;
 
 @Repository
 @RequiredArgsConstructor
@@ -43,5 +45,20 @@ public class UserInEventRepository {
                                 .eq(eventId)
                                 .and(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId)))
                 .execute();
+    }
+
+    public List<UserInEventWithUserData> findByEventIdWithUserData(UUID eventId) {
+        return dsl.select(
+                        UserInEvent.USER_IN_EVENT.USER_ID,
+                        UserInEvent.USER_IN_EVENT.EVENT_ID,
+                        UserInEvent.USER_IN_EVENT.ROLE,
+                        UserInEvent.USER_IN_EVENT.BALANCE,
+                        Users.USERS.LOGIN,
+                        Users.USERS.NAME)
+                .from(UserInEvent.USER_IN_EVENT)
+                .join(Users.USERS)
+                .on(UserInEvent.USER_IN_EVENT.USER_ID.eq(Users.USERS.USER_ID))
+                .where(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId))
+                .fetchInto(UserInEventWithUserData.class);
     }
 }
