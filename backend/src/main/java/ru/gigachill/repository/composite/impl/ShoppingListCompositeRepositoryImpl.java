@@ -16,7 +16,11 @@ import ru.gigachill.dto.ShoppingItemDTO;
 import ru.gigachill.dto.ShoppingListDTO;
 import ru.gigachill.repository.simple.*;
 import ru.gigachill.mapper.jooq.ShoppingRecordsMapper;
-import ru.gigachill.mapper.jooq.ShoppingListConsumerMapper;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import ru.gigachill.model.ShoppingListWithDetails;
+import ru.gigachill.mapper.ShoppingListWithDetailsMapper;
 
 @Transactional(readOnly = true)
 @Repository
@@ -25,10 +29,8 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
     private final ShoppingListRepository shoppingListRepository;
     private final ConsumerInListRepository consumerInListRepository;
     private final ShoppingItemRepository shoppingItemRepository;
-    private final UserRepository userRepository;
-    private final UserInEventRepository userInEventRepository;
     private final ShoppingRecordsMapper shoppingRecordsMapper;
-    private final ShoppingListConsumerMapper shoppingListConsumerMapper;
+    private final ShoppingListWithDetailsMapper shoppingListWithDetailsMapper;
 
     /**
      * Retrieves all shopping lists associated with the specified event.
@@ -38,16 +40,44 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
      */
     @Override
     public List<ShoppingListDTO> getAllShoppingListsFromEvent(UUID eventId) {
-        return shoppingListRepository.findByEventId(eventId).stream()
-                .map(list -> {
-                    List<ShoppingItemDTO> items = shoppingItemRepository.findByShoppingListId(list.getShoppingListId()).stream()
-                            .map(shoppingRecordsMapper::toShoppingItemDTO)
+        List<ShoppingListWithDetails> rawData = shoppingListRepository.findByEventIdWithDetails(eventId);
+        
+        // Группируем данные по shoppingListId
+        Map<UUID, List<ShoppingListWithDetails>> groupedData = rawData.stream()
+                .collect(Collectors.groupingBy(ShoppingListWithDetails::getShoppingListId));
+        
+        return groupedData.values().stream()
+                .map(listData -> {
+                    if (listData.isEmpty()) return null;
+
+                    ShoppingListWithDetails first = listData.getFirst();
+
+                    // Создаем ShoppingListDTO с помощью маппера
+                    ShoppingListDTO shoppingListDTO = shoppingListWithDetailsMapper.toShoppingListDTO(first);
+
+                    // Собираем товары
+                    List<ShoppingItemDTO> items = listData.stream()
+                            .filter(data -> data.getShoppingItemId() != null)
+                            .map(shoppingListWithDetailsMapper::toShoppingItemDTO)
                             .toList();
-                    
-                    List<ParticipantDTO> consumers = getConsumersForShoppingList(list.getShoppingListId(), eventId);
-                    
-                    return shoppingRecordsMapper.toShoppingListDTOWithDetails(list, items, consumers);
+
+                    // Собираем потребителей
+                    List<ParticipantDTO> consumers = listData.stream()
+                            .filter(data -> data.getUserId() != null)
+                            .map(data -> {
+                                ParticipantDTO consumer = new ParticipantDTO();
+                                consumer.setId(data.getUserId());
+                                return consumer;
+                            })
+                            .distinct()
+                            .toList();
+
+                    shoppingListDTO.setShoppingItems(items);
+                    shoppingListDTO.setConsumers(consumers);
+
+                    return shoppingListDTO;
                 })
+                .filter(Objects::nonNull)
                 .toList();
     }
 

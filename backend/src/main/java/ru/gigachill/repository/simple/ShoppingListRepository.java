@@ -1,5 +1,7 @@
 package ru.gigachill.repository.simple;
 
+import com.github.giga_chill.jooq.generated.tables.ConsumerInList;
+import com.github.giga_chill.jooq.generated.tables.ShoppingItems;
 import com.github.giga_chill.jooq.generated.tables.ShoppingLists;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingListsRecord;
 import io.micrometer.common.lang.Nullable;
@@ -9,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.springframework.stereotype.Repository;
+import ru.gigachill.model.ShoppingListWithDetails;
 
 @Repository
 @RequiredArgsConstructor
@@ -146,5 +149,29 @@ public class ShoppingListRepository {
                 .set(ShoppingLists.SHOPPING_LISTS.BUDGET, budget)
                 .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(shoppingListId))
                 .execute();
+    }
+
+    public List<ShoppingListWithDetails> findByEventIdWithDetails(UUID eventId) {
+        return dsl.select(
+                        ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID,
+                        ShoppingLists.SHOPPING_LISTS.TASK_ID,
+                        ShoppingLists.SHOPPING_LISTS.EVENT_ID,
+                        ShoppingLists.SHOPPING_LISTS.TITLE,
+                        ShoppingLists.SHOPPING_LISTS.DESCRIPTION,
+                        ShoppingLists.SHOPPING_LISTS.FILE_LINK,
+                        ShoppingLists.SHOPPING_LISTS.BUDGET,
+                        ShoppingItems.SHOPPING_ITEMS.SHOPPING_ITEM_ID,
+                        ShoppingItems.SHOPPING_ITEMS.TITLE.as("item_title"),
+                        ShoppingItems.SHOPPING_ITEMS.QUANTITY,
+                        ShoppingItems.SHOPPING_ITEMS.UNIT,
+                        ShoppingItems.SHOPPING_ITEMS.IS_PURCHASED,
+                        ConsumerInList.CONSUMER_IN_LIST.USER_ID)
+                .from(ShoppingLists.SHOPPING_LISTS)
+                .leftJoin(ShoppingItems.SHOPPING_ITEMS)
+                .on(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(ShoppingItems.SHOPPING_ITEMS.SHOPPING_LIST_ID))
+                .leftJoin(ConsumerInList.CONSUMER_IN_LIST)
+                .on(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID))
+                .where(ShoppingLists.SHOPPING_LISTS.EVENT_ID.eq(eventId))
+                .fetchInto(ShoppingListWithDetails.class);
     }
 }
