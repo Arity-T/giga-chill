@@ -4,6 +4,7 @@ import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+import ru.gigachill.dto.ParticipantDTO;
 import ru.gigachill.dto.ShoppingItemDTO;
 import ru.gigachill.dto.ShoppingListDTO;
 
@@ -222,4 +223,13 @@ public interface ShoppingListCompositeRepository {
      * @param budget the {@link BigDecimal} amount representing the new budget
      */
     void setBudget(UUID shoppingListId, BigDecimal budget);
+
+    /**
+     * Retrieves all consumers for a specific shopping list with their user data.
+     *
+     * @param shoppingListId the unique identifier of the shopping list
+     * @param eventId the unique identifier of the event
+     * @return a list of {@link ParticipantDTO} representing the consumers
+     */
+    List<ParticipantDTO> getConsumersForShoppingList(UUID shoppingListId, UUID eventId);
 }

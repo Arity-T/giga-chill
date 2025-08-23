@@ -425,9 +425,14 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
     }
 
     /**
-     * Helper method to get consumers for a shopping list using the consumer mapper
+     * Retrieves all consumers for a specific shopping list with their user data.
+     *
+     * @param shoppingListId the unique identifier of the shopping list
+     * @param eventId the unique identifier of the event
+     * @return a list of {@link ParticipantDTO} representing the consumers
      */
-    private List<ParticipantDTO> getConsumersForShoppingList(UUID shoppingListId, UUID eventId) {
+    @Override
+    public List<ParticipantDTO> getConsumersForShoppingList(UUID shoppingListId, UUID eventId) {
         return consumerInListRepository.findAllConsumersWithUserData(shoppingListId, eventId).stream()
                 .map(consumerWithUserDataMapper::toParticipantDTO)
                 .toList();
