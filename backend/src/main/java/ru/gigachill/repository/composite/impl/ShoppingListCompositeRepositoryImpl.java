@@ -38,16 +38,18 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
 
     /**
      * Retrieves all shopping lists associated with the specified event.
-     *
-     * @param eventId the unique identifier of the event
-     * @return a list of {@link ShoppingListDTO} objects for the event; empty list if none found
+     * <p>
+     * This method performs efficient batch data aggregation:
+     * 1. Loads all shopping list details and items in a single query
+     * 2. Loads all consumer assignments in a single query
+     * 3. Groups and maps the data to avoid N+1 query problems
      */
     @Override
     public List<ShoppingListDTO> getAllShoppingListsFromEvent(UUID eventId) {
         List<ShoppingListWithDetails> rawData = shoppingListRepository.findByEventIdWithDetails(eventId);
         List<ConsumerWithUserData> allConsumers = consumerInListRepository.findAllConsumersForEventWithUserData(eventId);
         
-        // Группируем потребителей по shoppingListId
+        // Group consumers by shopping list ID for efficient lookup
         Map<UUID, List<ConsumerWithUserData>> consumersByList = allConsumers.stream()
                 .collect(Collectors.groupingBy(ConsumerWithUserData::getShoppingListId));
         
@@ -59,14 +61,26 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
                 .collect(Collectors.toList());
     }
     
+    /**
+     * Maps raw shopping list data to a complete ShoppingListDTO.
+     *
+     * This method processes denormalized data from a JOIN query and:
+     * 1. Creates the base shopping list DTO from the first record
+     * 2. Deduplicates shopping items (same item may appear multiple times due to JOIN)
+     * 3. Attaches consumer participants from pre-loaded data
+     *
+     * @param listData denormalized shopping list data with items (from JOIN query)
+     * @param consumersByList pre-grouped consumer data by shopping list ID
+     * @return complete ShoppingListDTO with items and consumers
+     */
     private ShoppingListDTO mapToShoppingListDTO(List<ShoppingListWithDetails> listData, 
                                                 Map<UUID, List<ConsumerWithUserData>> consumersByList) {
         ShoppingListWithDetails first = listData.getFirst();
         
-        // Создаем основной объект списка покупок
+        // Create base shopping list DTO
         ShoppingListDTO shoppingListDTO = shoppingListWithDetailsMapper.toShoppingListDTO(first);
         
-        // Извлекаем уникальные товары
+        // Extract unique items (deduplicate from JOIN result)
         Map<UUID, ShoppingItemDTO> uniqueItems = new LinkedHashMap<>();
         for (ShoppingListWithDetails data : listData) {
             if (data.getShoppingItemId() != null) {
@@ -75,7 +89,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
             }
         }
         
-        // Получаем потребителей из предварительно загруженных данных
+        // Attach consumers from pre-loaded data
         List<ParticipantDTO> consumers = consumersByList.getOrDefault(first.getShoppingListId(), List.of())
                 .stream()
                 .map(consumerWithUserDataMapper::toParticipantDTO)
@@ -87,12 +101,6 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
         return shoppingListDTO;
     }
 
-    /**
-     * Retrieves a specific shopping list by its identifier.
-     *
-     * @param shoppingListId the unique identifier of the shopping list
-     * @return the {@link ShoppingListDTO} matching the given ID
-     */
     @Override
     public ShoppingListDTO getShoppingListById(UUID shoppingListId) {
         Optional<ShoppingListsRecord> recordOpt = shoppingListRepository.findById(shoppingListId);
@@ -111,15 +119,6 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
         return shoppingRecordsMapper.toShoppingListDTOWithDetails(record, items, consumers);
     }
 
-    /**
-     * Creates a new shopping list within the specified event.
-     *
-     * @param eventId the unique identifier of the event to which the shopping list belongs
-     * @param shoppingListId the unique identifier to assign to the new shopping list
-     * @param userId the unique identifier of the user creating the shopping list
-     * @param title the title of the shopping list
-     * @param description the description of the shopping list
-     */
     @Transactional
     @Override
     public void createShoppingList(
@@ -131,14 +130,6 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
         consumerInListRepository.addConsumer(shoppingListId, userId);
     }
 
-    /**
-     * Updates the title and/or description of an existing shopping list. Only non-null parameters
-     * will be applied.
-     *
-     * @param shoppingListId the unique identifier of the shopping list to update
-     * @param title the new title, or {@code null} to leave unchanged
-     * @param description the new description, or {@code null} to leave unchanged
-     */
     @Transactional
     @Override
     public void updateShoppingList(
@@ -146,23 +137,12 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
         shoppingListRepository.updateShoppingList(shoppingListId, title, description);
     }
 
-    /**
-     * Deletes the specified shopping list.
-     *
-     * @param shoppingListId the unique identifier of the shopping list to delete
-     */
     @Transactional
     @Override
     public void deleteShoppingList(UUID shoppingListId) {
         shoppingListRepository.deleteById(shoppingListId);
     }
 
-    /**
-     * Adds a new shopping item to the specified shopping list.
-     *
-     * @param shoppingListId the unique identifier of the shopping list
-     * @param shoppingItemDTO the {@link ShoppingItemDTO} representing the new item
-     */
     @Transactional
     @Override
     public void addShoppingItem(UUID shoppingListId, ShoppingItemDTO shoppingItemDTO) {
@@ -170,48 +150,24 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
                 shoppingRecordsMapper.toShoppingItemsRecord(shoppingItemDTO, shoppingListId));
     }
 
-    /**
-     * Removes an item from a shopping list.
-     *
-     * @param shoppingListId the unique identifier of the shopping list
-     * @param shoppingItemId the unique identifier of the item to remove
-     */
     @Transactional
     @Override
     public void deleteShoppingItemFromShoppingList(UUID shoppingListId, UUID shoppingItemId) {
         shoppingItemRepository.deleteById(shoppingItemId);
     }
 
-    /**
-     * Updates the purchase status of a shopping item.
-     *
-     * @param shoppingItemId the unique identifier of the shopping item
-     * @param status {@code true} if the item is purchased; {@code false} otherwise
-     */
     @Transactional
     @Override
     public void updateShoppingItemStatus(UUID shoppingItemId, boolean status) {
         shoppingItemRepository.updateStatus(shoppingItemId, status);
     }
 
-    /**
-     * Retrieves a shopping item by its identifier.
-     *
-     * @param shoppingItemId the unique identifier of the shopping item
-     * @return the {@link ShoppingItemDTO} matching the given ID
-     */
     @Override
     public ShoppingItemDTO getShoppingItemById(UUID shoppingItemId) {
         Optional<ShoppingItemsRecord> recordOpt = shoppingItemRepository.findById(shoppingItemId);
         return recordOpt.map(shoppingRecordsMapper::toShoppingItemDTO).orElse(null);
     }
 
-    /**
-     * Updates the list of consumer user IDs for a shopping list.
-     *
-     * @param shoppingListId the unique identifier of the shopping list
-     * @param allUserIds the list of user IDs who are allowed to consume this list
-     */
     @Transactional
     @Override
     public void updateShoppingListConsumers(UUID shoppingListId, List<UUID> allUserIds) {
@@ -228,46 +184,21 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
         consumerInListRepository.addConsumers(shoppingListId, toAdd);
     }
 
-    /**
-     * Checks whether a shopping list exists by its identifier.
-     *
-     * @param shoppingListId the unique identifier of the shopping list
-     * @return {@code true} if the shopping list exists; {@code false} otherwise
-     */
     @Override
     public boolean isExisted(UUID shoppingListId) {
         return shoppingListRepository.exists(shoppingListId);
     }
 
-    /**
-     * Checks whether a given user is a consumer of the specified shopping list.
-     *
-     * @param shoppingListId the unique identifier of the shopping list
-     * @param consumerId the unique identifier of the user
-     * @return {@code true} if the user is a consumer; {@code false} otherwise
-     */
     @Override
     public boolean isConsumer(UUID shoppingListId, UUID consumerId) {
         return consumerInListRepository.isConsumer(shoppingListId, consumerId);
     }
 
-    /**
-     * Checks whether a shopping item exists by its identifier.
-     *
-     * @param shoppingItemId the unique identifier of the shopping item
-     * @return {@code true} if the shopping item exists; {@code false} otherwise
-     */
     @Override
     public boolean isShoppingItemExisted(UUID shoppingItemId) {
         return shoppingItemRepository.exists(shoppingItemId);
     }
 
-    /**
-     * Updates the details of an existing shopping item.
-     *
-     * @param shoppingItemDTO the {@link ShoppingItemDTO} containing the new field values for the
-     *     item
-     */
     @Transactional
     @Override
     public void updateShoppingItem(ShoppingItemDTO shoppingItemDTO) {
@@ -279,14 +210,6 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
                 shoppingItemDTO.getIsPurchased());
     }
 
-    /**
-     * Retrieves all shopping lists corresponding to the given identifiers.
-     *
-     * @param shoppingListsIds a {@link List} of {@link UUID} representing the IDs of the shopping
-     *     lists to fetch
-     * @return a {@link List} of {@link ShoppingListDTO} instances matching the provided IDs; if an
-     *     ID does not correspond to an existing shopping list, it will be omitted
-     */
     @Override
     public List<ShoppingListDTO> getShoppingListsByIds(List<UUID> shoppingListsIds) {
         return shoppingListRepository.findByIds(shoppingListsIds).stream()
@@ -302,51 +225,21 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
                 .toList();
     }
 
-    /**
-     * Verifies whether shopping lists with all specified identifiers exist.
-     *
-     * @param shoppingListsIds a {@link List} of {@link UUID} representing the IDs to check
-     * @return {@code true} if a shopping list exists for every ID in the list; {@code false}
-     *     otherwise
-     */
     @Override
     public boolean areExisted(List<UUID> shoppingListsIds) {
         return shoppingListRepository.allExist(shoppingListsIds);
     }
 
-    /**
-     * Determines whether the specified shopping list is eligible to be bound to a task. The list is
-     * considered free of a task if the taskId field is null.
-     *
-     * @param shoppingListId the unique identifier of the shopping list to check
-     * @return {@code true} if the shopping list can be bound to a task; {@code false} otherwise
-     */
     @Override
     public boolean canBindShoppingListToTask(UUID shoppingListId) {
         return shoppingListRepository.canBind(shoppingListId);
     }
 
-    /**
-     * Determines whether all the specified shopping lists are eligible to be bound to a task. The
-     * list is considered free of a task if the taskId field is null.
-     *
-     * @param shoppingListsIds a {@link List} of {@link UUID} values representing the shopping lists
-     *     to check
-     * @return {@code true} if every shopping list in the list can be bound to a task; {@code false}
-     *     if one or more cannot
-     */
     @Override
     public boolean canBindShoppingListsToTask(List<UUID> shoppingListsIds) {
         return shoppingListRepository.allCanBeBound(shoppingListsIds);
     }
 
-    /**
-     * Retrieves the identifier of the task associated with the given shopping list.
-     *
-     * @param shoppingListId the unique identifier of the shopping list
-     * @return the {@link UUID} of the task linked to the specified shopping list. If the problem is
-     *     not resolved, return null.
-     */
     @Nullable
     @Override
     public UUID getTaskIdForShoppingList(UUID shoppingListId) {
@@ -358,14 +251,6 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
         return record.getTaskId();
     }
 
-    /**
-     * Determines whether all products in this list are purchased (The is_purchased field of all
-     * products is true).
-     *
-     * @param shoppingListId the unique identifier of the task
-     * @return {@code true} if all is_purchased fields of the lists are true; {@code false}
-     *     otherwise
-     */
     @Override
     public boolean isBought(UUID shoppingListId) {
         List<ShoppingItemsRecord> shoppingItems =
@@ -380,30 +265,11 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
         return true;
     }
 
-    /**
-     * Determines whether a single shopping list can be bound to the given task.
-     *
-     * @param shoppingListId the unique identifier of the shopping list to check
-     * @param taskId the unique identifier of the task
-     * @return {@code true} if the shopping list is eligible to be associated with the task( If the
-     *     shopping list is already linked to this task or is not linked to any task); {@code false}
-     *     otherwise
-     */
     @Override
     public boolean canBindShoppingListToTaskById(UUID shoppingListId, UUID taskId) {
         return shoppingListRepository.isBindedToTaskOrNull(shoppingListId, taskId);
     }
 
-    /**
-     * Determines whether all specified shopping lists can be bound to the given task.
-     *
-     * @param shoppingListsIds a {@link List} of {@link UUID} values representing shopping list IDs
-     *     to check
-     * @param taskId the unique identifier of the task
-     * @return {@code true} if every shopping list in the list is eligible for association with the
-     *     task( If the shopping list is already linked to this task or is not linked to any task);
-     *     {@code false} otherwise
-     */
     @Override
     public boolean canBindShoppingListsToTaskById(List<UUID> shoppingListsIds, UUID taskId) {
         if (shoppingListsIds == null || shoppingListsIds.isEmpty()) return true;
@@ -412,25 +278,12 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
         return count == shoppingListsIds.size();
     }
 
-    /**
-     * Sets or updates the budget for the specified shopping list.
-     *
-     * @param shoppingListId the unique identifier of the shopping list
-     * @param budget the {@link BigDecimal} amount representing the new budget
-     */
     @Transactional
     @Override
     public void setBudget(UUID shoppingListId, BigDecimal budget) {
         shoppingListRepository.setBudget(shoppingListId, budget);
     }
 
-    /**
-     * Retrieves all consumers for a specific shopping list with their user data.
-     *
-     * @param shoppingListId the unique identifier of the shopping list
-     * @param eventId the unique identifier of the event
-     * @return a list of {@link ParticipantDTO} representing the consumers
-     */
     @Override
     public List<ParticipantDTO> getConsumersForShoppingList(UUID shoppingListId, UUID eventId) {
         return consumerInListRepository.findAllConsumersWithUserData(shoppingListId, eventId).stream()

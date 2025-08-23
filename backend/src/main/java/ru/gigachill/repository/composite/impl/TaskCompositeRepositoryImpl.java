@@ -65,13 +65,6 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
         return tasksRecordMapper.toTaskWithShoppingListsDTO(record, shoppingLists, author, executor);
     }
 
-    /**
-     * Retrieves all tasks associated with the specified event.
-     *
-     * @param eventId the unique identifier of the event
-     * @return a {@link List} of {@link TaskDTO} representing all tasks in the event; empty list if
-     *     none found
-     */
     @Override
     public List<TaskDTO> getAllTasksFromEvent(UUID eventId) {
         return taskRepository.findAllByEventId(eventId).stream()
@@ -92,13 +85,6 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
         return dto;
     }
 
-    /**
-     * Retrieves a task by its unique identifier, including its associated shopping lists.
-     *
-     * @param taskId the unique identifier of the task
-     * @return a {@link TaskWithShoppingListsDTO} containing task details and its shopping list
-     *     references
-     */
     @Override
     public TaskWithShoppingListsDTO getTaskById(UUID taskId) {
         TasksRecord taskRecord = taskRepository.findById(taskId).orElse(null);
@@ -110,9 +96,13 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
 
     /**
      * Retrieves shopping lists for a specific task with their items and consumers.
-     *
-     * @param taskId the unique identifier of the task
-     * @return a list of {@link ShoppingListDTO} objects for the task
+     * <p>
+     * This method aggregates data from multiple sources:
+     * 1. Shopping list records associated with the task
+     * 2. Shopping items within each list
+     * 3. Consumer participants assigned to each list
+     * <p>
+     * The result provides a complete view of all shopping data related to the task.
      */
     @Override
     public List<ShoppingListDTO> getShoppingListsForTask(UUID taskId) {
@@ -131,41 +121,28 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
 
     /**
      * Creates a new task for the specified event and associates it with the given shopping lists.
-     *
-     * @param eventId the unique identifier of the event in which to create the task
-     * @param taskDTO the {@link TaskDTO} containing details of the task to create
-     * @param shoppingListsIds a {@link List} of {@link UUID} values representing shopping lists to
-     *     attach to the task
+     * <p>
+     * This method performs an atomic operation that:
+     * 1. Creates the task record in the database
+     * 2. Links all specified shopping lists to the newly created task
      */
     @Transactional
     @Override
     public void createTask(UUID eventId, TaskDTO taskDTO, List<UUID> shoppingListsIds) {
         taskRepository.save(tasksRecordMapper.toTasksRecord(taskDTO, eventId));
 
-        // Привязываем shopping lists к задаче
+        // Link shopping lists to the newly created task
         for (UUID shoppingListId : shoppingListsIds) {
             shoppingListRepository.updateTaskId(shoppingListId, taskDTO.getTaskId());
         }
     }
 
-    /**
-     * Updates an existing task’s data.
-     *
-     * @param taskId the unique identifier of the task to update
-     * @param taskDTO the {@link TaskDTO} containing the updated task information
-     */
     @Transactional
     @Override
     public void updateTask(UUID taskId, TaskDTO taskDTO) {
         taskRepository.updateFromDTO(taskId, taskDTO);
     }
 
-    /**
-     * Marks a task as started by a specific user, indicating execution has begun.
-     *
-     * @param taskId the unique identifier of the task to start
-     * @param userId the unique identifier of the user executing the task
-     */
     @Transactional
     @Override
     public void startExecuting(UUID taskId, UUID userId) {
@@ -173,9 +150,11 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
     }
 
     /**
-     * Deletes the specified task.
-     *
-     * @param taskId the unique identifier of the task to delete
+     * Deletes the specified task and cleans up associated data.
+     * <p>
+     * This method performs a cascading delete operation:
+     * 1. Resets status of all shopping items in associated lists (marks as unpurchased)
+     * 2. Deletes the task record (shopping list associations are automatically nullified by DB constraints)
      */
     @Transactional
     @Override
@@ -184,28 +163,15 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
 
         shoppingItemRepository.resetAllStatusByListIds(shoppingListIds);
 
-        // Связи у ShoppingLists автоматически выставляются в null на уровне СУБД
+        // Shopping list associations are automatically nullified by database constraints
         taskRepository.deleteById(taskId);
     }
 
-    /**
-     * Checks if the given user is the author (creator) of the task.
-     *
-     * @param taskId the unique identifier of the task
-     * @param userId the unique identifier of the user to check
-     * @return {@code true} if the user is the author; {@code false} otherwise
-     */
     @Override
     public boolean isAuthor(UUID taskId, UUID userId) {
         return taskRepository.isAuthor(taskId, userId);
     }
 
-    /**
-     * Retrieves the current status of the task (e.g., "pending", "in_progress", "completed").
-     *
-     * @param taskId the unique identifier of the task
-     * @return the status string of the task
-     */
     @Override
     public String getTaskStatus(UUID taskId) {
         Optional<TasksRecord> taskRecordOpt = taskRepository.findById(taskId);
@@ -219,38 +185,16 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
         return taskRecord.getStatus().getLiteral();
     }
 
-    /**
-     * Checks whether a task with the given identifier exists within the specified event context.
-     *
-     * @param eventId the unique identifier of the event
-     * @param taskId the unique identifier of the task
-     * @return {@code true} if the task exists within the event; {@code false} otherwise
-     */
     @Override
     public boolean isExisted(UUID eventId, UUID taskId) {
         return taskRepository.exists(eventId, taskId);
     }
 
-    /**
-     * Determines if a user has permission to execute the specified task.
-     *
-     * @param taskId the unique identifier of the task
-     * @param userId the unique identifier of the user
-     * @return {@code true} if the user can execute the task(if he is executor or executor is null);
-     *     {@code false} otherwise
-     */
     @Override
     public boolean canExecute(UUID taskId, UUID userId) {
         return taskRepository.canExecute(taskId, userId);
     }
 
-    /**
-     * Retrieves the identifier of the user who is currently executing the specified task.
-     *
-     * @param taskId the unique identifier of the task
-     * @return the {@link UUID} of the executor user if one is assigned; {@code null} if the task
-     *     has not been started or no executor is set
-     */
     @Nullable
     @Override
     public UUID getExecutorId(UUID taskId) {
@@ -264,10 +208,10 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
 
     /**
      * Assigns or unassigns the executor for the specified task.
-     *
-     * @param taskId the unique identifier of the task to update
-     * @param executorId the {@link UUID} of the user who will execute the task; may be {@code null}
-     *     to clear any existing executor
+     * <p>
+     * When the executor changes, this method also resets the status of all shopping items
+     * in associated lists to ensure data consistency (items become unpurchased when task
+     * execution is reassigned).
      */
     @Transactional
     @Override
@@ -276,7 +220,7 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
 
         List<UUID> listIds = shoppingListRepository.findIdsByTaskId(taskId);
 
-        // Отвязываем и сбрасываем статус товаров
+        // Reset item statuses when executor changes to maintain data consistency
         for (UUID listId : listIds) {
             shoppingItemRepository.resetAllStatusByListId(listId);
         }
@@ -284,54 +228,46 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
 
     /**
      * Updates the set of shopping lists associated with the specified task.
-     *
-     * @param taskId the unique identifier of the task to update
-     * @param shoppingLists a {@link List} of {@link UUID} values representing new shopping list IDs
-     *     to bind; may be {@code null} to clear all associations If the list is unlinked, its
-     *     status becomes "Unassigned". And all the purchases become not purchased.
+     * <p>
+     * This method implements a diff-based update strategy:
+     * 1. Compares current shopping list associations with the new desired state
+     * 2. Removes associations that are no longer needed (resets item statuses)
+     * 3. Adds new associations as needed
+     * 4. When shoppingLists is null, removes all associations
      */
     @Transactional
     @Override
     public void updateShoppingLists(UUID taskId, @Nullable List<UUID> shoppingLists) {
-        // Текущие списки, привязанные к задаче
         List<UUID> currentIds = shoppingListRepository.findIdsByTaskId(taskId);
 
         if (shoppingLists == null) {
-            // 1) Убираем все связи
+            // Clear all associations and reset item statuses
             shoppingListRepository.detachAllFromTask(taskId);
-            // 2) Сбрасываем статус у всех товаров в этих списках
             for (UUID listId : currentIds) {
                 shoppingItemRepository.resetAllStatusByListId(listId);
             }
             return;
         }
 
-        // Кого надо отвязать: есть в current, но нет в new
+        // Calculate differences: what to remove and what to add
         Set<UUID> toRemove = new HashSet<>(currentIds);
         shoppingLists.forEach(toRemove::remove);
 
-        // Кого надо привязать: есть в new, но нет в current
         Set<UUID> toAdd = new HashSet<>(shoppingLists);
         currentIds.forEach(toAdd::remove);
 
-        // Отвязываем и сбрасываем статус товаров
+        // Remove old associations and reset item statuses
         for (UUID listId : toRemove) {
             shoppingListRepository.updateTaskId(listId, null);
             shoppingItemRepository.resetAllStatusByListId(listId);
         }
 
-        // Привязываем новые
+        // Add new associations
         for (UUID listId : toAdd) {
             shoppingListRepository.updateTaskId(listId, taskId);
         }
     }
 
-    /**
-     * Updates the comment provided by the executor for the specified task.
-     *
-     * @param taskId the unique identifier of the task to update
-     * @param executorComment the comment text from the executor
-     */
     @Transactional
     @Override
     public void setExecutorComment(UUID taskId, String executorComment) {
@@ -340,12 +276,11 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
 
     /**
      * Updates the reviewer's comment and approval status for the specified task.
-     *
-     * @param taskId the unique identifier of the task to update
-     * @param reviewerComment the comment text from the reviewer; may be empty or null to clear
-     *     existing comment
-     * @param isApproved {@code true} if the reviewer approves the task - The task status becomes
-     *     "completed"; {@code false} otherwise - The task status becomes "in_progress"
+     * <p>
+     * This method implements the task review workflow:
+     * - When approved: task status becomes "completed"
+     * - When rejected: task status reverts to "in_progress" for rework
+     * - Reviewer comment is always updated regardless of approval status
      */
     @Transactional
     @Override

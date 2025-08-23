@@ -69,7 +69,7 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
 
     @Override
     public ParticipantDTO getParticipantById(UUID eventId, UUID participantId) {
-        // Получаем Optional<UserInEventRecord>
+        // Get participant's role and event-specific data
         Optional<UserInEventRecord> userInEventOpt =
                 userInEventRepository.findById(eventId, participantId);
         if (userInEventOpt.isEmpty()) {
@@ -77,12 +77,14 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
         }
         UserInEventRecord userInEvent = userInEventOpt.get();
 
+        // Get user's general profile data
         Optional<UsersRecord> userRecordOpt = userRepository.findById(participantId);
         if (userRecordOpt.isEmpty()) {
             return null;
         }
         UsersRecord userRecord = userRecordOpt.get();
 
+        // Combine event-specific and general user data
         ParticipantDTO dto = participantsRecordMapper.toParticipantDTO(userInEvent);
         dto.setLogin(userRecord.getLogin());
         dto.setName(userRecord.getName());
@@ -91,24 +93,25 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
 
     /**
      * Retrieves the current balance summary for the specified participant.
-     *
-     * @param eventId the unique identifier of the event
-     * @param participantId the unique identifier of the participant
-     * @return a {@link ParticipantBalanceDTO} containing the participant’s total debits, credits,
-     *     and net balance; never {@code null}
+     * <p>
+     * This method calculates the participant's debt relationships:
+     * - myDebts: amounts this participant owes to others (debtor_id = participantId)
+     * - debtsToMe: amounts others owe to this participant (creditor_id = participantId)
+     * <p>
+     * Self-debts and null user references are filtered out to ensure data integrity.
      */
     @Override
     public ParticipantBalanceDTO getParticipantBalance(UUID eventId, UUID participantId) {
         var myDebts =
                 eventRepository.findDebtsICreatedWithUserData(eventId, participantId).stream()
-                        // Фильтруем долги самому себе и null userId
+                        // Filter out self-debts and null user references
                         .filter(debt -> debt.getUserId() != null && !debt.getUserId().equals(participantId))
                         .map(debt -> Map.of(debtWithUserDataMapper.toUserDTO(debt), debt.getAmount()))
                         .toList();
 
         var debtsToMe =
                 eventRepository.findDebtsToMeWithUserData(eventId, participantId).stream()
-                        // Фильтруем долги самому себе и null userId
+                        // Filter out self-debts and null user references
                         .filter(debt -> debt.getUserId() != null && !debt.getUserId().equals(participantId))
                         .map(debt -> Map.of(debtWithUserDataMapper.toUserDTO(debt), debt.getAmount()))
                         .toList();
@@ -119,13 +122,17 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
     /**
      * Computes and retrieves a summary of balance information for each participant in the given
      * event.
-     *
-     * @param eventId the unique identifier of the event for which to calculate participant balances
-     * @return a {@link List} of {@link ParticipantSummaryBalanceDTO} objects
+     * <p>
+     * This method performs comprehensive balance calculation for all participants:
+     * 1. Loads all participants in the event
+     * 2. For each participant, calculates total debts (amounts they owe) and credits (amounts owed to them)
+     * 3. Computes net balance (credits - debts)
+     * 4. Retrieves detailed balance breakdown and user profile data
+     * 5. Returns complete balance summary for each participant
      */
     @Override
     public List<ParticipantSummaryBalanceDTO> getSummaryParticipantBalance(UUID eventId) {
-        // Получаем всех участников мероприятия
+        // Get all participants in the event
         List<UserInEventRecord> participants = userInEventRepository.findByEventId(eventId);
 
         List<ParticipantSummaryBalanceDTO> result = new ArrayList<>();
@@ -133,25 +140,25 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
         for (UserInEventRecord participant : participants) {
             UUID userId = participant.getUserId();
 
-            // Считаем, сколько этот участник должен другим (по debtor_id)
+            // Calculate total debts this participant owes to others (debtor_id = userId)
             BigDecimal totalDebts =
                     eventRepository.findDebtsICreated(eventId, userId).stream()
                             .map(Map.Entry::getValue)
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-            // Считаем, сколько должны этому участнику (по creditor_id)
+            // Calculate total credits owed to this participant (creditor_id = userId)
             BigDecimal totalCredits =
                     eventRepository.findDebtsToMe(eventId, userId).stream()
                             .map(Map.Entry::getValue)
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-            // Итоговый баланс: мне должны - я должен
+            // Net balance: credits owed to me - debts I owe
             BigDecimal totalBalance = totalCredits.subtract(totalDebts);
 
-            // Подробный баланс (детализация по каждому пользователю)
+            // Get detailed balance breakdown per user
             ParticipantBalanceDTO userBalance = getParticipantBalance(eventId, userId);
 
-            // Получаем UserDTO
+            // Get user profile data
             UsersRecord userRecord = userRepository.findById(userId).orElse(null);
             UserDTO userDTO = userRecord == null ? null : usersRecordMapper.toUserDTO(userRecord);
 

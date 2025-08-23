@@ -4,7 +4,6 @@ import com.github.giga_chill.jooq.generated.enums.EventRole;
 import com.github.giga_chill.jooq.generated.tables.records.EventsRecord;
 import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
 import jakarta.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -53,13 +52,20 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
                         });
     }
 
+    /**
+     * Creates a new event and automatically assigns the creator as the owner.
+     * <p>
+     * This method performs an atomic operation that:
+     * 1. Creates the event record in the database
+     * 2. Automatically links the creator user to the event with 'owner' role
+     */
     @Transactional
     @Override
     public void createEvent(UUID userId, EventDTO event) {
         EventsRecord eventRecord = eventsRecordMapper.toEventsRecord(event);
         eventRepository.save(eventRecord);
 
-        // Привязка пользователя к событию
+        // Automatically link creator as event owner
         UserInEventRecord userInEventRecord = new UserInEventRecord();
         userInEventRecord.setUserId(userId);
         userInEventRecord.setEventId(event.getEventId());
@@ -67,35 +73,17 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
         userInEventRepository.save(userInEventRecord);
     }
 
-    /**
-     * Checks whether an event with the given identifier exists.
-     *
-     * @param eventId the unique identifier of the event
-     * @return {@code true} if the event exists and delete status false, {@code false} otherwise
-     */
     @Override
     public boolean isExistedAndNotDeleted(UUID eventId) {
         return eventRepository.existsAndNotDeleted(eventId);
     }
 
-    /**
-     * Creates a new invite link record for the specified event.
-     *
-     * @param eventId the unique identifier of the event
-     * @param inviteLinkUuid the UUID to assign as the invite link token
-     */
     @Transactional
     @Override
     public void createInviteLink(UUID eventId, UUID inviteLinkUuid) {
         eventRepository.updateInviteLink(eventId, inviteLinkUuid);
     }
 
-    /**
-     * Retrieves the UUID of the current invite link for the given event.
-     *
-     * @param eventId the unique identifier of the event
-     * @return the {@link UUID} representing the invite link token
-     */
     @Override
     public UUID getInviteLinkUuid(UUID eventId) {
         EventsRecord event = eventRepository.findById(eventId).orElse(null);
@@ -104,13 +92,6 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
         return event.getInviteToken();
     }
 
-    /**
-     * Retrieves the unique Event ID associated with the given invite link UUID.
-     *
-     * @param linkUuid the UUID token used for event invitation links
-     * @return the {@link UUID} of the event linked to the provided invitation token, or {@code
-     *     null} if no matching event is found
-     */
     @Nullable
     @Override
     public UUID getEventByLinkUuid(UUID linkUuid) {
@@ -124,8 +105,11 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
 
     /**
      * Calculates and updates the overall budget for the specified event.
-     *
-     * @param eventId the unique identifier of the event to recalculate the budget for
+     * <p>
+     * This method performs a budget recalculation by:
+     * 1. Refreshing the debts view to ensure latest data is used
+     * 2. Calculating the total event budget from all debt relationships
+     * 3. Updating the event record with the new budget amount
      */
     @Transactional
     @Override
@@ -135,25 +119,12 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
         eventRepository.setEventBudget(eventId, eventRepository.calculateEventBudget(eventId));
     }
 
-    /**
-     * Marks the specified event as finalized, preventing further modifications. Executes any
-     * finalization logic before setting the event’s status to closed.
-     *
-     * @param eventId the unique identifier of the event to close
-     */
     @Transactional
     @Override
     public void finalizeEvent(UUID eventId) {
         eventRepository.finalizeEventById(eventId);
     }
 
-    /**
-     * Determines whether the specified event has been finalized (closed).
-     *
-     * @param eventId the unique identifier of the event to check
-     * @return {@code true} if the event is finalized and no longer editable; {@code false}
-     *     otherwise
-     */
     @Override
     public boolean isFinalized(UUID eventId) {
         return eventRepository.isFinalized(eventId);
@@ -165,12 +136,6 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
         eventRepository.deleteById(eventId);
     }
 
-    /**
-     * Retrieves the end date and time of the specified event.
-     *
-     * @param eventId the unique identifier of the event
-     * @return a {@link String} representation of the event’s end date‑time,
-     */
     @Override
     public String getEndDatetime(UUID eventId) {
         return eventRepository.getEndDatetimeById(eventId).toString();
