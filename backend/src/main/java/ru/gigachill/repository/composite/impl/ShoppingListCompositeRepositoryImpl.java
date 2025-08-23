@@ -5,8 +5,12 @@ import com.github.giga_chill.jooq.generated.tables.records.ShoppingListsRecord;
 import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +20,8 @@ import ru.gigachill.dto.ShoppingItemDTO;
 import ru.gigachill.dto.ShoppingListDTO;
 import ru.gigachill.repository.simple.*;
 import ru.gigachill.mapper.jooq.ShoppingRecordsMapper;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import ru.gigachill.model.ShoppingListWithDetails;
+import ru.gigachill.model.ConsumerWithUserData;
 import ru.gigachill.mapper.ShoppingListWithDetailsMapper;
 import ru.gigachill.mapper.ConsumerWithUserDataMapper;
 
@@ -43,44 +45,46 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
     @Override
     public List<ShoppingListDTO> getAllShoppingListsFromEvent(UUID eventId) {
         List<ShoppingListWithDetails> rawData = shoppingListRepository.findByEventIdWithDetails(eventId);
+        List<ConsumerWithUserData> allConsumers = consumerInListRepository.findAllConsumersForEventWithUserData(eventId);
         
-        // Группируем данные по shoppingListId
-        Map<UUID, List<ShoppingListWithDetails>> groupedData = rawData.stream()
-                .collect(Collectors.groupingBy(ShoppingListWithDetails::getShoppingListId));
+        // Группируем потребителей по shoppingListId
+        Map<UUID, List<ConsumerWithUserData>> consumersByList = allConsumers.stream()
+                .collect(Collectors.groupingBy(ConsumerWithUserData::getShoppingListId));
         
-        return groupedData.values().stream()
-                .map(listData -> {
-                    if (listData.isEmpty()) return null;
-
-                    ShoppingListWithDetails first = listData.getFirst();
-
-                    // Создаем ShoppingListDTO с помощью маппера
-                    ShoppingListDTO shoppingListDTO = shoppingListWithDetailsMapper.toShoppingListDTO(first);
-
-                    // Собираем товары
-                    List<ShoppingItemDTO> items = listData.stream()
-                            .filter(data -> data.getShoppingItemId() != null)
-                            .map(shoppingListWithDetailsMapper::toShoppingItemDTO)
-                            .toList();
-
-                    // Собираем потребителей
-                    List<ParticipantDTO> consumers = listData.stream()
-                            .filter(data -> data.getUserId() != null)
-                            .map(data -> {
-                                ParticipantDTO consumer = new ParticipantDTO();
-                                consumer.setId(data.getUserId());
-                                return consumer;
-                            })
-                            .distinct()
-                            .toList();
-
-                    shoppingListDTO.setShoppingItems(items);
-                    shoppingListDTO.setConsumers(consumers);
-
-                    return shoppingListDTO;
-                })
-                .filter(Objects::nonNull)
-                .toList();
+        return rawData.stream()
+                .collect(Collectors.groupingBy(ShoppingListWithDetails::getShoppingListId))
+                .values()
+                .stream()
+                .map(listData -> mapToShoppingListDTO(listData, consumersByList))
+                .collect(Collectors.toList());
+    }
+    
+    private ShoppingListDTO mapToShoppingListDTO(List<ShoppingListWithDetails> listData, 
+                                                Map<UUID, List<ConsumerWithUserData>> consumersByList) {
+        ShoppingListWithDetails first = listData.getFirst();
+        
+        // Создаем основной объект списка покупок
+        ShoppingListDTO shoppingListDTO = shoppingListWithDetailsMapper.toShoppingListDTO(first);
+        
+        // Извлекаем уникальные товары
+        Map<UUID, ShoppingItemDTO> uniqueItems = new LinkedHashMap<>();
+        for (ShoppingListWithDetails data : listData) {
+            if (data.getShoppingItemId() != null) {
+                uniqueItems.putIfAbsent(data.getShoppingItemId(), 
+                    shoppingListWithDetailsMapper.toShoppingItemDTO(data));
+            }
+        }
+        
+        // Получаем потребителей из предварительно загруженных данных
+        List<ParticipantDTO> consumers = consumersByList.getOrDefault(first.getShoppingListId(), List.of())
+                .stream()
+                .map(consumerWithUserDataMapper::toParticipantDTO)
+                .collect(Collectors.toList());
+        
+        shoppingListDTO.setShoppingItems(new ArrayList<>(uniqueItems.values()));
+        shoppingListDTO.setConsumers(consumers);
+        
+        return shoppingListDTO;
     }
 
     /**

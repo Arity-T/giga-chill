@@ -8,6 +8,7 @@ import java.util.UUID;
 
 @Data
 public class ConsumerWithUserData {
+    private UUID shoppingListId;
     private UUID userId;
     private String login;
     private String name;

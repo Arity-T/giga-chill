@@ -1,6 +1,7 @@
 package ru.gigachill.repository.simple;
 
 import com.github.giga_chill.jooq.generated.tables.ConsumerInList;
+import com.github.giga_chill.jooq.generated.tables.ShoppingLists;
 import com.github.giga_chill.jooq.generated.tables.UserInEvent;
 import com.github.giga_chill.jooq.generated.tables.Users;
 import com.github.giga_chill.jooq.generated.tables.records.ConsumerInListRecord;
@@ -73,6 +74,7 @@ public class ConsumerInListRepository {
 
     public List<ConsumerWithUserData> findAllConsumersWithUserData(UUID shoppingListId, UUID eventId) {
         return dsl.select(
+                        ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID,
                         ConsumerInList.CONSUMER_IN_LIST.USER_ID,
                         Users.USERS.LOGIN,
                         Users.USERS.NAME,
@@ -85,6 +87,26 @@ public class ConsumerInListRepository {
                 .on(ConsumerInList.CONSUMER_IN_LIST.USER_ID.eq(UserInEvent.USER_IN_EVENT.USER_ID)
                         .and(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId)))
                 .where(ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID.eq(shoppingListId))
+                .fetchInto(ConsumerWithUserData.class);
+    }
+
+    public List<ConsumerWithUserData> findAllConsumersForEventWithUserData(UUID eventId) {
+        return dsl.select(
+                        ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID,
+                        ConsumerInList.CONSUMER_IN_LIST.USER_ID,
+                        Users.USERS.LOGIN,
+                        Users.USERS.NAME,
+                        UserInEvent.USER_IN_EVENT.ROLE,
+                        UserInEvent.USER_IN_EVENT.BALANCE)
+                .from(ConsumerInList.CONSUMER_IN_LIST)
+                .join(ShoppingLists.SHOPPING_LISTS)
+                .on(ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID.eq(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID))
+                .join(Users.USERS)
+                .on(ConsumerInList.CONSUMER_IN_LIST.USER_ID.eq(Users.USERS.USER_ID))
+                .leftJoin(UserInEvent.USER_IN_EVENT)
+                .on(ConsumerInList.CONSUMER_IN_LIST.USER_ID.eq(UserInEvent.USER_IN_EVENT.USER_ID)
+                        .and(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId)))
+                .where(ShoppingLists.SHOPPING_LISTS.EVENT_ID.eq(eventId))
                 .fetchInto(ConsumerWithUserData.class);
     }
 }
