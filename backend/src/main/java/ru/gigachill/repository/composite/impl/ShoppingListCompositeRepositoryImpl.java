@@ -22,8 +22,7 @@ import ru.gigachill.repository.simple.*;
 import ru.gigachill.mapper.jooq.ShoppingRecordsMapper;
 import ru.gigachill.model.ShoppingListWithDetails;
 import ru.gigachill.model.ConsumerWithUserData;
-import ru.gigachill.mapper.ShoppingListWithDetailsMapper;
-import ru.gigachill.mapper.ConsumerWithUserDataMapper;
+import ru.gigachill.mapper.jooq.ParticipantsRecordMapper;
 
 @Transactional(readOnly = true)
 @Repository
@@ -33,8 +32,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
     private final ConsumerInListRepository consumerInListRepository;
     private final ShoppingItemRepository shoppingItemRepository;
     private final ShoppingRecordsMapper shoppingRecordsMapper;
-    private final ShoppingListWithDetailsMapper shoppingListWithDetailsMapper;
-    private final ConsumerWithUserDataMapper consumerWithUserDataMapper;
+    private final ParticipantsRecordMapper participantsRecordMapper;
 
     /**
      * Retrieves all shopping lists associated with the specified event.
@@ -78,21 +76,21 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
         ShoppingListWithDetails first = listData.getFirst();
         
         // Create base shopping list DTO
-        ShoppingListDTO shoppingListDTO = shoppingListWithDetailsMapper.toShoppingListDTO(first);
+        ShoppingListDTO shoppingListDTO = shoppingRecordsMapper.toShoppingListDTO(first);
         
         // Extract unique items (deduplicate from JOIN result)
         Map<UUID, ShoppingItemDTO> uniqueItems = new LinkedHashMap<>();
         for (ShoppingListWithDetails data : listData) {
             if (data.getShoppingItemId() != null) {
                 uniqueItems.putIfAbsent(data.getShoppingItemId(), 
-                    shoppingListWithDetailsMapper.toShoppingItemDTO(data));
+                    shoppingRecordsMapper.toShoppingItemDTO(data));
             }
         }
         
         // Attach consumers from pre-loaded data
         List<ParticipantDTO> consumers = consumersByList.getOrDefault(first.getShoppingListId(), List.of())
                 .stream()
-                .map(consumerWithUserDataMapper::toParticipantDTO)
+                .map(participantsRecordMapper::toParticipantDTO)
                 .collect(Collectors.toList());
         
         shoppingListDTO.setShoppingItems(new ArrayList<>(uniqueItems.values()));
@@ -287,7 +285,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
     @Override
     public List<ParticipantDTO> getConsumersForShoppingList(UUID shoppingListId, UUID eventId) {
         return consumerInListRepository.findAllConsumersWithUserData(shoppingListId, eventId).stream()
-                .map(consumerWithUserDataMapper::toParticipantDTO)
+                .map(participantsRecordMapper::toParticipantDTO)
                 .toList();
     }
 }

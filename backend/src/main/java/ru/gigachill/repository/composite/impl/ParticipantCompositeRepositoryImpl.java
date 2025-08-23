@@ -18,7 +18,6 @@ import ru.gigachill.repository.simple.UserInEventRepository;
 import ru.gigachill.repository.simple.UserRepository;
 import ru.gigachill.mapper.jooq.ParticipantsRecordMapper;
 import ru.gigachill.mapper.jooq.UsersRecordMapper;
-import ru.gigachill.mapper.jooq.DebtWithUserDataMapper;
 
 @Transactional(readOnly = true)
 @Repository
@@ -29,7 +28,6 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
     private final EventRepository eventRepository;
     private final ParticipantsRecordMapper participantsRecordMapper;
     private final UsersRecordMapper usersRecordMapper;
-    private final DebtWithUserDataMapper debtWithUserDataMapper;
 
     @Override
     public List<ParticipantDTO> getAllParticipantsByEventId(UUID eventId) {
@@ -106,14 +104,14 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
                 eventRepository.findDebtsICreatedWithUserData(eventId, participantId).stream()
                         // Filter out self-debts and null user references
                         .filter(debt -> debt.getUserId() != null && !debt.getUserId().equals(participantId))
-                        .map(debt -> Map.of(debtWithUserDataMapper.toUserDTO(debt), debt.getAmount()))
+                        .map(debt -> Map.of(usersRecordMapper.toUserDTO(debt), debt.getAmount()))
                         .toList();
 
         var debtsToMe =
                 eventRepository.findDebtsToMeWithUserData(eventId, participantId).stream()
                         // Filter out self-debts and null user references
                         .filter(debt -> debt.getUserId() != null && !debt.getUserId().equals(participantId))
-                        .map(debt -> Map.of(debtWithUserDataMapper.toUserDTO(debt), debt.getAmount()))
+                        .map(debt -> Map.of(usersRecordMapper.toUserDTO(debt), debt.getAmount()))
                         .toList();
 
         return new ParticipantBalanceDTO(myDebts, debtsToMe);

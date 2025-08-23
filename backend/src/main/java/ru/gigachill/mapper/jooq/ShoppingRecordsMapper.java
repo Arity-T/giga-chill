@@ -3,10 +3,12 @@ package ru.gigachill.mapper.jooq;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingItemsRecord;
 import com.github.giga_chill.jooq.generated.tables.records.ShoppingListsRecord;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import ru.gigachill.dto.ShoppingItemDTO;
 import ru.gigachill.dto.ShoppingListDTO;
 import ru.gigachill.dto.ParticipantDTO;
+import ru.gigachill.model.ShoppingListWithDetails;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,4 +21,11 @@ public interface ShoppingRecordsMapper {
 	ShoppingItemsRecord toShoppingItemsRecord(ShoppingItemDTO dto, UUID shoppingListId);
 
 	ShoppingListDTO toShoppingListDTOWithDetails(ShoppingListsRecord record, List<ShoppingItemDTO> shoppingItems, List<ParticipantDTO> consumers);
+
+	@Mapping(target = "shoppingItems", ignore = true)
+	@Mapping(target = "consumers", ignore = true)
+	ShoppingListDTO toShoppingListDTO(ShoppingListWithDetails details);
+
+	@Mapping(source = "itemTitle", target = "title")
+	ShoppingItemDTO toShoppingItemDTO(ShoppingListWithDetails details);
 }

@@ -8,6 +8,7 @@ import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 import ru.gigachill.dto.ParticipantDTO;
 import ru.gigachill.model.UserInEventWithUserData;
+import ru.gigachill.model.ConsumerWithUserData;
 import java.util.UUID;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {UsersRecordMapper.class})
@@ -21,6 +22,10 @@ public interface ParticipantsRecordMapper {
 	@Mapping(source = "userId", target = "id")
 	@Mapping(source = "role.literal", target = "role")
 	ParticipantDTO toParticipantDTO(UserInEventWithUserData record);
+
+	@Mapping(source = "userId", target = "id")
+	@Mapping(source = "role.literal", target = "role")
+	ParticipantDTO toParticipantDTO(ConsumerWithUserData consumerData);
 
 	@Mapping(source = "dto.id", target = "userId")
 	@Mapping(source = "dto.role", target = "role", qualifiedByName = "stringToEventRole")
