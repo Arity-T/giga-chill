@@ -51,42 +51,20 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
         userInEventRepository.deleteById(eventId, participantId);
     }
 
-    // todo: optimize in the repository
     @Override
     public boolean checkUserInEvent(UUID eventId, UUID userId) {
-        List<UserInEventRecord> records = userInEventRepository.findByEventId(eventId);
-        for (UserInEventRecord record : records) {
-            if (record.getUserId().equals(userId)) {
-                return true;
-            }
-        }
-        return false;
+        return userInEventRepository.existsByEventIdAndUserId(eventId, userId);
     }
 
-    // todo: optimize in the repository
     @Transactional
     @Override
-    public void updateParticipantRole(UUID eventId, UUID participantId, String role) {
-        List<UserInEventRecord> records = userInEventRepository.findByEventId(eventId);
-        for (UserInEventRecord record : records) {
-            if (record.getUserId().equals(participantId)) {
-                record.setRole(EventRole.valueOf(role));
-                record.update();
-                break;
-            }
-        }
+    public void updateParticipantRole(UUID eventId, UUID participantId, EventRole role) {
+        userInEventRepository.updateRole(eventId, participantId, role);
     }
 
-    // todo: optimize in the repository
     @Override
     public String getParticipantRoleInEvent(UUID eventId, UUID participantId) {
-        List<UserInEventRecord> records = userInEventRepository.findByEventId(eventId);
-        for (UserInEventRecord record : records) {
-            if (record.getUserId().equals(participantId)) {
-                return record.getRole() != null ? record.getRole().getLiteral() : null;
-            }
-        }
-        return null;
+        return userInEventRepository.getRole(eventId, participantId).toString();
     }
 
     @Override

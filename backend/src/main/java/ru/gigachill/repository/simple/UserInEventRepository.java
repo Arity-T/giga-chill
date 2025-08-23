@@ -1,5 +1,6 @@
 package ru.gigachill.repository.simple;
 
+import com.github.giga_chill.jooq.generated.enums.EventRole;
 import com.github.giga_chill.jooq.generated.tables.UserInEvent;
 import com.github.giga_chill.jooq.generated.tables.Users;
 import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
@@ -60,5 +61,28 @@ public class UserInEventRepository {
                 .on(UserInEvent.USER_IN_EVENT.USER_ID.eq(Users.USERS.USER_ID))
                 .where(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId))
                 .fetchInto(UserInEventWithUserData.class);
+    }
+
+    public boolean existsByEventIdAndUserId(UUID eventId, UUID userId) {
+        return dsl.fetchExists(
+                dsl.selectFrom(UserInEvent.USER_IN_EVENT)
+                        .where(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId)
+                                .and(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId))));
+    }
+
+    public void updateRole(UUID eventId, UUID userId, EventRole role) {
+        dsl.update(UserInEvent.USER_IN_EVENT)
+                .set(UserInEvent.USER_IN_EVENT.ROLE, role)
+                .where(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId)
+                        .and(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId)))
+                .execute();
+    }
+
+    public EventRole getRole(UUID eventId, UUID userId) {
+        return dsl.select(UserInEvent.USER_IN_EVENT.ROLE)
+                .from(UserInEvent.USER_IN_EVENT)
+                .where(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId)
+                        .and(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId)))
+                .fetchOne(UserInEvent.USER_IN_EVENT.ROLE);
     }
 }
