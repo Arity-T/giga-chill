@@ -43,6 +43,12 @@ public class ShoppingListRepository {
                 .fetchInto(UUID.class);
     }
 
+    public List<ShoppingListsRecord> findByTaskId(UUID taskId) {
+        return dsl.selectFrom(ShoppingLists.SHOPPING_LISTS)
+                .where(ShoppingLists.SHOPPING_LISTS.TASK_ID.eq(taskId))
+                .fetch();
+    }
+
     public void save(ShoppingListsRecord record) {
         dsl.insertInto(ShoppingLists.SHOPPING_LISTS).set(record).execute();
     }
@@ -172,6 +178,30 @@ public class ShoppingListRepository {
                 .leftJoin(ConsumerInList.CONSUMER_IN_LIST)
                 .on(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID))
                 .where(ShoppingLists.SHOPPING_LISTS.EVENT_ID.eq(eventId))
+                .fetchInto(ShoppingListWithDetails.class);
+    }
+
+    public List<ShoppingListWithDetails> findByTaskIdWithDetails(UUID taskId) {
+        return dsl.select(
+                        ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID,
+                        ShoppingLists.SHOPPING_LISTS.TASK_ID,
+                        ShoppingLists.SHOPPING_LISTS.EVENT_ID,
+                        ShoppingLists.SHOPPING_LISTS.TITLE,
+                        ShoppingLists.SHOPPING_LISTS.DESCRIPTION,
+                        ShoppingLists.SHOPPING_LISTS.FILE_LINK,
+                        ShoppingLists.SHOPPING_LISTS.BUDGET,
+                        ShoppingItems.SHOPPING_ITEMS.SHOPPING_ITEM_ID,
+                        ShoppingItems.SHOPPING_ITEMS.TITLE.as("item_title"),
+                        ShoppingItems.SHOPPING_ITEMS.QUANTITY,
+                        ShoppingItems.SHOPPING_ITEMS.UNIT,
+                        ShoppingItems.SHOPPING_ITEMS.IS_PURCHASED,
+                        ConsumerInList.CONSUMER_IN_LIST.USER_ID)
+                .from(ShoppingLists.SHOPPING_LISTS)
+                .leftJoin(ShoppingItems.SHOPPING_ITEMS)
+                .on(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(ShoppingItems.SHOPPING_ITEMS.SHOPPING_LIST_ID))
+                .leftJoin(ConsumerInList.CONSUMER_IN_LIST)
+                .on(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID))
+                .where(ShoppingLists.SHOPPING_LISTS.TASK_ID.eq(taskId))
                 .fetchInto(ShoppingListWithDetails.class);
     }
 }

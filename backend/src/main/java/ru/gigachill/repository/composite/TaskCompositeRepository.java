@@ -3,6 +3,7 @@ package ru.gigachill.repository.composite;
 import jakarta.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
+import ru.gigachill.dto.ShoppingListDTO;
 import ru.gigachill.dto.TaskDTO;
 import ru.gigachill.dto.TaskWithShoppingListsDTO;
 
@@ -31,6 +32,14 @@ public interface TaskCompositeRepository {
      *     references
      */
     TaskWithShoppingListsDTO getTaskById(UUID taskId);
+
+    /**
+     * Retrieves shopping lists for a specific task with their items and consumers.
+     *
+     * @param taskId the unique identifier of the task
+     * @return a list of {@link ShoppingListDTO} objects for the task
+     */
+    List<ShoppingListDTO> getShoppingListsForTask(UUID taskId);
 
     /**
      * Creates a new task for the specified event and associates it with the given shopping lists.

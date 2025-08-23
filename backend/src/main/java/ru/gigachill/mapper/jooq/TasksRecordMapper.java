@@ -9,6 +9,7 @@ import ru.gigachill.dto.ShoppingListDTO;
 import ru.gigachill.dto.TaskDTO;
 import com.github.giga_chill.jooq.generated.enums.TaskStatus;
 import ru.gigachill.dto.TaskWithShoppingListsDTO;
+import ru.gigachill.dto.UserDTO;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,5 +32,16 @@ public interface TasksRecordMapper {
 	}
 
 	TaskWithShoppingListsDTO toTaskWithShoppingListsDTO(TaskDTO dto, List<ShoppingListDTO> shoppingLists);
+
+	/**
+	 * Creates TaskWithShoppingListsDTO from TasksRecord with resolved author and executor
+	 */
+	default TaskWithShoppingListsDTO toTaskWithShoppingListsDTO(TasksRecord record, List<ShoppingListDTO> shoppingLists, 
+	                                                           UserDTO author, UserDTO executor) {
+		TaskDTO dto = toTaskDTO(record);
+		dto.setAuthor(author);
+		dto.setExecutor(executor);
+		return toTaskWithShoppingListsDTO(dto, shoppingLists);
+	}
 }
 

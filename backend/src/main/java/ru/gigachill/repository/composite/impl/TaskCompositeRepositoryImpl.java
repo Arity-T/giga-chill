@@ -11,11 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 import ru.gigachill.repository.composite.TaskCompositeRepository;
 import ru.gigachill.dto.ShoppingListDTO;
+import ru.gigachill.dto.ShoppingItemDTO;
+import ru.gigachill.dto.ParticipantDTO;
 import ru.gigachill.dto.TaskDTO;
 import ru.gigachill.dto.TaskWithShoppingListsDTO;
 import ru.gigachill.dto.UserDTO;
 import ru.gigachill.mapper.jooq.TasksRecordMapper;
 import ru.gigachill.mapper.jooq.UsersRecordMapper;
+import ru.gigachill.mapper.jooq.ShoppingRecordsMapper;
 import ru.gigachill.repository.simple.ShoppingItemRepository;
 import ru.gigachill.repository.simple.ShoppingListRepository;
 import ru.gigachill.repository.simple.TaskRepository;
@@ -32,19 +35,34 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
     private final ShoppingItemRepository shoppingItemRepository;
     private final TasksRecordMapper tasksRecordMapper;
     private final UsersRecordMapper usersRecordMapper;
+    private final ShoppingRecordsMapper shoppingRecordsMapper;
 
+    /**
+     * Maps a user ID to UserDTO by fetching user data from repository.
+     * Returns null if userId is null or user not found.
+     *
+     * @param userId the user ID to map
+     * @return UserDTO or null if user not found
+     */
     private UserDTO mapUser(UUID userId) {
         if (userId == null) return null;
         UsersRecord record = userRepository.findById(userId).orElse(null);
         return record == null ? null : usersRecordMapper.toUserDTO(record);
     }
 
+    /**
+     * Creates TaskWithShoppingListsDTO from TasksRecord with resolved author and executor.
+     * This method coordinates data fetching and mapping for complete task representation.
+     *
+     * @param record the task record from database
+     * @param shoppingLists the shopping lists associated with the task
+     * @return complete TaskWithShoppingListsDTO with resolved user data
+     */
     private TaskWithShoppingListsDTO toTaskWithShoppingListsDTO(
             TasksRecord record, List<ShoppingListDTO> shoppingLists) {
-        TaskDTO dto = tasksRecordMapper.toTaskDTO(record);
-        dto.setAuthor(mapUser(record.getAuthorId()));
-        dto.setExecutor(mapUser(record.getExecutorId()));
-        return tasksRecordMapper.toTaskWithShoppingListsDTO(dto, shoppingLists);
+        UserDTO author = mapUser(record.getAuthorId());
+        UserDTO executor = mapUser(record.getExecutorId());
+        return tasksRecordMapper.toTaskWithShoppingListsDTO(record, shoppingLists, author, executor);
     }
 
     /**
@@ -57,13 +75,21 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
     @Override
     public List<TaskDTO> getAllTasksFromEvent(UUID eventId) {
         return taskRepository.findAllByEventId(eventId).stream()
-                .map(record -> {
-                    TaskDTO dto = tasksRecordMapper.toTaskDTO(record);
-                    dto.setAuthor(mapUser(record.getAuthorId()));
-                    dto.setExecutor(mapUser(record.getExecutorId()));
-                    return dto;
-                })
+                .map(this::mapTaskRecordToTaskDTO)
                 .toList();
+    }
+
+    /**
+     * Maps TasksRecord to TaskDTO with resolved author and executor.
+     *
+     * @param record the task record from database
+     * @return TaskDTO with resolved user data
+     */
+    private TaskDTO mapTaskRecordToTaskDTO(TasksRecord record) {
+        TaskDTO dto = tasksRecordMapper.toTaskDTO(record);
+        dto.setAuthor(mapUser(record.getAuthorId()));
+        dto.setExecutor(mapUser(record.getExecutorId()));
+        return dto;
     }
 
     /**
@@ -78,12 +104,29 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
         TasksRecord taskRecord = taskRepository.findById(taskId).orElse(null);
         if (taskRecord == null) return null;
 
-        List<ShoppingListDTO> shoppingLists =
-                shoppingListCompositeRepository.getAllShoppingListsFromEvent(taskRecord.getEventId()).stream()
-                        .filter(list -> taskId.equals(list.getTaskId()))
-                        .toList();
-
+        List<ShoppingListDTO> shoppingLists = getShoppingListsForTask(taskId);
         return toTaskWithShoppingListsDTO(taskRecord, shoppingLists);
+    }
+
+    /**
+     * Retrieves shopping lists for a specific task with their items and consumers.
+     *
+     * @param taskId the unique identifier of the task
+     * @return a list of {@link ShoppingListDTO} objects for the task
+     */
+    @Override
+    public List<ShoppingListDTO> getShoppingListsForTask(UUID taskId) {
+        return shoppingListRepository.findByTaskId(taskId).stream()
+                .map(record -> {
+                    List<ShoppingItemDTO> items = shoppingItemRepository.findByShoppingListId(record.getShoppingListId()).stream()
+                            .map(shoppingRecordsMapper::toShoppingItemDTO)
+                            .toList();
+                    
+                    List<ParticipantDTO> consumers = shoppingListCompositeRepository.getConsumersForShoppingList(record.getShoppingListId(), record.getEventId());
+                    
+                    return shoppingRecordsMapper.toShoppingListDTOWithDetails(record, items, consumers);
+                })
+                .toList();
     }
 
     /**
