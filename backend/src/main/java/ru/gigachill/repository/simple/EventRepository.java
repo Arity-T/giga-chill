@@ -3,10 +3,7 @@ package ru.gigachill.repository.simple;
 import static org.jooq.impl.DSL.sum;
 
 import com.github.giga_chill.jooq.generated.enums.TaskStatus;
-import com.github.giga_chill.jooq.generated.tables.DebtsPerEvent;
-import com.github.giga_chill.jooq.generated.tables.Events;
-import com.github.giga_chill.jooq.generated.tables.ShoppingLists;
-import com.github.giga_chill.jooq.generated.tables.Tasks;
+import com.github.giga_chill.jooq.generated.tables.*;
 import com.github.giga_chill.jooq.generated.tables.records.EventsRecord;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -17,6 +14,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
+import ru.gigachill.model.DebtWithUserData;
 
 @Repository
 @RequiredArgsConstructor
@@ -150,6 +148,43 @@ public class EventRepository {
                                         r.get(DebtsPerEvent.DEBTS_PER_EVENT.DEBTOR_ID),
                                         r.get(DebtsPerEvent.DEBTS_PER_EVENT.AMOUNT)));
     }
+
+    // Возвращает список долгов в мероприятии eventId, где userId - должник, с данными кредиторов
+    public List<DebtWithUserData> findDebtsICreatedWithUserData(UUID eventId, UUID userId) {
+        return dsl.select(
+                        DebtsPerEvent.DEBTS_PER_EVENT.CREDITOR_ID.as("userId"),
+                        DebtsPerEvent.DEBTS_PER_EVENT.AMOUNT,
+                        Users.USERS.LOGIN,
+                        Users.USERS.NAME)
+                .from(DebtsPerEvent.DEBTS_PER_EVENT)
+                .join(Users.USERS)
+                .on(DebtsPerEvent.DEBTS_PER_EVENT.CREDITOR_ID.eq(Users.USERS.USER_ID))
+                .where(
+                        DebtsPerEvent.DEBTS_PER_EVENT
+                                .EVENT_ID
+                                .eq(eventId)
+                                .and(DebtsPerEvent.DEBTS_PER_EVENT.DEBTOR_ID.eq(userId)))
+                .fetchInto(DebtWithUserData.class);
+    }
+
+    // Возвращает список долгов в мероприятии eventId, где userId - кредитор, с данными должников
+    public List<DebtWithUserData> findDebtsToMeWithUserData(UUID eventId, UUID userId) {
+        return dsl.select(
+                        DebtsPerEvent.DEBTS_PER_EVENT.DEBTOR_ID.as("userId"),
+                        DebtsPerEvent.DEBTS_PER_EVENT.AMOUNT,
+                        Users.USERS.LOGIN,
+                        Users.USERS.NAME)
+                .from(DebtsPerEvent.DEBTS_PER_EVENT)
+                .join(Users.USERS)
+                .on(DebtsPerEvent.DEBTS_PER_EVENT.DEBTOR_ID.eq(Users.USERS.USER_ID))
+                .where(
+                        DebtsPerEvent.DEBTS_PER_EVENT
+                                .EVENT_ID
+                                .eq(eventId)
+                                .and(DebtsPerEvent.DEBTS_PER_EVENT.CREDITOR_ID.eq(userId)))
+                .fetchInto(DebtWithUserData.class);
+    }
+
     public List<EventsRecord> findByUserIdWithJoin(UUID userId) {
         return dsl.select(Events.EVENTS.fields())
                 .from(Events.EVENTS)

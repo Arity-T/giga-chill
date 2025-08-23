@@ -18,6 +18,7 @@ import ru.gigachill.repository.simple.UserInEventRepository;
 import ru.gigachill.repository.simple.UserRepository;
 import ru.gigachill.mapper.jooq.ParticipantsRecordMapper;
 import ru.gigachill.mapper.jooq.UsersRecordMapper;
+import ru.gigachill.mapper.jooq.DebtWithUserDataMapper;
 
 @Transactional(readOnly = true)
 @Repository
@@ -28,6 +29,7 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
     private final EventRepository eventRepository;
     private final ParticipantsRecordMapper participantsRecordMapper;
     private final UsersRecordMapper usersRecordMapper;
+    private final DebtWithUserDataMapper debtWithUserDataMapper;
 
     @Override
     public List<ParticipantDTO> getAllParticipantsByEventId(UUID eventId) {
@@ -120,29 +122,17 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
     @Override
     public ParticipantBalanceDTO getParticipantBalance(UUID eventId, UUID participantId) {
         var myDebts =
-                eventRepository.findDebtsICreated(eventId, participantId).stream()
-                        // Фильтруем долги самому себе
-                        .filter(entry -> !entry.getKey().equals(participantId))
-                        .map(
-                                entry -> {
-                                    var userOpt = userRepository.findById(entry.getKey());
-                                    return userOpt.map(user -> Map.of(usersRecordMapper.toUserDTO(user), entry.getValue()))
-                                            .orElse(null);
-                                })
-                        .filter(Objects::nonNull)
+                eventRepository.findDebtsICreatedWithUserData(eventId, participantId).stream()
+                        // Фильтруем долги самому себе и null userId
+                        .filter(debt -> debt.getUserId() != null && !debt.getUserId().equals(participantId))
+                        .map(debt -> Map.of(debtWithUserDataMapper.toUserDTO(debt), debt.getAmount()))
                         .toList();
 
         var debtsToMe =
-                eventRepository.findDebtsToMe(eventId, participantId).stream()
-                        // Фильтруем долги самому себе
-                        .filter(entry -> !entry.getKey().equals(participantId))
-                        .map(
-                                entry -> {
-                                    var userOpt = userRepository.findById(entry.getKey());
-                                    return userOpt.map(user -> Map.of(usersRecordMapper.toUserDTO(user), entry.getValue()))
-                                            .orElse(null);
-                                })
-                        .filter(Objects::nonNull)
+                eventRepository.findDebtsToMeWithUserData(eventId, participantId).stream()
+                        // Фильтруем долги самому себе и null userId
+                        .filter(debt -> debt.getUserId() != null && !debt.getUserId().equals(participantId))
+                        .map(debt -> Map.of(debtWithUserDataMapper.toUserDTO(debt), debt.getAmount()))
                         .toList();
 
         return new ParticipantBalanceDTO(myDebts, debtsToMe);
