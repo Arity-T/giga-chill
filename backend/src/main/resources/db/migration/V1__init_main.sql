@@ -92,10 +92,18 @@ SELECT
   sl.event_id,
   c.user_id AS debtor_id,
   t.executor_id AS creditor_id,
-  ROUND(sl.budget / COUNT(*) OVER (PARTITION BY sl.shopping_list_id), 2) AS amount
+  ROUND(SUM(sl.budget / consumer_count.total_consumers), 2) AS amount
 FROM shopping_lists sl
 JOIN tasks t ON sl.task_id = t.task_id
 JOIN consumer_in_list c ON c.shopping_list_id = sl.shopping_list_id
+JOIN (
+  SELECT 
+    shopping_list_id,
+    COUNT(*) as total_consumers
+  FROM consumer_in_list
+  GROUP BY shopping_list_id
+) consumer_count ON consumer_count.shopping_list_id = sl.shopping_list_id
 WHERE sl.budget IS NOT NULL
   AND t.executor_id IS NOT NULL
-  AND t.status = 'completed';
+  AND t.status = 'completed'
+GROUP BY sl.event_id, c.user_id, t.executor_id;
