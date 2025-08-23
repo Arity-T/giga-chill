@@ -3,6 +3,8 @@ package ru.gigachill.service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+
+import com.github.giga_chill.jooq.generated.enums.EventRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -101,7 +103,8 @@ public class ParticipantService {
         participantsServiceValidator.checkReplaceRole(eventId, participantId);
 
         var newRole = participantSetRole.getRole().getValue();
-        participantCompositeRepository.updateParticipantRole(eventId, participantId, newRole);
+        EventRole eventRole = EventRole.valueOf(newRole);
+        participantCompositeRepository.updateParticipantRole(eventId, participantId, eventRole);
     }
 
     public String getParticipantRoleInEvent(UUID eventId, UUID participantId) {

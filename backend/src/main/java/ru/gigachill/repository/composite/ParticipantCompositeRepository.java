@@ -1,5 +1,6 @@
 package ru.gigachill.repository.composite;
 
+import com.github.giga_chill.jooq.generated.enums.EventRole;
 import java.util.List;
 import java.util.UUID;
 import ru.gigachill.dto.ParticipantBalanceDTO;
@@ -54,7 +55,7 @@ public interface ParticipantCompositeRepository {
      * @param participantId the unique identifier of the participant
      * @param role the new role to assign to the participant
      */
-    void updateParticipantRole(UUID eventId, UUID participantId, String role);
+    void updateParticipantRole(UUID eventId, UUID participantId, EventRole role);
 
     /**
      * Retrieves the role of a participant in a specific event.
