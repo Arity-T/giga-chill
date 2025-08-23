@@ -6,10 +6,10 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 import ru.gigachill.exception.ConflictException;
 import ru.gigachill.exception.ForbiddenException;
 import ru.gigachill.exception.NotFoundException;
+import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 
 @Component
 @RequiredArgsConstructor

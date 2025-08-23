@@ -72,7 +72,8 @@ public class ConsumerInListRepository {
                 > 0;
     }
 
-    public List<ConsumerWithUserData> findAllConsumersWithUserData(UUID shoppingListId, UUID eventId) {
+    public List<ConsumerWithUserData> findAllConsumersWithUserData(
+            UUID shoppingListId, UUID eventId) {
         return dsl.select(
                         ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID,
                         ConsumerInList.CONSUMER_IN_LIST.USER_ID,
@@ -84,8 +85,11 @@ public class ConsumerInListRepository {
                 .join(Users.USERS)
                 .on(ConsumerInList.CONSUMER_IN_LIST.USER_ID.eq(Users.USERS.USER_ID))
                 .leftJoin(UserInEvent.USER_IN_EVENT)
-                .on(ConsumerInList.CONSUMER_IN_LIST.USER_ID.eq(UserInEvent.USER_IN_EVENT.USER_ID)
-                        .and(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId)))
+                .on(
+                        ConsumerInList.CONSUMER_IN_LIST
+                                .USER_ID
+                                .eq(UserInEvent.USER_IN_EVENT.USER_ID)
+                                .and(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId)))
                 .where(ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID.eq(shoppingListId))
                 .fetchInto(ConsumerWithUserData.class);
     }
@@ -100,12 +104,17 @@ public class ConsumerInListRepository {
                         UserInEvent.USER_IN_EVENT.BALANCE)
                 .from(ConsumerInList.CONSUMER_IN_LIST)
                 .join(ShoppingLists.SHOPPING_LISTS)
-                .on(ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID.eq(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID))
+                .on(
+                        ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID.eq(
+                                ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID))
                 .join(Users.USERS)
                 .on(ConsumerInList.CONSUMER_IN_LIST.USER_ID.eq(Users.USERS.USER_ID))
                 .leftJoin(UserInEvent.USER_IN_EVENT)
-                .on(ConsumerInList.CONSUMER_IN_LIST.USER_ID.eq(UserInEvent.USER_IN_EVENT.USER_ID)
-                        .and(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId)))
+                .on(
+                        ConsumerInList.CONSUMER_IN_LIST
+                                .USER_ID
+                                .eq(UserInEvent.USER_IN_EVENT.USER_ID)
+                                .and(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId)))
                 .where(ShoppingLists.SHOPPING_LISTS.EVENT_ID.eq(eventId))
                 .fetchInto(ConsumerWithUserData.class);
     }

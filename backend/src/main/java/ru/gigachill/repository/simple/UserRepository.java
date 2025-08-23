@@ -5,7 +5,6 @@ import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;

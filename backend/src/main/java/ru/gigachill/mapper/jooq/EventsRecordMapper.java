@@ -7,12 +7,12 @@ import ru.gigachill.dto.EventDTO;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface EventsRecordMapper {
 
-	EventDTO toEventDTO(EventsRecord record);
+    EventDTO toEventDTO(EventsRecord record);
 
-	// Менять поле isFinalized можно только отдельным методом
-	@Mapping(target = "isFinalized", ignore = true)
-	EventsRecord toEventsRecord(EventDTO dto);
+    // Менять поле isFinalized можно только отдельным методом
+    @Mapping(target = "isFinalized", ignore = true)
+    EventsRecord toEventsRecord(EventDTO dto);
 
-	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-	void updateEventsRecordFromDTO(EventDTO dto, @MappingTarget EventsRecord record);
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateEventsRecordFromDTO(EventDTO dto, @MappingTarget EventsRecord record);
 }

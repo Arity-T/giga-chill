@@ -190,8 +190,11 @@ public class EventRepository {
                 .from(Events.EVENTS)
                 .join(UserInEvent.USER_IN_EVENT)
                 .on(Events.EVENTS.EVENT_ID.eq(UserInEvent.USER_IN_EVENT.EVENT_ID))
-                .where(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId)
-                        .and(Events.EVENTS.IS_DELETED.eq(false)))
+                .where(
+                        UserInEvent.USER_IN_EVENT
+                                .USER_ID
+                                .eq(userId)
+                                .and(Events.EVENTS.IS_DELETED.eq(false)))
                 .fetchInto(EventsRecord.class);
     }
 }

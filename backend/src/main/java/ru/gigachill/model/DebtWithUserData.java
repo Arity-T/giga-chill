@@ -1,9 +1,8 @@
 package ru.gigachill.model;
 
-import lombok.Data;
-
 import java.math.BigDecimal;
 import java.util.UUID;
+import lombok.Data;
 
 @Data
 public class DebtWithUserData {
@@ -12,4 +11,3 @@ public class DebtWithUserData {
     private String login;
     private String name;
 }
-

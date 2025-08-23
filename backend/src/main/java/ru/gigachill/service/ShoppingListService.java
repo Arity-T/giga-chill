@@ -5,12 +5,12 @@ import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
-import ru.gigachill.repository.composite.TaskCompositeRepository;
 import ru.gigachill.dto.ShoppingItemDTO;
 import ru.gigachill.exception.BadRequestException;
 import ru.gigachill.mapper.ShoppingItemMapper;
 import ru.gigachill.mapper.ShoppingListMapper;
+import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
+import ru.gigachill.repository.composite.TaskCompositeRepository;
 import ru.gigachill.service.validator.*;
 import ru.gigachill.web.api.model.*;
 
@@ -155,7 +155,8 @@ public class ShoppingListService {
         shoppingListsServiceValidator.checkUnassignedOrAssignedStatus(
                 shoppingListId, shoppingListStatus);
 
-        shoppingListCompositeRepository.deleteShoppingItemFromShoppingList(shoppingListId, shoppingItemId);
+        shoppingListCompositeRepository.deleteShoppingItemFromShoppingList(
+                shoppingListId, shoppingItemId);
     }
 
     public Boolean updateShoppingItemStatus(

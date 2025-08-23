@@ -4,12 +4,12 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import ru.gigachill.repository.composite.ParticipantCompositeRepository;
-import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
-import ru.gigachill.repository.composite.TaskCompositeRepository;
 import ru.gigachill.exception.BadRequestException;
 import ru.gigachill.exception.ConflictException;
 import ru.gigachill.exception.ForbiddenException;
+import ru.gigachill.repository.composite.ParticipantCompositeRepository;
+import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
+import ru.gigachill.repository.composite.TaskCompositeRepository;
 
 @Component
 @RequiredArgsConstructor
@@ -81,7 +81,8 @@ public class ParticipantServiceValidator {
     }
 
     public void checkIsAuthorOrAdminOrOwner(UUID eventId, UUID participantId, UUID taskId) {
-        if (isParticipantRole(eventId, participantId) && !taskCompositeRepository.isAuthor(taskId, participantId)) {
+        if (isParticipantRole(eventId, participantId)
+                && !taskCompositeRepository.isAuthor(taskId, participantId)) {
             throw new ForbiddenException(
                     "User with id: "
                             + participantId

@@ -1,10 +1,9 @@
 package ru.gigachill.model;
 
 import com.github.giga_chill.jooq.generated.enums.EventRole;
-import lombok.Data;
-
 import java.math.BigDecimal;
 import java.util.UUID;
+import lombok.Data;
 
 @Data
 public class ConsumerWithUserData {
@@ -15,4 +14,3 @@ public class ConsumerWithUserData {
     private EventRole role;
     private BigDecimal balance;
 }
-

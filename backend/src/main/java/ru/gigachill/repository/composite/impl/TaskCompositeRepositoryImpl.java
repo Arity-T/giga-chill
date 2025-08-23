@@ -8,17 +8,17 @@ import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
-import ru.gigachill.repository.composite.TaskCompositeRepository;
-import ru.gigachill.dto.ShoppingListDTO;
-import ru.gigachill.dto.ShoppingItemDTO;
 import ru.gigachill.dto.ParticipantDTO;
+import ru.gigachill.dto.ShoppingItemDTO;
+import ru.gigachill.dto.ShoppingListDTO;
 import ru.gigachill.dto.TaskDTO;
 import ru.gigachill.dto.TaskWithShoppingListsDTO;
 import ru.gigachill.dto.UserDTO;
+import ru.gigachill.mapper.jooq.ShoppingRecordsMapper;
 import ru.gigachill.mapper.jooq.TasksRecordMapper;
 import ru.gigachill.mapper.jooq.UsersRecordMapper;
-import ru.gigachill.mapper.jooq.ShoppingRecordsMapper;
+import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
+import ru.gigachill.repository.composite.TaskCompositeRepository;
 import ru.gigachill.repository.simple.ShoppingItemRepository;
 import ru.gigachill.repository.simple.ShoppingListRepository;
 import ru.gigachill.repository.simple.TaskRepository;
@@ -38,8 +38,8 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
     private final ShoppingRecordsMapper shoppingRecordsMapper;
 
     /**
-     * Maps a user ID to UserDTO by fetching user data from repository.
-     * Returns null if userId is null or user not found.
+     * Maps a user ID to UserDTO by fetching user data from repository. Returns null if userId is
+     * null or user not found.
      *
      * @param userId the user ID to map
      * @return UserDTO or null if user not found
@@ -51,8 +51,8 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
     }
 
     /**
-     * Creates TaskWithShoppingListsDTO from TasksRecord with resolved author and executor.
-     * This method coordinates data fetching and mapping for complete task representation.
+     * Creates TaskWithShoppingListsDTO from TasksRecord with resolved author and executor. This
+     * method coordinates data fetching and mapping for complete task representation.
      *
      * @param record the task record from database
      * @param shoppingLists the shopping lists associated with the task
@@ -62,7 +62,8 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
             TasksRecord record, List<ShoppingListDTO> shoppingLists) {
         UserDTO author = mapUser(record.getAuthorId());
         UserDTO executor = mapUser(record.getExecutorId());
-        return tasksRecordMapper.toTaskWithShoppingListsDTO(record, shoppingLists, author, executor);
+        return tasksRecordMapper.toTaskWithShoppingListsDTO(
+                record, shoppingLists, author, executor);
     }
 
     @Override
@@ -96,34 +97,39 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
 
     /**
      * Retrieves shopping lists for a specific task with their items and consumers.
-     * <p>
-     * This method aggregates data from multiple sources:
-     * 1. Shopping list records associated with the task
-     * 2. Shopping items within each list
-     * 3. Consumer participants assigned to each list
-     * <p>
-     * The result provides a complete view of all shopping data related to the task.
+     *
+     * <p>This method aggregates data from multiple sources: 1. Shopping list records associated
+     * with the task 2. Shopping items within each list 3. Consumer participants assigned to each
+     * list
+     *
+     * <p>The result provides a complete view of all shopping data related to the task.
      */
     @Override
     public List<ShoppingListDTO> getShoppingListsForTask(UUID taskId) {
         return shoppingListRepository.findByTaskId(taskId).stream()
-                .map(record -> {
-                    List<ShoppingItemDTO> items = shoppingItemRepository.findByShoppingListId(record.getShoppingListId()).stream()
-                            .map(shoppingRecordsMapper::toShoppingItemDTO)
-                            .toList();
-                    
-                    List<ParticipantDTO> consumers = shoppingListCompositeRepository.getConsumersForShoppingList(record.getShoppingListId(), record.getEventId());
-                    
-                    return shoppingRecordsMapper.toShoppingListDTOWithDetails(record, items, consumers);
-                })
+                .map(
+                        record -> {
+                            List<ShoppingItemDTO> items =
+                                    shoppingItemRepository
+                                            .findByShoppingListId(record.getShoppingListId())
+                                            .stream()
+                                            .map(shoppingRecordsMapper::toShoppingItemDTO)
+                                            .toList();
+
+                            List<ParticipantDTO> consumers =
+                                    shoppingListCompositeRepository.getConsumersForShoppingList(
+                                            record.getShoppingListId(), record.getEventId());
+
+                            return shoppingRecordsMapper.toShoppingListDTOWithDetails(
+                                    record, items, consumers);
+                        })
                 .toList();
     }
 
     /**
      * Creates a new task for the specified event and associates it with the given shopping lists.
-     * <p>
-     * This method performs an atomic operation that:
-     * 1. Creates the task record in the database
+     *
+     * <p>This method performs an atomic operation that: 1. Creates the task record in the database
      * 2. Links all specified shopping lists to the newly created task
      */
     @Transactional
@@ -151,10 +157,10 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
 
     /**
      * Deletes the specified task and cleans up associated data.
-     * <p>
-     * This method performs a cascading delete operation:
-     * 1. Resets status of all shopping items in associated lists (marks as unpurchased)
-     * 2. Deletes the task record (shopping list associations are automatically nullified by DB constraints)
+     *
+     * <p>This method performs a cascading delete operation: 1. Resets status of all shopping items
+     * in associated lists (marks as unpurchased) 2. Deletes the task record (shopping list
+     * associations are automatically nullified by DB constraints)
      */
     @Transactional
     @Override
@@ -208,10 +214,10 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
 
     /**
      * Assigns or unassigns the executor for the specified task.
-     * <p>
-     * When the executor changes, this method also resets the status of all shopping items
-     * in associated lists to ensure data consistency (items become unpurchased when task
-     * execution is reassigned).
+     *
+     * <p>When the executor changes, this method also resets the status of all shopping items in
+     * associated lists to ensure data consistency (items become unpurchased when task execution is
+     * reassigned).
      */
     @Transactional
     @Override
@@ -228,12 +234,11 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
 
     /**
      * Updates the set of shopping lists associated with the specified task.
-     * <p>
-     * This method implements a diff-based update strategy:
-     * 1. Compares current shopping list associations with the new desired state
-     * 2. Removes associations that are no longer needed (resets item statuses)
-     * 3. Adds new associations as needed
-     * 4. When shoppingLists is null, removes all associations
+     *
+     * <p>This method implements a diff-based update strategy: 1. Compares current shopping list
+     * associations with the new desired state 2. Removes associations that are no longer needed
+     * (resets item statuses) 3. Adds new associations as needed 4. When shoppingLists is null,
+     * removes all associations
      */
     @Transactional
     @Override
@@ -276,11 +281,10 @@ public class TaskCompositeRepositoryImpl implements TaskCompositeRepository {
 
     /**
      * Updates the reviewer's comment and approval status for the specified task.
-     * <p>
-     * This method implements the task review workflow:
-     * - When approved: task status becomes "completed"
-     * - When rejected: task status reverts to "in_progress" for rework
-     * - Reviewer comment is always updated regardless of approval status
+     *
+     * <p>This method implements the task review workflow: - When approved: task status becomes
+     * "completed" - When rejected: task status reverts to "in_progress" for rework - Reviewer
+     * comment is always updated regardless of approval status
      */
     @Transactional
     @Override

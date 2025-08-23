@@ -10,9 +10,9 @@ import ru.gigachill.model.DebtWithUserData;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UsersRecordMapper {
 
-	@Mapping(source = "userId", target = "id")
-	UserDTO toUserDTO(UsersRecord record);
+    @Mapping(source = "userId", target = "id")
+    UserDTO toUserDTO(UsersRecord record);
 
-	@Mapping(source = "userId", target = "id")
-	UserDTO toUserDTO(DebtWithUserData debtData);
+    @Mapping(source = "userId", target = "id")
+    UserDTO toUserDTO(DebtWithUserData debtData);
 }

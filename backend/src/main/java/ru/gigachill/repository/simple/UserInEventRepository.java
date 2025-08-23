@@ -7,7 +7,6 @@ import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
@@ -66,23 +65,32 @@ public class UserInEventRepository {
     public boolean existsByEventIdAndUserId(UUID eventId, UUID userId) {
         return dsl.fetchExists(
                 dsl.selectFrom(UserInEvent.USER_IN_EVENT)
-                        .where(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId)
-                                .and(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId))));
+                        .where(
+                                UserInEvent.USER_IN_EVENT
+                                        .EVENT_ID
+                                        .eq(eventId)
+                                        .and(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId))));
     }
 
     public void updateRole(UUID eventId, UUID userId, EventRole role) {
         dsl.update(UserInEvent.USER_IN_EVENT)
                 .set(UserInEvent.USER_IN_EVENT.ROLE, role)
-                .where(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId)
-                        .and(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId)))
+                .where(
+                        UserInEvent.USER_IN_EVENT
+                                .EVENT_ID
+                                .eq(eventId)
+                                .and(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId)))
                 .execute();
     }
 
     public EventRole getRole(UUID eventId, UUID userId) {
         return dsl.select(UserInEvent.USER_IN_EVENT.ROLE)
                 .from(UserInEvent.USER_IN_EVENT)
-                .where(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId)
-                        .and(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId)))
+                .where(
+                        UserInEvent.USER_IN_EVENT
+                                .EVENT_ID
+                                .eq(eventId)
+                                .and(UserInEvent.USER_IN_EVENT.USER_ID.eq(userId)))
                 .fetchOne(UserInEvent.USER_IN_EVENT.ROLE);
     }
 }

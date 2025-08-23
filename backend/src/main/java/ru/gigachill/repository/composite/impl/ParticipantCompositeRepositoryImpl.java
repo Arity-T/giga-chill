@@ -8,16 +8,16 @@ import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.gigachill.repository.composite.ParticipantCompositeRepository;
 import ru.gigachill.dto.ParticipantBalanceDTO;
 import ru.gigachill.dto.ParticipantDTO;
 import ru.gigachill.dto.ParticipantSummaryBalanceDTO;
 import ru.gigachill.dto.UserDTO;
+import ru.gigachill.mapper.jooq.ParticipantsRecordMapper;
+import ru.gigachill.mapper.jooq.UsersRecordMapper;
+import ru.gigachill.repository.composite.ParticipantCompositeRepository;
 import ru.gigachill.repository.simple.EventRepository;
 import ru.gigachill.repository.simple.UserInEventRepository;
 import ru.gigachill.repository.simple.UserRepository;
-import ru.gigachill.mapper.jooq.ParticipantsRecordMapper;
-import ru.gigachill.mapper.jooq.UsersRecordMapper;
 
 @Transactional(readOnly = true)
 @Repository
@@ -91,26 +91,32 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
 
     /**
      * Retrieves the current balance summary for the specified participant.
-     * <p>
-     * This method calculates the participant's debt relationships:
-     * - myDebts: amounts this participant owes to others (debtor_id = participantId)
-     * - debtsToMe: amounts others owe to this participant (creditor_id = participantId)
-     * <p>
-     * Self-debts and null user references are filtered out to ensure data integrity.
+     *
+     * <p>This method calculates the participant's debt relationships: - myDebts: amounts this
+     * participant owes to others (debtor_id = participantId) - debtsToMe: amounts others owe to
+     * this participant (creditor_id = participantId)
+     *
+     * <p>Self-debts and null user references are filtered out to ensure data integrity.
      */
     @Override
     public ParticipantBalanceDTO getParticipantBalance(UUID eventId, UUID participantId) {
         var myDebts =
                 eventRepository.findDebtsICreatedWithUserData(eventId, participantId).stream()
                         // Filter out self-debts and null user references
-                        .filter(debt -> debt.getUserId() != null && !debt.getUserId().equals(participantId))
+                        .filter(
+                                debt ->
+                                        debt.getUserId() != null
+                                                && !debt.getUserId().equals(participantId))
                         .map(debt -> Map.of(usersRecordMapper.toUserDTO(debt), debt.getAmount()))
                         .toList();
 
         var debtsToMe =
                 eventRepository.findDebtsToMeWithUserData(eventId, participantId).stream()
                         // Filter out self-debts and null user references
-                        .filter(debt -> debt.getUserId() != null && !debt.getUserId().equals(participantId))
+                        .filter(
+                                debt ->
+                                        debt.getUserId() != null
+                                                && !debt.getUserId().equals(participantId))
                         .map(debt -> Map.of(usersRecordMapper.toUserDTO(debt), debt.getAmount()))
                         .toList();
 
@@ -120,13 +126,12 @@ public class ParticipantCompositeRepositoryImpl implements ParticipantCompositeR
     /**
      * Computes and retrieves a summary of balance information for each participant in the given
      * event.
-     * <p>
-     * This method performs comprehensive balance calculation for all participants:
-     * 1. Loads all participants in the event
-     * 2. For each participant, calculates total debts (amounts they owe) and credits (amounts owed to them)
-     * 3. Computes net balance (credits - debts)
-     * 4. Retrieves detailed balance breakdown and user profile data
-     * 5. Returns complete balance summary for each participant
+     *
+     * <p>This method performs comprehensive balance calculation for all participants: 1. Loads all
+     * participants in the event 2. For each participant, calculates total debts (amounts they owe)
+     * and credits (amounts owed to them) 3. Computes net balance (credits - debts) 4. Retrieves
+     * detailed balance breakdown and user profile data 5. Returns complete balance summary for each
+     * participant
      */
     @Override
     public List<ParticipantSummaryBalanceDTO> getSummaryParticipantBalance(UUID eventId) {

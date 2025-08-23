@@ -3,9 +3,9 @@ package ru.gigachill.service.validator;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.gigachill.repository.composite.EventCompositeRepository;
 import ru.gigachill.exception.ConflictException;
 import ru.gigachill.exception.NotFoundException;
+import ru.gigachill.repository.composite.EventCompositeRepository;
 
 @Component
 @RequiredArgsConstructor

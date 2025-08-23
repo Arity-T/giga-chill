@@ -5,11 +5,11 @@ import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import ru.gigachill.repository.composite.TaskCompositeRepository;
 import ru.gigachill.dto.TaskDTO;
 import ru.gigachill.mapper.TaskMapper;
 import ru.gigachill.mapper.UserMapper;
 import ru.gigachill.model.UserEntity;
+import ru.gigachill.repository.composite.TaskCompositeRepository;
 import ru.gigachill.service.validator.*;
 import ru.gigachill.web.api.model.*;
 
@@ -216,7 +216,8 @@ public class TaskService {
         taskServiceValidator.checkInProgressStatus(taskId, getTaskStatus(taskId));
         taskServiceValidator.checkOpportunityToSentTaskToReview(taskId, userId);
 
-        taskCompositeRepository.setExecutorComment(taskId, taskSendForReviewRequest.getExecutorComment());
+        taskCompositeRepository.setExecutorComment(
+                taskId, taskSendForReviewRequest.getExecutorComment());
         return taskSendForReviewRequest.getExecutorComment();
     }
 

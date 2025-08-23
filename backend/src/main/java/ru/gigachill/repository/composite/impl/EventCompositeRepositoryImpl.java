@@ -9,9 +9,9 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.gigachill.repository.composite.EventCompositeRepository;
 import ru.gigachill.dto.EventDTO;
 import ru.gigachill.mapper.jooq.EventsRecordMapper;
+import ru.gigachill.repository.composite.EventCompositeRepository;
 import ru.gigachill.repository.simple.EventRepository;
 import ru.gigachill.repository.simple.UserInEventRepository;
 
@@ -25,10 +25,7 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
 
     @Override
     public EventDTO getEventById(UUID eventId) {
-        return eventRepository
-                .findById(eventId)
-                .map(eventsRecordMapper::toEventDTO)
-                .orElse(null);
+        return eventRepository.findById(eventId).map(eventsRecordMapper::toEventDTO).orElse(null);
     }
 
     @Override
@@ -54,9 +51,8 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
 
     /**
      * Creates a new event and automatically assigns the creator as the owner.
-     * <p>
-     * This method performs an atomic operation that:
-     * 1. Creates the event record in the database
+     *
+     * <p>This method performs an atomic operation that: 1. Creates the event record in the database
      * 2. Automatically links the creator user to the event with 'owner' role
      */
     @Transactional
@@ -105,11 +101,10 @@ public class EventCompositeRepositoryImpl implements EventCompositeRepository {
 
     /**
      * Calculates and updates the overall budget for the specified event.
-     * <p>
-     * This method performs a budget recalculation by:
-     * 1. Refreshing the debts view to ensure latest data is used
-     * 2. Calculating the total event budget from all debt relationships
-     * 3. Updating the event record with the new budget amount
+     *
+     * <p>This method performs a budget recalculation by: 1. Refreshing the debts view to ensure
+     * latest data is used 2. Calculating the total event budget from all debt relationships 3.
+     * Updating the event record with the new budget amount
      */
     @Transactional
     @Override

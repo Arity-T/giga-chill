@@ -174,9 +174,13 @@ public class ShoppingListRepository {
                         ConsumerInList.CONSUMER_IN_LIST.USER_ID)
                 .from(ShoppingLists.SHOPPING_LISTS)
                 .leftJoin(ShoppingItems.SHOPPING_ITEMS)
-                .on(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(ShoppingItems.SHOPPING_ITEMS.SHOPPING_LIST_ID))
+                .on(
+                        ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(
+                                ShoppingItems.SHOPPING_ITEMS.SHOPPING_LIST_ID))
                 .leftJoin(ConsumerInList.CONSUMER_IN_LIST)
-                .on(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID))
+                .on(
+                        ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(
+                                ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID))
                 .where(ShoppingLists.SHOPPING_LISTS.EVENT_ID.eq(eventId))
                 .fetchInto(ShoppingListWithDetails.class);
     }
@@ -198,9 +202,13 @@ public class ShoppingListRepository {
                         ConsumerInList.CONSUMER_IN_LIST.USER_ID)
                 .from(ShoppingLists.SHOPPING_LISTS)
                 .leftJoin(ShoppingItems.SHOPPING_ITEMS)
-                .on(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(ShoppingItems.SHOPPING_ITEMS.SHOPPING_LIST_ID))
+                .on(
+                        ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(
+                                ShoppingItems.SHOPPING_ITEMS.SHOPPING_LIST_ID))
                 .leftJoin(ConsumerInList.CONSUMER_IN_LIST)
-                .on(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID))
+                .on(
+                        ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(
+                                ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID))
                 .where(ShoppingLists.SHOPPING_LISTS.TASK_ID.eq(taskId))
                 .fetchInto(ShoppingListWithDetails.class);
     }
