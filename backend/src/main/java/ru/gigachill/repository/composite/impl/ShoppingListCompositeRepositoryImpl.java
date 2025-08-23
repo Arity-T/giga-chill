@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import ru.gigachill.model.ShoppingListWithDetails;
 import ru.gigachill.mapper.ShoppingListWithDetailsMapper;
+import ru.gigachill.mapper.ConsumerWithUserDataMapper;
 
 @Transactional(readOnly = true)
 @Repository
@@ -31,6 +32,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
     private final ShoppingItemRepository shoppingItemRepository;
     private final ShoppingRecordsMapper shoppingRecordsMapper;
     private final ShoppingListWithDetailsMapper shoppingListWithDetailsMapper;
+    private final ConsumerWithUserDataMapper consumerWithUserDataMapper;
 
     /**
      * Retrieves all shopping lists associated with the specified event.
@@ -422,23 +424,8 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
      * Helper method to get consumers for a shopping list using the consumer mapper
      */
     private List<ParticipantDTO> getConsumersForShoppingList(UUID shoppingListId, UUID eventId) {
-        return consumerInListRepository.findAllConsumers(shoppingListId).stream()
-                .map(userId -> {
-                    var userOpt = userRepository.findById(userId);
-                    var userInEventOpt = userInEventRepository.findById(eventId, userId);
-
-                    ParticipantDTO base = userInEventOpt
-                            .map(shoppingListConsumerMapper::toParticipantDTOFromUserInEvent)
-                            .orElseGet(() -> shoppingListConsumerMapper.createFallbackParticipant(userId));
-
-                    if (userOpt.isPresent()) {
-                        var userRecord = userOpt.get();
-                        base.setLogin(userRecord.getLogin());
-                        base.setName(userRecord.getName());
-                    }
-
-                    return base;
-                })
+        return consumerInListRepository.findAllConsumersWithUserData(shoppingListId, eventId).stream()
+                .map(consumerWithUserDataMapper::toParticipantDTO)
                 .toList();
     }
 }

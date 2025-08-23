@@ -1,12 +1,15 @@
 package ru.gigachill.repository.simple;
 
 import com.github.giga_chill.jooq.generated.tables.ConsumerInList;
+import com.github.giga_chill.jooq.generated.tables.UserInEvent;
+import com.github.giga_chill.jooq.generated.tables.Users;
 import com.github.giga_chill.jooq.generated.tables.records.ConsumerInListRecord;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
+import ru.gigachill.model.ConsumerWithUserData;
 
 @Repository
 @RequiredArgsConstructor
@@ -66,5 +69,22 @@ public class ConsumerInListRepository {
                                                         ConsumerInList.CONSUMER_IN_LIST.USER_ID.eq(
                                                                 consumerId))))
                 > 0;
+    }
+
+    public List<ConsumerWithUserData> findAllConsumersWithUserData(UUID shoppingListId, UUID eventId) {
+        return dsl.select(
+                        ConsumerInList.CONSUMER_IN_LIST.USER_ID,
+                        Users.USERS.LOGIN,
+                        Users.USERS.NAME,
+                        UserInEvent.USER_IN_EVENT.ROLE,
+                        UserInEvent.USER_IN_EVENT.BALANCE)
+                .from(ConsumerInList.CONSUMER_IN_LIST)
+                .join(Users.USERS)
+                .on(ConsumerInList.CONSUMER_IN_LIST.USER_ID.eq(Users.USERS.USER_ID))
+                .leftJoin(UserInEvent.USER_IN_EVENT)
+                .on(ConsumerInList.CONSUMER_IN_LIST.USER_ID.eq(UserInEvent.USER_IN_EVENT.USER_ID)
+                        .and(UserInEvent.USER_IN_EVENT.EVENT_ID.eq(eventId)))
+                .where(ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID.eq(shoppingListId))
+                .fetchInto(ConsumerWithUserData.class);
     }
 }
