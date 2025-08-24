@@ -1,6 +1,7 @@
 package ru.gigachill.mapper;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -25,6 +26,7 @@ public interface DebtMapper {
                 .filter(Objects::nonNull)
                 .flatMap(map -> map.entrySet().stream())
                 .map(this::toDebt)
+                .peek(item -> item.setAmount(item.getAmount().setScale(2, RoundingMode.HALF_UP)))
                 .collect(Collectors.toList());
     }
 }
