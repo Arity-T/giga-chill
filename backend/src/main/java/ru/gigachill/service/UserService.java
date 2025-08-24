@@ -12,7 +12,7 @@ import ru.gigachill.exception.BadRequestException;
 import ru.gigachill.exception.NotFoundException;
 import ru.gigachill.exception.UnauthorizedException;
 import ru.gigachill.model.UserEntity;
-import ru.gigachill.repository.UserRepository;
+import ru.gigachill.repository.simple.UserRepository;
 
 @Service
 public class UserService {

@@ -5,11 +5,11 @@ import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import ru.gigachill.data.access.object.TaskDAO;
-import ru.gigachill.data.transfer.object.TaskDTO;
+import ru.gigachill.dto.TaskDTO;
 import ru.gigachill.mapper.TaskMapper;
 import ru.gigachill.mapper.UserMapper;
 import ru.gigachill.model.UserEntity;
+import ru.gigachill.repository.composite.TaskCompositeRepository;
 import ru.gigachill.service.validator.*;
 import ru.gigachill.web.api.model.*;
 
@@ -18,7 +18,7 @@ import ru.gigachill.web.api.model.*;
 public class TaskService {
 
     private final Environment env;
-    private final TaskDAO taskDAO;
+    private final TaskCompositeRepository taskCompositeRepository;
     private final ShoppingListService shoppingListsService;
     private final UserService userService;
     private final ParticipantService participantsService;
@@ -35,7 +35,7 @@ public class TaskService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         participantsServiceValidator.checkUserInEvent(eventId, userId);
 
-        return taskDAO.getAllTasksFromEvent(eventId).stream()
+        return taskCompositeRepository.getAllTasksFromEvent(eventId).stream()
                 .map(taskMapper::toTask)
                 .peek(
                         item ->
@@ -49,7 +49,7 @@ public class TaskService {
         taskServiceValidator.checkIsExisted(eventId, taskId);
         participantsServiceValidator.checkUserInEvent(eventId, userId);
 
-        var task = taskMapper.toTaskWithShoppingLists(taskDAO.getTaskById(taskId));
+        var task = taskMapper.toTaskWithShoppingLists(taskCompositeRepository.getTaskById(taskId));
         task.setPermissions(taskPermissions(eventId, taskId, userId));
         task.getShoppingLists()
                 .forEach(
@@ -96,7 +96,7 @@ public class TaskService {
                         executorId != null
                                 ? userMapper.toUserDto(userService.getById(executorId))
                                 : null);
-        taskDAO.createTask(eventId, task, shoppingListsIds);
+        taskCompositeRepository.createTask(eventId, task, shoppingListsIds);
         return task.getTaskId().toString();
     }
 
@@ -122,7 +122,7 @@ public class TaskService {
                         null,
                         null,
                         null);
-        taskDAO.updateTask(taskId, task);
+        taskCompositeRepository.updateTask(taskId, task);
     }
 
     public void startExecuting(UUID taskId, UUID userId, UUID eventId) {
@@ -133,7 +133,7 @@ public class TaskService {
         taskServiceValidator.checkNotCompletedStatus(taskId, getTaskStatus(taskId));
         taskServiceValidator.checkExecutionOpportunity(taskId, userId);
 
-        taskDAO.startExecuting(taskId, userId);
+        taskCompositeRepository.startExecuting(taskId, userId);
     }
 
     public void deleteTask(UUID taskId, UUID eventId, UUID userId) {
@@ -144,23 +144,23 @@ public class TaskService {
         taskServiceValidator.checkNotCompletedStatus(taskId, getTaskStatus(taskId));
         participantsServiceValidator.checkIsAuthorOrAdminOrOwner(eventId, userId, taskId);
 
-        taskDAO.deleteTask(taskId);
+        taskCompositeRepository.deleteTask(taskId);
     }
 
     public boolean isAuthor(UUID taskId, UUID userId) {
-        return taskDAO.isAuthor(taskId, userId);
+        return taskCompositeRepository.isAuthor(taskId, userId);
     }
 
     public String getTaskStatus(UUID taskId) {
-        return taskDAO.getTaskStatus(taskId);
+        return taskCompositeRepository.getTaskStatus(taskId);
     }
 
     public boolean isExisted(UUID eventId, UUID taskId) {
-        return taskDAO.isExisted(eventId, taskId);
+        return taskCompositeRepository.isExisted(eventId, taskId);
     }
 
     public UUID getExecutorId(UUID taskId) {
-        return taskDAO.getExecutorId(taskId);
+        return taskCompositeRepository.getExecutorId(taskId);
     }
 
     public UUID updateExecutor(
@@ -181,7 +181,7 @@ public class TaskService {
             participantsServiceValidator.checkUserInEvent(eventId, executorId);
         }
 
-        taskDAO.updateExecutor(taskId, executorId);
+        taskCompositeRepository.updateExecutor(taskId, executorId);
         return executorId;
     }
 
@@ -200,7 +200,7 @@ public class TaskService {
                     shoppingListsIds);
         }
 
-        taskDAO.updateShoppingLists(taskId, shoppingListsIds);
+        taskCompositeRepository.updateShoppingLists(taskId, shoppingListsIds);
     }
 
     public String setExecutorComment(
@@ -216,7 +216,8 @@ public class TaskService {
         taskServiceValidator.checkInProgressStatus(taskId, getTaskStatus(taskId));
         taskServiceValidator.checkOpportunityToSentTaskToReview(taskId, userId);
 
-        taskDAO.setExecutorComment(taskId, taskSendForReviewRequest.getExecutorComment());
+        taskCompositeRepository.setExecutorComment(
+                taskId, taskSendForReviewRequest.getExecutorComment());
         return taskSendForReviewRequest.getExecutorComment();
     }
 
@@ -230,7 +231,7 @@ public class TaskService {
         taskServiceValidator.checkUnderReviewStatus(taskId, getTaskStatus(taskId));
         taskServiceValidator.checkOpportunityToApproveTask(eventId, taskId, userId);
 
-        taskDAO.setReviewerComment(
+        taskCompositeRepository.setReviewerComment(
                 taskId, taskReviewRequest.getReviewerComment(), taskReviewRequest.getIsApproved());
     }
 

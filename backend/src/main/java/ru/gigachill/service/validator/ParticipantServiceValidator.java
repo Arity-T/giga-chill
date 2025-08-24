@@ -4,23 +4,23 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import ru.gigachill.data.access.object.ParticipantDAO;
-import ru.gigachill.data.access.object.ShoppingListDAO;
-import ru.gigachill.data.access.object.TaskDAO;
 import ru.gigachill.exception.BadRequestException;
 import ru.gigachill.exception.ConflictException;
 import ru.gigachill.exception.ForbiddenException;
+import ru.gigachill.repository.composite.ParticipantCompositeRepository;
+import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
+import ru.gigachill.repository.composite.TaskCompositeRepository;
 
 @Component
 @RequiredArgsConstructor
 public class ParticipantServiceValidator {
-    private final ParticipantDAO participantDAO;
-    private final ShoppingListDAO shoppingListDAO;
-    private final TaskDAO taskDAO;
+    private final ParticipantCompositeRepository participantCompositeRepository;
+    private final ShoppingListCompositeRepository shoppingListCompositeRepository;
+    private final TaskCompositeRepository taskCompositeRepository;
     private final Environment env;
 
     public void checkUserInEvent(UUID eventId, UUID userId) {
-        if (!participantDAO.checkUserInEvent(eventId, userId)) {
+        if (!participantCompositeRepository.checkUserInEvent(eventId, userId)) {
             throw new ForbiddenException(
                     "User with id: "
                             + userId
@@ -30,7 +30,7 @@ public class ParticipantServiceValidator {
     }
 
     public void checkIsAlreadyParticipant(UUID eventId, UUID userId) {
-        if (participantDAO.checkUserInEvent(eventId, userId)) {
+        if (participantCompositeRepository.checkUserInEvent(eventId, userId)) {
             throw new ConflictException(
                     "User with id "
                             + userId
@@ -71,7 +71,7 @@ public class ParticipantServiceValidator {
     public void checkIsConsumerOrAdminOrOwner(
             UUID eventId, UUID participantId, UUID shoppingListId) {
         if (isParticipantRole(eventId, participantId)
-                && !shoppingListDAO.isConsumer(shoppingListId, participantId)) {
+                && !shoppingListCompositeRepository.isConsumer(shoppingListId, participantId)) {
             throw new ForbiddenException(
                     "User with id: "
                             + participantId
@@ -81,7 +81,8 @@ public class ParticipantServiceValidator {
     }
 
     public void checkIsAuthorOrAdminOrOwner(UUID eventId, UUID participantId, UUID taskId) {
-        if (isParticipantRole(eventId, participantId) && !taskDAO.isAuthor(taskId, participantId)) {
+        if (isParticipantRole(eventId, participantId)
+                && !taskCompositeRepository.isAuthor(taskId, participantId)) {
             throw new ForbiddenException(
                     "User with id: "
                             + participantId
@@ -98,19 +99,19 @@ public class ParticipantServiceValidator {
     }
 
     public boolean isOwnerRole(UUID eventId, UUID participantId) {
-        return participantDAO
+        return participantCompositeRepository
                 .getParticipantRoleInEvent(eventId, participantId)
                 .equals(env.getProperty("roles.owner"));
     }
 
     public boolean isAdminRole(UUID eventId, UUID participantId) {
-        return participantDAO
+        return participantCompositeRepository
                 .getParticipantRoleInEvent(eventId, participantId)
                 .equals(env.getProperty("roles.admin"));
     }
 
     public boolean isParticipantRole(UUID eventId, UUID participantId) {
-        return participantDAO
+        return participantCompositeRepository
                 .getParticipantRoleInEvent(eventId, participantId)
                 .equals(env.getProperty("roles.participant"));
     }

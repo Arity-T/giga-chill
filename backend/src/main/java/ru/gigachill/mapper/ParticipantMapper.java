@@ -3,7 +3,7 @@ package ru.gigachill.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import ru.gigachill.data.transfer.object.ParticipantDTO;
+import ru.gigachill.dto.ParticipantDTO;
 import ru.gigachill.web.api.model.Participant;
 import ru.gigachill.web.api.model.UserRole;
 
