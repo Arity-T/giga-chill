@@ -1,7 +1,5 @@
 package ru.gigachill.repository.composite.impl;
 
-import com.github.giga_chill.jooq.generated.tables.records.ShoppingItemsRecord;
-import com.github.giga_chill.jooq.generated.tables.records.ShoppingListsRecord;
 import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -17,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.gigachill.dto.ParticipantDTO;
 import ru.gigachill.dto.ShoppingItemDTO;
 import ru.gigachill.dto.ShoppingListDTO;
+import ru.gigachill.jooq.generated.tables.records.ShoppingItemsRecord;
+import ru.gigachill.jooq.generated.tables.records.ShoppingListsRecord;
 import ru.gigachill.mapper.jooq.ParticipantsRecordMapper;
 import ru.gigachill.mapper.jooq.ShoppingRecordsMapper;
 import ru.gigachill.model.ConsumerWithUserData;

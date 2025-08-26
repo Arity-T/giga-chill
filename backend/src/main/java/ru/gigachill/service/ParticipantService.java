@@ -1,6 +1,5 @@
 package ru.gigachill.service;
 
-import com.github.giga_chill.jooq.generated.enums.EventRole;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -8,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import ru.gigachill.dto.ParticipantDTO;
+import ru.gigachill.jooq.generated.enums.EventRole;
 import ru.gigachill.mapper.ParticipantBalanceMapper;
 import ru.gigachill.mapper.ParticipantMapper;
 import ru.gigachill.mapper.ParticipantSummaryBalanceMapper;

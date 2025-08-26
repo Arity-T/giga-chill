@@ -1,15 +1,15 @@
 package ru.gigachill.repository.simple;
 
-import com.github.giga_chill.jooq.generated.enums.EventRole;
-import com.github.giga_chill.jooq.generated.tables.UserInEvent;
-import com.github.giga_chill.jooq.generated.tables.Users;
-import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
+import ru.gigachill.jooq.generated.enums.EventRole;
+import ru.gigachill.jooq.generated.tables.UserInEvent;
+import ru.gigachill.jooq.generated.tables.Users;
+import ru.gigachill.jooq.generated.tables.records.UserInEventRecord;
 import ru.gigachill.model.UserInEventWithUserData;
 
 @Repository

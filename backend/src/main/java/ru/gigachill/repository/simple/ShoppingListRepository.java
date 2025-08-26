@@ -1,9 +1,5 @@
 package ru.gigachill.repository.simple;
 
-import com.github.giga_chill.jooq.generated.tables.ConsumerInList;
-import com.github.giga_chill.jooq.generated.tables.ShoppingItems;
-import com.github.giga_chill.jooq.generated.tables.ShoppingLists;
-import com.github.giga_chill.jooq.generated.tables.records.ShoppingListsRecord;
 import io.micrometer.common.lang.Nullable;
 import java.math.BigDecimal;
 import java.util.*;
@@ -11,6 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.springframework.stereotype.Repository;
+import ru.gigachill.jooq.generated.tables.ConsumerInList;
+import ru.gigachill.jooq.generated.tables.ShoppingItems;
+import ru.gigachill.jooq.generated.tables.ShoppingLists;
+import ru.gigachill.jooq.generated.tables.records.ShoppingListsRecord;
 import ru.gigachill.model.ShoppingListWithDetails;
 
 @Repository

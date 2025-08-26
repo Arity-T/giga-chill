@@ -1,8 +1,5 @@
 package ru.gigachill.repository.composite.impl;
 
-import com.github.giga_chill.jooq.generated.enums.EventRole;
-import com.github.giga_chill.jooq.generated.tables.records.EventsRecord;
-import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
 import jakarta.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
@@ -10,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gigachill.dto.EventDTO;
+import ru.gigachill.jooq.generated.enums.EventRole;
+import ru.gigachill.jooq.generated.tables.records.EventsRecord;
+import ru.gigachill.jooq.generated.tables.records.UserInEventRecord;
 import ru.gigachill.mapper.jooq.EventsRecordMapper;
 import ru.gigachill.repository.composite.EventCompositeRepository;
 import ru.gigachill.repository.simple.EventRepository;

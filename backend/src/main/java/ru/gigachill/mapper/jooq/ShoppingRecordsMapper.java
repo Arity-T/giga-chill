@@ -1,7 +1,5 @@
 package ru.gigachill.mapper.jooq;
 
-import com.github.giga_chill.jooq.generated.tables.records.ShoppingItemsRecord;
-import com.github.giga_chill.jooq.generated.tables.records.ShoppingListsRecord;
 import java.util.List;
 import java.util.UUID;
 import org.mapstruct.Mapper;
@@ -10,6 +8,8 @@ import org.mapstruct.ReportingPolicy;
 import ru.gigachill.dto.ParticipantDTO;
 import ru.gigachill.dto.ShoppingItemDTO;
 import ru.gigachill.dto.ShoppingListDTO;
+import ru.gigachill.jooq.generated.tables.records.ShoppingItemsRecord;
+import ru.gigachill.jooq.generated.tables.records.ShoppingListsRecord;
 import ru.gigachill.model.ShoppingListWithDetails;
 
 @Mapper(

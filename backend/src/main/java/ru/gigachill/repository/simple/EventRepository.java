@@ -2,9 +2,6 @@ package ru.gigachill.repository.simple;
 
 import static org.jooq.impl.DSL.sum;
 
-import com.github.giga_chill.jooq.generated.enums.TaskStatus;
-import com.github.giga_chill.jooq.generated.tables.*;
-import com.github.giga_chill.jooq.generated.tables.records.EventsRecord;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -14,6 +11,9 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
+import ru.gigachill.jooq.generated.enums.TaskStatus;
+import ru.gigachill.jooq.generated.tables.*;
+import ru.gigachill.jooq.generated.tables.records.EventsRecord;
 import ru.gigachill.model.DebtWithUserData;
 
 @Repository

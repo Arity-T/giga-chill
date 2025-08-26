@@ -1,15 +1,15 @@
 package ru.gigachill.repository.simple;
 
-import com.github.giga_chill.jooq.generated.tables.ConsumerInList;
-import com.github.giga_chill.jooq.generated.tables.ShoppingLists;
-import com.github.giga_chill.jooq.generated.tables.UserInEvent;
-import com.github.giga_chill.jooq.generated.tables.Users;
-import com.github.giga_chill.jooq.generated.tables.records.ConsumerInListRecord;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
+import ru.gigachill.jooq.generated.tables.ConsumerInList;
+import ru.gigachill.jooq.generated.tables.ShoppingLists;
+import ru.gigachill.jooq.generated.tables.UserInEvent;
+import ru.gigachill.jooq.generated.tables.Users;
+import ru.gigachill.jooq.generated.tables.records.ConsumerInListRecord;
 import ru.gigachill.model.ConsumerWithUserData;
 
 @Repository

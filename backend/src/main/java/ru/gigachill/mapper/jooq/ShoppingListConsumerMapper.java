@@ -1,12 +1,12 @@
 package ru.gigachill.mapper.jooq;
 
-import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
-import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 import java.util.UUID;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import ru.gigachill.dto.ParticipantDTO;
+import ru.gigachill.jooq.generated.tables.records.UserInEventRecord;
+import ru.gigachill.jooq.generated.tables.records.UsersRecord;
 
 @Mapper(
         componentModel = "spring",

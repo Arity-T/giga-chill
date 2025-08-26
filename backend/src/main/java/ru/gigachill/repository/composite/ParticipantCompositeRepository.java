@@ -1,11 +1,11 @@
 package ru.gigachill.repository.composite;
 
-import com.github.giga_chill.jooq.generated.enums.EventRole;
 import java.util.List;
 import java.util.UUID;
 import ru.gigachill.dto.ParticipantBalanceDTO;
 import ru.gigachill.dto.ParticipantDTO;
 import ru.gigachill.dto.ParticipantSummaryBalanceDTO;
+import ru.gigachill.jooq.generated.enums.EventRole;
 
 /**
  * Data Access Object (DAO) interface for {@link ParticipantDTO} entities.

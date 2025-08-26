@@ -1,8 +1,5 @@
 package ru.gigachill.repository.composite.impl;
 
-import com.github.giga_chill.jooq.generated.enums.EventRole;
-import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
-import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 import java.math.BigDecimal;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +9,9 @@ import ru.gigachill.dto.ParticipantBalanceDTO;
 import ru.gigachill.dto.ParticipantDTO;
 import ru.gigachill.dto.ParticipantSummaryBalanceDTO;
 import ru.gigachill.dto.UserDTO;
+import ru.gigachill.jooq.generated.enums.EventRole;
+import ru.gigachill.jooq.generated.tables.records.UserInEventRecord;
+import ru.gigachill.jooq.generated.tables.records.UsersRecord;
 import ru.gigachill.mapper.jooq.ParticipantsRecordMapper;
 import ru.gigachill.mapper.jooq.UsersRecordMapper;
 import ru.gigachill.repository.composite.ParticipantCompositeRepository;

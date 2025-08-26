@@ -1,7 +1,5 @@
 package ru.gigachill.mapper.jooq;
 
-import com.github.giga_chill.jooq.generated.enums.TaskStatus;
-import com.github.giga_chill.jooq.generated.tables.records.TasksRecord;
 import java.util.List;
 import java.util.UUID;
 import org.mapstruct.Mapper;
@@ -12,6 +10,8 @@ import ru.gigachill.dto.ShoppingListDTO;
 import ru.gigachill.dto.TaskDTO;
 import ru.gigachill.dto.TaskWithShoppingListsDTO;
 import ru.gigachill.dto.UserDTO;
+import ru.gigachill.jooq.generated.enums.TaskStatus;
+import ru.gigachill.jooq.generated.tables.records.TasksRecord;
 
 @Mapper(
         componentModel = "spring",

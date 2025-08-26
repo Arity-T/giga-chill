@@ -1,13 +1,13 @@
 package ru.gigachill.mapper.jooq;
 
-import com.github.giga_chill.jooq.generated.enums.EventRole;
-import com.github.giga_chill.jooq.generated.tables.records.UserInEventRecord;
 import java.util.UUID;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 import ru.gigachill.dto.ParticipantDTO;
+import ru.gigachill.jooq.generated.enums.EventRole;
+import ru.gigachill.jooq.generated.tables.records.UserInEventRecord;
 import ru.gigachill.model.ConsumerWithUserData;
 import ru.gigachill.model.UserInEventWithUserData;
 

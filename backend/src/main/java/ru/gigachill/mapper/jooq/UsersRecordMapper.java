@@ -1,10 +1,10 @@
 package ru.gigachill.mapper.jooq;
 
-import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import ru.gigachill.dto.UserDTO;
+import ru.gigachill.jooq.generated.tables.records.UsersRecord;
 import ru.gigachill.model.DebtWithUserData;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)

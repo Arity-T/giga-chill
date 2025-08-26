@@ -1,7 +1,5 @@
 package ru.gigachill.repository.simple;
 
-import com.github.giga_chill.jooq.generated.tables.ShoppingItems;
-import com.github.giga_chill.jooq.generated.tables.records.ShoppingItemsRecord;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +7,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
+import ru.gigachill.jooq.generated.tables.ShoppingItems;
+import ru.gigachill.jooq.generated.tables.records.ShoppingItemsRecord;
 
 @Repository
 @RequiredArgsConstructor

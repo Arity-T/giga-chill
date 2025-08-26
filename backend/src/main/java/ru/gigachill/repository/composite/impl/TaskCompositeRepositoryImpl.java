@@ -1,8 +1,5 @@
 package ru.gigachill.repository.composite.impl;
 
-import com.github.giga_chill.jooq.generated.enums.TaskStatus;
-import com.github.giga_chill.jooq.generated.tables.records.TasksRecord;
-import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 import jakarta.annotation.Nullable;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +11,9 @@ import ru.gigachill.dto.ShoppingListDTO;
 import ru.gigachill.dto.TaskDTO;
 import ru.gigachill.dto.TaskWithShoppingListsDTO;
 import ru.gigachill.dto.UserDTO;
+import ru.gigachill.jooq.generated.enums.TaskStatus;
+import ru.gigachill.jooq.generated.tables.records.TasksRecord;
+import ru.gigachill.jooq.generated.tables.records.UsersRecord;
 import ru.gigachill.mapper.jooq.ShoppingRecordsMapper;
 import ru.gigachill.mapper.jooq.TasksRecordMapper;
 import ru.gigachill.mapper.jooq.UsersRecordMapper;

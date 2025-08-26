@@ -1,8 +1,5 @@
 package ru.gigachill.repository.simple;
 
-import com.github.giga_chill.jooq.generated.enums.TaskStatus;
-import com.github.giga_chill.jooq.generated.tables.Tasks;
-import com.github.giga_chill.jooq.generated.tables.records.TasksRecord;
 import jakarta.annotation.Nullable;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +7,9 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.springframework.stereotype.Repository;
 import ru.gigachill.dto.TaskDTO;
+import ru.gigachill.jooq.generated.enums.TaskStatus;
+import ru.gigachill.jooq.generated.tables.Tasks;
+import ru.gigachill.jooq.generated.tables.records.TasksRecord;
 
 @Repository
 @RequiredArgsConstructor

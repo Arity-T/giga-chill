@@ -1,6 +1,5 @@
 package ru.gigachill.service;
 
-import com.github.giga_chill.jooq.generated.tables.records.UsersRecord;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 import ru.gigachill.exception.BadRequestException;
 import ru.gigachill.exception.NotFoundException;
 import ru.gigachill.exception.UnauthorizedException;
+import ru.gigachill.jooq.generated.tables.records.UsersRecord;
 import ru.gigachill.model.UserEntity;
 import ru.gigachill.repository.simple.UserRepository;
 
