@@ -31,7 +31,6 @@ public class DataAccessLoggerAspect {
     public Object logDataAccess(ProceedingJoinPoint joinPoint) throws Throwable {
         String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
         String methodName = joinPoint.getSignature().getName();
-        Object[] args = joinPoint.getArgs();
 
         String userInfo = getCurrentUserInfo();
 

@@ -7,7 +7,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import ru.gigachill.dto.ShoppingItemDTO;
 import ru.gigachill.exception.BadRequestException;
-import ru.gigachill.mapper.ShoppingItemMapper;
 import ru.gigachill.mapper.ShoppingListMapper;
 import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 import ru.gigachill.repository.composite.TaskCompositeRepository;
@@ -19,7 +18,6 @@ import ru.gigachill.web.api.model.*;
 public class ShoppingListService {
 
     private final ShoppingListMapper shoppingListMapper;
-    private final ShoppingItemMapper shoppingItemMapper;
     private final Environment env;
     private final ShoppingListCompositeRepository shoppingListCompositeRepository;
     private final TaskCompositeRepository taskCompositeRepository;
