@@ -6,12 +6,13 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import ru.gigachill.data.access.object.ParticipantDAO;
-import ru.gigachill.data.transfer.object.ParticipantDTO;
+import ru.gigachill.dto.ParticipantDTO;
+import ru.gigachill.jooq.generated.enums.EventRole;
 import ru.gigachill.mapper.ParticipantBalanceMapper;
 import ru.gigachill.mapper.ParticipantMapper;
 import ru.gigachill.mapper.ParticipantSummaryBalanceMapper;
 import ru.gigachill.model.UserEntity;
+import ru.gigachill.repository.composite.ParticipantCompositeRepository;
 import ru.gigachill.service.validator.EventServiceValidator;
 import ru.gigachill.service.validator.ParticipantServiceValidator;
 import ru.gigachill.web.api.model.*;
@@ -24,7 +25,7 @@ public class ParticipantService {
     private final ParticipantSummaryBalanceMapper participantSummaryBalanceMapper;
     private final ParticipantMapper participantMapper;
     private final Environment env;
-    private final ParticipantDAO participantDAO;
+    private final ParticipantCompositeRepository participantCompositeRepository;
     private final EventServiceValidator eventServiceValidator;
     private final ParticipantServiceValidator participantsServiceValidator;
     private final UserService userService;
@@ -34,7 +35,7 @@ public class ParticipantService {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         participantsServiceValidator.checkUserInEvent(eventId, participantId);
 
-        return participantDAO.getAllParticipantsByEventId(eventId).stream()
+        return participantCompositeRepository.getAllParticipantsByEventId(eventId).stream()
                 .map(participantMapper::toParticipant)
                 .toList();
     }
@@ -61,7 +62,7 @@ public class ParticipantService {
                         env.getProperty("roles.participant").toString(),
                         BigDecimal.valueOf(0));
 
-        participantDAO.addParticipantToEvent(eventId, participant);
+        participantCompositeRepository.addParticipantToEvent(eventId, participant);
         return userToAdd.getId();
     }
 
@@ -74,7 +75,7 @@ public class ParticipantService {
                         env.getProperty("roles.participant").toString(),
                         BigDecimal.valueOf(0));
 
-        participantDAO.addParticipantToEvent(eventId, participant);
+        participantCompositeRepository.addParticipantToEvent(eventId, participant);
         return userEntity.getId();
     }
 
@@ -87,7 +88,7 @@ public class ParticipantService {
         participantsServiceValidator.checkAdminOrOwnerRole(eventId, userId);
         participantsServiceValidator.checkUserInEvent(eventId, participantId);
 
-        participantDAO.deleteParticipant(eventId, participantId);
+        participantCompositeRepository.deleteParticipant(eventId, participantId);
     }
 
     public void updateParticipantRole(
@@ -101,11 +102,12 @@ public class ParticipantService {
         participantsServiceValidator.checkReplaceRole(eventId, participantId);
 
         var newRole = participantSetRole.getRole().getValue();
-        participantDAO.updateParticipantRole(eventId, participantId, newRole);
+        EventRole eventRole = EventRole.valueOf(newRole);
+        participantCompositeRepository.updateParticipantRole(eventId, participantId, eventRole);
     }
 
     public String getParticipantRoleInEvent(UUID eventId, UUID participantId) {
-        return participantDAO.getParticipantRoleInEvent(eventId, participantId);
+        return participantCompositeRepository.getParticipantRoleInEvent(eventId, participantId);
     }
 
     public boolean isOwnerRole(UUID eventId, UUID participantId) {
@@ -128,7 +130,7 @@ public class ParticipantService {
         participantsServiceValidator.checkUserInEvent(eventId, participantId);
 
         return participantBalanceMapper.toUserBalance(
-                participantDAO.getParticipantBalance(eventId, participantId));
+                participantCompositeRepository.getParticipantBalance(eventId, participantId));
     }
 
     public List<ParticipantBalanceSummary> getParticipantsSummaryBalance(
@@ -137,7 +139,7 @@ public class ParticipantService {
         participantsServiceValidator.checkUserInEvent(eventId, participantId);
         participantsServiceValidator.checkAdminOrOwnerRole(eventId, participantId);
 
-        return participantDAO.getSummaryParticipantBalance(eventId).stream()
+        return participantCompositeRepository.getSummaryParticipantBalance(eventId).stream()
                 .map(participantSummaryBalanceMapper::toParticipantBalanceSummary)
                 .toList();
     }

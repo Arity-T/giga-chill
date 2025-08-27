@@ -1,7 +1,7 @@
 package ru.gigachill.mapper;
 
 import org.mapstruct.Mapper;
-import ru.gigachill.data.transfer.object.UserDTO;
+import ru.gigachill.dto.UserDTO;
 import ru.gigachill.model.UserEntity;
 import ru.gigachill.web.api.model.User;
 

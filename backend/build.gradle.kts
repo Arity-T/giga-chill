@@ -175,7 +175,7 @@ jooq {
                     }
 
                     target.apply {
-                        packageName = "com.github.giga_chill.jooq.generated"
+                        packageName = "ru.gigachill.jooq.generated"
                         directory = "build/generated-sources/jooq"
                     }
                 }

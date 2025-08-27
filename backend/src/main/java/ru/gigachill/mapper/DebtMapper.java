@@ -1,13 +1,14 @@
 package ru.gigachill.mapper;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.gigachill.data.transfer.object.UserDTO;
+import ru.gigachill.dto.UserDTO;
 import ru.gigachill.web.api.model.Debt;
 
 @Mapper(componentModel = "spring", uses = UserMapper.class)
@@ -25,6 +26,7 @@ public interface DebtMapper {
                 .filter(Objects::nonNull)
                 .flatMap(map -> map.entrySet().stream())
                 .map(this::toDebt)
+                .peek(item -> item.setAmount(item.getAmount().setScale(2, RoundingMode.HALF_UP)))
                 .collect(Collectors.toList());
     }
 }
