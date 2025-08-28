@@ -1,0 +1,10 @@
+{
+  "Rules": [
+    {
+      "Status": "Enabled",
+      "Expiration": {
+        "Days": 1
+      }
+    }
+  ]
+}
