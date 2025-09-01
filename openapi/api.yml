@@ -18,6 +18,7 @@ tags:
   - name: Participants
   - name: Shopping Lists
   - name: Shopping List Items
+  - name: Shopping List Receipts
   - name: Tasks
   - name: Debts
   - name: Test Utils
@@ -611,6 +612,111 @@ paths:
           description: No Content
         "400":
           $ref: "#/components/responses/InvalidDataError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /events/{eventId}/shopping-lists/{shoppingListId}/receipts/upload-policy:
+    post:
+      summary: Создать и получить policy для загрузки фотографии чека
+      tags: [Shopping List Receipts]
+      operationId: createReceiptUploadPolicy
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/shoppingListId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReceiptUploadPolicyCreate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReceiptUploadPolicy"
+        "400":
+          $ref: "#/components/responses/InvalidDataError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /events/{eventId}/shopping-lists/{shoppingListId}/receipts/confirm-upload:
+    post:
+      summary: Подтвердить загрузку фотографии чека
+      tags: [Shopping List Receipts]
+      operationId: confirmReceiptUpload
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/shoppingListId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReceiptConfirmRequest"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/InvalidDataError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /events/{eventId}/shopping-lists/{shoppingListId}/receipts/{receiptId}:
+    get:
+      summary: Получение фотографии чека
+      description:
+        Возвращает фотографию чека, связанную с указанным списком покупок.
+        Подразумевается, что фотография загружается напрямую из S3 хранилища.
+        Для этого бэкенду нужно вернуть редирект - 302 Found. В заголовке Location
+        указывается Pre-signed GET – временная ссылка на файл в S3.
+      tags: [Shopping List Receipts]
+      operationId: getReceiptImage
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/shoppingListId"
+        - $ref: "#/components/parameters/receiptId"
+      responses:
+        "302":
+          description: Found - редирект на pre-signed URL для загрузки фотографии чека
+          headers:
+            Location:
+              description: Pre-signed GET URL для доступа к фотографии чека в S3
+              schema:
+                type: string
+                format: uri
+                example: "https://s3.giga-chill.ru/receipt/receipts/e0cc1bbd-2292-4f14-8605-8aadf374c390.jpg?AWSAccessKeyId=...&Signature=...&Expires=..."
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    delete:
+      summary: Удалить фотографию чека
+      tags: [Shopping List Receipts]
+      operationId: deleteReceipt
+      parameters:
+        - $ref: "#/components/parameters/eventId"
+        - $ref: "#/components/parameters/shoppingListId"
+        - $ref: "#/components/parameters/receiptId"
+      responses:
+        "204":
+          description: No Content
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":

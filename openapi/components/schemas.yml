@@ -279,6 +279,8 @@ ShoppingListWithItems:
       example: true
     budget:
       $ref: "./properties/ShoppingList.yml#/budget"
+    receipt_id:
+      $ref: "#/UUID"
     shopping_items:
       $ref: "#/ShoppingItems"
     consumers:
@@ -312,6 +314,52 @@ ShoppingListSetBudget:
   properties:
     budget:
       $ref: "./properties/ShoppingList.yml#/budget"
+
+ReceiptUploadPolicyCreate:
+  type: object
+  required:
+    - content_type
+    - content_length
+    - file_name
+    - md5_hash
+  properties:
+    content_type:
+      type: string
+      description: Тип содержимого файла
+      example: "image/jpeg"
+    content_length:
+      type: number
+      description: Длина содержимого файла
+      example: 1000
+    original_file_name:
+      type: string
+      description: Имя файла на стороне клиента
+      example: "receipt.jpg"
+    md5_hash:
+      type: string
+      description: MD5 хеш файла
+      example: "F1D4550D32911DE07C61170113B4FDAA"
+
+ReceiptUploadPolicy:
+  type: object
+  required: [receipt_id, upload_url, fields]
+  properties:
+    receipt_id:
+      $ref: "#/UUID"
+    upload_url:
+      type: string
+      description: Эндпоинт S3 для загрузки файла
+      example: "https://s3.giga-chill.ru/incoming"
+    fields:
+      type: object
+      description: Набор полей, которые обязан отправить клиент при загрузке файла в S3
+
+ReceiptConfirmRequest:
+  type: object
+  required: [receipt_id]
+  properties:
+    receipt_id:
+      $ref: "#/UUID"
 
 TaskStatus:
   type: string
