@@ -23,19 +23,16 @@ roles:
   admin: admin
   participant: participant
 
-shopping_list_status:
+shopping-list-status:
   unassigned: unassigned
   assigned: assigned
-  in_progress: in_progress
+  in-progress: in_progress
   bought: bought
-  partially_bought: partially_bought
+  partially-bought: partially_bought
   cancelled: cancelled
 
-task_status:
+task-status:
   open: open
-  in_progress: in_progress
-  under_review: under_review
+  in-progress: in_progress
+  under-review: under_review
   completed: completed
-
-
-

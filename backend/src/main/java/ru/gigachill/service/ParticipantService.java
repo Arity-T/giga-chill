@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import ru.gigachill.dto.ParticipantDTO;
 import ru.gigachill.jooq.generated.enums.EventRole;
@@ -12,6 +11,7 @@ import ru.gigachill.mapper.ParticipantBalanceMapper;
 import ru.gigachill.mapper.ParticipantMapper;
 import ru.gigachill.mapper.ParticipantSummaryBalanceMapper;
 import ru.gigachill.model.UserEntity;
+import ru.gigachill.properties.RoleProperties;
 import ru.gigachill.repository.composite.ParticipantCompositeRepository;
 import ru.gigachill.service.validator.EventServiceValidator;
 import ru.gigachill.service.validator.ParticipantServiceValidator;
@@ -24,7 +24,7 @@ public class ParticipantService {
     private final ParticipantBalanceMapper participantBalanceMapper;
     private final ParticipantSummaryBalanceMapper participantSummaryBalanceMapper;
     private final ParticipantMapper participantMapper;
-    private final Environment env;
+    private final RoleProperties roleProperties;
     private final ParticipantCompositeRepository participantCompositeRepository;
     private final EventServiceValidator eventServiceValidator;
     private final ParticipantServiceValidator participantsServiceValidator;
@@ -59,7 +59,7 @@ public class ParticipantService {
                         userToAdd.getId(),
                         userToAdd.getLogin(),
                         userToAdd.getName(),
-                        env.getProperty("roles.participant").toString(),
+                        roleProperties.getParticipant(),
                         BigDecimal.valueOf(0));
 
         participantCompositeRepository.addParticipantToEvent(eventId, participant);
@@ -72,7 +72,7 @@ public class ParticipantService {
                         userEntity.getId(),
                         userEntity.getLogin(),
                         userEntity.getName(),
-                        env.getProperty("roles.participant").toString(),
+                        roleProperties.getParticipant(),
                         BigDecimal.valueOf(0));
 
         participantCompositeRepository.addParticipantToEvent(eventId, participant);
@@ -111,18 +111,16 @@ public class ParticipantService {
     }
 
     public boolean isOwnerRole(UUID eventId, UUID participantId) {
-        return getParticipantRoleInEvent(eventId, participantId)
-                .equals(env.getProperty("roles.owner"));
+        return getParticipantRoleInEvent(eventId, participantId).equals(roleProperties.getOwner());
     }
 
     public boolean isAdminRole(UUID eventId, UUID participantId) {
-        return getParticipantRoleInEvent(eventId, participantId)
-                .equals(env.getProperty("roles.admin"));
+        return getParticipantRoleInEvent(eventId, participantId).equals(roleProperties.getAdmin());
     }
 
     public boolean isParticipantRole(UUID eventId, UUID participantId) {
         return getParticipantRoleInEvent(eventId, participantId)
-                .equals(env.getProperty("roles.participant"));
+                .equals(roleProperties.getParticipant());
     }
 
     public UserBalance getParticipantBalance(UUID eventId, UUID participantId) {
