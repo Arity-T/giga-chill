@@ -622,6 +622,9 @@ paths:
   /events/{eventId}/shopping-lists/{shoppingListId}/receipts/upload-policy:
     post:
       summary: Создать и получить policy для загрузки фотографии чека
+      description:
+        Оригинальное имя файла должно указываться в заголовке Content-Disposition
+        при создании Pre-signed POST policy.
       tags: [Shopping List Receipts]
       operationId: createReceiptUploadPolicy
       parameters:
