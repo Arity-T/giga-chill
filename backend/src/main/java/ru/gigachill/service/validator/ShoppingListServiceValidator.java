@@ -4,11 +4,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import ru.gigachill.exception.ConflictException;
 import ru.gigachill.exception.ForbiddenException;
 import ru.gigachill.exception.NotFoundException;
+import ru.gigachill.properties.ShoppingListStatusProperties;
+import ru.gigachill.properties.TaskStatusProperties;
 import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 
 @Component
@@ -17,7 +18,8 @@ public class ShoppingListServiceValidator {
 
     private final ShoppingListCompositeRepository shoppingListCompositeRepository;
     private final ParticipantServiceValidator participantsServiceValidator;
-    private final Environment env;
+    private final ShoppingListStatusProperties shoppingListStatusProperties;
+    private final TaskStatusProperties taskStatusProperties;
 
     public void checkIsExisted(UUID shoppingListId) {
         if (!shoppingListCompositeRepository.isExisted(shoppingListId)) {
@@ -26,8 +28,8 @@ public class ShoppingListServiceValidator {
     }
 
     public void checkUnassignedOrAssignedStatus(UUID shoppingListId, String shoppingListStatus) {
-        if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned"))
-                && !shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"))) {
+        if (!shoppingListStatus.equals(shoppingListStatusProperties.getUnassigned())
+                && !shoppingListStatus.equals(shoppingListStatusProperties.getAssigned())) {
             throw new ConflictException(
                     "Shopping list with id: "
                             + shoppingListId
@@ -53,7 +55,7 @@ public class ShoppingListServiceValidator {
     }
 
     public void checkInProgressStatus(UUID shoppingListId, String shoppingListStatus) {
-        if (!shoppingListStatus.equals(env.getProperty("shopping_list_status.in_progress"))) {
+        if (!shoppingListStatus.equals(shoppingListStatusProperties.getInProgress())) {
             throw new ConflictException(
                     "Shopping list with id: "
                             + shoppingListId
@@ -70,9 +72,9 @@ public class ShoppingListServiceValidator {
             String taskStatus) {
         if (Objects.isNull(executorId)
                 || !(executorId.equals(participantId)
-                                && taskStatus.equals(env.getProperty("task_status.in_progress"))
+                                && taskStatus.equals(taskStatusProperties.getInProgress())
                         || !(participantsServiceValidator.isParticipantRole(eventId, participantId)
-                                && taskStatus.equals(env.getProperty("task_status.under_review"))
+                                && taskStatus.equals(taskStatusProperties.getUnderReview())
                                 && executorId.equals(participantId)))) {
             throw new ForbiddenException(
                     "User with id: "
@@ -84,9 +86,8 @@ public class ShoppingListServiceValidator {
 
     public void checkOpportunityToChangeBudget(
             UUID eventId, UUID shoppingListId, UUID userId, UUID executorId, String taskStatus) {
-        if (!((taskStatus.equals(env.getProperty("task_status.in_progress"))
-                        && executorId.equals(userId))
-                || (taskStatus.equals(env.getProperty("task_status.under_review"))
+        if (!((taskStatus.equals(taskStatusProperties.getInProgress()) && executorId.equals(userId))
+                || (taskStatus.equals(taskStatusProperties.getUnderReview())
                         && !participantsServiceValidator.isParticipantRole(eventId, userId)
                         && !executorId.equals(userId)))) {
             throw new ConflictException(
