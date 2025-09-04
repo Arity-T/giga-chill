@@ -325,6 +325,9 @@ ReceiptUploadPolicyCreate:
   properties:
     content_type:
       type: string
+      enum:
+        - "image/jpeg"
+        - "image/png"
       description: Тип содержимого файла
       example: "image/jpeg"
     content_length:
