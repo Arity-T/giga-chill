@@ -3,11 +3,12 @@ package ru.gigachill.service;
 import java.math.BigDecimal;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import ru.gigachill.dto.ShoppingItemDTO;
 import ru.gigachill.exception.BadRequestException;
 import ru.gigachill.mapper.ShoppingListMapper;
+import ru.gigachill.properties.ShoppingListStatusProperties;
+import ru.gigachill.properties.TaskStatusProperties;
 import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 import ru.gigachill.repository.composite.TaskCompositeRepository;
 import ru.gigachill.service.validator.*;
@@ -18,7 +19,8 @@ import ru.gigachill.web.api.model.*;
 public class ShoppingListService {
 
     private final ShoppingListMapper shoppingListMapper;
-    private final Environment env;
+    private final ShoppingListStatusProperties shoppingListStatusProperties;
+    private final TaskStatusProperties taskStatusProperties;
     private final ShoppingListCompositeRepository shoppingListCompositeRepository;
     private final TaskCompositeRepository taskCompositeRepository;
     private final ParticipantService participantsService;
@@ -211,21 +213,21 @@ public class ShoppingListService {
     public String getShoppingListStatus(UUID shoppingListId) {
         var taskId = getTaskIdForShoppingList(shoppingListId);
         if (Objects.isNull(taskId)) {
-            return env.getProperty("shopping_list_status.unassigned");
+            return shoppingListStatusProperties.getUnassigned();
         }
         var taskStatus = taskCompositeRepository.getTaskStatus(taskId);
-        if (taskStatus.equals(env.getProperty("task_status.open"))) {
-            return env.getProperty("shopping_list_status.assigned");
+        if (taskStatus.equals(taskStatusProperties.getOpen())) {
+            return shoppingListStatusProperties.getAssigned();
         }
-        if (taskStatus.equals(env.getProperty("task_status.in_progress"))
-                || taskStatus.equals(env.getProperty("task_status.under_review"))) {
-            return env.getProperty("shopping_list_status.in_progress");
+        if (taskStatus.equals(taskStatusProperties.getInProgress())
+                || taskStatus.equals(taskStatusProperties.getUnderReview())) {
+            return shoppingListStatusProperties.getInProgress();
         }
-        if (taskStatus.equals(env.getProperty("task_status.completed"))) {
+        if (taskStatus.equals(taskStatusProperties.getCompleted())) {
             if (shoppingListCompositeRepository.isBought(shoppingListId)) {
-                return env.getProperty("shopping_list_status.bought");
+                return shoppingListStatusProperties.getBought();
             } else {
-                return env.getProperty("shopping_list_status.partially_bought");
+                return shoppingListStatusProperties.getPartiallyBought();
             }
         }
         throw new IllegalArgumentException("Invalid shopping list status");
@@ -275,10 +277,8 @@ public class ShoppingListService {
         }
 
         var shoppingListStatus = getShoppingListStatus(shoppingListId);
-        var isUnassigned =
-                shoppingListStatus.equals(env.getProperty("shopping_list_status.unassigned"));
-        var isAssigned =
-                shoppingListStatus.equals(env.getProperty("shopping_list_status.assigned"));
+        var isUnassigned = shoppingListStatus.equals(shoppingListStatusProperties.getUnassigned());
+        var isAssigned = shoppingListStatus.equals(shoppingListStatusProperties.getAssigned());
         return (isUnassigned || isAssigned);
     }
 }

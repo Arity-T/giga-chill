@@ -4,10 +4,10 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import ru.gigachill.exception.ConflictException;
 import ru.gigachill.exception.NotFoundException;
+import ru.gigachill.properties.TaskStatusProperties;
 import ru.gigachill.repository.composite.TaskCompositeRepository;
 
 @Component
@@ -15,7 +15,7 @@ import ru.gigachill.repository.composite.TaskCompositeRepository;
 public class TaskServiceValidator {
     private final TaskCompositeRepository taskCompositeRepository;
     private final ParticipantServiceValidator participantsServiceValidator;
-    private final Environment env;
+    private final TaskStatusProperties taskStatusProperties;
 
     public void checkIsExisted(UUID eventId, UUID taskId) {
         if (!taskCompositeRepository.isExisted(eventId, taskId)) {
@@ -24,13 +24,13 @@ public class TaskServiceValidator {
     }
 
     public void checkNotCompletedStatus(UUID taskId, String taskStatus) {
-        if (taskStatus.equals(env.getProperty("task_status.completed"))) {
+        if (taskStatus.equals(taskStatusProperties.getCompleted())) {
             throw new ConflictException("Task with id: " + taskId + " is completed");
         }
     }
 
     public void checkOpenStatus(UUID taskId, String taskStatus) {
-        if (!taskStatus.equals(env.getProperty("task_status.open"))) {
+        if (!taskStatus.equals(taskStatusProperties.getOpen())) {
             throw new ConflictException("Task with id: " + taskId + " is not open");
         }
     }
@@ -43,7 +43,7 @@ public class TaskServiceValidator {
     }
 
     public void checkInProgressStatus(UUID taskId, String taskStatus) {
-        if (!taskStatus.equals(env.getProperty("task_status.in_progress"))) {
+        if (!taskStatus.equals(taskStatusProperties.getInProgress())) {
             throw new ConflictException("Task with id: " + taskId + " is not \"in progress\"");
         }
     }
@@ -61,7 +61,7 @@ public class TaskServiceValidator {
     }
 
     public void checkUnderReviewStatus(UUID taskId, String taskStatus) {
-        if (!taskStatus.equals(env.getProperty("task_status.under_review"))) {
+        if (!taskStatus.equals(taskStatusProperties.getUnderReview())) {
             throw new ConflictException("Task with id: " + taskId + " is not \"under review\"");
         }
     }

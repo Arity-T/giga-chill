@@ -3,12 +3,12 @@ package ru.gigachill.service;
 import java.time.OffsetDateTime;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import ru.gigachill.dto.TaskDTO;
 import ru.gigachill.mapper.TaskMapper;
 import ru.gigachill.mapper.UserMapper;
 import ru.gigachill.model.UserEntity;
+import ru.gigachill.properties.TaskStatusProperties;
 import ru.gigachill.repository.composite.TaskCompositeRepository;
 import ru.gigachill.service.validator.*;
 import ru.gigachill.web.api.model.*;
@@ -17,7 +17,7 @@ import ru.gigachill.web.api.model.*;
 @RequiredArgsConstructor
 public class TaskService {
 
-    private final Environment env;
+    private final TaskStatusProperties taskStatusProperties;
     private final TaskCompositeRepository taskCompositeRepository;
     private final ShoppingListService shoppingListsService;
     private final UserService userService;
@@ -88,7 +88,7 @@ public class TaskService {
                         UUID.randomUUID(),
                         taskCreate.getTitle(),
                         taskCreate.getDescription(),
-                        env.getProperty("task_status.open"),
+                        taskStatusProperties.getOpen(),
                         taskCreate.getDeadlineDatetime(),
                         null,
                         null,
@@ -241,17 +241,17 @@ public class TaskService {
         permissions.setCanTakeInWork(false);
         permissions.setCanReview(false);
         var executorId = getExecutorId(taskId);
-        if (getTaskStatus(taskId).equals(env.getProperty("task_status.completed"))) {
+        if (getTaskStatus(taskId).equals(taskStatusProperties.getCompleted())) {
             permissions.setCanEdit(false);
         }
         if (participantsService.isParticipantRole(eventId, userId) && !isAuthor(taskId, userId)) {
             permissions.setCanEdit(false);
         }
-        if (getTaskStatus(taskId).equals(env.getProperty("task_status.open"))
+        if (getTaskStatus(taskId).equals(taskStatusProperties.getOpen())
                 && (Objects.isNull(executorId) || executorId.equals(userId))) {
             permissions.canTakeInWork(true);
         }
-        if (getTaskStatus(taskId).equals(env.getProperty("task_status.under_review"))
+        if (getTaskStatus(taskId).equals(taskStatusProperties.getUnderReview())
                 && !participantsService.isParticipantRole(eventId, userId)
                 && !getExecutorId(taskId).equals(userId)) {
             permissions.setCanReview(true);

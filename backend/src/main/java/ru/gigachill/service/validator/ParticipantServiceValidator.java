@@ -2,11 +2,11 @@ package ru.gigachill.service.validator;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import ru.gigachill.exception.BadRequestException;
 import ru.gigachill.exception.ConflictException;
 import ru.gigachill.exception.ForbiddenException;
+import ru.gigachill.properties.RoleProperties;
 import ru.gigachill.repository.composite.ParticipantCompositeRepository;
 import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 import ru.gigachill.repository.composite.TaskCompositeRepository;
@@ -17,7 +17,7 @@ public class ParticipantServiceValidator {
     private final ParticipantCompositeRepository participantCompositeRepository;
     private final ShoppingListCompositeRepository shoppingListCompositeRepository;
     private final TaskCompositeRepository taskCompositeRepository;
-    private final Environment env;
+    private final RoleProperties roleProperties;
 
     public void checkUserInEvent(UUID eventId, UUID userId) {
         if (!participantCompositeRepository.checkUserInEvent(eventId, userId)) {
@@ -101,18 +101,18 @@ public class ParticipantServiceValidator {
     public boolean isOwnerRole(UUID eventId, UUID participantId) {
         return participantCompositeRepository
                 .getParticipantRoleInEvent(eventId, participantId)
-                .equals(env.getProperty("roles.owner"));
+                .equals(roleProperties.getOwner());
     }
 
     public boolean isAdminRole(UUID eventId, UUID participantId) {
         return participantCompositeRepository
                 .getParticipantRoleInEvent(eventId, participantId)
-                .equals(env.getProperty("roles.admin"));
+                .equals(roleProperties.getAdmin());
     }
 
     public boolean isParticipantRole(UUID eventId, UUID participantId) {
         return participantCompositeRepository
                 .getParticipantRoleInEvent(eventId, participantId)
-                .equals(env.getProperty("roles.participant"));
+                .equals(roleProperties.getParticipant());
     }
 }
