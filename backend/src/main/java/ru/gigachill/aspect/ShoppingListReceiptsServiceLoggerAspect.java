@@ -1,5 +1,6 @@
 package ru.gigachill.aspect;
 
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -9,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import ru.gigachill.config.LoggerColorConfig;
-
-import java.util.UUID;
 
 @Component
 @Aspect
@@ -42,7 +41,8 @@ public class ShoppingListReceiptsServiceLoggerAspect {
 
     @Around("uploadPolicy(userId, eventId, shoppingListId)")
     public Object logUploadPolicy(
-            ProceedingJoinPoint proceedingJoinPoint, UUID userId, UUID eventId, UUID shoppingListId) throws Throwable {
+            ProceedingJoinPoint proceedingJoinPoint, UUID userId, UUID eventId, UUID shoppingListId)
+            throws Throwable {
         Object result = proceedingJoinPoint.proceed();
         LOGGER.info(
                 "{}{}Policy for loading receipt for shopping list with id: {} was created{}",
@@ -55,7 +55,8 @@ public class ShoppingListReceiptsServiceLoggerAspect {
 
     @Around("confirmUpload(userId, eventId, shoppingListId)")
     public Object logConfirmUpload(
-            ProceedingJoinPoint proceedingJoinPoint, UUID userId, UUID eventId, UUID shoppingListId) throws Throwable {
+            ProceedingJoinPoint proceedingJoinPoint, UUID userId, UUID eventId, UUID shoppingListId)
+            throws Throwable {
         Object result = proceedingJoinPoint.proceed();
         LOGGER.info(
                 "{}{}The receipt for the shopping list with id: {} was uploaded to the file storage{}",
@@ -68,7 +69,12 @@ public class ShoppingListReceiptsServiceLoggerAspect {
 
     @Around("deleteReceipt(userId, eventId, shoppingListId, receiptId)")
     public Object logDeleteReceipt(
-            ProceedingJoinPoint proceedingJoinPoint, UUID userId, UUID eventId, UUID shoppingListId, UUID receiptId) throws Throwable {
+            ProceedingJoinPoint proceedingJoinPoint,
+            UUID userId,
+            UUID eventId,
+            UUID shoppingListId,
+            UUID receiptId)
+            throws Throwable {
         Object result = proceedingJoinPoint.proceed();
         LOGGER.info(
                 "{}{}The receipt with id: {} was deleted{}",
@@ -81,7 +87,12 @@ public class ShoppingListReceiptsServiceLoggerAspect {
 
     @Around("getReceipt(userId, eventId, shoppingListId, receiptId)")
     public Object logGetReceipt(
-            ProceedingJoinPoint proceedingJoinPoint, UUID userId, UUID eventId, UUID shoppingListId, UUID receiptId) throws Throwable {
+            ProceedingJoinPoint proceedingJoinPoint,
+            UUID userId,
+            UUID eventId,
+            UUID shoppingListId,
+            UUID receiptId)
+            throws Throwable {
         Object result = proceedingJoinPoint.proceed();
         LOGGER.info(
                 "{}{}The file with the receipt id: {} was received{}",

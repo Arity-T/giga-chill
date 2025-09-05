@@ -2,6 +2,7 @@ package ru.gigachill.service;
 
 import io.minio.*;
 import io.minio.errors.*;
+import io.minio.http.Method;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -10,6 +11,7 @@ import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.gigachill.exception.ConflictException;
@@ -208,17 +210,14 @@ public class ShoppingListReceiptsService {
         shoppingListReceiptsServiceValidator.checkKeyInBucket(
                 receiptId, minioProperties.getBucketReceipt());
 
-        String fileName;
         try {
-            fileName =
-                    minioClient
-                            .statObject(
-                                    StatObjectArgs.builder()
-                                            .bucket(minioProperties.getBucketReceipt())
-                                            .object(receiptId.toString())
-                                            .build())
-                            .userMetadata()
-                            .get("original-filename");
+            return minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(minioProperties.getBucketReceipt())
+                            .object(receiptId.toString())
+                            .expiry(minioProperties.getMaxLinkTtl().intValue(), TimeUnit.SECONDS)
+                            .build());
         } catch (RuntimeException
                 | ErrorResponseException
                 | InsufficientDataException
@@ -231,6 +230,5 @@ public class ShoppingListReceiptsService {
                 | XmlParserException e) {
             throw new RuntimeException(e);
         }
-        return minioProperties.getUploadUrl() + minioProperties.getBucketReceipt() + "/" + fileName;
     }
 }
