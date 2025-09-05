@@ -33,6 +33,7 @@ public class ShoppingListReceiptsService {
     private final MinioClient minioClient;
     private final MinioProperties minioProperties;
     private final ShoppingListCompositeRepository shoppingListCompositeRepository;
+    private final ShoppingListServiceValidator shoppingListServiceValidator;
 
     public ReceiptUploadPolicy uploadPolicy(
             UUID userId,
@@ -49,12 +50,12 @@ public class ShoppingListReceiptsService {
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
+        shoppingListServiceValidator.checkIsExisted(shoppingListId);
         var taskId = shoppingListService.getTaskIdForShoppingList(shoppingListId);
         if (Objects.isNull(taskId)) {
             throw new ConflictException(
                     "List with id:" + shoppingListId + " is not attached to task");
         }
-        taskServiceValidator.checkIsExisted(eventId, taskId);
         participantServiceValidator.checkUserInEvent(eventId, userId);
         taskServiceValidator.checkInProgressStatus(taskId, taskService.getTaskStatus(taskId));
         taskServiceValidator.checkOpportunityToSentTaskToReview(taskId, userId);
@@ -99,12 +100,12 @@ public class ShoppingListReceiptsService {
             ReceiptConfirmRequest receiptConfirmRequest) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
+        shoppingListServiceValidator.checkIsExisted(shoppingListId);
         var taskId = shoppingListService.getTaskIdForShoppingList(shoppingListId);
         if (Objects.isNull(taskId)) {
             throw new ConflictException(
                     "List with id:" + shoppingListId + " is not attached to task");
         }
-        taskServiceValidator.checkIsExisted(eventId, taskId);
         participantServiceValidator.checkUserInEvent(eventId, userId);
         taskServiceValidator.checkInProgressStatus(taskId, taskService.getTaskStatus(taskId));
         taskServiceValidator.checkOpportunityToSentTaskToReview(taskId, userId);
@@ -160,12 +161,12 @@ public class ShoppingListReceiptsService {
     public void deleteReceipt(UUID userId, UUID eventId, UUID shoppingListId, UUID receiptId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
+        shoppingListServiceValidator.checkIsExisted(shoppingListId);
         var taskId = shoppingListService.getTaskIdForShoppingList(shoppingListId);
         if (Objects.isNull(taskId)) {
             throw new ConflictException(
                     "List with id:" + shoppingListId + " is not attached to task");
         }
-        taskServiceValidator.checkIsExisted(eventId, taskId);
         participantServiceValidator.checkUserInEvent(eventId, userId);
         taskServiceValidator.checkInProgressStatus(taskId, taskService.getTaskStatus(taskId));
         taskServiceValidator.checkOpportunityToSentTaskToReview(taskId, userId);
@@ -192,5 +193,44 @@ public class ShoppingListReceiptsService {
         }
 
         shoppingListCompositeRepository.deleteReceiptIdByShoppingListId(shoppingListId);
+    }
+
+    public String getReceipt(UUID userId, UUID eventId, UUID shoppingListId, UUID receiptId) {
+        eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
+        shoppingListServiceValidator.checkIsExisted(shoppingListId);
+        var taskId = shoppingListService.getTaskIdForShoppingList(shoppingListId);
+        if (Objects.isNull(taskId)) {
+            throw new ConflictException(
+                    "List with id:" + shoppingListId + " is not attached to task");
+        }
+        participantServiceValidator.checkUserInEvent(eventId, userId);
+        shoppingListReceiptsServiceValidator.checkKeyInBucket(
+                receiptId, minioProperties.getBucketReceipt());
+
+        String fileName;
+        try {
+            fileName =
+                    minioClient
+                            .statObject(
+                                    StatObjectArgs.builder()
+                                            .bucket(minioProperties.getBucketReceipt())
+                                            .object(receiptId.toString())
+                                            .build())
+                            .userMetadata()
+                            .get("original-filename");
+        } catch (RuntimeException
+                | ErrorResponseException
+                | InsufficientDataException
+                | InternalException
+                | InvalidKeyException
+                | InvalidResponseException
+                | IOException
+                | NoSuchAlgorithmException
+                | ServerException
+                | XmlParserException e) {
+            throw new RuntimeException(e);
+        }
+        return minioProperties.getUploadUrl() + minioProperties.getBucketReceipt() + "/" + fileName;
     }
 }

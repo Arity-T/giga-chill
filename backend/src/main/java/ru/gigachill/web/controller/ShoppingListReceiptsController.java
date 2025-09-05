@@ -1,8 +1,10 @@
 package ru.gigachill.web.controller;
 
 import io.minio.errors.*;
+import java.net.URI;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,6 +58,15 @@ public class ShoppingListReceiptsController implements ShoppingListReceiptsApi {
 
     @Override
     public ResponseEntity<Void> getReceiptImage(UUID eventId, UUID shoppingListId, UUID receiptId) {
-        return null;
+        var user =
+                userService.userAuthentication(
+                        SecurityContextHolder.getContext().getAuthentication());
+        shoppingListReceiptsService.deleteReceipt(user.getId(), eventId, shoppingListId, receiptId);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(
+                        URI.create(
+                                shoppingListReceiptsService.getReceipt(
+                                        user.getId(), eventId, shoppingListId, receiptId)))
+                .build();
     }
 }
