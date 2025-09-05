@@ -320,7 +320,7 @@ ReceiptUploadPolicyCreate:
   required:
     - content_type
     - content_length
-    - file_name
+    - original_file_name
     - md5_hash
   properties:
     content_type:

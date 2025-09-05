@@ -610,6 +610,7 @@ paths:
   /events/{eventId}/shopping-lists/{shoppingListId}/receipts/upload-policy:
     post:
       summary: Создать и получить policy для загрузки фотографии чека
+      description: Оригинальное имя файла должно указываться в заголовке Content-Disposition при создании Pre-signed POST policy.
       tags:
         - Shopping List Receipts
       operationId: createReceiptUploadPolicy
@@ -1464,11 +1465,14 @@ components:
       required:
         - content_type
         - content_length
-        - file_name
+        - original_file_name
         - md5_hash
       properties:
         content_type:
           type: string
+          enum:
+            - image/jpeg
+            - image/png
           description: Тип содержимого файла
           example: image/jpeg
         content_length:
