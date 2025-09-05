@@ -58,6 +58,7 @@ public class ShoppingListReceiptsService {
         participantServiceValidator.checkUserInEvent(eventId, userId);
         taskServiceValidator.checkInProgressStatus(taskId, taskService.getTaskStatus(taskId));
         taskServiceValidator.checkOpportunityToSentTaskToReview(taskId, userId);
+        shoppingListReceiptsServiceValidator.checkOpportunityToAddReceipt(shoppingListId);
 
         ZonedDateTime ttl =
                 ZonedDateTime.now(ZoneOffset.UTC)
@@ -91,7 +92,11 @@ public class ShoppingListReceiptsService {
                 fields);
     }
 
-    public void confirmUpload(UUID userId, UUID eventId, UUID shoppingListId, ReceiptConfirmRequest receiptConfirmRequest){
+    public void confirmUpload(
+            UUID userId,
+            UUID eventId,
+            UUID shoppingListId,
+            ReceiptConfirmRequest receiptConfirmRequest) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         var taskId = shoppingListService.getTaskIdForShoppingList(shoppingListId);
@@ -106,39 +111,86 @@ public class ShoppingListReceiptsService {
         shoppingListReceiptsServiceValidator.checkOpportunityToAddReceipt(shoppingListId);
 
         try {
-            minioClient.copyObject(CopyObjectArgs.builder().source(CopySource.builder().bucket(minioProperties.getBucketIncoming())
-                    .object(receiptConfirmRequest.getReceiptId().toString()).build()).bucket(minioProperties.getBucketReceipt())
-                    .object(receiptConfirmRequest.getReceiptId().toString()).build());
+            minioClient.copyObject(
+                    CopyObjectArgs.builder()
+                            .source(
+                                    CopySource.builder()
+                                            .bucket(minioProperties.getBucketIncoming())
+                                            .object(receiptConfirmRequest.getReceiptId().toString())
+                                            .build())
+                            .bucket(minioProperties.getBucketReceipt())
+                            .object(receiptConfirmRequest.getReceiptId().toString())
+                            .build());
         } catch (RuntimeException
-                 | ErrorResponseException
-                 | InsufficientDataException
-                 | InternalException
-                 | InvalidKeyException
-                 | InvalidResponseException
-                 | IOException
-                 | NoSuchAlgorithmException
-                 | ServerException
-                 | XmlParserException e) {
+                | ErrorResponseException
+                | InsufficientDataException
+                | InternalException
+                | InvalidKeyException
+                | InvalidResponseException
+                | IOException
+                | NoSuchAlgorithmException
+                | ServerException
+                | XmlParserException e) {
             throw new RuntimeException(e);
         }
 
         try {
-            minioClient.removeObject(RemoveObjectArgs.builder().bucket(minioProperties.getBucketIncoming()).object(receiptConfirmRequest.getReceiptId().toString()).build());
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(minioProperties.getBucketIncoming())
+                            .object(receiptConfirmRequest.getReceiptId().toString())
+                            .build());
         } catch (RuntimeException
-                 | ErrorResponseException
-                 | InsufficientDataException
-                 | InternalException
-                 | InvalidKeyException
-                 | InvalidResponseException
-                 | IOException
-                 | NoSuchAlgorithmException
-                 | ServerException
-                 | XmlParserException e) {
+                | ErrorResponseException
+                | InsufficientDataException
+                | InternalException
+                | InvalidKeyException
+                | InvalidResponseException
+                | IOException
+                | NoSuchAlgorithmException
+                | ServerException
+                | XmlParserException e) {
             throw new RuntimeException(e);
         }
 
-        shoppingListCompositeRepository.addReceiptIdByShoppingListId(shoppingListId, receiptConfirmRequest.getReceiptId());
+        shoppingListCompositeRepository.addReceiptIdByShoppingListId(
+                shoppingListId, receiptConfirmRequest.getReceiptId());
     }
 
+    public void deleteReceipt(UUID userId, UUID eventId, UUID shoppingListId, UUID receiptId) {
+        eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
+        var taskId = shoppingListService.getTaskIdForShoppingList(shoppingListId);
+        if (Objects.isNull(taskId)) {
+            throw new ConflictException(
+                    "List with id:" + shoppingListId + " is not attached to task");
+        }
+        taskServiceValidator.checkIsExisted(eventId, taskId);
+        participantServiceValidator.checkUserInEvent(eventId, userId);
+        taskServiceValidator.checkInProgressStatus(taskId, taskService.getTaskStatus(taskId));
+        taskServiceValidator.checkOpportunityToSentTaskToReview(taskId, userId);
+        shoppingListReceiptsServiceValidator.checkKeyInBucket(
+                receiptId, minioProperties.getBucketReceipt());
 
+        try {
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(minioProperties.getBucketReceipt())
+                            .object(receiptId.toString())
+                            .build());
+        } catch (RuntimeException
+                | ErrorResponseException
+                | InsufficientDataException
+                | InternalException
+                | InvalidKeyException
+                | InvalidResponseException
+                | IOException
+                | NoSuchAlgorithmException
+                | ServerException
+                | XmlParserException e) {
+            throw new RuntimeException(e);
+        }
+
+        shoppingListCompositeRepository.deleteReceiptIdByShoppingListId(shoppingListId);
+    }
 }

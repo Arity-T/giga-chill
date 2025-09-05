@@ -1,12 +1,18 @@
 package ru.gigachill.service.validator;
 
+import io.minio.MinioClient;
+import io.minio.StatObjectArgs;
+import io.minio.errors.*;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.gigachill.exception.BadRequestException;
 import ru.gigachill.exception.ConflictException;
+import ru.gigachill.exception.NotFoundException;
 import ru.gigachill.properties.MinioProperties;
 import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 
@@ -15,6 +21,7 @@ import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 public class ShoppingListReceiptsServiceValidator {
     private final MinioProperties minioProperties;
     private final ShoppingListCompositeRepository shoppingListCompositeRepository;
+    private final MinioClient minioClient;
 
     public void checkContentType(String contentType) {
         if (!minioProperties.getAllowedContentTypes().contains(contentType)) {
@@ -36,9 +43,27 @@ public class ShoppingListReceiptsServiceValidator {
         }
     }
 
-    public void checkOpportunityToAddReceipt(UUID shoppingListId){
-        if (!shoppingListCompositeRepository.canAddReceiptIdByShoppingListId(shoppingListId)){
-            throw new ConflictException("List with id: "+ shoppingListId +" already has a receipt");
+    public void checkOpportunityToAddReceipt(UUID shoppingListId) {
+        if (!shoppingListCompositeRepository.canAddReceiptIdByShoppingListId(shoppingListId)) {
+            throw new ConflictException(
+                    "List with id: " + shoppingListId + " already has a receipt");
+        }
+    }
+
+    public void checkKeyInBucket(UUID key, String bucketName) {
+        try {
+            minioClient.statObject(
+                    StatObjectArgs.builder().bucket(bucketName).object(key.toString()).build());
+        } catch (ErrorResponseException
+                | InsufficientDataException
+                | InternalException
+                | InvalidKeyException
+                | InvalidResponseException
+                | IOException
+                | NoSuchAlgorithmException
+                | ServerException
+                | XmlParserException e) {
+            throw new NotFoundException("File with id: " + key + " not found in file storage");
         }
     }
 }

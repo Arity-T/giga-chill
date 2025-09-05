@@ -26,7 +26,8 @@ public class ShoppingListReceiptsController implements ShoppingListReceiptsApi {
         var user =
                 userService.userAuthentication(
                         SecurityContextHolder.getContext().getAuthentication());
-        shoppingListReceiptsService.confirmUpload(user.getId(), eventId, shoppingListId, receiptConfirmRequest);
+        shoppingListReceiptsService.confirmUpload(
+                user.getId(), eventId, shoppingListId, receiptConfirmRequest);
         return ResponseEntity.noContent().build();
     }
 

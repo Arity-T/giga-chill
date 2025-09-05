@@ -256,13 +256,10 @@ public interface ShoppingListCompositeRepository {
      */
     void deleteReceiptIdByShoppingListId(UUID shoppingListId);
 
-
     /**
      * Checks that the shopping list does not have a receipt attached to it.
      *
      * @param shoppingListId the identifier of the shopping list
      */
     boolean canAddReceiptIdByShoppingListId(UUID shoppingListId);
-
-
 }
