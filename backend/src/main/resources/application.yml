@@ -12,6 +12,18 @@ server:
   port: ${SERVER_PORT}
   https_cookies_only: ${HTTPS_COOKIES_ONLY}
 
+minio:
+  source: ${MINIO_ENDPOINT}
+  username: ${MINIO_USER}
+  password: ${MINIO_PASSWORD}
+  bucket-incoming: ${BUCKET_INCOMING}
+  bucket-receipt: ${BUCKET_RECEIPT}
+  max-file-size: ${MAX_FILE_SIZE}
+  allowed-content-types: ${ALLOWED_CONTENT_TYPES}
+  allowed-file-types: ${ALLOWED_FILE_TYPES}
+  max-link-ttl: ${MAX_LINK_TTL}
+  upload-url: ${UPLOAD_URL}
+
 jwt:
   expiration: ${JWT_EXPIRATION}
 
