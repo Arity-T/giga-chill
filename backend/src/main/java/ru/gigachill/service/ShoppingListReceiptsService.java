@@ -62,6 +62,7 @@ public class ShoppingListReceiptsService {
                         .plusSeconds(minioProperties.getMaxLinkTtl().longValue());
         PostPolicy policy = new PostPolicy(minioProperties.getBucketIncoming(), ttl);
         policy.addContentLengthRangeCondition(1, minioProperties.getMaxFileSize().longValue());
+        policy.addStartsWithCondition("key", "");
         policy.addStartsWithCondition(
                 "Content-Type", receiptUploadPolicyCreate.getContentType().getValue());
         policy.addStartsWithCondition("x-amz-meta-md5", receiptUploadPolicyCreate.getMd5Hash());
@@ -82,6 +83,9 @@ public class ShoppingListReceiptsService {
             throw new RuntimeException(e);
         }
 
-        return new ReceiptUploadPolicy(UUID.randomUUID(), minioProperties.getUploadUrl(), fields);
+        return new ReceiptUploadPolicy(
+                UUID.randomUUID(),
+                minioProperties.getUploadUrl() + minioProperties.getBucketIncoming(),
+                fields);
     }
 }
