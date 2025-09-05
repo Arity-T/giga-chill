@@ -1,7 +1,6 @@
 package ru.gigachill.service;
 
-import io.minio.MinioClient;
-import io.minio.PostPolicy;
+import io.minio.*;
 import io.minio.errors.*;
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -15,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.gigachill.exception.ConflictException;
 import ru.gigachill.properties.MinioProperties;
+import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 import ru.gigachill.service.validator.*;
+import ru.gigachill.web.api.model.ReceiptConfirmRequest;
 import ru.gigachill.web.api.model.ReceiptUploadPolicy;
 import ru.gigachill.web.api.model.ReceiptUploadPolicyCreate;
 
@@ -31,6 +32,7 @@ public class ShoppingListReceiptsService {
     private final ShoppingListService shoppingListService;
     private final MinioClient minioClient;
     private final MinioProperties minioProperties;
+    private final ShoppingListCompositeRepository shoppingListCompositeRepository;
 
     public ReceiptUploadPolicy uploadPolicy(
             UUID userId,
@@ -88,4 +90,55 @@ public class ShoppingListReceiptsService {
                 minioProperties.getUploadUrl() + minioProperties.getBucketIncoming(),
                 fields);
     }
+
+    public void confirmUpload(UUID userId, UUID eventId, UUID shoppingListId, ReceiptConfirmRequest receiptConfirmRequest){
+        eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
+        eventServiceValidator.checkIsNotFinalized(eventId);
+        var taskId = shoppingListService.getTaskIdForShoppingList(shoppingListId);
+        if (Objects.isNull(taskId)) {
+            throw new ConflictException(
+                    "List with id:" + shoppingListId + " is not attached to task");
+        }
+        taskServiceValidator.checkIsExisted(eventId, taskId);
+        participantServiceValidator.checkUserInEvent(eventId, userId);
+        taskServiceValidator.checkInProgressStatus(taskId, taskService.getTaskStatus(taskId));
+        taskServiceValidator.checkOpportunityToSentTaskToReview(taskId, userId);
+        shoppingListReceiptsServiceValidator.checkOpportunityToAddReceipt(shoppingListId);
+
+        try {
+            minioClient.copyObject(CopyObjectArgs.builder().source(CopySource.builder().bucket(minioProperties.getBucketIncoming())
+                    .object(receiptConfirmRequest.getReceiptId().toString()).build()).bucket(minioProperties.getBucketReceipt())
+                    .object(receiptConfirmRequest.getReceiptId().toString()).build());
+        } catch (RuntimeException
+                 | ErrorResponseException
+                 | InsufficientDataException
+                 | InternalException
+                 | InvalidKeyException
+                 | InvalidResponseException
+                 | IOException
+                 | NoSuchAlgorithmException
+                 | ServerException
+                 | XmlParserException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            minioClient.removeObject(RemoveObjectArgs.builder().bucket(minioProperties.getBucketIncoming()).object(receiptConfirmRequest.getReceiptId().toString()).build());
+        } catch (RuntimeException
+                 | ErrorResponseException
+                 | InsufficientDataException
+                 | InternalException
+                 | InvalidKeyException
+                 | InvalidResponseException
+                 | IOException
+                 | NoSuchAlgorithmException
+                 | ServerException
+                 | XmlParserException e) {
+            throw new RuntimeException(e);
+        }
+
+        shoppingListCompositeRepository.addReceiptIdByShoppingListId(shoppingListId, receiptConfirmRequest.getReceiptId());
+    }
+
+
 }

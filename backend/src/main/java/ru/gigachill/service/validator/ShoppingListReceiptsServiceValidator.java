@@ -1,15 +1,20 @@
 package ru.gigachill.service.validator;
 
 import java.math.BigDecimal;
+import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.gigachill.exception.BadRequestException;
+import ru.gigachill.exception.ConflictException;
 import ru.gigachill.properties.MinioProperties;
+import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
 
 @Component
 @RequiredArgsConstructor
 public class ShoppingListReceiptsServiceValidator {
     private final MinioProperties minioProperties;
+    private final ShoppingListCompositeRepository shoppingListCompositeRepository;
 
     public void checkContentType(String contentType) {
         if (!minioProperties.getAllowedContentTypes().contains(contentType)) {
@@ -28,6 +33,12 @@ public class ShoppingListReceiptsServiceValidator {
     public void checkFileType(String fileType) {
         if (minioProperties.getAllowedFileTypes().stream().noneMatch(fileType::endsWith)) {
             throw new BadRequestException("File type:" + fileType + " is not supported");
+        }
+    }
+
+    public void checkOpportunityToAddReceipt(UUID shoppingListId){
+        if (!shoppingListCompositeRepository.canAddReceiptIdByShoppingListId(shoppingListId)){
+            throw new ConflictException("List with id: "+ shoppingListId +" already has a receipt");
         }
     }
 }

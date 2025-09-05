@@ -23,7 +23,11 @@ public class ShoppingListReceiptsController implements ShoppingListReceiptsApi {
     @Override
     public ResponseEntity<Void> confirmReceiptUpload(
             UUID eventId, UUID shoppingListId, ReceiptConfirmRequest receiptConfirmRequest) {
-        return null;
+        var user =
+                userService.userAuthentication(
+                        SecurityContextHolder.getContext().getAuthentication());
+        shoppingListReceiptsService.confirmUpload(user.getId(), eventId, shoppingListId, receiptConfirmRequest);
+        return ResponseEntity.noContent().build();
     }
 
     @Override
