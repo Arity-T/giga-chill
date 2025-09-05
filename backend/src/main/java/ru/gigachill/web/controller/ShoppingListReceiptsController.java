@@ -47,7 +47,11 @@ public class ShoppingListReceiptsController implements ShoppingListReceiptsApi {
 
     @Override
     public ResponseEntity<Void> deleteReceipt(UUID eventId, UUID shoppingListId, UUID receiptId) {
-        return null;
+        var user =
+                userService.userAuthentication(
+                        SecurityContextHolder.getContext().getAuthentication());
+        shoppingListReceiptsService.deleteReceipt(user.getId(), eventId, shoppingListId, receiptId);
+        return ResponseEntity.noContent().build();
     }
 
     @Override
