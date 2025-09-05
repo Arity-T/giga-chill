@@ -50,6 +50,10 @@ spotless {
 // === Зависимости приложения и тестов ===
 dependencies {
 
+    //MinIO
+    implementation("io.minio:minio:8.5.16")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
     //Swagger API
     implementation("io.swagger.core.v3:swagger-annotations:2.2.9")
     implementation("org.openapitools:jackson-databind-nullable:0.2.6")

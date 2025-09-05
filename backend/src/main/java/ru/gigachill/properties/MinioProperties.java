@@ -1,5 +1,6 @@
 package ru.gigachill.properties;
 
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -14,9 +15,9 @@ public class MinioProperties {
     private String password;
     private String bucketIncoming;
     private String bucketReceipt;
-    private Integer maxFileSize;
+    private BigDecimal maxFileSize;
     private List<String> allowedContentTypes;
     private List<String> allowedFileTypes;
-    private Integer maxLinkTtl;
+    private BigDecimal maxLinkTtl;
     private String uploadUrl;
 }
