@@ -213,5 +213,24 @@ public class ShoppingListRepository {
                 .fetchInto(ShoppingListWithDetails.class);
     }
 
+    public UUID getReceiptIdByShoppingListId(UUID shoppingListId) {
+        return dsl.select(ShoppingLists.SHOPPING_LISTS.RECEIPT_ID)
+                .from(ShoppingLists.SHOPPING_LISTS)
+                .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(shoppingListId))
+                .fetchOneInto(UUID.class);
+    }
 
+    public void addReceiptIdByShoppingListId(UUID shoppingListId, UUID receiptId) {
+        dsl.update(ShoppingLists.SHOPPING_LISTS)
+                .set(ShoppingLists.SHOPPING_LISTS.RECEIPT_ID, receiptId)
+                .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(shoppingListId))
+                .execute();
+    }
+
+    public void setNullReceiptIdByShoppingListId(UUID shoppingListId) {
+        dsl.update(ShoppingLists.SHOPPING_LISTS)
+                .set(ShoppingLists.SHOPPING_LISTS.RECEIPT_ID, (UUID) null)
+                .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(shoppingListId))
+                .execute();
+    }
 }
