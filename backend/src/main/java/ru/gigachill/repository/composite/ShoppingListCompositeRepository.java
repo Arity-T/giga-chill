@@ -261,5 +261,5 @@ public interface ShoppingListCompositeRepository {
      *
      * @param shoppingListId the identifier of the shopping list
      */
-    boolean canAddReceiptIdByShoppingListId(UUID shoppingListId);
+    boolean hasReceipt(UUID shoppingListId);
 }

@@ -50,7 +50,7 @@ public class ShoppingListReceiptsServiceValidator {
     }
 
     public void checkOpportunityToAddReceipt(UUID shoppingListId) {
-        if (!shoppingListCompositeRepository.canAddReceiptIdByShoppingListId(shoppingListId)) {
+        if (!shoppingListCompositeRepository.hasReceipt(shoppingListId)) {
             throw new ConflictException(
                     "List with id: " + shoppingListId + " already has a receipt");
         }

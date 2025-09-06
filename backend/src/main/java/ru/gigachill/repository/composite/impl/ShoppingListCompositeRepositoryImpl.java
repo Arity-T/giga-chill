@@ -318,7 +318,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
     }
 
     @Override
-    public boolean canAddReceiptIdByShoppingListId(UUID shoppingListId) {
+    public boolean hasReceipt(UUID shoppingListId) {
         return shoppingListRepository.getReceiptIdByShoppingListId(shoppingListId) == null;
     }
 }
