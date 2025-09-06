@@ -51,6 +51,7 @@ public class ShoppingListReceiptsService {
                 receiptUploadPolicyCreate.getContentLength());
 
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
+        participantServiceValidator.checkUserInEvent(eventId, userId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListServiceValidator.checkIsExisted(shoppingListId);
         var taskId = shoppingListService.getTaskIdForShoppingList(shoppingListId);
@@ -58,7 +59,6 @@ public class ShoppingListReceiptsService {
             throw new ConflictException(
                     "List with id:" + shoppingListId + " is not attached to task");
         }
-        participantServiceValidator.checkUserInEvent(eventId, userId);
         taskServiceValidator.checkInProgressStatus(taskId, taskService.getTaskStatus(taskId));
         taskServiceValidator.checkOpportunityToSentTaskToReview(taskId, userId);
         shoppingListReceiptsServiceValidator.canSetReceiptId(shoppingListId);
@@ -100,6 +100,7 @@ public class ShoppingListReceiptsService {
             UUID shoppingListId,
             ReceiptConfirmRequest receiptConfirmRequest) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
+        participantServiceValidator.checkUserInEvent(eventId, userId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListServiceValidator.checkIsExisted(shoppingListId);
         var taskId = shoppingListService.getTaskIdForShoppingList(shoppingListId);
@@ -107,7 +108,6 @@ public class ShoppingListReceiptsService {
             throw new ConflictException(
                     "List with id:" + shoppingListId + " is not attached to task");
         }
-        participantServiceValidator.checkUserInEvent(eventId, userId);
         taskServiceValidator.checkInProgressStatus(taskId, taskService.getTaskStatus(taskId));
         taskServiceValidator.checkOpportunityToSentTaskToReview(taskId, userId);
         shoppingListReceiptsServiceValidator.canSetReceiptId(shoppingListId);
@@ -161,6 +161,7 @@ public class ShoppingListReceiptsService {
 
     public void deleteReceipt(UUID userId, UUID eventId, UUID shoppingListId, UUID receiptId) {
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
+        participantServiceValidator.checkUserInEvent(eventId, userId);
         eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListServiceValidator.checkIsExisted(shoppingListId);
         var taskId = shoppingListService.getTaskIdForShoppingList(shoppingListId);
@@ -168,7 +169,6 @@ public class ShoppingListReceiptsService {
             throw new ConflictException(
                     "List with id:" + shoppingListId + " is not attached to task");
         }
-        participantServiceValidator.checkUserInEvent(eventId, userId);
         taskServiceValidator.checkInProgressStatus(taskId, taskService.getTaskStatus(taskId));
         taskServiceValidator.checkOpportunityToSentTaskToReview(taskId, userId);
         shoppingListReceiptsServiceValidator.checkKeyInBucket(
@@ -197,15 +197,14 @@ public class ShoppingListReceiptsService {
     }
 
     public String getReceipt(UUID userId, UUID eventId, UUID shoppingListId, UUID receiptId) {
+        participantServiceValidator.checkUserInEvent(eventId, userId);
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
-        eventServiceValidator.checkIsNotFinalized(eventId);
         shoppingListServiceValidator.checkIsExisted(shoppingListId);
         var taskId = shoppingListService.getTaskIdForShoppingList(shoppingListId);
         if (Objects.isNull(taskId)) {
             throw new ConflictException(
                     "List with id:" + shoppingListId + " is not attached to task");
         }
-        participantServiceValidator.checkUserInEvent(eventId, userId);
         shoppingListReceiptsServiceValidator.checkKeyInBucket(
                 receiptId, minioProperties.getBucketReceipt());
 
