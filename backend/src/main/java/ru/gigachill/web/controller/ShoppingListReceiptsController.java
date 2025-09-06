@@ -1,6 +1,5 @@
 package ru.gigachill.web.controller;
 
-import io.minio.errors.*;
 import java.net.URI;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +42,7 @@ public class ShoppingListReceiptsController implements ShoppingListReceiptsApi {
                         SecurityContextHolder.getContext().getAuthentication());
 
         return ResponseEntity.ok(
-                shoppingListReceiptsService.uploadPolicy(
+                shoppingListReceiptsService.createUploadPolicy(
                         user.getId(), eventId, shoppingListId, receiptUploadPolicyCreate));
     }
 
@@ -65,7 +64,7 @@ public class ShoppingListReceiptsController implements ShoppingListReceiptsApi {
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(
                         URI.create(
-                                shoppingListReceiptsService.getReceipt(
+                                shoppingListReceiptsService.getReceiptUrl(
                                         user.getId(), eventId, shoppingListId, receiptId)))
                 .build();
     }

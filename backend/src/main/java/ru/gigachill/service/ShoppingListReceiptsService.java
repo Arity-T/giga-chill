@@ -37,7 +37,7 @@ public class ShoppingListReceiptsService {
     private final ShoppingListCompositeRepository shoppingListCompositeRepository;
     private final ShoppingListServiceValidator shoppingListServiceValidator;
 
-    public ReceiptUploadPolicy uploadPolicy(
+    public ReceiptUploadPolicy createUploadPolicy(
             UUID userId,
             UUID eventId,
             UUID shoppingListId,
@@ -196,7 +196,7 @@ public class ShoppingListReceiptsService {
         shoppingListCompositeRepository.deleteReceiptIdByShoppingListId(shoppingListId);
     }
 
-    public String getReceipt(UUID userId, UUID eventId, UUID shoppingListId, UUID receiptId) {
+    public String getReceiptUrl(UUID userId, UUID eventId, UUID shoppingListId, UUID receiptId) {
         participantServiceValidator.checkUserInEvent(eventId, userId);
         eventServiceValidator.checkIsExistedAndNotDeleted(eventId);
         shoppingListServiceValidator.checkIsExisted(shoppingListId);
