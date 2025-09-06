@@ -64,8 +64,7 @@ public class ShoppingListReceiptsService {
         shoppingListReceiptsServiceValidator.checkOpportunityToAddReceipt(shoppingListId);
 
         ZonedDateTime ttl =
-                ZonedDateTime.now(ZoneOffset.UTC)
-                        .plusSeconds(minioProperties.getMaxLinkTtl().longValue());
+                ZonedDateTime.now(ZoneOffset.UTC).plusSeconds(minioProperties.getMaxLinkTtl());
         PostPolicy policy = new PostPolicy(minioProperties.getBucketIncoming(), ttl);
         policy.addContentLengthRangeCondition(1, minioProperties.getMaxFileSize().longValue());
         policy.addStartsWithCondition("key", "");
@@ -216,7 +215,7 @@ public class ShoppingListReceiptsService {
                             .method(Method.GET)
                             .bucket(minioProperties.getBucketReceipt())
                             .object(receiptId.toString())
-                            .expiry(minioProperties.getMaxLinkTtl().intValue(), TimeUnit.SECONDS)
+                            .expiry(minioProperties.getMaxLinkTtl(), TimeUnit.SECONDS)
                             .build());
         } catch (RuntimeException
                 | ErrorResponseException

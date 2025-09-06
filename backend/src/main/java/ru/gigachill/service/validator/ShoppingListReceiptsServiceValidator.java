@@ -30,10 +30,16 @@ public class ShoppingListReceiptsServiceValidator {
     }
 
     public void checkContentLength(BigDecimal contentLength) {
-        if (contentLength.compareTo(minioProperties.getMaxFileSize()) > 0) {
+        if (contentLength.intValue() <= 0) {
+            throw new BadRequestException("File size must be greater than zero.");
+        }
+        if (contentLength.intValue() > minioProperties.getMaxFileSize()) {
             throw new BadRequestException(
                     "The file size exceeds the allowed size in bytes. "
-                            + "Acceptable size: minioProperties.getMaxFileSize(), Received size: contentLength");
+                            + "Acceptable size: "
+                            + minioProperties.getMaxFileSize()
+                            + ", Received size: "
+                            + contentLength);
         }
     }
 
