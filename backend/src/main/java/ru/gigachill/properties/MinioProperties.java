@@ -18,5 +18,5 @@ public class MinioProperties {
     private List<String> allowedContentTypes;
     private List<String> allowedFileTypes;
     private Integer maxLinkTtl;
-    private String uploadUrl;
+    private String publicSource;
 }

@@ -90,7 +90,7 @@ public class ShoppingListReceiptsService {
 
         return new ReceiptUploadPolicy(
                 UUID.randomUUID(),
-                minioProperties.getUploadUrl() + minioProperties.getBucketIncoming(),
+                minioProperties.getPublicSource() + minioProperties.getBucketIncoming(),
                 fields);
     }
 

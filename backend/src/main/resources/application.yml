@@ -22,7 +22,7 @@ minio:
   allowed-content-types: ${ALLOWED_CONTENT_TYPES}
   allowed-file-types: ${ALLOWED_FILE_TYPES}
   max-link-ttl: ${MAX_LINK_TTL}
-  upload-url: ${UPLOAD_URL}
+  public-source: ${MINIO_PUBLIC_ENDPOINT}
 
 jwt:
   expiration: ${JWT_EXPIRATION}
