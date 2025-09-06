@@ -61,7 +61,7 @@ public class ShoppingListReceiptsService {
         participantServiceValidator.checkUserInEvent(eventId, userId);
         taskServiceValidator.checkInProgressStatus(taskId, taskService.getTaskStatus(taskId));
         taskServiceValidator.checkOpportunityToSentTaskToReview(taskId, userId);
-        shoppingListReceiptsServiceValidator.checkOpportunityToAddReceipt(shoppingListId);
+        shoppingListReceiptsServiceValidator.canSetReceiptId(shoppingListId);
 
         ZonedDateTime ttl =
                 ZonedDateTime.now(ZoneOffset.UTC).plusSeconds(minioProperties.getMaxLinkTtl());
@@ -110,7 +110,7 @@ public class ShoppingListReceiptsService {
         participantServiceValidator.checkUserInEvent(eventId, userId);
         taskServiceValidator.checkInProgressStatus(taskId, taskService.getTaskStatus(taskId));
         taskServiceValidator.checkOpportunityToSentTaskToReview(taskId, userId);
-        shoppingListReceiptsServiceValidator.checkOpportunityToAddReceipt(shoppingListId);
+        shoppingListReceiptsServiceValidator.canSetReceiptId(shoppingListId);
 
         try {
             minioClient.copyObject(

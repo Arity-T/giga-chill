@@ -316,9 +316,4 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
     public void deleteReceiptIdByShoppingListId(UUID shoppingListId) {
         shoppingListRepository.setNullReceiptIdByShoppingListId(shoppingListId);
     }
-
-    @Override
-    public boolean hasReceipt(UUID shoppingListId) {
-        return shoppingListRepository.getReceiptIdByShoppingListId(shoppingListId) == null;
-    }
 }

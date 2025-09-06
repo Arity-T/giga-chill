@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -49,8 +50,9 @@ public class ShoppingListReceiptsServiceValidator {
         }
     }
 
-    public void checkOpportunityToAddReceipt(UUID shoppingListId) {
-        if (!shoppingListCompositeRepository.hasReceipt(shoppingListId)) {
+    public void canSetReceiptId(UUID shoppingListId) {
+        if (Objects.isNull(
+                shoppingListCompositeRepository.getReceiptIdByShoppingListId(shoppingListId))) {
             throw new ConflictException(
                     "List with id: " + shoppingListId + " already has a receipt");
         }
