@@ -247,7 +247,7 @@ public interface ShoppingListCompositeRepository {
      * @param shoppingListId the identifier of the shopping list
      * @param receiptId the identifier of receipt id
      */
-    void addReceiptIdByShoppingListId(UUID shoppingListId, UUID receiptId);
+    void setReceiptIdByShoppingListId(UUID shoppingListId, UUID receiptId);
 
     /**
      * Removes the receipt association from the given shopping list.

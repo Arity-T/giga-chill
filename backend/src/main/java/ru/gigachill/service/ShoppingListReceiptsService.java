@@ -155,7 +155,7 @@ public class ShoppingListReceiptsService {
             throw new RuntimeException(e);
         }
 
-        shoppingListCompositeRepository.addReceiptIdByShoppingListId(
+        shoppingListCompositeRepository.setReceiptIdByShoppingListId(
                 shoppingListId, receiptConfirmRequest.getReceiptId());
     }
 
