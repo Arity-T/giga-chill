@@ -164,7 +164,7 @@ public class ShoppingListRepository {
                         ShoppingLists.SHOPPING_LISTS.EVENT_ID,
                         ShoppingLists.SHOPPING_LISTS.TITLE,
                         ShoppingLists.SHOPPING_LISTS.DESCRIPTION,
-                        ShoppingLists.SHOPPING_LISTS.FILE_LINK,
+                        ShoppingLists.SHOPPING_LISTS.RECEIPT_ID,
                         ShoppingLists.SHOPPING_LISTS.BUDGET,
                         ShoppingItems.SHOPPING_ITEMS.SHOPPING_ITEM_ID,
                         ShoppingItems.SHOPPING_ITEMS.TITLE.as("item_title"),
@@ -192,7 +192,7 @@ public class ShoppingListRepository {
                         ShoppingLists.SHOPPING_LISTS.EVENT_ID,
                         ShoppingLists.SHOPPING_LISTS.TITLE,
                         ShoppingLists.SHOPPING_LISTS.DESCRIPTION,
-                        ShoppingLists.SHOPPING_LISTS.FILE_LINK,
+                        ShoppingLists.SHOPPING_LISTS.RECEIPT_ID,
                         ShoppingLists.SHOPPING_LISTS.BUDGET,
                         ShoppingItems.SHOPPING_ITEMS.SHOPPING_ITEM_ID,
                         ShoppingItems.SHOPPING_ITEMS.TITLE.as("item_title"),
@@ -212,4 +212,6 @@ public class ShoppingListRepository {
                 .where(ShoppingLists.SHOPPING_LISTS.TASK_ID.eq(taskId))
                 .fetchInto(ShoppingListWithDetails.class);
     }
+
+
 }
