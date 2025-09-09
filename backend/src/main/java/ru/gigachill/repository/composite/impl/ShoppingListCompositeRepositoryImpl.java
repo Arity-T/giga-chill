@@ -308,12 +308,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
     }
 
     @Override
-    public void setReceiptIdByShoppingListId(UUID shoppingListId, UUID receiptId) {
-        shoppingListRepository.addReceiptIdByShoppingListId(shoppingListId, receiptId);
-    }
-
-    @Override
-    public void deleteReceiptIdByShoppingListId(UUID shoppingListId) {
-        shoppingListRepository.setNullReceiptIdByShoppingListId(shoppingListId);
+    public void setReceiptIdByShoppingListId(UUID shoppingListId, @Nullable UUID receiptId) {
+        shoppingListRepository.setReceiptIdByShoppingListId(shoppingListId, receiptId);
     }
 }

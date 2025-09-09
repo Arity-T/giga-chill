@@ -193,7 +193,7 @@ public class ShoppingListReceiptsService {
             throw new RuntimeException(e);
         }
 
-        shoppingListCompositeRepository.deleteReceiptIdByShoppingListId(shoppingListId);
+        shoppingListCompositeRepository.setReceiptIdByShoppingListId(shoppingListId, null);
     }
 
     public String getReceiptUrl(UUID userId, UUID eventId, UUID shoppingListId, UUID receiptId) {
