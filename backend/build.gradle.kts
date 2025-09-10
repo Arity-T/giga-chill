@@ -99,7 +99,7 @@ dependencies {
 }
 
 // === Пути для файлов генерации ===
-val specMainPath = System.getenv("OPEN_API_MAIN_SPECIFICATION")
+val specMainPath: String = System.getenv("OPEN_API_MAIN_SPECIFICATION")
 
 // === Задача для генерации основного API ===
 val generateOpenApi by tasks.registering(GenerateTask::class) {
@@ -131,11 +131,11 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
-val dbHost = System.getenv("DB_HOST")
-val dbPort = System.getenv("DB_PORT")
-val dbName = System.getenv("DB_NAME")
-val dbUser = System.getenv("DB_USER")
-val dbPassword = System.getenv("DB_PASSWORD")
+val dbHost: String = System.getenv("DB_HOST")
+val dbPort: String = System.getenv("DB_PORT")
+val dbName: String = System.getenv("DB_NAME")
+val dbUser: String = System.getenv("DB_USER")
+val dbPassword: String = System.getenv("DB_PASSWORD")
 
 val jdbcUrl = "jdbc:postgresql://$dbHost:$dbPort/$dbName"
 
