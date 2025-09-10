@@ -147,7 +147,7 @@ public class ShoppingListServiceLoggerAspect {
                 "{}{}Shopping list with id: {} was created{}",
                 loggerColorConfig.getPOST_COLOR(),
                 loggerColorConfig.getPOST_LABEL(),
-                (String) result,
+                result,
                 loggerColorConfig.getRESET_COLOR());
         return result;
     }
@@ -187,7 +187,7 @@ public class ShoppingListServiceLoggerAspect {
                 "{}{}Shopping item with id: {} was added to shopping list with id: {}{}",
                 loggerColorConfig.getPOST_COLOR(),
                 loggerColorConfig.getPOST_LABEL(),
-                (String) result,
+                result,
                 shoppingListId,
                 loggerColorConfig.getRESET_COLOR());
         return result;
@@ -230,7 +230,7 @@ public class ShoppingListServiceLoggerAspect {
                 loggerColorConfig.getPATCH_COLOR(),
                 loggerColorConfig.getPATCH_LABEL(),
                 shoppingItemId,
-                (Boolean) result,
+                result,
                 loggerColorConfig.getRESET_COLOR());
         return result;
     }
@@ -270,7 +270,7 @@ public class ShoppingListServiceLoggerAspect {
                 loggerColorConfig.getGET_COLOR(),
                 loggerColorConfig.getGET_LABEL(),
                 shoppingListId,
-                (String) result,
+                result,
                 loggerColorConfig.getRESET_COLOR());
         return result;
     }
@@ -410,7 +410,7 @@ public class ShoppingListServiceLoggerAspect {
                 loggerColorConfig.getPUT_COLOR(),
                 loggerColorConfig.getPUT_LABEL(),
                 shoppingListId,
-                (BigDecimal) result,
+                result,
                 loggerColorConfig.getRESET_COLOR());
         return result;
     }
