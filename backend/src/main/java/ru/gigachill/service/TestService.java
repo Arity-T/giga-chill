@@ -30,7 +30,7 @@ public class TestService {
                                         t.getSchema() != null
                                                 && "public"
                                                         .equalsIgnoreCase(t.getSchema().getName()))
-                        .collect(Collectors.toList());
+                        .toList();
         // Обычные VIEW
         List<String> viewNames =
                 dsl.select(DSL.field("table_name", String.class))

@@ -147,18 +147,19 @@ public class DataAccessLoggerAspect {
                 return "Map(size=" + map.size() + ")";
             }
 
-            // Jooq Result/Record
+                // Jooq Result/Record
             case org.jooq.Record rec -> {
                 StringBuilder sb = new StringBuilder("JooqRecord{");
                 for (int i = 0; i < rec.size(); i++) {
-                    sb.append(Objects.requireNonNull(rec.field(i)).getName()).append("=").append(rec.get(i));
+                    sb.append(Objects.requireNonNull(rec.field(i)).getName())
+                            .append("=")
+                            .append(rec.get(i));
                     if (i < rec.size() - 1) sb.append(", ");
                 }
                 sb.append("}");
                 return sb.toString();
             }
-            default -> {
-            }
+            default -> {}
         }
         // DTO/Entity: логируем только ключевые поля
         try {

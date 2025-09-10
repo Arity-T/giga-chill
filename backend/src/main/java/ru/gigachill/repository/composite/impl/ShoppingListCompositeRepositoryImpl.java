@@ -66,7 +66,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
      *
      * <p>This method processes denormalized data from a JOIN query and: 1. Creates the base
      * shopping list DTO from the first record 2. Deduplicates shopping items (same item may appear
-     * multiple times due to JOIN) 3. Attaches consumer participants from pre-loaded data
+     * multiple times due to JOIN) 3. Attaches consumer participants from preloaded data
      *
      * @param listData denormalized shopping list data with items (from JOIN query)
      * @param consumersByList pre-grouped consumer data by shopping list ID
