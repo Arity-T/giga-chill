@@ -75,13 +75,7 @@ public class SecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(@NotNull CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOriginPatterns(
-                                frontendProperties
-                                        .getOrigin()) // TODO: заменить на allowedOrigins с адресом
-                        // фронта
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
-                        .allowCredentials(true);
+                registry.addMapping("/**").allowedOrigins(frontendProperties.getOrigin());
             }
         };
     }
