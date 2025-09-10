@@ -276,14 +276,14 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
 
     @Override
     public boolean canBindShoppingListToTaskById(UUID shoppingListId, UUID taskId) {
-        return shoppingListRepository.isBindedToTaskOrNull(shoppingListId, taskId);
+        return shoppingListRepository.isBoundToTaskOrNull(shoppingListId, taskId);
     }
 
     @Override
     public boolean canBindShoppingListsToTaskById(List<UUID> shoppingListsIds, UUID taskId) {
         if (shoppingListsIds == null || shoppingListsIds.isEmpty()) return true;
 
-        int count = shoppingListRepository.countAllBindedToThisTaskOrNull(shoppingListsIds, taskId);
+        int count = shoppingListRepository.countAllBoundToThisTaskOrNull(shoppingListsIds, taskId);
         return count == shoppingListsIds.size();
     }
 
