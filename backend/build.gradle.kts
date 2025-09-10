@@ -109,7 +109,7 @@ val generateOpenApi by tasks.registering(GenerateTask::class) {
     validateSpec.set(false)
     generatorName.set("spring")
     inputSpec.set(specMainPath)
-    outputDir.set("$buildDir/generated/api")
+    outputDir.set(layout.buildDirectory.dir("generated/api").get().asFile.absolutePath)
     apiPackage.set("ru.gigachill.web.api")
     modelPackage.set("ru.gigachill.web.api.model")
     invokerPackage.set("ru.gigachill.web.api.invoker")
@@ -139,8 +139,8 @@ val dbPassword: String = System.getenv("DB_PASSWORD")
 
 val jdbcUrl = "jdbc:postgresql://$dbHost:$dbPort/$dbName"
 
-sourceSets["main"].java.srcDir("build/generated-sources/jooq")
-sourceSets["main"].java.srcDir("build/generated/api")
+sourceSets["main"].java.srcDir(layout.buildDirectory.dir("generated-sources/jooq"))
+sourceSets["main"].java.srcDir(layout.buildDirectory.dir("generated/api"))
 
 
 // === jOOQ codegen конфигурация ===
@@ -180,7 +180,7 @@ jooq {
 
                     target.apply {
                         packageName = "ru.gigachill.jooq.generated"
-                        directory = "build/generated-sources/jooq"
+                        directory = layout.buildDirectory.dir("generated-sources/jooq").get().asFile.absolutePath
                     }
                 }
             }
