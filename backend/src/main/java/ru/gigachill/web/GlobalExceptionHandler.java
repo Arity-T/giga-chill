@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(
             MethodArgumentNotValidException e) {
-        var firstError = e.getBindingResult().getFieldErrors().get(0);
+        var firstError = e.getBindingResult().getFieldErrors().getFirst();
         var message =
                 String.format(
                         "Validation failed for field '%s': %s",
