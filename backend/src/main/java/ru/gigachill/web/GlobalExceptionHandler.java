@@ -83,7 +83,7 @@ public class GlobalExceptionHandler {
 
     // DTO для ошибок
     public static class ErrorResponse {
-        public String message;
+        public final String message;
 
         public ErrorResponse(String message) {
             this.message = message;
