@@ -51,7 +51,7 @@ public class ShoppingListReceiptsServiceValidator {
     }
 
     public void canSetReceiptId(UUID shoppingListId) {
-        if (Objects.isNull(
+        if (!Objects.isNull(
                 shoppingListCompositeRepository.getReceiptIdByShoppingListId(shoppingListId))) {
             throw new ConflictException(
                     "List with id: " + shoppingListId + " already has a receipt");
