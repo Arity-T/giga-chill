@@ -60,7 +60,7 @@ public class ShoppingListReceiptsController implements ShoppingListReceiptsApi {
         var user =
                 userService.userAuthentication(
                         SecurityContextHolder.getContext().getAuthentication());
-        shoppingListReceiptsService.deleteReceipt(user.getId(), eventId, shoppingListId, receiptId);
+
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(
                         URI.create(
