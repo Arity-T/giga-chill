@@ -4,7 +4,6 @@ import io.minio.MinioClient;
 import io.minio.StatObjectArgs;
 import io.minio.errors.*;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
@@ -30,11 +29,11 @@ public class ShoppingListReceiptsServiceValidator {
         }
     }
 
-    public void checkContentLength(BigDecimal contentLength) {
-        if (contentLength.intValue() <= 0) {
+    public void checkContentLength(Integer contentLength) {
+        if (contentLength <= 0) {
             throw new BadRequestException("File size must be greater than zero.");
         }
-        if (contentLength.intValue() > minioProperties.getMaxFileSize()) {
+        if (contentLength > minioProperties.getMaxFileSize()) {
             throw new BadRequestException(
                     "The file size exceeds the allowed size in bytes. "
                             + "Acceptable size: "
