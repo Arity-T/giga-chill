@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.gigachill.exception.ConflictException;
 import ru.gigachill.properties.MinioProperties;
 import ru.gigachill.repository.composite.ShoppingListCompositeRepository;
@@ -90,7 +91,9 @@ public class ShoppingListReceiptsService {
 
         return new ReceiptUploadPolicy(
                 UUID.randomUUID(),
-                minioProperties.getPublicSource() + minioProperties.getBucketIncoming(),
+                UriComponentsBuilder.fromUriString(minioProperties.getPublicSource())
+                        .pathSegment(minioProperties.getBucketIncoming())
+                        .toUriString(),
                 fields);
     }
 
