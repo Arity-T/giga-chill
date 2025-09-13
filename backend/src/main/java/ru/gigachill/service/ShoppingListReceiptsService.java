@@ -88,8 +88,15 @@ public class ShoppingListReceiptsService {
             throw new RuntimeException(e);
         }
 
+        // Добавляем обязательные поля для S3 в fields,
+        // чтобы клиент мог отправить их в multipart как есть.
+        UUID receiptId = UUID.randomUUID();
+        fields.put("key", receiptId.toString());
+        fields.put("Content-Type", receiptUploadPolicyCreate.getContentType().getValue());
+        fields.put("x-amz-meta-md5", receiptUploadPolicyCreate.getMd5Hash());
+
         return new ReceiptUploadPolicy(
-                UUID.randomUUID(),
+                receiptId,
                 minioProperties.getPublicSource() + minioProperties.getBucketIncoming(),
                 fields);
     }
