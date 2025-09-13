@@ -307,6 +307,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
         return shoppingListRepository.getReceiptIdByShoppingListId(shoppingListId);
     }
 
+    @Transactional
     @Override
     public void setReceiptIdByShoppingListId(UUID shoppingListId, @Nullable UUID receiptId) {
         shoppingListRepository.setReceiptIdByShoppingListId(shoppingListId, receiptId);
