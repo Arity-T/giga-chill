@@ -74,14 +74,15 @@ public class ShoppingListReceiptsService {
         taskServiceValidator.checkOpportunityToSentTaskToReview(taskId, userId);
         shoppingListReceiptsServiceValidator.canSetReceiptId(shoppingListId);
 
+        UUID receiptId = UUID.randomUUID();
         ZonedDateTime ttl =
                 ZonedDateTime.now(ZoneOffset.UTC).plusSeconds(minioProperties.getMaxLinkTtl());
         PostPolicy policy = new PostPolicy(minioProperties.getBucketIncoming(), ttl);
         policy.addContentLengthRangeCondition(1, minioProperties.getMaxFileSize().longValue());
-        policy.addStartsWithCondition("key", "");
-        policy.addStartsWithCondition(
+        policy.addEqualsCondition("key", receiptId.toString());
+        policy.addEqualsCondition(
                 "Content-Type", receiptUploadPolicyCreate.getContentType().getValue());
-        policy.addStartsWithCondition("x-amz-meta-md5", receiptUploadPolicyCreate.getMd5Hash());
+        policy.addEqualsCondition("Content-MD5", receiptUploadPolicyCreate.getMd5Hash());
         String contentDisposition =
                 buildContentDisposition(receiptUploadPolicyCreate.getOriginalFileName());
         policy.addEqualsCondition("Content-Disposition", contentDisposition);
@@ -104,12 +105,10 @@ public class ShoppingListReceiptsService {
 
         // Добавляем обязательные поля для S3 в fields,
         // чтобы клиент мог отправить их в multipart как есть.
-        UUID receiptId = UUID.randomUUID();
         fields.put("key", receiptId.toString());
         fields.put("Content-Type", receiptUploadPolicyCreate.getContentType().getValue());
-        fields.put("x-amz-meta-md5", receiptUploadPolicyCreate.getMd5Hash());
         fields.put("Content-Disposition", contentDisposition);
-
+        fields.put("Content-MD5", receiptUploadPolicyCreate.getMd5Hash());
         return new ReceiptUploadPolicy(
                 receiptId,
                 UriComponentsBuilder.fromUriString(minioProperties.getPublicSource())

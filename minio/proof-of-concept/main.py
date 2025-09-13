@@ -51,11 +51,9 @@ def main():
         Key=key,
         Fields={
             "Content-Type": ctype,
-            "x-amz-meta-md5": md5hex,
         },
         Conditions=[
             {"Content-Type": ctype},
-            {"x-amz-meta-md5": md5hex},
             ["content-length-range", 1, 10 * 1024 * 1024],
         ],
         ExpiresIn=300,
