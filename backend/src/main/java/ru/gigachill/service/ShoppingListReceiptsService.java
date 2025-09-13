@@ -4,6 +4,8 @@ import io.minio.*;
 import io.minio.errors.*;
 import io.minio.http.Method;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.ZoneOffset;
@@ -37,6 +39,14 @@ public class ShoppingListReceiptsService {
     private final MinioProperties minioProperties;
     private final ShoppingListCompositeRepository shoppingListCompositeRepository;
     private final ShoppingListServiceValidator shoppingListServiceValidator;
+
+    private static String buildContentDisposition(String originalFileName) {
+        String sanitized =
+                originalFileName.replace("\"", "_").replace("\r", "_").replace("\n", "_");
+        String asciiFallback = sanitized.replaceAll("[^\\x20-\\x7E]", "_");
+        String encoded = URLEncoder.encode(sanitized, StandardCharsets.UTF_8);
+        return "inline; filename=\"" + asciiFallback + "\"; filename*=UTF-8''" + encoded;
+    }
 
     public ReceiptUploadPolicy createUploadPolicy(
             UUID userId,
@@ -72,6 +82,9 @@ public class ShoppingListReceiptsService {
         policy.addStartsWithCondition(
                 "Content-Type", receiptUploadPolicyCreate.getContentType().getValue());
         policy.addStartsWithCondition("x-amz-meta-md5", receiptUploadPolicyCreate.getMd5Hash());
+        String contentDisposition =
+                buildContentDisposition(receiptUploadPolicyCreate.getOriginalFileName());
+        policy.addEqualsCondition("Content-Disposition", contentDisposition);
 
         Map<String, String> fields;
         try {
@@ -95,6 +108,7 @@ public class ShoppingListReceiptsService {
         fields.put("key", receiptId.toString());
         fields.put("Content-Type", receiptUploadPolicyCreate.getContentType().getValue());
         fields.put("x-amz-meta-md5", receiptUploadPolicyCreate.getMd5Hash());
+        fields.put("Content-Disposition", contentDisposition);
 
         return new ReceiptUploadPolicy(
                 receiptId,
