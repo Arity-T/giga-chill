@@ -1476,7 +1476,7 @@ components:
           description: Тип содержимого файла
           example: image/jpeg
         content_length:
-          type: number
+          type: integer
           description: Длина содержимого файла
           example: 1000
         original_file_name:
