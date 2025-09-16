@@ -1,9 +1,9 @@
 import React, { useMemo, useRef, useState } from "react";
-import { Button, Image, Space, App, Popconfirm } from "antd";
-import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Button, Image, Space, App, Popconfirm, Tooltip } from "antd";
+import { FileAddOutlined, FileTextOutlined, DeleteOutlined, DownloadOutlined, RotateLeftOutlined, RotateRightOutlined, ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
 import SparkMD5 from "spark-md5";
 import { getReceiptImagePath, useCreateReceiptUploadPolicyMutation, useConfirmReceiptUploadMutation, useDeleteReceiptMutation, Content_type, type ReceiptConfirmRequest } from '@/store/api';
-
+import styles from "./ReceiptUploadButton.module.css";
 
 interface ReceiptUploadButtonProps {
     eventId: string;
@@ -25,6 +25,7 @@ export default function ReceiptUploadButton({
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const [isBusy, setIsBusy] = useState(false);
+    const [isPreviewVisible, setIsPreviewVisible] = useState(false);
 
     const [createPolicy] = useCreateReceiptUploadPolicyMutation();
     const [confirmUpload] = useConfirmReceiptUploadMutation();
@@ -120,62 +121,74 @@ export default function ReceiptUploadButton({
     };
 
     return (
-        <Space direction="vertical" size="small">
+        <div onClick={(e) => e.stopPropagation()}>
             {receiptId ? (
-                <Image
-                    src={getReceiptImagePath({ eventId, shoppingListId, receiptId })}
-                    width={200}
-                    height={200}
-                    style={{ objectFit: "cover", borderRadius: 8 }}
-                    alt="Квитанция"
-                />
+                <>
+                    <Tooltip title="Посмотреть фото чека">
+                        <Button
+                            type="text"
+                            icon={<FileTextOutlined style={{ fontSize: 24 }} />}
+                            onClick={() => setIsPreviewVisible(true)}
+                            disabled={isBusy}
+                        />
+                    </Tooltip>
+
+                    <Image
+                        src={getReceiptImagePath({ eventId, shoppingListId, receiptId })}
+                        style={{ display: "none" }}
+                        preview={{
+                            visible: isPreviewVisible,
+                            onVisibleChange: (v) => setIsPreviewVisible(v),
+                            toolbarRender: (
+                                _,
+                                {
+                                    transform: { scale },
+                                    actions: { onRotateLeft, onRotateRight, onZoomOut, onZoomIn },
+                                }
+                            ) => (
+                                <Space size={12} className={styles.toolbarWrapper}>
+                                    <RotateLeftOutlined onClick={onRotateLeft} />
+                                    <RotateRightOutlined onClick={onRotateRight} />
+                                    <ZoomOutOutlined disabled={scale === 1} onClick={onZoomOut} />
+                                    <ZoomInOutlined disabled={scale === 50} onClick={onZoomIn} />
+                                    {can_edit && (
+                                        <Popconfirm
+                                            title="Вы уверены, что хотите удалить чек?"
+                                            okText="Да, удалить"
+                                            cancelText="Отмена"
+                                            onConfirm={async () => {
+                                                await handleDelete();
+                                                setIsPreviewVisible(false);
+                                            }}
+                                        >
+                                            <DeleteOutlined />
+                                        </Popconfirm>
+                                    )}
+                                </Space>
+                            ),
+                        }}
+                    />
+                </>
             ) : (
-                <div style={{
-                    width: 200, height: 200, border: "1px dashed #d9d9d9",
-                    borderRadius: 8, display: "flex", alignItems: "center",
-                    justifyContent: "center", color: "#999"
-                }}>
-                    Нет изображения
-                </div>
+                <Tooltip title="Загрузить фото чека">
+                    <Button
+                        type="text"
+                        icon={<FileAddOutlined style={{ fontSize: 24 }} />}
+                        onClick={handleChooseClick}
+                        disabled={disabled}
+                        loading={isBusy}
+                    />
+                </Tooltip>
             )}
 
-            <Space>
-                <Button
-                    icon={<UploadOutlined />}
-                    onClick={handleChooseClick}
-                    disabled={disabled}
-                    loading={isBusy}
-                >
-                    Загрузить чек
-                </Button>
-
-                <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept={accept}
-                    style={{ display: "none" }}
-                    onChange={handleFileSelected}
-                />
-
-                {can_edit && receiptId && (
-                    <Popconfirm
-                        title="Удалить чек?"
-                        okText="Удалить"
-                        cancelText="Отмена"
-                        onConfirm={handleDelete}
-                    >
-                        <Button
-                            danger
-                            icon={<DeleteOutlined />}
-                            disabled={disabled}
-                            loading={isBusy}
-                        >
-                            Удалить
-                        </Button>
-                    </Popconfirm>
-                )}
-            </Space>
-        </Space>
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept={accept}
+                style={{ display: "none" }}
+                onChange={handleFileSelected}
+            />
+        </div>
     );
 }
 

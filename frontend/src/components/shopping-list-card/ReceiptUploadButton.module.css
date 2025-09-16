@@ -1,0 +1,21 @@
+.toolbarWrapper {
+    padding: 0 24px;
+    color: #fff;
+    font-size: 20px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 100px;
+}
+
+.toolbarWrapper :global(.anticon) {
+    padding: 12px;
+    cursor: pointer;
+}
+
+.toolbarWrapper :global(.anticon[disabled]) {
+    cursor: not-allowed;
+    opacity: 0.3;
+}
+
+.toolbarWrapper :global(.anticon:hover) {
+    opacity: 0.3;
+}
