@@ -26,6 +26,8 @@ interface ShoppingListCardProps {
     onToggleExpand?: (listId: string) => void;
     showStatus?: boolean;
     enableBudgetInput?: boolean;
+    showReceiptPreview?: boolean;
+    canEditReceipt?: boolean;
 }
 
 export default function ShoppingListCard({
@@ -36,7 +38,9 @@ export default function ShoppingListCard({
     expandedListId,
     onToggleExpand,
     showStatus = true,
-    enableBudgetInput = false
+    enableBudgetInput = false,
+    showReceiptPreview = false,
+    canEditReceipt = false
 }: ShoppingListCardProps) {
     const [activeKey, setActiveKey] = useState<string | string[]>([]);
     const [isHovered, setIsHovered] = useState(false);
@@ -234,6 +238,8 @@ export default function ShoppingListCard({
                                 showStatus={showStatus}
                                 enableBudgetInput={enableBudgetInput}
                                 eventId={eventId}
+                                showReceiptPreview={showReceiptPreview}
+                                canEditReceipt={canEditReceipt}
                             />
                         </div>
                     </div>

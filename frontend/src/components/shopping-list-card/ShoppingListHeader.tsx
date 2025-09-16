@@ -6,10 +6,12 @@ import { ShoppingListStatus, useSetShoppingListBudgetMutation } from '@/store/ap
 import InlineEditControls from '@/components/inline-edit-controls';
 import ConsumerButton from './ConsumerButton';
 import ActionButtons from './ActionButtons';
+import ReceiptUploadButton from './ReceiptUploadButton';
 
 const { Text, Title } = Typography;
 
 interface ShoppingListHeaderProps {
+    eventId: string;
     shoppingList: ShoppingListWithItems;
     isHovered: boolean;
     purchasedCount: number;
@@ -20,7 +22,8 @@ interface ShoppingListHeaderProps {
     canEdit: boolean;
     showStatus?: boolean;
     enableBudgetInput?: boolean;
-    eventId?: string;
+    showReceiptPreview: boolean;
+    canEditReceipt: boolean;
 }
 
 export default function ShoppingListHeader({
@@ -34,6 +37,8 @@ export default function ShoppingListHeader({
     canEdit,
     showStatus = true,
     enableBudgetInput = false,
+    showReceiptPreview,
+    canEditReceipt,
     eventId
 }: ShoppingListHeaderProps) {
     const { message } = App.useApp();
@@ -90,6 +95,14 @@ export default function ShoppingListHeader({
                             {getStatusText(shoppingList.status)}
                         </Tag>
                     </Tooltip>
+                )}
+                {showReceiptPreview && (
+                    <ReceiptUploadButton
+                        eventId={eventId}
+                        shoppingListId={shoppingList.shopping_list_id}
+                        can_edit={canEditReceipt}
+                        receiptId={shoppingList.receipt_id}
+                    />
                 )}
                 {(enableBudgetInput || showBudget) && (
                     <div
