@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ -f ".env" ]]; then
-  source ".env"
+if [[ -f ".env.local" ]]; then
+  source ".env.local"
 fi
 
 # Required env
