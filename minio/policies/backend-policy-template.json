@@ -4,6 +4,16 @@
     {
       "Effect": "Allow",
       "Action": [
+        "s3:GetBucketLocation"
+      ],
+      "Resource": [
+        "arn:aws:s3:::${BUCKET_INCOMING}",
+        "arn:aws:s3:::${BUCKET_RECEIPT}"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
         "s3:GetObject",
         "s3:DeleteObject",
         "s3:PutObject"
@@ -16,6 +26,7 @@
       "Effect": "Allow",
       "Action": [
         "s3:GetObject",
+        "s3:DeleteObject",
         "s3:PutObject"
       ],
       "Resource": [
