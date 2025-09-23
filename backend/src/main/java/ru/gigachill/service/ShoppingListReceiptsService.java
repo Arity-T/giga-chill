@@ -232,13 +232,14 @@ public class ShoppingListReceiptsService {
                 receiptId, minioProperties.getBucketReceipt());
 
         try {
-            return minioClient.getPresignedObjectUrl(
-                    GetPresignedObjectUrlArgs.builder()
-                            .method(Method.GET)
-                            .bucket(minioProperties.getBucketReceipt())
-                            .object(receiptId.toString())
-                            .expiry(minioProperties.getMaxLinkTtl(), TimeUnit.SECONDS)
-                            .build());
+            return changeToPublicEndpoint(
+                    minioClient.getPresignedObjectUrl(
+                            GetPresignedObjectUrlArgs.builder()
+                                    .method(Method.GET)
+                                    .bucket(minioProperties.getBucketReceipt())
+                                    .object(receiptId.toString())
+                                    .expiry(minioProperties.getMaxLinkTtl(), TimeUnit.SECONDS)
+                                    .build()));
         } catch (RuntimeException
                 | ErrorResponseException
                 | InsufficientDataException
@@ -251,5 +252,9 @@ public class ShoppingListReceiptsService {
                 | XmlParserException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    String changeToPublicEndpoint(String endpoint) {
+        return endpoint.replace(minioProperties.getSource(), minioProperties.getPublicSource());
     }
 }
