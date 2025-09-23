@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.gigachill.exception.ConflictException;
@@ -36,6 +37,10 @@ public class ShoppingListReceiptsService {
     private final TaskService taskService;
     private final ShoppingListService shoppingListService;
     private final MinioClient minioClient;
+
+    @Qualifier("publicMinioClient")
+    private final MinioClient publicMinioClient;
+
     private final MinioProperties minioProperties;
     private final ShoppingListCompositeRepository shoppingListCompositeRepository;
     private final ShoppingListServiceValidator shoppingListServiceValidator;
@@ -232,14 +237,13 @@ public class ShoppingListReceiptsService {
                 receiptId, minioProperties.getBucketReceipt());
 
         try {
-            return changeToPublicEndpoint(
-                    minioClient.getPresignedObjectUrl(
-                            GetPresignedObjectUrlArgs.builder()
-                                    .method(Method.GET)
-                                    .bucket(minioProperties.getBucketReceipt())
-                                    .object(receiptId.toString())
-                                    .expiry(minioProperties.getMaxLinkTtl(), TimeUnit.SECONDS)
-                                    .build()));
+            return publicMinioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(minioProperties.getBucketReceipt())
+                            .object(receiptId.toString())
+                            .expiry(minioProperties.getMaxLinkTtl(), TimeUnit.SECONDS)
+                            .build());
         } catch (RuntimeException
                 | ErrorResponseException
                 | InsufficientDataException

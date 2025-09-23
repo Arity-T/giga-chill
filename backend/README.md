@@ -38,14 +38,14 @@ docker compose -f ./compose.build.yml up --build --abort-on-container-exit --exi
 На основе полученного Fat Jar можно собрать образ с помощью [`Dockerfile.runner`](Dockerfile.runner):
 
 ```bash
-docker build -f Dockerfile.runner -t giga-chill-backend --build-context build=./backend-build .
+docker build -f Dockerfile.runner -t gigachill-backend --build-context build=./backend-build .
 ```
 
 Который затем можно запустить:
 
 ```bash
 cp .env.runner.example .env.runner
-docker run -p 8081:8081 --env-file ./.env.runner -d giga-chill-backend
+docker run -p 8081:8081 --env-file ./.env.runner -d --name gigachill-backend gigachill-backend
 ```
 
 Образ также содержит в себе скрипт миграций и файлы миграций, которые можно выполнить
