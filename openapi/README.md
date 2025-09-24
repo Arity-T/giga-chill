@@ -28,14 +28,14 @@ npm run build
 ```bash
 docker run -p 1240:8080 -e SWAGGER_JSON=/spec/openapi.yml -e LAYOUT=BaseLayout \
   -v /var/www/giga-chill/openapi.yml:/spec/openapi.yml \
-  --name giga-chill-swagger-ui -d docker.swagger.io/swaggerapi/swagger-ui:v5.27.1
+  --name gigachill-swagger-ui -d docker.swagger.io/swaggerapi/swagger-ui:v5.27.1
 ```
 
 Либо с ссылкой на файл:
 
 ```bash
 docker run -p 1240:8080 -e URL=https://giga-chill.ru/api/openapi.yml -e LAYOUT=BaseLayout \
-  --name giga-chill-swagger-ui -d docker.swagger.io/swaggerapi/swagger-ui:v5.27.1
+  --name gigachill-swagger-ui -d docker.swagger.io/swaggerapi/swagger-ui:v5.27.1
 ```
 
 ## Host Redocly with Docker
@@ -47,7 +47,7 @@ docker run -p 1240:8080 -e URL=https://giga-chill.ru/api/openapi.yml -e LAYOUT=B
 ```bash
 docker run -p 1241:80 -e SPEC_URL=openapi.yml -e PAGE_TITLE="GigaChill API — ReDoc" \
   -v /var/www/giga-chill/openapi.yml:/usr/share/nginx/html/openapi.yml \
-  --name giga-chill-redoc -d redocly/redoc:v2.5.0
+  --name gigachill-redoc -d redocly/redoc:v2.5.0
 ```
 
 Либо с ссылкой на файл:
@@ -55,5 +55,5 @@ docker run -p 1241:80 -e SPEC_URL=openapi.yml -e PAGE_TITLE="GigaChill API — R
 ```bash
 docker run -p 1241:80 -e SPEC_URL=https://giga-chill.ru/api/openapi.yml \
   -e PAGE_TITLE="GigaChill API — ReDoc" \
-  --name giga-chill-redoc -d redocly/redoc:v2.5.0
+  --name gigachill-redoc -d redocly/redoc:v2.5.0
 ```

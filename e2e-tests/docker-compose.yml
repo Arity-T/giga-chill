@@ -1,6 +1,6 @@
 services:
   e2e-tests:
-    image: giga-chill-tests
+    image: gigachill-tests
     build:
       context: .
     env_file:

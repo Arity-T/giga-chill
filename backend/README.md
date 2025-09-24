@@ -52,7 +52,7 @@ docker run -p 8081:8081 --env-file ./.env.runner -d --name gigachill-backend gig
 командой:
 
 ```bash
-docker run --rm --env-file ./.env.runner giga-chill-backend ./migrate.sh
+docker run --rm --env-file ./.env.runner gigachill-backend ./migrate.sh
 ```
 
 К команде запуска бэкенда и миграций можно добавить параметр `--network gigachill-network`,
