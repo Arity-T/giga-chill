@@ -1,3 +1,6 @@
+# Компоуз предназначен для локального запуска приложения
+# Перед запуском нужно создать файл .env (см. .env.example)
+
 services:
   postgres:
     image: postgres:17-alpine
@@ -50,9 +53,9 @@ services:
       - DB_PORT=5432
       - SERVER_PORT=8081
       - JWT_EXPIRATION=1d
-      - HTTPS_COOKIES_ONLY=${HTTPS_COOKIES_ONLY}
-      - BACKEND_PROFILE=${BACKEND_PROFILE}
-      - FRONTEND_ORIGIN=${FRONTEND_ORIGIN}
+      - HTTPS_COOKIES_ONLY=false
+      - BACKEND_PROFILE=test
+      - FRONTEND_ORIGIN=http://localhost:${FRONTEND_HOST_PORT}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -79,8 +82,8 @@ services:
     build:
       context: frontend
       args:
-        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
-        NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL}
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:${BACKEND_HOST_PORT}
+        NEXT_PUBLIC_BASE_URL: http://localhost:${FRONTEND_HOST_PORT}
       additional_contexts:
         openapi: ./openapi
     ports:
@@ -95,7 +98,7 @@ services:
     container_name: gigachill-minio
     restart: unless-stopped
     environment:
-      - MINIO_API_CORS_ALLOW_ORIGIN=${FRONTEND_ORIGIN}
+      - MINIO_API_CORS_ALLOW_ORIGIN=http://localhost:${FRONTEND_HOST_PORT}
       - MINIO_ROOT_USER=minioadmin
       - MINIO_ROOT_PASSWORD=minioadmin
     volumes:
