@@ -10,7 +10,7 @@ plugins {
     id("com.github.node-gradle.node") version "7.0.2"
 }
 
-group = "com.github.giga-chill"
+group = "ru.giga-chill"
 version = "0.0.1-SNAPSHOT"
 
 // === Java toolchain ===
