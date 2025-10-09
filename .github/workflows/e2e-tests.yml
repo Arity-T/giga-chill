@@ -33,8 +33,9 @@ jobs:
           docker compose build
 
       - name: Run the application
-        run: docker compose up -d --wait
+        run: docker compose up -d
 
+      # TODO: добавить healthcheck'и на бэкенд и фронтенд
       - name: Wait for the application to be ready
         run: sleep 10
 
