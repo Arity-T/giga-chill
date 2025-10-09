@@ -1,0 +1,28 @@
+# Отдельный компоуз для разворачивания базы данных
+# DB_USER=postgres DB_PASSWORD=postgres DB_NAME=gigachill docker compose -f compose.db.yml up -d
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: gigachill-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks: 
+      - gigachill-network
+
+volumes:
+  postgres-data:
+
+networks:
+  gigachill-network:
+    external: true
