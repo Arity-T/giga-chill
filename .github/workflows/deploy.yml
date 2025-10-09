@@ -48,6 +48,7 @@ jobs:
       - name: Build Backend Runner
         run: |
           docker build -f Dockerfile.runner -t $IMAGE_NAME \
+            --label "app=gigachill" \
             --label "runnumber=${GITHUB_RUN_ID}" \
             --build-context build="$BACKEND_BUILD_DIR" .
 
@@ -89,6 +90,7 @@ jobs:
       - name: Build Frontend
         run: |
           docker build -t $IMAGE_NAME \
+            --label "app=gigachill" \
             --label "runnumber=${GITHUB_RUN_ID}" \
             --build-arg NEXT_PUBLIC_API_BASE_URL=${{ vars.BACKEND_URL_PROD }} \
             --build-arg NEXT_PUBLIC_BASE_URL=${{ vars.FRONTEND_URL_PROD }} \
@@ -167,6 +169,9 @@ jobs:
 
       - name: Up services
         run: docker compose -f compose.deploy.yml up -d --remove-orphans
+
+      - name: Prune old app images
+        run: docker image prune -a -f --filter "label=app=gigachill"
 
       - name: Cleanup env files
         if: always()
