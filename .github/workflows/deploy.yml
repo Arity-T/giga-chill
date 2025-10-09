@@ -130,6 +130,8 @@ jobs:
       FRONTEND_IMAGE_NAME: giga-chill-frontend
       REPOSITORY_OWNER: ${{ github.repository_owner }}
       DEPLOY_TAG: ${{ github.sha }}
+      # Отдельный проект, чтобы runner не удалял лишние контейнеры (--remove-orphans)
+      COMPOSE_PROJECT_NAME: giga-chill-gh-actions
     steps:
       - name: Check out the repository to the runner
         uses: actions/checkout@v4
