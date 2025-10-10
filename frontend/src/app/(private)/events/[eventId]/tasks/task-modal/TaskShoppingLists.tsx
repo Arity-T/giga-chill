@@ -14,6 +14,7 @@ interface TaskShoppingListsProps {
     shoppingLists: ShoppingListWithItems[];
     allShoppingLists: ShoppingListWithItems[];
     canEdit: boolean;
+    canEditReceipt: boolean;
     onUpdate: (shoppingListIds: string[]) => Promise<void>;
     // Показывать списки как карточки (для исполнителя и проверяющего)
     showAsCards?: boolean;
@@ -27,6 +28,7 @@ export default function TaskShoppingLists({
     shoppingLists,
     allShoppingLists,
     canEdit,
+    canEditReceipt,
     onUpdate,
     showAsCards = false,
     eventId,
@@ -169,6 +171,8 @@ export default function TaskShoppingLists({
                                     onToggleExpand={onToggleExpand}
                                     showStatus={false}
                                     enableBudgetInput={true}
+                                    showReceiptPreview={true}
+                                    canEditReceipt={canEditReceipt}
                                 />
                             </div>
                         ))

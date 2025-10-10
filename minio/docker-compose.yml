@@ -1,0 +1,48 @@
+services:
+  minio:
+    # https://hub.docker.com/r/minio/minio/tags
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z-cpuv1
+    container_name: gigachill-minio
+    restart: unless-stopped
+    environment:
+      - MINIO_API_CORS_ALLOW_ORIGIN=${FRONTEND_ORIGIN}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      # https://docs.min.io/community/minio-object-store/reference/minio-server/settings/console.html#envvar.MINIO_BROWSER_REDIRECT_URL
+      - MINIO_BROWSER_REDIRECT_URL=${MINIO_BROWSER_REDIRECT_URL}
+    volumes:
+      - ${MINIO_HOST_DATA_DIR}:/data
+    ports:
+      - "${MINIO_HOST_PORT}:9000"
+      - "${MINIO_CONSOLE_HOST_PORT}:9001"
+    command: server /data --console-address ":9001"
+    # https://github.com/minio/minio/issues/18389#issuecomment-1792826843
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gigachill-network
+  
+  minio-bootstrap:
+    image: gigachill-minio-bootstrap
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      - MC_HOST_GIGACHILL=http://${MINIO_ROOT_USER}:${MINIO_ROOT_PASSWORD}@minio:9000
+      - MINIO_ALIAS=GIGACHILL
+      - SVC_USER=${SVC_USER}
+      - SVC_PASSWORD=${SVC_PASSWORD}
+      - BUCKET_INCOMING=${BUCKET_INCOMING}
+      - BUCKET_RECEIPT=${BUCKET_RECEIPT}
+    networks:
+      - gigachill-network
+
+networks:
+  gigachill-network:
+    external: true

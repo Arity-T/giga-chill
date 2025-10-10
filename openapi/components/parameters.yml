@@ -30,6 +30,14 @@ shoppingItemId:
   schema:
     $ref: "./schemas.yml#/UUID"
 
+receiptId:
+  name: receiptId
+  in: path
+  required: true
+  description: Идентификатор фотографии чека
+  schema:
+    $ref: "./schemas.yml#/UUID"
+
 taskId:
   name: taskId
   in: path

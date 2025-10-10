@@ -301,4 +301,15 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
                 .map(participantsRecordMapper::toParticipantDTO)
                 .toList();
     }
+
+    @Override
+    public UUID getReceiptIdByShoppingListId(UUID shoppingListId) {
+        return shoppingListRepository.getReceiptIdByShoppingListId(shoppingListId);
+    }
+
+    @Transactional
+    @Override
+    public void setReceiptIdByShoppingListId(UUID shoppingListId, @Nullable UUID receiptId) {
+        shoppingListRepository.setReceiptIdByShoppingListId(shoppingListId, receiptId);
+    }
 }

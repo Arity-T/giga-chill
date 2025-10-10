@@ -7,3 +7,4 @@
 !build.sh
 !build.gradle.kts
 !settings.gradle.kts
+!lombok.config

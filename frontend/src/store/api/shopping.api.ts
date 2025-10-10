@@ -59,5 +59,17 @@ codegenApi.enhanceEndpoints({
                 { type: 'ShoppingListInTask' as const, id: `${eventId}-${shoppingListId}` },
             ],
         },
+        confirmReceiptUpload: {
+            invalidatesTags: (_result: any, _error: any, { eventId, shoppingListId }: { eventId: string; shoppingListId: string }) => [
+                { type: 'ShoppingLists', id: eventId },
+                { type: 'ShoppingListInTask' as const, id: `${eventId}-${shoppingListId}` },
+            ],
+        },
+        deleteReceipt: {
+            invalidatesTags: (_result: any, _error: any, { eventId, shoppingListId }: { eventId: string; shoppingListId: string }) => [
+                { type: 'ShoppingLists', id: eventId },
+                { type: 'ShoppingListInTask' as const, id: `${eventId}-${shoppingListId}` },
+            ],
+        },
     },
 })

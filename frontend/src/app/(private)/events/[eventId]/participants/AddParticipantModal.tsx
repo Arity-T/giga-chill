@@ -68,7 +68,7 @@ export default function AddParticipantModal({ visible, onCancel, eventId, onSucc
 
     const handleCopyLink = () => {
         if (tokenData?.invitation_token) {
-            const inviteLink = `${APP_CONFIG.BASE_URL}${PAGES.JOIN_BY_INVITATION(tokenData.invitation_token)}`;
+            const inviteLink = new URL(PAGES.JOIN_BY_INVITATION(tokenData.invitation_token), APP_CONFIG.BASE_URL).href;
             navigator.clipboard.writeText(inviteLink);
             message.success('Ссылка скопирована в буфер обмена');
         }
@@ -173,7 +173,7 @@ export default function AddParticipantModal({ visible, onCancel, eventId, onSucc
                                 border: '1px solid #d9d9d9'
                             }}>
                                 <Typography.Text code copyable={false} style={{ fontSize: '14px' }}>
-                                    {`${APP_CONFIG.BASE_URL}${PAGES.JOIN_BY_INVITATION(tokenData.invitation_token)}`}
+                                    {new URL(PAGES.JOIN_BY_INVITATION(tokenData.invitation_token), APP_CONFIG.BASE_URL).href}
                                 </Typography.Text>
                             </div>
                             <Space>

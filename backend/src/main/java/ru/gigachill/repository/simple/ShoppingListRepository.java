@@ -164,7 +164,7 @@ public class ShoppingListRepository {
                         ShoppingLists.SHOPPING_LISTS.EVENT_ID,
                         ShoppingLists.SHOPPING_LISTS.TITLE,
                         ShoppingLists.SHOPPING_LISTS.DESCRIPTION,
-                        ShoppingLists.SHOPPING_LISTS.FILE_LINK,
+                        ShoppingLists.SHOPPING_LISTS.RECEIPT_ID,
                         ShoppingLists.SHOPPING_LISTS.BUDGET,
                         ShoppingItems.SHOPPING_ITEMS.SHOPPING_ITEM_ID,
                         ShoppingItems.SHOPPING_ITEMS.TITLE.as("item_title"),
@@ -192,7 +192,7 @@ public class ShoppingListRepository {
                         ShoppingLists.SHOPPING_LISTS.EVENT_ID,
                         ShoppingLists.SHOPPING_LISTS.TITLE,
                         ShoppingLists.SHOPPING_LISTS.DESCRIPTION,
-                        ShoppingLists.SHOPPING_LISTS.FILE_LINK,
+                        ShoppingLists.SHOPPING_LISTS.RECEIPT_ID,
                         ShoppingLists.SHOPPING_LISTS.BUDGET,
                         ShoppingItems.SHOPPING_ITEMS.SHOPPING_ITEM_ID,
                         ShoppingItems.SHOPPING_ITEMS.TITLE.as("item_title"),
@@ -211,5 +211,19 @@ public class ShoppingListRepository {
                                 ConsumerInList.CONSUMER_IN_LIST.SHOPPING_LIST_ID))
                 .where(ShoppingLists.SHOPPING_LISTS.TASK_ID.eq(taskId))
                 .fetchInto(ShoppingListWithDetails.class);
+    }
+
+    public UUID getReceiptIdByShoppingListId(UUID shoppingListId) {
+        return dsl.select(ShoppingLists.SHOPPING_LISTS.RECEIPT_ID)
+                .from(ShoppingLists.SHOPPING_LISTS)
+                .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(shoppingListId))
+                .fetchOneInto(UUID.class);
+    }
+
+    public void setReceiptIdByShoppingListId(UUID shoppingListId, @Nullable UUID receiptId) {
+        dsl.update(ShoppingLists.SHOPPING_LISTS)
+                .set(ShoppingLists.SHOPPING_LISTS.RECEIPT_ID, receiptId)
+                .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(shoppingListId))
+                .execute();
     }
 }

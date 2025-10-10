@@ -278,6 +278,7 @@ export default function TaskModal({
                         shoppingLists={task.shopping_lists}
                         allShoppingLists={allShoppingLists}
                         canEdit={task.permissions.can_edit && task.status === TaskStatus.Open}
+                        canEditReceipt={isExecutorInProgress}
                         onUpdate={handleUpdateShoppingLists}
                         showAsCards={isExecutorInProgress || task.permissions.can_review}
                         eventId={eventId}

@@ -2,7 +2,7 @@
 
 services:
   frontend:
-    image: giga-chill-frontend
+    image: gigachill-frontend
     build:
       context: .
       args:

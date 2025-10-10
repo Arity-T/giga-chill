@@ -12,7 +12,7 @@ public class ShoppingListWithDetails {
     private UUID eventId;
     private String title;
     private String description;
-    private String fileLink;
+    private UUID receiptId;
     private BigDecimal budget;
 
     // Shopping item fields

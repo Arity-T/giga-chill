@@ -1,3 +1,6 @@
+# Компоуз предназначен для локального запуска приложения
+# Перед запуском нужно создать файл .env (см. .env.example)
+
 services:
   postgres:
     image: postgres:17-alpine
@@ -50,12 +53,23 @@ services:
       - DB_PORT=5432
       - SERVER_PORT=8081
       - JWT_EXPIRATION=1d
-      - HTTPS_COOKIES_ONLY=${HTTPS_COOKIES_ONLY}
-      - BACKEND_PROFILE=${BACKEND_PROFILE}
-      - FRONTEND_ORIGIN=${FRONTEND_ORIGIN}
+      - HTTPS_COOKIES_ONLY=false
+      - BACKEND_PROFILE=test
+      - FRONTEND_ORIGIN=http://localhost:${FRONTEND_HOST_PORT}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
+      #S3
+      - MINIO_ENDPOINT=http://minio:9000
+      - MINIO_USER=gigachill-backend
+      - MINIO_PASSWORD=gigachill-backend
+      - BUCKET_INCOMING=incoming
+      - BUCKET_RECEIPT=receipt
+      - MAX_FILE_SIZE=10485760
+      - ALLOWED_CONTENT_TYPES=image/jpeg,image/png
+      - ALLOWED_FILE_TYPES=.jpeg,.jpg,.png
+      - MAX_LINK_TTL=60
+      - MINIO_PUBLIC_ENDPOINT=http://localhost:${MINIO_HOST_PORT}
     ports:
       - "${BACKEND_HOST_PORT}:8081"
     volumes:
@@ -68,8 +82,8 @@ services:
     build:
       context: frontend
       args:
-        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
-        NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL}
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:${BACKEND_HOST_PORT}
+        NEXT_PUBLIC_BASE_URL: http://localhost:${FRONTEND_HOST_PORT}
       additional_contexts:
         openapi: ./openapi
     ports:
@@ -78,9 +92,50 @@ services:
       - PORT=3000
     networks: 
       - gigachill-network
+  
+  minio:
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z-cpuv1
+    container_name: gigachill-minio
+    restart: unless-stopped
+    environment:
+      - MINIO_API_CORS_ALLOW_ORIGIN=http://localhost:${FRONTEND_HOST_PORT}
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    volumes:
+      - minio-data:/data
+    ports:
+      - "${MINIO_HOST_PORT}:9000"
+      - "${MINIO_CONSOLE_HOST_PORT}:9001"
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gigachill-network
+  
+  minio-bootstrap:
+    image: gigachill-minio-bootstrap
+    build:
+      context: minio
+      dockerfile: Dockerfile
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      - MC_HOST_GIGACHILL=http://minioadmin:minioadmin@minio:9000
+      - MINIO_ALIAS=GIGACHILL
+      - SVC_USER=gigachill-backend
+      - SVC_PASSWORD=gigachill-backend
+      - BUCKET_INCOMING=incoming
+      - BUCKET_RECEIPT=receipt
+    networks:
+      - gigachill-network
 
 volumes:
   postgres-data:
+  minio-data:
   backend-build:
   gigachill-logs:
     name: gigachill-logs

@@ -232,4 +232,20 @@ public interface ShoppingListCompositeRepository {
      * @return a list of {@link ParticipantDTO} representing the consumers
      */
     List<ParticipantDTO> getConsumersForShoppingList(UUID shoppingListId, UUID eventId);
+
+    /**
+     * Returns the receipt identifier associated with the given shopping list.
+     *
+     * @param shoppingListId the identifier of the shopping list
+     * @return the UUID of the receipt linked to the list
+     */
+    UUID getReceiptIdByShoppingListId(UUID shoppingListId);
+
+    /**
+     * Sets the receipt identifier for the given shopping list.
+     *
+     * @param shoppingListId the identifier of the shopping list
+     * @param receiptId the identifier of receipt id, or null to remove the association
+     */
+    void setReceiptIdByShoppingListId(UUID shoppingListId, @Nullable UUID receiptId);
 }

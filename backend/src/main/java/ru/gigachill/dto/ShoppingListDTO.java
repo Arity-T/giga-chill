@@ -19,4 +19,5 @@ public class ShoppingListDTO {
     @Nullable private BigDecimal budget;
     private List<ShoppingItemDTO> shoppingItems;
     private List<ParticipantDTO> consumers;
+    @Nullable private UUID receiptId;
 }

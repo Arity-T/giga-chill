@@ -10,10 +10,10 @@
 
 ```bash
 # Сборка образа
-docker build -t giga-chill-frontend --build-arg NEXT_PUBLIC_API_BASE_URL=http://localhost:8081 --build-arg NEXT_PUBLIC_BASE_URL=http://localhost:3000 --build-context openapi=../openapi .
+docker build -t gigachill-frontend --build-arg NEXT_PUBLIC_API_BASE_URL=http://localhost:8081 --build-arg NEXT_PUBLIC_BASE_URL=http://localhost:3000 --build-context openapi=../openapi .
 
 # Запуск контейнера
-docker run -p 3000:3000 -d giga-chill-frontend
+docker run -p 3000:3000 -d gigachill-frontend
 ```
 
 Либо с помощью [docker-compose](docker-compose.yml):
