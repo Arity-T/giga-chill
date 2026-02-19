@@ -103,7 +103,7 @@ public class ParticipantServiceLoggerAspect {
                 "{}{}User with id: {} was added to event with id: {}{}",
                 loggerColorConfig.getPOST_COLOR(),
                 loggerColorConfig.getPOST_LABEL(),
-                (UUID) result,
+                result,
                 eventId,
                 loggerColorConfig.getRESET_COLOR());
         return result;
@@ -178,7 +178,7 @@ public class ParticipantServiceLoggerAspect {
                 loggerColorConfig.getPATCH_COLOR(),
                 loggerColorConfig.getPATCH_LABEL(),
                 participantId,
-                (String) result,
+                result,
                 eventId,
                 loggerColorConfig.getRESET_COLOR());
         return result;

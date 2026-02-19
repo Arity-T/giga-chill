@@ -110,7 +110,7 @@ public class ShoppingListRepository {
                         .and(ShoppingLists.SHOPPING_LISTS.TASK_ID.isNull()));
     }
 
-    public boolean isBindedToTaskOrNull(UUID shoppingListId, UUID taskId) {
+    public boolean isBoundToTaskOrNull(UUID shoppingListId, UUID taskId) {
         return dsl.fetchExists(
                 dsl.selectFrom(ShoppingLists.SHOPPING_LISTS)
                         .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.eq(shoppingListId))
@@ -139,7 +139,7 @@ public class ShoppingListRepository {
                 .execute();
     }
 
-    public int countAllBindedToThisTaskOrNull(List<UUID> shoppingListIds, UUID taskId) {
+    public int countAllBoundToThisTaskOrNull(List<UUID> shoppingListIds, UUID taskId) {
         return dsl.fetchCount(
                 dsl.selectFrom(ShoppingLists.SHOPPING_LISTS)
                         .where(ShoppingLists.SHOPPING_LISTS.SHOPPING_LIST_ID.in(shoppingListIds))

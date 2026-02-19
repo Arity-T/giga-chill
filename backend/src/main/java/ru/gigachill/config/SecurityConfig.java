@@ -1,5 +1,6 @@
 package ru.gigachill.config;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.*;
 import org.springframework.security.authentication.*;
 import org.springframework.security.config.Customizer;
@@ -73,14 +74,8 @@ public class SecurityConfig {
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOriginPatterns(
-                                frontendProperties
-                                        .getOrigin()) // TODO: заменить на allowedOrigins с адресом
-                        // фронта
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
-                        .allowCredentials(true);
+            public void addCorsMappings(@NotNull CorsRegistry registry) {
+                registry.addMapping("/**").allowedOrigins(frontendProperties.getOrigin());
             }
         };
     }

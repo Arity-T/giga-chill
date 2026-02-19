@@ -66,7 +66,7 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
      *
      * <p>This method processes denormalized data from a JOIN query and: 1. Creates the base
      * shopping list DTO from the first record 2. Deduplicates shopping items (same item may appear
-     * multiple times due to JOIN) 3. Attaches consumer participants from pre-loaded data
+     * multiple times due to JOIN) 3. Attaches consumer participants from preloaded data
      *
      * @param listData denormalized shopping list data with items (from JOIN query)
      * @param consumersByList pre-grouped consumer data by shopping list ID
@@ -276,14 +276,14 @@ public class ShoppingListCompositeRepositoryImpl implements ShoppingListComposit
 
     @Override
     public boolean canBindShoppingListToTaskById(UUID shoppingListId, UUID taskId) {
-        return shoppingListRepository.isBindedToTaskOrNull(shoppingListId, taskId);
+        return shoppingListRepository.isBoundToTaskOrNull(shoppingListId, taskId);
     }
 
     @Override
     public boolean canBindShoppingListsToTaskById(List<UUID> shoppingListsIds, UUID taskId) {
         if (shoppingListsIds == null || shoppingListsIds.isEmpty()) return true;
 
-        int count = shoppingListRepository.countAllBindedToThisTaskOrNull(shoppingListsIds, taskId);
+        int count = shoppingListRepository.countAllBoundToThisTaskOrNull(shoppingListsIds, taskId);
         return count == shoppingListsIds.size();
     }
 

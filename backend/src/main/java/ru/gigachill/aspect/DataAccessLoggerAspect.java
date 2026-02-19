@@ -118,40 +118,48 @@ public class DataAccessLoggerAspect {
     }
 
     private String summarizeObject(Object obj) {
-        if (obj == null) return "null";
-        if (obj instanceof Optional<?> opt) {
-            return opt.map(this::summarizeObject).orElse("Optional.empty");
-        }
-        if (obj instanceof Collection<?> col) {
-            StringBuilder sb = new StringBuilder("Collection(size=" + col.size());
-            if (!col.isEmpty()) {
-                sb.append(", first=[");
-                int count = 0;
-                for (Object item : col) {
-                    sb.append(summarizeObject(item));
-                    if (++count >= 3) break;
-                    sb.append(", ");
+        switch (obj) {
+            case null -> {
+                return "null";
+            }
+            case Optional<?> opt -> {
+                return opt.map(this::summarizeObject).orElse("Optional.empty");
+            }
+            case org.jooq.Result<?> res -> {
+                return "JooqResult(size=" + res.size() + ")";
+            }
+            case Collection<?> col -> {
+                StringBuilder sb = new StringBuilder("Collection(size=" + col.size());
+                if (!col.isEmpty()) {
+                    sb.append(", first=[");
+                    int count = 0;
+                    for (Object item : col) {
+                        sb.append(summarizeObject(item));
+                        if (++count >= 3) break;
+                        sb.append(", ");
+                    }
+                    sb.append("]");
                 }
-                sb.append("]");
+                sb.append(")");
+                return sb.toString();
             }
-            sb.append(")");
-            return sb.toString();
-        }
-        if (obj instanceof Map<?, ?> map) {
-            return "Map(size=" + map.size() + ")";
-        }
-        // Jooq Result/Record
-        if (obj instanceof org.jooq.Result<?> res) {
-            return "JooqResult(size=" + res.size() + ")";
-        }
-        if (obj instanceof org.jooq.Record rec) {
-            StringBuilder sb = new StringBuilder("JooqRecord{");
-            for (int i = 0; i < rec.size(); i++) {
-                sb.append(rec.field(i).getName()).append("=").append(rec.get(i));
-                if (i < rec.size() - 1) sb.append(", ");
+            case Map<?, ?> map -> {
+                return "Map(size=" + map.size() + ")";
             }
-            sb.append("}");
-            return sb.toString();
+
+                // Jooq Result/Record
+            case org.jooq.Record rec -> {
+                StringBuilder sb = new StringBuilder("JooqRecord{");
+                for (int i = 0; i < rec.size(); i++) {
+                    sb.append(Objects.requireNonNull(rec.field(i)).getName())
+                            .append("=")
+                            .append(rec.get(i));
+                    if (i < rec.size() - 1) sb.append(", ");
+                }
+                sb.append("}");
+                return sb.toString();
+            }
+            default -> {}
         }
         // DTO/Entity: логируем только ключевые поля
         try {
