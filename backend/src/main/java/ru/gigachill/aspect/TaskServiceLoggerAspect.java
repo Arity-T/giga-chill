@@ -126,7 +126,7 @@ public class TaskServiceLoggerAspect {
                 loggerColorConfig.getPOST_COLOR(),
                 loggerColorConfig.getPOST_LABEL(),
                 userEntity.getId(),
-                (String) result,
+                result,
                 eventId,
                 loggerColorConfig.getRESET_COLOR());
         return result;
@@ -205,7 +205,7 @@ public class TaskServiceLoggerAspect {
                 loggerColorConfig.getGET_COLOR(),
                 loggerColorConfig.getGET_LABEL(),
                 taskId,
-                (String) result,
+                result,
                 loggerColorConfig.getRESET_COLOR());
         return result;
     }
@@ -238,7 +238,7 @@ public class TaskServiceLoggerAspect {
     public Object logGetExecutorId(ProceedingJoinPoint proceedingJoinPoint, UUID taskId)
             throws Throwable {
         Object result = proceedingJoinPoint.proceed();
-        if ((UUID) result == null) {
+        if (result == null) {
             LOGGER.info(
                     "{}{}Task with id: {} does not have executor{}",
                     loggerColorConfig.getGET_COLOR(),
@@ -251,7 +251,7 @@ public class TaskServiceLoggerAspect {
                     loggerColorConfig.getGET_COLOR(),
                     loggerColorConfig.getGET_LABEL(),
                     taskId,
-                    (UUID) result,
+                    result,
                     loggerColorConfig.getRESET_COLOR());
         }
         return result;
@@ -274,7 +274,7 @@ public class TaskServiceLoggerAspect {
                     loggerColorConfig.getPUT_COLOR(),
                     loggerColorConfig.getPUT_LABEL(),
                     taskId,
-                    (UUID) result,
+                    result,
                     loggerColorConfig.getRESET_COLOR());
         }
         return result;
@@ -302,7 +302,7 @@ public class TaskServiceLoggerAspect {
                 loggerColorConfig.getPOST_COLOR(),
                 loggerColorConfig.getPOST_LABEL(),
                 taskId,
-                (String) result,
+                result,
                 loggerColorConfig.getRESET_COLOR());
         return result;
     }

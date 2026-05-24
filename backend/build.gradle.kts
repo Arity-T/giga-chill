@@ -10,7 +10,7 @@ plugins {
     id("com.github.node-gradle.node") version "7.0.2"
 }
 
-group = "com.github.giga-chill"
+group = "ru.giga-chill"
 version = "0.0.1-SNAPSHOT"
 
 // === Java toolchain ===
@@ -99,7 +99,7 @@ dependencies {
 }
 
 // === Пути для файлов генерации ===
-val specMainPath = System.getenv("OPEN_API_MAIN_SPECIFICATION")
+val specMainPath: String = System.getenv("OPEN_API_MAIN_SPECIFICATION")
 
 // === Задача для генерации основного API ===
 val generateOpenApi by tasks.registering(GenerateTask::class) {
@@ -109,7 +109,7 @@ val generateOpenApi by tasks.registering(GenerateTask::class) {
     validateSpec.set(false)
     generatorName.set("spring")
     inputSpec.set(specMainPath)
-    outputDir.set("$buildDir/generated/api")
+    outputDir.set(layout.buildDirectory.dir("generated/api").get().asFile.absolutePath)
     apiPackage.set("ru.gigachill.web.api")
     modelPackage.set("ru.gigachill.web.api.model")
     invokerPackage.set("ru.gigachill.web.api.invoker")
@@ -131,16 +131,16 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
-val dbHost = System.getenv("DB_HOST")
-val dbPort = System.getenv("DB_PORT")
-val dbName = System.getenv("DB_NAME")
-val dbUser = System.getenv("DB_USER")
-val dbPassword = System.getenv("DB_PASSWORD")
+val dbHost: String = System.getenv("DB_HOST")
+val dbPort: String = System.getenv("DB_PORT")
+val dbName: String = System.getenv("DB_NAME")
+val dbUser: String = System.getenv("DB_USER")
+val dbPassword: String = System.getenv("DB_PASSWORD")
 
 val jdbcUrl = "jdbc:postgresql://$dbHost:$dbPort/$dbName"
 
-sourceSets["main"].java.srcDir("build/generated-sources/jooq")
-sourceSets["main"].java.srcDir("build/generated/api")
+sourceSets["main"].java.srcDir(layout.buildDirectory.dir("generated-sources/jooq"))
+sourceSets["main"].java.srcDir(layout.buildDirectory.dir("generated/api"))
 
 
 // === jOOQ codegen конфигурация ===
@@ -180,7 +180,7 @@ jooq {
 
                     target.apply {
                         packageName = "ru.gigachill.jooq.generated"
-                        directory = "build/generated-sources/jooq"
+                        directory = layout.buildDirectory.dir("generated-sources/jooq").get().asFile.absolutePath
                     }
                 }
             }

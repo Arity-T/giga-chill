@@ -163,8 +163,8 @@ public interface ShoppingListCompositeRepository {
     boolean canBindShoppingListToTask(UUID shoppingListId);
 
     /**
-     * Determines whether all of the specified shopping lists are eligible to be bound to a task.
-     * The list is considered free of a task if the taskId field is null.
+     * Determines whether all the specified shopping lists are eligible to be bound to a task. The
+     * list is considered free of a task if the taskId field is null.
      *
      * @param shoppingListsIds a {@link List} of {@link UUID} values representing the shopping lists
      *     to check

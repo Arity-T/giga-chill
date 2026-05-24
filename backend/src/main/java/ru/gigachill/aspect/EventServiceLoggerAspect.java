@@ -84,7 +84,7 @@ public class EventServiceLoggerAspect {
                 loggerColorConfig.getPOST_COLOR(),
                 loggerColorConfig.getPOST_LABEL(),
                 userId,
-                (String) result,
+                result,
                 loggerColorConfig.getRESET_COLOR());
         return result;
     }
@@ -151,7 +151,7 @@ public class EventServiceLoggerAspect {
                 loggerColorConfig.getPOST_COLOR(),
                 loggerColorConfig.getPOST_LABEL(),
                 eventId,
-                (String) result,
+                result,
                 loggerColorConfig.getRESET_COLOR());
         return result;
     }
@@ -173,7 +173,7 @@ public class EventServiceLoggerAspect {
     public Object logGetEventByLinkUuid(ProceedingJoinPoint proceedingJoinPoint, UUID linkUuid)
             throws Throwable {
         Object result = proceedingJoinPoint.proceed();
-        if ((UUID) result == null) {
+        if (result == null) {
             LOGGER.info(
                     "{}{}Invite link with hash: {} did not attach to event{}",
                     loggerColorConfig.getGET_COLOR(),
@@ -186,7 +186,7 @@ public class EventServiceLoggerAspect {
                     loggerColorConfig.getGET_COLOR(),
                     loggerColorConfig.getGET_LABEL(),
                     linkUuid,
-                    (UUID) result,
+                    result,
                     loggerColorConfig.getRESET_COLOR());
         }
         return result;
@@ -215,7 +215,7 @@ public class EventServiceLoggerAspect {
                 loggerColorConfig.getGET_COLOR(),
                 loggerColorConfig.getGET_LABEL(),
                 eventId,
-                (String) result,
+                result,
                 loggerColorConfig.getRESET_COLOR());
         return result;
     }
